@@ -1,7 +1,6 @@
 ;;; gpr-skel.el --- an extension to Gpr mode for inserting statement skeletons
 
-;; Copyright (C) 2013
-;;   Free Software Foundation, Inc.
+;; Copyright (C) 2013 Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 

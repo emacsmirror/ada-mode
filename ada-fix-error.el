@@ -1,7 +1,7 @@
 ;;; ada-fix-error.el --- utilities for automatically fixing
 ;; errors reported by the compiler.
 
-;; Copyright (C) 1999-2009, 2012, 2013 Stephen Leake.
+;; Copyright (C) 1999-2009, 2012-2013 Free Software Foundation, Inc.
 
 ;; Author     : Stephen Leake      <Stephen_Leake@stephe-leake.org>
 ;; Maintainer : Stephen Leake      <Stephen_Leake@stephe-leake.org>
