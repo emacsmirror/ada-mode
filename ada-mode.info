@@ -1,8 +1,7 @@
 This is ../ada-mode.info, produced by makeinfo version 4.13 from
 ../ada-mode.texi.
 
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-2008, 2009, 2010, 2011, 2012, 2013  Free Software Foundation, Inc.
+Copyright (C) 1999 - 2014  Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -24,8 +23,7 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-2008, 2009, 2010, 2011, 2012, 2013  Free Software Foundation, Inc.
+   Copyright (C) 1999 - 2014  Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -65,11 +63,10 @@ File: ada-mode.info,  Node: Overview,  Next: Installation,  Prev: Top,  Up: Top
 **********
 
 The Emacs mode for programming in Ada helps the user in reading
-existing code and facilitates writing new code.
+existing code and facilitates developing new code.
 
-   When the Gnu Ada compiler GNAT is used, the cross-reference
-information output by the compiler is used to provide powerful code
-navigation (jump to definition, find all uses, etc).
+   Cross-reference information output by the compiler is used to provide
+powerful code navigation (jump to definition, find all uses, etc).
 
    When you open a file with a file extension of `.ads' or `.adb',
 Emacs will automatically load and activate Ada mode.
@@ -79,19 +76,18 @@ compiler (`https://libre2.adacore.com/') and the GNAT default naming
 convention.
 
    You must customize a few things if you are using a different file
-naming convention or compiler; *Note Other compiler::, *Note
-Non-standard file names::.
+naming convention or compiler; *Note Non-standard file names::, *Note
+Other compiler::.
 
    In addition, you may want to customize the indentation,
 capitalization, and other things; *Note Other customization::.
 
-   Finally, for large Ada projects, you will want to set up an Emacs
-Ada mode project file for each project; *Note Project files::. Note
-that these are different from the GNAT project files used by gnatmake
-and other GNAT commands.
+   Finally, for large Ada projects, you will want to set up an Emacs Ada
+mode project file for each project; *Note Project files::. Note that
+these are different from the GNAT project files used by the GNAT tools.
 
-   *Note Running Debuggers Under Emacs: (emacs)Running Debuggers Under
-Emacs, for general information on debugging.
+   *Note Debuggers: (emacs)Debuggers, for general information on
+debugging.
 
 
 File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,  Up: Top
@@ -99,18 +95,21 @@ File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,
 2 Installation
 **************
 
-Ada mode is part of the standard Emacs distribution; if you use that,
-no files need to be installed.
+Ada mode is distributed in the Gnu ELPA package archive; it can be
+installed via `M-x list-packages' (*note Packages: (emacs)Packages.).
+You must first enable packages in your `~/.emacs', _after_ customizing
+`Info-default-directory-list' (if you do that):
+
+     (package-initialize)
 
    Ada mode is also available as a separate distribution, from the Emacs
 Ada mode website
-`http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html'. The
-separate distribution may be more recent.
+`http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html'.
 
    For installing the separate distribution, see the `README' file in
 the distribution.
 
-   To see what version of Ada mode you have installed, do `M-x
+   To see what version of Ada mode you have installed, invoke `M-x
 ada-mode-version'.
 
 * Menu:
@@ -131,7 +130,9 @@ for which gcc provices the `-fdump-xref'.
 requires the very latest version, in `gnatcoll 1.7w' distributed with
 GNATPro 7.2 preview.
 
-   To build `gnatinspect':
+   To build `gnatinspect', assuming gnat-7.1.2 is installed in
+`/usr/gnat-7.1.1':
+
      tar xf ~/Downloads/gnatcoll-1.7w-src.tgz
      cd gnatcoll-1.7w-src
      ./configure --prefix=/usr/gnat-7.1.2
@@ -201,7 +202,7 @@ ends with either `.adb', `_b.ada' or `.body'.
 name following the GNAT convention, you need to provide an alternate
 function for `ada-file-name-from-ada-name'. Doing that is beyond the
 scope of this manual; see the current definitions in `ada-mode.el' and
-`ada-gnat.el' for examples.
+`ada-gnat-xref.el' for examples.
 
 
 File: ada-mode.info,  Node: Other compiler,  Next: Other cross-reference,  Prev: Non-standard file names,  Up: Customization
@@ -274,18 +275,27 @@ the syntax to set a variable is the following:
      Insert a matching right paren when you type a left paren.
 
 `hippie-expand'
-     Bind hippie-expand to a key; it expands the word before point,
+     Bind `hippie-expand' to a key; it expands the word before point,
      using words from current buffer, other buffers, file names, etc;
      see `hippie-expand-try-functions-list'. You can also add
      `ada-skel-hippie-try' to that list. Note that `ada-expand', which
      defaults to `ada-skel-expand', is bound to <C-c C-e> (*note
      Statement skeletons::).
 
+`imenu'
+
+`which-func'
+
    The above can all be set by the following code in your `~/.emacs'.
 Note that some are functions are added to `before-save-hook'; they run
-just before a buffer is written to disk.
+just before a buffer is written to disk. Also, the order is important;
+ada-mode does not set up the Ada-specific features of imenu and
+which-func unless they are loaded first.
+
      (setq-default indent-tabs-mode nil)
      (electric-pair-mode 1)
+     (require 'imenu)
+     (require 'which-func)
      (require 'ada-mode)
      (add-to-list 'hippie-expand-try-functions-list 'ada-skel-hippie-try)
      (define-key ada-mode-map "\C-e"     'hippie-expand)
@@ -444,7 +454,7 @@ This example uses no project files.
    Yes, this is missing "use Ada.Text_IO;" - we want to demonstrate
 compiler error handling.
 
-   `hello_2.adb':
+   `hello_2.adb' has no errors:
 
      with Hello_Pkg;
      procedure Hello_2
@@ -452,15 +462,11 @@ compiler error handling.
         Hello_Pkg.Say_Hello;
      end Hello_2;
 
-   This file has no errors.
-
-   `hello_pkg.ads':
+   `hello_pkg.ads' has no errors:
 
      package Hello_Pkg is
         procedure Say_Hello;
      end Hello_Pkg;
-
-   This file has no errors.
 
    `hello_pkg.adb':
 
@@ -933,15 +939,19 @@ An Emacs Ada mode project file specifies what directories hold sources
 for your project, and allows you to customize the compilation commands
 and other things on a per-project basis.
 
-   The default file extension for Ada mode project files is `*.adp'.
-You can use a different extension by adding it to
-`ada-prj-parser-alist'.
+   The default file extension for Ada mode project files is `*.adp' or
+`*.prj'. You can use a different extension by adding it to
+`ada-prj-file-extensions', and a different syntax by adding a parser
+function to `ada-prj-parser-alist'.
 
    Note that Ada mode project files `*.adp' are different than GNAT
 compiler project files `*.gpr'. However, Emacs Ada mode can use a GNAT
 project file to specify the project directories. If no other
 customization is needed, a GNAT project file can be used without an
 Emacs Ada mode project file.
+
+   If no Emacs Ada mode project file is specified, some Ada mode
+functions are not available.
 
 * Menu:
 
@@ -960,6 +970,8 @@ line specifies a project variable name and its value, separated by "="
      src_dir=/Projects/my_project/src_1
      src_dir=/Projects/my_project/src_2
 
+   Any line that does not have an "=" is a comment.
+
    Some variables (like `src_dir') are lists; multiple occurrences are
 concatenated.
 
@@ -967,7 +979,8 @@ concatenated.
 trailing spaces.
 
    The current project file is given by the lisp variable
-`ada-prj-default-project-file'.
+`ada-prj-default-project-file', and shown by the menu command <Ada |
+Project Files | Show project>.
 
    To set the project file, use the menu command `Ada | Set Project
 ...', or the elisp functions `ada-parse-prj-file, ada-select-prj-file'.
@@ -980,8 +993,8 @@ The latter can be added to a Makefile:
 
    You specify either a GNAT project file or an Emacs Ada mode project
 file; if the file extension is `.gpr', the file is treated as a GNAT
-project file. Any other extension is treated as an Emacs Ada mode
-project file.
+project file. Extensions given by `ada-prj-file-extensions' (default
+`.adp, .prj') are treated as an Emacs Ada mode project file.
 
    After a project file is parsed, you can make it current again with
 just `ada-select-prj-file', or by selecting it from the menu.
@@ -992,22 +1005,20 @@ File: ada-mode.info,  Node: Project file variables,  Prev: Project file overview
 5.2 Project file variables
 ==========================
 
-Some project file variables can also be defined in elisp variables.
-
-   To set a project variable that is a list, specify each element of the
+To set a project variable that is a list, specify each element of the
 list on a separate line in the project file.
 
    Process environment variables can be referenced using the normal
 `$var' syntax.
 
    Most project variables have defaults that can be changed by setting
-elisp variables; the table below identifies the lisp variable for each
+elisp variables; the table below identifies the elisp variable for each
 project variable. Elisp variables corresponding to project variables
 that are lists are elisp lists.
 
    In general, project variables are evaluated when referenced in Emacs
-Ada mode commands. Relative file paths are expanded to absolute
-relative to the directory containing the project file.
+Ada mode commands. Relative file paths are expanded relative to the
+directory containing the project file.
 
    Ada mode defines some project variables; others are defined by the
 compiler.
@@ -1035,6 +1046,15 @@ project file.
      List of files containing casing exceptions. *Note Automatic
      casing::.
 
+`el_file'        [default: ]
+     The value is a file name, which is loaded as an elisp file when the
+     project file is parsed or selected. This allows setting Ada mode
+     indentation variables, and any arbitrary elisp code used to
+     customize the project.
+
+`path_sep'       [default: `path-separator']
+     Separator character used in compiler search paths.
+
 `src_dir'        [default: `"."']
      A list of directories to search for source files.
 
@@ -1047,14 +1067,18 @@ project file.
 `ada_project_path'   [default: `""']
      A list of directories to search for GNAT project files.
 
-     If set, the `ADA_PROJECT_PATH' process environment variable is set
+     If set, the `GPR_PROJECT_PATH' process environment variable is set
      to this value in the child process that runs GNAT tools. If not
-     set, `ADA_PROJECT_PATH' in the child process is inherited from the
+     set, `GPR_PROJECT_PATH' in the child process is inherited from the
      Emacs process.
 
-     If you have the `ADA_PROJECT_PATH' environment variable set in the
-     Emacs process correctly for all of your projects, you do not need
-     to set this project variable.
+     If you have the `GPR_PROJECT_PATH' or `ADA_PROJECT_PATH'
+     environment variable set in the Emacs process correctly for all of
+     your projects, you do not need to set this project variable.
+
+     The project search path can also be set in GNAT aggregate
+     projects. However, the gnat tools do not make that path available
+     to Emacs, so you must duplicate it in an Emacs Ada project file.
 
 `gpr_file'   [default: `""']
      The GNAT project file.
@@ -1063,6 +1087,9 @@ project file.
      project file are appended to `src_dir' and `ada_project_path'.
      This allows specifying Ada source directories with a GNAT project
      file, and other source directories with the Emacs project file.
+
+`gpr_project_path'   [default: `""']
+     Same as `ada_project_path'.
 
 
 
@@ -1074,16 +1101,17 @@ File: ada-mode.info,  Node: Moving Through Ada Code,  Next: Identifier completio
 There are several commands to navigate through Ada code. All these
 functions are available through the Ada menu and keybindings.
 
-   Some of these commands rely on facilities provided by the compiler;
-the standard Emacs Ada mode only supports the GNAT compiler, but others
-can be added.
+   Some of these commands rely on cross reference facilities provided by
+the compiler; the standard Emacs Ada mode only supports the GNAT
+compiler, but others can be added (*note Other cross-reference::).
 
 `C-c C-d'
      Move from any use of an identifier to its declaration, for from a
-     declaration to its body.
+     declaration to its body (if there is one).
 
 `C-c M-d'
-     Move from a child type declaration to the parent type declaration.
+     Move from a child type declaration to the parent type declaration;
+     display a list of references if there is more than one parent.
 
 `C-c C-n'
      Move to the next keyword in the current statement.
@@ -1098,21 +1126,25 @@ can be added.
 `C-c C-o'
      Switch between corresponding spec and body. There are several
      special cases:
-        *     If the region is active, it is assumed to contain an Ada
-          package     name; position point on the corresponding package
+
+        * If the region is active, it is assumed to contain an Ada
+          package name; position point on the corresponding package
           declaration.
 
-        *     If point is in the start line of a top level child package
-             declaration (but not package body), or a child subprogram
-          spec or     body, position point on the corresponding parent
-          package     declaration.
+        * If point is in the start line of a top level child package
+          declaration (but not package body), or a child subprogram
+          spec or body, position point on the corresponding parent
+          package declaration.
 
-        *     If point is in the start line of a top level separate
-          body,     position point on the corresponding separate stub
-          declaration.
+        * If point is in the start line of a top level separate body,
+          position point on the corresponding separate stub declaration.
 
-        *     If point is in a subprogram, position point on the
-          corresponding     declaration or body in the other file.
+        * If point is in a subprogram declaration or body, position
+          point on the corresponding body or declaration in the other
+          file.
+
+        * If point is on a `with' clause, position point on the
+          corresponding declaration.
 
 
 `C-c C-r'
@@ -1125,8 +1157,17 @@ can be added.
      point. Use `C-x `' (`next-error') to visit each reference (as for
      compilation errors).
 
+`C-c M-x'
+     Show the declaration that the declaration at point overrides.
+
 `C-u SPACE'
      Jump back to the previous location.
+
+`Ada | Misc | Refresh cross reference cache'
+     Cross reference information is loaded from the compiler output when
+     the first cross reference command is issued. If the code is
+     recompiled after that, the cross reference information is reloaded
+     by invoking this menu command.
 
 
 
@@ -1216,6 +1257,10 @@ can also configure the indentation, via the following variables:
      Indentation for the lines in a `with' context clause.
 
 
+   The indentation variables are buffer local; the global value may be
+overridden in an elisp file invoked by an `el_file' Emacs Ada mode
+project file statement, or in a file local variable section.
+
    The following keys indent portions of the text:
 `RET'
      Insert and indent a new line.
@@ -1229,13 +1274,14 @@ can also configure the indentation, via the following variables:
 
    The indentation algorithm relies on a grammar parser to identify the
 syntactic role for keywords and other words in the code. If the code is
-accepted by the parser, the indentation is correct. If the code is not
-accepted (because it is partially complete during editing), the
-indentation engine falls back to the trivial algorithm of indenting
-each new line the same as the previous line.
+accepted by the parser, the indentation is done according to the rules
+in the indentation engine.
 
-   Once enough new text has been entered to make the code acceptable to
-the parser, the statement or declaration is properly indented.
+   If the code is not accepted (because it is partially complete during
+editing), the indentation engine falls back to the trivial algorithm of
+indenting each new line the same as the previous line. Once enough new
+text has been entered to make the code acceptable to the parser, the
+statement or declaration is properly indented.
 
    For example, if you are entering this code:
 
@@ -1243,9 +1289,10 @@ the parser, the statement or declaration is properly indented.
         B;
      end if;
 
-   when you type `RET B', `B' is indented to the same column as `if'.
-Then when you type the final `;', all three lines are indented, putting
-`B' where it belongs.
+   when you type `RET B', `B' is indented to the same column as `if',
+because the parser does not find `end if;'. Then when you type the
+final `;' followed by <TAB>, all three lines are indented, putting `B'
+where it belongs.
 
    To be more user friendly, the parser accepts a superset of the Ada
 grammer. For example, the parser accepts this code for an `if'
@@ -1260,6 +1307,9 @@ omitted.
    One way to easily insert empty statements like this is using *note
 Statement skeletons::.
 
+   In rare cases, the parser gets confused; it can be reset by invoking
+menu <Ada | Misc | Reset parser>. Please report such cases as a bug.
+
 
 File: ada-mode.info,  Node: Statement skeletons,  Next: Aligning code,  Prev: Indentation,  Up: Top
 
@@ -1267,7 +1317,7 @@ File: ada-mode.info,  Node: Statement skeletons,  Next: Aligning code,  Prev: In
 *********************
 
 `C-c C-e' expands the previous one or two words into a statment
-skeleton. For example, `if C-c C-e' expands to:
+skeleton. For example, `i f C-c C-e' expands to:
 
      if  then
      elsif  then
@@ -1278,11 +1328,11 @@ skeleton. For example, `if C-c C-e' expands to:
 this is a convenient way to insert statements with correct indentation.
 
    For named statements (packages, loops, etc), the name is taken from
-the word before point, and the name of statement from the word before
-that. Some expansions prompt for more information, such as whether a
-spec or body is desired. For example, `package A_Package C-c C-e' first
-prompts for "body" or "spec". If "spec" is selected, the following code
-is inserted:
+the word before point, and the name of the statement from the word
+before that. Some expansions prompt for more information, such as
+whether a spec or body is desired. For example, `package A_Package C-c
+C-e' first prompts for "body" or "spec". If "spec" is selected, the
+following code is inserted:
 
      package A_Package is
      private
@@ -1344,9 +1394,9 @@ File: ada-mode.info,  Node: Automatic casing,  Next: Comment Handling,  Prev: Al
 *******************
 
 Casing of identifiers, attributes and keywords is automatically
-performed while typing when the variable `ada-auto-case' is non-nil.
-Every time you type a word separator, the previous word is
-automatically cased.
+performed while typing when the variable `ada-auto-case' is non-nil
+(the default). Every time you type a word separator, the previous word
+is automatically cased.
 
    You can customize the automatic casing with the following variables:
 
@@ -1364,7 +1414,8 @@ automatically cased.
 
      If nil, the mixed case characters in identifiers are forced to
      upper case, but the other characters are not modified. That allows
-     typing all uppercase identifiers without defining an exception.
+     typing all uppercase identifiers without defining a casing
+     exception.
 
    You can define exceptions to these rules, in files specified by the
 variable `ada-case-exception-file'. Each line in a case exception file
@@ -1387,9 +1438,8 @@ underscores or word boundary.
    There are two ways to add new items to this file: you can simply edit
 it as you would edit any text file. Or you can position point on the
 word you want to add, and select menu `Ada | Casing | Create full
-exception' (`C-c C-y', `ada-case-create-exception') or `Ada | Casing |
-Create partial exception' (`C-c C-M-y').  The word will be added to the
-current list of exceptions and to the file.
+exception' or `Ada | Casing | Create partial exception'.  The word will
+be added to the current list of exceptions and to the file.
 
    It is sometimes useful to have multiple exception files. For
 example, one could be the standard Ada acronyms, the second some
@@ -1439,6 +1489,10 @@ File: ada-mode.info,  Node: Key summary,  Next: Developer overview,  Prev: Comme
 13 Key summary
 **************
 
+This table summarizes the keys described in this manual. Other keys are
+bound by Ada mode; see <C-h b> for a complete list. The Ada menu also
+displays keys bound to menu operations.
+
 `M-/'
      *Note Identifier completion::.  Complete the word before point;
      repeat to cycle thru possible completions.
@@ -1446,6 +1500,9 @@ File: ada-mode.info,  Node: Key summary,  Next: Developer overview,  Prev: Comme
 `M-;'
      *Note Comment Handling::.  If the region is active, comment or
      uncomment it.
+
+`M-q'
+     *Note Comment Handling::.  Fill the current comment paragraph.
 
 `RET'
      *Note Indentation::.  Insert and indent a new line.
@@ -1464,6 +1521,9 @@ File: ada-mode.info,  Node: Key summary,  Next: Developer overview,  Prev: Comme
 `C-c C-a'
      *Note Aligning code::.  Align code.
 
+`C-c C-c'
+     *Note Compile commands::.  Build the current main program.
+
 `C-c C-d'
      *Note Moving Through Ada Code::.  Move from any use of an
      identifier to its declaration, for from a declaration to its body.
@@ -1475,6 +1535,9 @@ File: ada-mode.info,  Node: Key summary,  Next: Developer overview,  Prev: Comme
 `C-c C-e'
      *Note Statement skeletons::.  Expand previous one or two words
      into a statement or declaration skeleton.
+
+`C-c C-c'
+     *Note Compile commands::.  Build the current file.
 
 `C-c C-n'
      *Note Moving Through Ada Code::.  Move to the next keyword in the
@@ -1503,6 +1566,10 @@ File: ada-mode.info,  Node: Key summary,  Next: Developer overview,  Prev: Comme
 `C-c C-y'
      *Note Automatic casing::.  Create case exception.
 
+`C-c `'
+     *Note Compiler errors::.  Move to the location of the next
+     secondary compilation error.
+
 `C-x `'
      *Note Compiler errors::.  Move to the location of the next
      compilation error or show result.
@@ -1525,6 +1592,7 @@ sources, here's an overview.
 * Directory structure::
 * Package organization::
 * OpenToken::
+* ELPA::
 
 
 File: ada-mode.info,  Node: Directory structure,  Next: Package organization,  Prev: Developer overview,  Up: Developer overview
@@ -1532,7 +1600,7 @@ File: ada-mode.info,  Node: Directory structure,  Next: Package organization,  P
 14.1 Directory structure
 ========================
 
-`org.emacs.ada-mode.stephe-1'
+`org.emacs.ada-mode'
      Main source.
 
      File extensions:
@@ -1541,7 +1609,8 @@ File: ada-mode.info,  Node: Directory structure,  Next: Package organization,  P
 
     `*.elc'
           Byte-compiled elisp files, not in the distribution. Generated
-          by the Makefile target `byte-compile'.
+          by the Makefile target `byte-compile', or by the Emacs
+          package installer.
 
           Compiling the parse tables (`*-wy.el') speeds up loading them
           significantly. Compiling other files speeds up parsing, but
@@ -1554,8 +1623,8 @@ File: ada-mode.info,  Node: Directory structure,  Next: Package organization,  P
     `*-wy.el'
           Parse tables, generated from the corresponding grammar `*.wy'
           by the OpenToken tool `wisi-generate.exe'. These are in the
-          tarball distribution and the monotone so users and Elisp
-          developers don't have to install OpenToken.
+          tarball distribution and the monotone repository so users and
+          Elisp developers don't have to install OpenToken.
 
     `*-wy.output'
           Diagnostic output from `wisi-generate.exe', useful for tracing
@@ -1585,12 +1654,13 @@ File: ada-mode.info,  Node: Directory structure,  Next: Package organization,  P
 
 
 `build'
-     Makefiles for byte-compiling, running tests, making zips.
+     Makefile for building the user guides, publishing to the web page
+     or Gnu ELPA. Test drivers.
 
 `build/wisi'
-     Makefiles for building and testing with the wisi-based parser.
+     Makefile for building and testing with the wisi-based parser.
      Separate from `build', because there used to be a SMIE-based
-     parser, and there might be another one someday.
+     parser, and there might be another parser someday.
 
      The emacs used to byte-compile and run tests is given by the 'make'
      variable EMACS_EXE, which defaults to 'emacs'; it can be
@@ -1680,8 +1750,7 @@ Ada mode consists of all files with `ada-' prefix in the file name.
      All user-settable options for the Ada indentation engine.
 
 `ada-mode-compat-23.4.el'
-     A start on defining functions used by Ada mode but not in Emacs
-     23.4.
+     Defines functions used by Ada mode that are not in Emacs 23.4.
 
      Emacs Ada mode is written for Emacs 24.3. Emacs version 23.4 is
      partially supported. Earlier versions of Emacs are not supported.
@@ -1771,7 +1840,7 @@ name.
      Implements the generalized LALR parser.
 
 
-File: ada-mode.info,  Node: OpenToken,  Prev: Package organization,  Up: Developer overview
+File: ada-mode.info,  Node: OpenToken,  Next: ELPA,  Prev: Package organization,  Up: Developer overview
 
 14.3 OpenToken
 ==============
@@ -1785,6 +1854,27 @@ how to get it.
    The Makefile variable `WISI_OPENTOKEN' gives the path to the build
 directory for OpenToken; you probably need to override it with an
 external environment variable or on the `make' command line.
+
+
+File: ada-mode.info,  Node: ELPA,  Prev: OpenToken,  Up: Developer overview
+
+14.4 ELPA
+=========
+
+Ada mode is published via the Gnu ELPA archive. To test a new version
+of Ada mode, we use a local Gnu ELPA archive. That requires fetching
+Gnu ELPA via git:
+
+     cd /Projects
+     git clone git://git.savannah.gnu.org/emacs/elpa.git
+
+   If you have an Emacs Savannah developer account, you can use:
+
+     cd /Projects
+     git clone <login>@git.savannah.gnu.org/emacs/elpa.git
+
+   `build/Makefile' contains targets for copying Ada mode source to the
+elpa workspace, and for building the elpa archive there.
 
 
 File: ada-mode.info,  Node: GNU Free Documentation License,  Next: Index,  Prev: Developer overview,  Up: Top
@@ -2282,66 +2372,69 @@ Index
 * Menu:
 
 * ada-case-adjust-at-point:              Automatic casing.     (line 65)
-* ada-case-create-exception:             Automatic casing.     (line 47)
+* ada-case-create-exception:             Automatic casing.     (line 48)
 * ada-find-other-file:                   Moving Through Ada Code.
-                                                               (line 31)
+                                                               (line 32)
 * ada-goto-declaration:                  Moving Through Ada Code.
                                                                (line 14)
 * ada-goto-declaration-parent:           Moving Through Ada Code.
                                                                (line 18)
 * ada-next-statement-keyword:            Moving Through Ada Code.
-                                                               (line 21)
+                                                               (line 22)
 * ada-prev-statement-keyword:            Moving Through Ada Code.
-                                                               (line 26)
+                                                               (line 27)
+* ada-show-overridden:                   Moving Through Ada Code.
+                                                               (line 66)
 * ada-show-overriding:                   Moving Through Ada Code.
-                                                               (line 56)
+                                                               (line 61)
 * ada-show-references:                   Moving Through Ada Code.
-                                                               (line 51)
+                                                               (line 56)
 * comment-dwim:                          Comment Handling.     (line 10)
 * fill-paragraph:                        Comment Handling.     (line 18)
 
 
 
 Tag Table:
-Node: Top1031
-Node: Overview2675
-Node: Installation3984
-Node: gnatinspect4607
-Node: Customization5280
-Node: Non-standard file names5761
-Node: Other compiler7595
-Node: Other cross-reference8174
-Node: Other customization8892
-Node: Compiling Executing11155
-Node: Compile commands11889
-Node: Compiling Examples14621
-Node: No project files15453
-Node: Set compiler options20838
-Node: Set source search path22796
-Node: Use GNAT project file25245
-Node: Use multiple GNAT project files28018
-Node: Use a Makefile30735
-Node: Compiler errors32049
-Node: Project files32863
-Node: Project file overview33700
-Node: Project file variables35055
-Node: Moving Through Ada Code37979
-Node: Identifier completion40087
-Node: Indentation41048
-Node: Statement skeletons44731
-Node: Aligning code45932
-Node: Automatic casing46876
-Node: Comment Handling49600
-Node: Key summary50118
-Node: Developer overview52236
-Node: Directory structure52567
-Node: Package organization55955
-Node: Ada mode56190
-Node: gpr mode58393
-Node: GNAT core58675
-Node: Wisi59621
-Node: OpenToken60583
-Node: GNU Free Documentation License61171
-Node: Index86351
+Node: Top954
+Node: Overview2521
+Node: Installation3731
+Node: gnatinspect4494
+Node: Customization5223
+Node: Non-standard file names5704
+Node: Other compiler7543
+Node: Other cross-reference8122
+Node: Other customization8840
+Node: Compiling Executing11313
+Node: Compile commands12047
+Node: Compiling Examples14779
+Node: No project files15611
+Node: Set compiler options20966
+Node: Set source search path22924
+Node: Use GNAT project file25373
+Node: Use multiple GNAT project files28146
+Node: Use a Makefile30863
+Node: Compiler errors32177
+Node: Project files32991
+Node: Project file overview34015
+Node: Project file variables35541
+Node: Moving Through Ada Code39048
+Node: Identifier completion41744
+Node: Indentation42705
+Node: Statement skeletons46838
+Node: Aligning code48044
+Node: Automatic casing48988
+Node: Comment Handling51682
+Node: Key summary52200
+Node: Developer overview54825
+Node: Directory structure55165
+Node: Package organization58642
+Node: Ada mode58877
+Node: gpr mode61068
+Node: GNAT core61350
+Node: Wisi62296
+Node: OpenToken63258
+Node: ELPA63859
+Node: GNU Free Documentation License64467
+Node: Index89647
 
 End Tag Table

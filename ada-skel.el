@@ -337,7 +337,6 @@ trailing `...' if there are more keys."
       (concat (mapconcat 'car alist-1 " | ") " | ... : "))
   ))
 
-;;;###autoload
 (defun ada-skel-expand (&optional name)
   "Expand the token or placeholder before point to a skeleton, as defined by `ada-skel-token-alist'.
 A token is a symbol in the current syntax.

@@ -168,7 +168,6 @@
   )
 
 ;;;;
-;;;###autoload
 (defun gpr-wisi-setup ()
   "Set up a buffer for parsing Ada files with wisi."
   (wisi-setup '(gpr-wisi-before-cache

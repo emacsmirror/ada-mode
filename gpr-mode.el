@@ -1,10 +1,9 @@
 ;;; gpr-mode --- major-mode for editing GNAT project files
 
-;; Copyright (C) 2004, 2007, 2008, 2012-2013  Free Software Foundation, Inc.
+;; Copyright (C) 2004, 2007, 2008, 2012-2014  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
-;; Version: 5.0
 
 ;; This file is part of GNU Emacs.
 
@@ -38,18 +37,6 @@
 ;; we reuse several ada-mode functions
 (require 'ada-mode)
 
-(defun gpr-align ()
-  "If region is active, apply 'align'. If not, attempt to align
-current construct."
-  (interactive)
-  (if (use-region-p)
-      (progn
-        (align (region-beginning) (region-end))
-        (deactivate-mark))
-
-    (align-current)
-    ))
-
 (defvar gpr-mode-map
   (let ((map (make-sparse-keymap)))
     ;; C-c <letter> are reserved for users
@@ -57,7 +44,6 @@ current construct."
     ;; global-map has C-x ` 'next-error
     (define-key map [return]   'ada-indent-newline-indent)
     (define-key map "\C-c`"    'ada-show-secondary-error)
-    (define-key map "\C-c\C-a" 'gpr-align)
     (define-key map "\C-c\C-c" 'compile)
     (define-key map "\C-c\C-e" 'gpr-expand)
     (define-key map "\C-c\C-f" 'gpr-show-parse-error)
@@ -65,6 +51,7 @@ current construct."
             ;; FIXME (later): implement?
     ;; (define-key map "\C-c\C-n" 'ada-next-statement-keyword)
     ;; (define-key map "\C-c\C-p" 'ada-prev-statement-keyword)
+    (define-key map "\C-c\C-o" 	 'ff-find-other-file)
     (define-key map "\C-c\C-S-p" 'gpr-set-as-project)
     (define-key map "\C-c\C-t" 'ada-case-read-all-exceptions)
     (define-key map "\C-c\C-w" 'ada-case-adjust-at-point)
@@ -92,14 +79,13 @@ current construct."
     ["Next compilation error"      next-error                       t]
     ["Show secondary error"        ada-show-secondary-error         t]
     ["Show last parse error"       gpr-show-parse-error             t]
+    ["Other file"                  ff-find-other-file               t]
     ("Edit"
-     ["Indent Line"                 indent-for-tab-command         t]
-     ["Indent Lines in Selection"   indent-region                  t]
+     ["Indent Line or selection"    indent-for-tab-command         t]
+     ["Indent current statement"    gpr-indent-statement           t]
      ["Indent Lines in File"        (indent-region (point-min) (point-max))  t]
      ["Expand skeleton"             gpr-expand                     t] ;; FIXME: only if skeleton
-     ["Align"                       gpr-align                      t]
-     ["Comment Selection"           comment-region                 t]
-     ["Uncomment Selection"         (lambda () (comment-region t)) t]
+     ["Comment/uncomment selection" comment-dwim                   t]
      ["Fill Comment Paragraph"      fill-paragraph                 t]
 
      ["Fill Comment Paragraph Justify" ada-fill-comment-paragraph-justify t]
@@ -221,6 +207,7 @@ of the package or project point is in or just after, or nil.")
   (ada-select-prj-file (or file (buffer-file-name))))
 
 ;;;;
+;;;###autoload
 (defun gpr-mode ()
   "The major mode for editing GNAT project files."
 
@@ -265,13 +252,15 @@ of the package or project point is in or just after, or nil.")
 
   )
 
-;; user needs to add this somewhere:
-;; FIXME: add autoload processing?
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.gpr\\'" . gpr-mode))  ; GNAT project files
 
 (provide 'gpr-mode)
 
 (unless (featurep 'gpr-indent-engine)
   (require 'gpr-wisi))
+
+(unless (featurep 'gpr-skeletons)
+  (require 'gpr-skel))
 
 ;;; end of file

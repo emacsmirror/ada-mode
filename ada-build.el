@@ -1,7 +1,7 @@
 ;;; ada-build.el --- extensions to ada-mode for compiling and running
 ;;; Ada projects without 'make' or similar tool
 ;;
-;;; Copyright (C) 1994, 1995, 1997 - 2013  Free Software Foundation, Inc.
+;;; Copyright (C) 1994, 1995, 1997 - 2014  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -20,10 +20,6 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-;;
-;;; Usage:
-;;
-;; Add (require 'ada-build) to your .emacs
 
 ;;; Design:
 ;;

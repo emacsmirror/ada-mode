@@ -332,7 +332,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       (cond
        ((null search-type)
 	(pop-to-buffer (current-buffer))
-	(error "gnatinspect did not return other item"))
+	(error "gnatinspect did not return other item; refresh?"))
 
        ((and
 	 (string-equal search-type "declaration")
@@ -345,7 +345,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 
       (when (null result)
 	(pop-to-buffer (current-buffer))
-	(error "gnatinspect did not return other item"))
+	(error "gnatinspect did not return other item; refresh?"))
 
       (message "parsing result ... done")
       result)))
@@ -391,7 +391,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 
       (when (null result)
 	(pop-to-buffer (current-buffer))
-	(error "gnatinspect did not return other item"))
+	(error "gnatinspect did not return other item; refresh?"))
 
       (message "parsing result ... done")
       result)))

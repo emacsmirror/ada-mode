@@ -41,6 +41,11 @@ File: gpr-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
 * Overview::
 * Installation::
+* Customization::
+* Moving Through Gpr Code::
+* Identifier completion::
+* Indentation::
+* Statement skeletons::
 * GNU Free Documentation License::
 * Index::
 
@@ -63,16 +68,17 @@ and facilitates writing new code.
 automatically load and activate gpr mode.
 
 
-File: gpr-mode.info,  Node: Installation,  Prev: Overview,  Up: Top
+File: gpr-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,  Up: Top
 
 2 Installation
 **************
 
-gpr mode is part of the standard Emacs distribution; if you use that,
-no files need to be installed.
+gpr mode is distributed in the Gnu ELPA package archive, bundled with
+Ada mode; it can be installed via `M-x list-packages' (*note Packages:
+(emacs)Packages.).
 
-   gpr mode is also available as a separate distribution (bundled with
-Ada mode), from the Emacs Ada mode website
+   gpr mode is also available as a separate distribution bundled with
+Ada mode, from the Emacs Ada mode website
 `http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html'. The
 separate distribution may be more recent.
 
@@ -84,7 +90,200 @@ version number. To see what version of Ada mode you have installed, do
 `M-x ada-mode-version'.
 
 
-File: gpr-mode.info,  Node: GNU Free Documentation License,  Next: Index,  Up: Top
+File: gpr-mode.info,  Node: Customization,  Next: Moving Through Gpr Code,  Prev: Installation,  Up: Top
+
+3 Customization
+***************
+
+gpr mode uses the Ada mode indentation variables; they can be set via
+the menu `Ada | Customize' from an Ada mode buffer.  Click on the
+`Help' button there for help on using customize.
+
+   To modify a specific variable, you can directly call the function
+`customize-variable'; just type `M-x customize-variable <RET>
+VARIABLE-NAME <RET>').
+
+   Alternately, you can specify variable settings in the Emacs
+configuration file, `~/.emacs'. This file is coded in Emacs lisp, and
+the syntax to set a variable is the following:
+     (setq variable-name value)
+
+   Some general Emacs settings that are useful for gpr files:
+`delete-trailing-whitespace'
+     Deletes space, tab at end of line and blank lines at end of buffer.
+
+`untabify'
+     Deletes tab characters that have crept into the file.
+
+`indent-tabs-mode'
+     Don't insert tab characters when indenting.
+
+`hippie-expand'
+     Bind `hippie-expand' to a key; it expands the word before point,
+     using words from current buffer, other buffers, file names, etc;
+     see `hippie-expand-try-functions-list'. You can also add
+     `skeleton-hippie-try' to that list (*note Statement skeletons::).
+
+   The above can all be set by the following code in your `~/.emacs'.
+Note that some are functions are added to `before-save-hook'; they run
+just before a buffer is written to disk.
+     (setq-default indent-tabs-mode nil)
+     (require 'gpr-mode)
+     (add-to-list 'hippie-expand-try-functions-list 'skeleton-hippie-try)
+     (define-key gpr-mode-map "\C-e"     'hippie-expand)
+     (add-hook 'gpr-mode-hook
+        (lambda ()
+         (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)
+         (add-hook 'before-save-hook
+                   (lambda () (untabify (point-min) (point-max)))
+                    nil t)))
+
+
+File: gpr-mode.info,  Node: Moving Through Gpr Code,  Next: Identifier completion,  Prev: Customization,  Up: Top
+
+4 Moving Through Gpr Code
+*************************
+
+These commands navigate through gpr code. All these functions are
+available through the gpr menu and keybindings.
+
+`C-c C-o'
+     If point is on a `with' clause, position point on the
+     corresponding package declaration.
+
+`C-u SPACE'
+     Jump back to the previous location.
+
+
+
+File: gpr-mode.info,  Node: Identifier completion,  Next: Indentation,  Prev: Moving Through Gpr Code,  Up: Top
+
+5 Identifier completion
+***********************
+
+Emacs provides a general way of completing identifiers: `M-/' (bound to
+`dabbrev-expand'). This is an easy way to type faster: you just have to
+type the first few letters of an identifier, and then loop through all
+the possible completions.
+
+   `M-/' works by parsing all open gpr files for possible completions.
+
+   For instance, if the words `my_identifier' and `my_subprogram' are
+the only words starting with `my' in any of the open gpr files, then
+you will have this scenario:
+
+     You type:  myM-/
+     Emacs inserts:  `my_identifier'
+     If you press M-/ once again, Emacs replaces `my_identifier' with
+     `my_subprogram'.
+     Pressing M-/ once more will bring you back to `my_identifier'.
+
+   This is a very fast way to do completion, and the casing of words
+will also be respected.
+
+
+File: gpr-mode.info,  Node: Indentation,  Next: Statement skeletons,  Prev: Identifier completion,  Up: Top
+
+6 Indentation
+*************
+
+gpr mode comes with a full set of rules for automatic indentation. You
+can also configure the indentation, via the following variables:
+
+`ada-indent'                  (default value: 3)
+     Number of columns for default indentation.
+
+`ada-indent-broken'           (default value: 2)
+     Number of columns to indent the continuation of a broken line.
+
+`ada-indent-when'             (default value: 3)
+     Indentation for `when' relative to `exception', `case', or `or' in
+     `select'.
+
+`ada-indent-with'             (default value: ada-indent-broken)
+     Indentation for the lines in a `with' context clause.
+
+
+   The following keys indent portions of the text:
+`RET'
+     Insert and indent a new line.
+
+`TAB'
+     Indent the current line, or the current region.
+
+`C-c TAB'
+     Indent the current declaration.
+
+
+   The indentation algorithm relies on a grammar parser to identify the
+syntactic role for keywords and other words in the code. If the code is
+accepted by the parser, the indentation is done according to the rules
+in the indentation engine.
+
+   If the code is not accepted (because it is partially complete during
+editing), the indentation engine falls back to the trivial algorithm of
+indenting each new line the same as the previous line. Once enough new
+text has been entered to make the code acceptable to the parser, the
+declaration is properly indented.
+
+   For example, if you are entering this code:
+
+        for Source_Dirs use
+          ("../../1553/test",
+           "../../system/test");
+
+   when you type `RET (', `(' is indented to the same column as `for',
+because the parser does not find `);'. Then when you type the final `;'
+followed by <TAB>, all three lines are indented, putting `(' where it
+belongs.
+
+   To be more user friendly, the parser accepts a superset of the gpr
+grammer. For example, the parser accepts this code for a `case'
+statement:
+
+     case is
+     end case;
+
+   In general, any sequence of statements, and many expressions, may be
+omitted.
+
+   One way to easily insert empty statements like this is using *note
+Statement skeletons::.
+
+   In rare cases, the parser gets confused; it can be reset by invoking
+menu <gpr | Misc | Reset parser>. Please report such cases as a bug.
+
+
+File: gpr-mode.info,  Node: Statement skeletons,  Next: GNU Free Documentation License,  Prev: Indentation,  Up: Top
+
+7 Statement skeletons
+*********************
+
+`C-c C-e' expands the previous one or two words into a statment
+skeleton. For example, `c a s e C-c C-e' expands to:
+
+     case  is
+     when =>
+     end case;
+
+   All skeleton expansions are accepted by the indentation parser, so
+this is a convenient way to insert statements with correct indentation.
+
+   For named packages, the name is taken from the word before point,
+and the package keyword from the word before that:
+
+     package A_Package
+
+   expands to:
+
+     package A_Package is
+     end A_Package;
+
+   Some expansions prompt for more information, such as a choice of
+license.
+
+
+File: gpr-mode.info,  Node: GNU Free Documentation License,  Next: Index,  Prev: Statement skeletons,  Up: Top
 
 Appendix A GNU Free Documentation License
 *****************************************
@@ -578,12 +777,21 @@ Index
  [index ]
 * Menu:
 
+* ff-find-other-file:                    Moving Through Gpr Code.
+                                                               (line 10)
+
+
 
 Tag Table:
 Node: Top969
-Node: Overview1840
-Node: Installation2398
-Node: GNU Free Documentation License3077
-Node: Index28230
+Node: Overview1952
+Node: Installation2510
+Node: Customization3268
+Node: Moving Through Gpr Code5191
+Node: Identifier completion5641
+Node: Indentation6602
+Node: Statement skeletons8978
+Node: GNU Free Documentation License9733
+Node: Index34914
 
 End Tag Table

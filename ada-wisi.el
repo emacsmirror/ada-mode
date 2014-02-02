@@ -1321,7 +1321,6 @@ Also return cache at start."
   (define-key ada-mode-map "\M-k" 'wisi-show-token)
   )
 
-;;;###autoload
 (defun ada-wisi-setup ()
   "Set up a buffer for parsing Ada files with wisi."
   (wisi-setup '(ada-wisi-comment
@@ -1380,6 +1379,7 @@ Also return cache at start."
 (setq ada-make-subprogram-body 'ada-wisi-make-subprogram-body)
 (setq ada-next-statement-keyword 'wisi-forward-statement-keyword)
 (setq ada-prev-statement-keyword 'wisi-backward-statement-keyword)
+(setq ada-reset-parser 'wisi-invalidate-cache)
 (setq ada-scan-paramlist 'ada-wisi-scan-paramlist)
 (setq ada-show-parse-error 'wisi-show-parse-error)
 (setq ada-which-function 'ada-wisi-which-function)

@@ -1,11 +1,11 @@
 ;;; ada-mode.el --- major-mode for editing Ada sources
 ;;
-;;; Copyright (C) 1994, 1995, 1997 - 2013  Free Software Foundation, Inc.
+;;; Copyright (C) 1994, 1995, 1997 - 2014  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.0
+;; Version: 5.0.1
 ;; package-requires: ((wisi "1.0"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
@@ -113,7 +113,7 @@
 ;;
 ;;   alist entries are set during load by the implementation elisp files.
 ;;
-;;   `ada-prj-parse-file-ext' uses this style.
+;;   `ada-prj-default-compiler-alist' uses this style.
 
 ;;; History:
 ;;
@@ -161,7 +161,6 @@
 
 (require 'find-file)
 (require 'align)
-(require 'which-func)
 (require 'compile)
 
 (eval-when-compile (require 'cl-macs))
@@ -169,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.0"))
+  (let ((version-string "5.0.1"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
@@ -300,6 +299,7 @@ Values defined by cross reference packages.")
     ;; global-map has C-x ` 'next-error
     (define-key map [return] 	 'ada-indent-newline-indent)
     (define-key map "\C-c`" 	 'ada-show-secondary-error)
+    (define-key map "\C-c;"      'comment-dwim)
     (define-key map "\C-c\M-`" 	 'ada-fix-compiler-error)
     (define-key map "\C-c\C-a" 	 'ada-align)
     (define-key map "\C-c\C-b" 	 'ada-make-subprogram-body)
@@ -366,12 +366,11 @@ Values defined by cross reference packages.")
      )
     ("Edit"
      ["Expand skeleton"             ada-expand              t]
-     ["Indent line"                 indent-for-tab-command  t]
+     ["Indent line or selection"    indent-for-tab-command  t]
      ["Indent current statement"    ada-indent-statement    t]
      ["Indent lines in file"        (indent-region (point-min) (point-max))  t]
      ["Align"                       ada-align               t]
-     ["Comment selection"           comment-region          t]
-     ["Uncomment selection"         (comment-region t)      t]
+     ["Comment/uncomment selection" comment-dwim            t]
      ["Fill comment paragraph"         ada-fill-comment-paragraph           t]
      ["Fill comment paragraph justify" (ada-fill-comment-paragraph 'full)   t]
      ["Fill comment paragraph postfix" (ada-fill-comment-paragraph 'full t) t]
@@ -387,6 +386,7 @@ Values defined by cross reference packages.")
     ("Misc"
      ["Show last parse error"         ada-show-parse-error         t]
      ["Refresh cross reference cache" ada-xref-refresh             t]
+     ["Reset parser"                  ada-reset-parser             t]
      )))
 
 ;; This doesn't need to be buffer-local because there can be only one
@@ -767,6 +767,16 @@ Each parameter declaration is represented by a list
 	(insert "; "))
       )
     ))
+
+(defvar ada-reset-parser nil
+  ;; Supplied by indentation engine parser
+  "Function to reset parser, to clear confused state."
+  )
+
+(defun ada-reset-parser ()
+  (interactive)
+  (when ada-reset-parser
+    (funcall ada-reset-parser)))
 
 (defvar ada-show-parse-error nil
   ;; Supplied by indentation engine parser
@@ -1188,7 +1198,6 @@ Include properties set via `ada-prj-default-compiler-alist',
      (list
       ;; variable name alphabetical order
       'ada_compiler    ada-compiler
-      'ada_ref_tool    ada-xref-tool
       'auto_case       ada-auto-case
       'case_keyword    ada-case-keyword
       'case_strict     ada-case-strict
@@ -1215,7 +1224,7 @@ Include properties set via `ada-prj-default-compiler-alist',
    (lambda (ext) (cons ext 'ada-prj-parse-file-1))
    ada-prj-file-extensions)
   ;; project file parse
-  "Alist of parsers for project files.
+  "Alist of parsers for project files, indexed by file extension.
 Default provides the minimal Ada mode parser; compiler support
 code may add other parsers.  Parser is called with two arguments;
 the project file name and the current project property
@@ -1615,7 +1624,7 @@ See `ff-other-file-alist'.")
   "Regexp for extracting the parent name from fully-qualified name.")
 
 (defvar ada-file-name-from-ada-name nil
-  ;; depends on ada-compiler, per-project
+  ;; determined by ada-xref-tool, set by *-select-prj
   "Function called with one parameter ADA-NAME, which is a library
 unit name; it should return the filename in which ADA-NAME is
 found.")
@@ -1854,7 +1863,8 @@ identifier.  May be an Ada identifier or operator function name."
 FILE may be absolute, or on `compilation-search-path'.
 
 If OTHER-WINDOW is non-nil, show the buffer in another window."
-  (setq file (ff-get-file-name compilation-search-path file))
+  (or (file-name-absolute-p file)
+      (setq file (ff-get-file-name compilation-search-path file)))
   (let ((buffer (get-file-buffer file)))
     (cond
      ((bufferp buffer)
@@ -2532,7 +2542,8 @@ The paragraph is indented on the first line."
   (set (make-local-variable 'add-log-current-defun-function)
        'ada-add-log-current-function)
 
-  (add-hook 'which-func-functions 'ada-which-function nil t)
+  (when (boundp 'which-func-functions)
+    (add-hook 'which-func-functions 'ada-which-function nil t))
 
   ;;  Support for align
   (add-to-list 'align-dq-string-modes 'ada-mode)
@@ -2619,9 +2630,15 @@ The paragraph is indented on the first line."
   (require 'ada-gnat-compile))
 
 (unless (featurep 'ada-xref-tool)
-  (require 'ada-gnat-xref))
+  (cl-case ada-xref-tool
+    ((nil 'gnat) (require 'ada-gnat-xref))
+    ('gnat_inspect (require 'gnat-inspect))
+    ))
 
 (unless (featurep 'ada-skeletons)
   (require 'ada-skel))
+
+(when (featurep 'imenu)
+  (require 'ada-imenu))
 
 ;;; end of file

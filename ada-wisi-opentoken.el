@@ -1,7 +1,7 @@
 ;;; ada-wisi-opentoken.el --- An indentation function for ada-wisi that indents OpenToken
 ;; grammar statements nicely.
 
-;; Copyright (C) 2013  Free Software Foundation, Inc.
+;; Copyright (C) 2013, 2014  Free Software Foundation, Inc.
 
 ;; This file is part of GNU Emacs.
 
@@ -23,13 +23,12 @@
 
 ;; This is an example of a user-added indentation rule.
 ;;
-;; In ~/.emacs (or project-specific config):
-;; (require 'ada-wisi-opentoken)
-;;
-;; In each file that declares OpenToken grammars:
+;; In each file that declares OpenToken grammars, enable
+;; ada-indent-opentoken minor mode by adding this near the end of the
+;; file:
 ;;
 ;; Local Variables:
-;; ada-indent-opentoken: t
+;; eval: (ada-indent-opentoken-mode)
 ;; End:
 
 ;;; Code:
@@ -37,45 +36,49 @@
 (require 'ada-mode)
 (require 'wisi)
 
-(defcustom ada-indent-opentoken nil
-  "If non-nil, apply `ada-wisi-opentoken' indentation rule."
-  :type  'boolean
-  :group 'ada-indentation
-  :safe  'booleanp)
-(make-variable-buffer-local 'ada-indent-opentoken)
-
 (defun ada-wisi-opentoken ()
   "Return appropriate indentation (an integer column) for continuation lines in an OpenToken grammar statement."
   ;; We don't do any checking to see if we actually are in an
   ;; OpenToken grammar statement, since this rule should only be
   ;; included in package specs that exist solely to define OpenToken
   ;; grammar fragments.
-  (when ada-indent-opentoken
-    (save-excursion
-      (let ((token-text (nth 1 (wisi-backward-token))))
-	(cond
-	 ((equal token-text "<=")
-	  (back-to-indentation)
-	  (+ (current-column) ada-indent-broken))
+  (save-excursion
+    (let ((token-text (nth 1 (wisi-backward-token))))
+      (cond
+       ((equal token-text "<=")
+	(back-to-indentation)
+	(+ (current-column) ada-indent-broken))
 
-	 ((member token-text '("+" "&"))
-	  (while (not (equal "<=" (nth 1 (wisi-backward-token)))))
-	  (back-to-indentation)
-	  (+ (current-column) ada-indent-broken))
-	 )))))
+       ((member token-text '("+" "&"))
+	(while (not (equal "<=" (nth 1 (wisi-backward-token)))))
+	(back-to-indentation)
+	(+ (current-column) ada-indent-broken))
+       ))))
 
-(defun ada-wisi-opentoken-setup ()
-  (add-to-list 'wisi-indent-calculate-functions 'ada-wisi-opentoken))
+(defconst ada-wisi-opentoken-align
+  "Align rule for OpenToken grammar definitions."
+  '(ada-opentoken
+    (regexp  . "[^=]\\(\\s-*\\)<=")
+    (valid   . (lambda() (not (ada-in-comment-p))))
+    (modes   . '(ada-mode))))
 
-;; This must be after ada-wisi-setup on ada-mode-hook, because
-;; ada-wisi-setup resets wisi-indent-calculate-functions
-(add-hook 'ada-mode-hook 'ada-wisi-opentoken-setup t)
+;;;###autoload
+(define-minor-mode ada-indent-opentoken-mode
+  "Minor mode for indenting grammar definitions for the OpenToken package.
+Enable mode if ARG is positive"
+  :initial-value t
+  :lighter       "OpenToken"   ;; mode line
 
-(add-to-list 'ada-align-rules
-	     '(ada-opentoken
-	       (regexp  . "[^=]\\(\\s-*\\)<=")
-	       (valid   . (lambda() (not (ada-in-comment-p))))
-	       (modes   . '(ada-mode))))
+  (if ada-indent-opentoken-mode
+      (progn
+	;; This must be after ada-wisi-setup on ada-mode-hook, because
+	;; ada-wisi-setup resets wisi-indent-calculate-functions
+	(add-to-list 'ada-align-rules ada-wisi-opentoken-align)
+	(add-to-list 'wisi-indent-calculate-functions 'ada-wisi-opentoken))
+
+    (setq ada-align-rules (delete ada-wisi-opentoken-align ada-align-rules))
+    (setq wisi-indent-calculate-functions (delete 'ada-wisi-opentoken wisi-indent-calculate-functions))
+    ))
 
 (provide 'ada-wisi-opentoken)
 ;; end of file

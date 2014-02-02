@@ -1,0 +1,65 @@
+Emacs Ada mode version 5.0.1
+
+See ada-mode.texi (or a compiled version) for help on using and
+customizing Ada mode, and notes for Ada mode developers.
+
+Ada mode is provided as a Gnu ELPA package; to install the package,
+add to ~./emacs:
+
+(package-initialize)
+
+then invoke M-x list-packages, install Ada mode.
+
+
+To install Ada mode, gpr mode, and associated utilities from this distribution:
+
+Unzip to a convenient place (we will use ~/ada-mode in the following).
+
+In a shell:
+$ cd ~/ada-mode/build/wisi
+$ byte-compile
+
+Edit your ~/.emacs, add:
+
+(add-to-list 'load-path (expand-file-name "~/ada-mode"))
+
+
+Ada mode will be automatically loaded when you open a file with a
+matching extension (default *.ads, *.adb).
+
+
+By default ada-mode uses gnat find for cross-reference functions.
+There is experimental support for an alternative, gnatinspect. You can
+select that by adding:
+
+(require 'gnat-inspect)
+
+in your ~/.emacs, before anything that loads ada-mode
+
+to build gnatinspect:
+    (gds-lynx-5)
+    cd ~/Projects
+    tar xf ~/Downloads/gnatcoll...
+    cd gnatcoll...
+    case:
+    when linux:
+        ./configure --prefix=/usr/gnat-7.1.2 --enable-gpl
+    when windows:
+        in cygwin bash, with gnat-7.1.2 in path:
+        ./configure --prefix=/Apps/GNAT-7.1.2 --enable-gpl
+    end case
+
+    make Gnatcoll_Build=Debug
+    sudo make Gnatcoll_Build=Debug install
+
+
+gnatinspect references:
+    gnatcoll-1.6w-src/docs/xref.rst
+    gnatcoll-1.6w-src/src/tools/gnatinspect.adb
+
+debugging gnatinspect:
+    verbosity in .gnatdebug:
+    -- Projects
+    -- ENTITIES.PARSING
+
+(end of file)
