@@ -34,6 +34,10 @@
 ;; compiling and running capabilities in Ada mode 4.01, done in 2013 by
 ;; Stephen Leake <stephen_leake@stephe-leake.org>.
 
+(when (and (= emacs-major-version 24)
+	   (= emacs-minor-version 2))
+  (require 'ada-mode-compat-24.2))
+
 (require 'ada-mode)
 
 ;;;; User customization

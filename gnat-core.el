@@ -3,7 +3,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012, 2013  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -23,10 +23,6 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-;; We use cl-delete-if, defined in cl-seq.el. cl-seq.el has no
-;; 'provide'.  autoload for cl-delete-if is defined in cl-loaddefs.el,
-;; which is not pre-loaded.  cl-lib does (load "cl-loaddefs.el"), so
-;; that seems to be the thing to do
 (require 'cl-lib)
 
 ;;;;; code

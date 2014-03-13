@@ -1,6 +1,6 @@
 ;;; ada-skel.el --- an extension to Ada mode for inserting statement skeletons
 
-;; Copyright (C) 1987, 1993, 1994, 1996-2013  Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1993, 1994, 1996-2014  Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -67,7 +67,7 @@
 
 ;;;;; user variables, example skeletons intended to be overwritten
 
-(defcustom ada-skel-initial-string "header"
+(defcustom ada-skel-initial-string "{header}"
   "*String to insert in empty buffer.
 This could end in a token recognized by `ada-skel-expand'."
   :type 'string

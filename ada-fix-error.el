@@ -1,7 +1,7 @@
 ;;; ada-fix-error.el --- utilities for automatically fixing
 ;; errors reported by the compiler.
 
-;; Copyright (C) 1999-2009, 2012-2013 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2009, 2012-2014 Free Software Foundation, Inc.
 
 ;; Author     : Stephen Leake      <Stephen_Leake@stephe-leake.org>
 ;; Maintainer : Stephen Leake      <Stephen_Leake@stephe-leake.org>
@@ -27,9 +27,8 @@
 ;;;; code
 
 (require 'ada-mode)
+(require 'cl-lib)
 (require 'compile)
-
-(eval-when-compile (require 'cl-macs))
 
 (defcustom ada-fix-sort-context-clause t
   "*If non-nil, sort context clause when inserting 'with'"

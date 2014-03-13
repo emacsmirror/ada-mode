@@ -2,7 +2,7 @@
 ;;
 ;; [1] GNAT user guide (info "gnat_ugn")
 ;;
-;; Copyright (C) 2013 Free Software Foundation, Inc.
+;; Copyright (C) 2013, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -24,8 +24,6 @@
 ;;; History: first version Jan 2013
 ;;
 ;;; code style
-;;
-;; not using lexical-binding or cl-lib because we support Emacs 23
 ;;
 ;; I don't use 'pcase', because it gives _really_ confusing errors
 ;; when I forget a ')' somewhere. Even worse, the error message is

@@ -5,8 +5,8 @@
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.0.1
-;; package-requires: ((wisi "1.0"))
+;; Version: 5.1.0
+;; package-requires: ((wisi "1.0.1") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -159,16 +159,15 @@
 ;;     robin-reply@reagans.org
 ;;    and others for their valuable hints.
 
-(require 'find-file)
 (require 'align)
+(require 'cl-lib)
 (require 'compile)
-
-(eval-when-compile (require 'cl-macs))
+(require 'find-file)
 
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.0.1"))
+  (let ((version-string "5.1.0"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
@@ -222,12 +221,23 @@ preserved when the list is written back to the file."
 (defcustom ada-case-keyword 'downcase-word
   "Buffer-local value that may override project variable `case_keyword'.
 Global value is default for project variable `case_keyword'.
-Function to call to adjust the case of an Ada keywords."
+Function to call to adjust the case of Ada keywords."
   :type '(choice (const downcase-word)
 		 (const upcase-word))
   :group 'ada
   :safe  'functionp)
 (make-variable-buffer-local 'ada-case-keyword)
+
+(defcustom ada-case-identifier 'ada-mixed-case
+  "Buffer-local value that may override project variable `case_keyword'.
+Global value is default for project variable `case_keyword'.
+Function to call to adjust the case of Ada keywords."
+  :type '(choice (const ada-mixed-case)
+		 (const downcase-word)
+		 (const upcase-word))
+  :group 'ada
+  :safe  'functionp)
+(make-variable-buffer-local 'ada-case-identifier)
 
 (defcustom ada-case-strict t
   "Buffer-local value that may override project variable `case_strict'.
@@ -240,8 +250,9 @@ Otherwise, allow UPPERCASE for identifiers."
 (make-variable-buffer-local 'ada-case-strict)
 
 (defcustom ada-language-version 'ada2012
-  "Ada language version; one of `ada83', `ada95', `ada2005'.
-Only affects the keywords to highlight."
+  "Ada language version; one of `ada83', `ada95', `ada2005', `ada2012'.
+Only affects the keywords to highlight, not which version the
+indentation parser accepts."
   :type '(choice (const ada83)
 		 (const ada95)
 		 (const ada2005)
@@ -254,11 +265,13 @@ Only affects the keywords to highlight."
   "Comment fill prefix."
   :type 'string
   :group 'ada)
+(make-variable-buffer-local 'ada-language-version)
 
 (defcustom ada-fill-comment-postfix " --"
   "Comment fill postfix."
   :type 'string
   :group 'ada)
+(make-variable-buffer-local 'ada-language-version)
 
 (defcustom ada-prj-file-extensions '("adp" "prj")
   "List of Emacs Ada mode project file extensions.
@@ -292,6 +305,33 @@ Values defined by cross reference packages.")
 
 ;;;; keymap and menus
 
+(defvar ada-ret-binding nil)
+(defvar ada-lfd-binding nil)
+
+(defun ada-case-activate-keys ()
+  "Modify the key bindings for all the keys that should adjust casing."
+  (interactive)
+  ;; We can't use post-self-insert-hook for \n, \r, because they are
+  ;; not self-insert.
+
+  ;; The 'or ...' is there to be sure that the value will not be
+  ;; changed again when this is called more than once, since we
+  ;; are rebinding the keys.
+  (or ada-ret-binding (setq ada-ret-binding (key-binding "\C-M")))
+  (or ada-lfd-binding (setq ada-lfd-binding (key-binding "\C-j")))
+
+  (mapc (function
+	 (lambda(key)
+	   (define-key
+	     ada-mode-map
+	     (char-to-string key)
+	     'ada-case-adjust-interactive)))
+	'( ?_ ?% ?& ?* ?( ?) ?- ?= ?+
+	      ?| ?\; ?: ?' ?\" ?< ?, ?. ?> ?/ ?\n 32 ?\r ))
+
+  (define-key ada-mode-map [return] 'ada-case-adjust-interactive)
+  )
+
 (defvar ada-mode-map
   (let ((map (make-sparse-keymap)))
     ;; C-c <letter> are reserved for users
@@ -299,7 +339,7 @@ Values defined by cross reference packages.")
     ;; global-map has C-x ` 'next-error
     (define-key map [return] 	 'ada-indent-newline-indent)
     (define-key map "\C-c`" 	 'ada-show-secondary-error)
-    (define-key map "\C-c;"      'comment-dwim)
+    (define-key map "\C-c;"      (lambda () (error "use M-; instead"))) ; comment-dwim
     (define-key map "\C-c\M-`" 	 'ada-fix-compiler-error)
     (define-key map "\C-c\C-a" 	 'ada-align)
     (define-key map "\C-c\C-b" 	 'ada-make-subprogram-body)
@@ -388,6 +428,7 @@ Values defined by cross reference packages.")
      ["Refresh cross reference cache" ada-xref-refresh             t]
      ["Reset parser"                  ada-reset-parser             t]
      )))
+(ada-case-activate-keys)
 
 ;; This doesn't need to be buffer-local because there can be only one
 ;; popup menu at a time.
@@ -396,13 +437,13 @@ Values defined by cross reference packages.")
 (easy-menu-define ada-context-menu nil
   "Context menu keymap for Ada mode"
   '("Ada"
-    ["Make body for subprogram"      ada-make-subprogram-body     t] ;; FIXME: include only if will succeed
+    ["Make body for subprogram"      ada-make-subprogram-body     t]
     ["Goto declaration/body"         ada-goto-declaration         :included ada-context-menu-on-identifier]
     ["Show parent declarations"      ada-show-declaration-parents :included ada-context-menu-on-identifier]
     ["Show references"               ada-show-references          :included ada-context-menu-on-identifier]
     ["Show overriding"               ada-show-overriding          :included ada-context-menu-on-identifier]
     ["Show overridden"               ada-show-overridden          :included ada-context-menu-on-identifier]
-    ["Expand skeleton"               ada-expand                        t] ;; FIXME: only if skeleton
+    ["Expand skeleton"               ada-expand                        t]
     ["Create full case exception"    ada-case-create-exception         t]
     ["Create partial case exception" ada-case-create-partial-exception t]
 
@@ -486,6 +527,7 @@ Function is called with no arguments.")
      (modes   . '(ada-mode)))
     (ada-comment
      (regexp  . "\\(\\s-*\\)--")
+     (valid   . (lambda () (ada-align-valid)))
      (modes   . '(ada-mode)))
     (ada-use
      (regexp  . "\\(\\s-*\\)\\<\\(use\\s-\\)")
@@ -500,9 +542,9 @@ Function is called with no arguments.")
 (defun ada-align-valid ()
   "See use in `ada-align-rules'."
   (save-excursion
-    ;; we don't put "when (match-beginning 2)" here; missing a match
+    ;; we don't put "when (match-beginning n)" here; missing a match
     ;; is a bug in the regexp.
-    (goto-char (match-beginning 2))
+    (goto-char (or (match-beginning 2) (match-beginning 1)))
     (not (ada-in-string-or-comment-p))))
 
 (defconst ada-align-region-separate
@@ -643,11 +685,20 @@ Each parameter declaration is represented by a list
       (setq access-p (or access-p (nth 4 param)))
       )
 
-    (unless (save-excursion (skip-chars-backward " \t") (bolp))
-      ;; paramlist starts on same line as subprogram identifier; clean up whitespace
-      (end-of-line)
-      (delete-char (- (skip-syntax-backward " ")))
-      (insert " "))
+    (let ((space-before-p (save-excursion (skip-chars-backward " \t") (not (bolp))))
+	  (space-after-p (save-excursion (skip-chars-forward " \t") (not (eolp)))))
+      (when space-before-p
+	;; paramlist starts on same line as subprogram identifier; clean
+	;; up whitespace. Allow for code on same line as closing paren
+	;; ('return' or ';').
+	(skip-syntax-forward " ")
+	(delete-char (- (skip-syntax-backward " ")))
+	(if space-after-p
+	    (progn
+	      (insert "  ")
+	      (forward-char -1))
+	  (insert " "))
+	))
 
     (insert "(")
 
@@ -946,6 +997,9 @@ User is prompted to choose a file from project variable casing if it is a list."
   "Return t if point is after a prefix of a numeric literal."
   (looking-back "\\([0-9]+#[0-9a-fA-F_]+\\)"))
 
+(defvar ada-keywords nil
+  "List of Ada keywords for current `ada-language-version'.")
+
 (defun ada-after-keyword-p ()
   "Return non-nil if point is after an element of `ada-keywords'."
   (let ((word (buffer-substring-no-properties
@@ -953,9 +1007,32 @@ User is prompted to choose a file from project variable casing if it is a list."
 	       (point))))
     (member (downcase word) ada-keywords)))
 
+(defun ada-mixed-case (start end)
+  "Adjust case of region START END to Mixed_Case."
+  (let ((done nil)
+	next)
+    (if ada-case-strict
+	(downcase-region start end))
+    (goto-char start)
+    (while (not done)
+      (setq next
+	    (or
+	     (save-excursion (when (search-forward "_" end t) (point-marker)))
+	     (copy-marker (1+ end))))
+
+      ;; upcase first char
+      (insert-char (upcase (following-char)) 1)
+      (delete-char 1)
+
+      (goto-char next)
+      (if (< (point) end)
+	  (setq start (point))
+	(setq done t))
+      )))
+
 (defun ada-case-adjust-identifier ()
   "Adjust case of the previous word as an identifier.
-Uses Mixed_Case, with exceptions defined in
+Uses `ada-case-identifier', with exceptions defined in
 `ada-case-full-exceptions', `ada-case-partial-exceptions'."
   (interactive)
   (save-excursion
@@ -975,26 +1052,23 @@ Uses Mixed_Case, with exceptions defined in
 	    (insert (car match))
 	    (delete-region (point) end))
 
-	;; else apply Mixed_Case and partial-exceptions
-	(if ada-case-strict
-	    (downcase-region start end))
+	;; else apply ada-case-identifier
+	(funcall ada-case-identifier start end)
+
+	;; apply partial-exceptions
+	(goto-char start)
 	(while (not done)
 	  (setq next
 		(or
 		 (save-excursion (when (search-forward "_" end t) (point-marker)))
 		 (copy-marker (1+ end))))
 
-	  (if (setq match (assoc-string (buffer-substring-no-properties start (1- next))
+	  (when (setq match (assoc-string (buffer-substring-no-properties start (1- next))
 					ada-case-partial-exceptions t))
-	      (progn
-		;; see comment above at 'full word exception' for why
-		;; we do insert first.
-		(insert (car match))
-		(delete-region (point) (1- next)))
-
-	    ;; else upcase first char
-	    (insert-char (upcase (following-char)) 1)
-	    (delete-char 1))
+	    ;; see comment above at 'full word exception' for why
+	    ;; we do insert first.
+	    (insert (car match))
+	    (delete-region (point) (1- next)))
 
 	  (goto-char next)
 	  (if (< (point) end)
@@ -1074,7 +1148,7 @@ With prefix arg, adjust case even if in comment."
   (ada-case-adjust-region (point-min) (point-max)))
 
 (defun ada-case-adjust-interactive (arg)
-  "Adjust the case of the previous word, and process the character just typed.
+  "If `ada-auto-case' is non-nil, adjust the case of the previous word, and process the character just typed.
 To be bound to keys that should cause auto-casing.
 ARG is the prefix the user entered with \\[universal-argument]."
   (interactive "P")
@@ -1084,45 +1158,20 @@ ARG is the prefix the user entered with \\[universal-argument]."
 
     (cond
      ((eq lastk ?\n)
-      (ada-case-adjust lastk)
-      (funcall ada-lfd-binding))
+        (when ada-auto-case
+	  (ada-case-adjust lastk))
+	(funcall ada-lfd-binding))
 
-     ((eq lastk ?\r)
-      (ada-case-adjust lastk)
+     ((memq lastk '(?\r return))
+      (when ada-auto-case
+	(ada-case-adjust lastk))
       (funcall ada-ret-binding))
 
      (t
-      (ada-case-adjust lastk)
+      (when ada-auto-case
+	(ada-case-adjust lastk))
       (self-insert-command (prefix-numeric-value arg)))
-     )
-  ))
-
-(defvar ada-ret-binding nil)
-(defvar ada-lfd-binding nil)
-
-(defun ada-case-activate-keys ()
-  "Modify the key bindings for all the keys that should adjust casing."
-  (interactive)
-  ;; We can't use post-self-insert-hook for \n, \r, because they are
-  ;; not self-insert.  So we make ada-mode-map buffer local, and don't
-  ;; call this function if ada-auto-case is off. That means
-  ;; ada-auto-case cannot be changed after an Ada buffer is created.
-
-  ;; The 'or ...' is there to be sure that the value will not be
-  ;; changed again when Ada mode is called more than once, since we
-  ;; are rebinding the keys.
-  (or ada-ret-binding (setq ada-ret-binding (key-binding "\C-M")))
-  (or ada-lfd-binding (setq ada-lfd-binding (key-binding "\C-j")))
-
-  (mapcar (function
-	   (lambda(key)
-	     (define-key
-	       ada-mode-map
-	       (char-to-string key)
-	       'ada-case-adjust-interactive)))
-	  '( ?_ ?% ?& ?* ?( ?) ?- ?= ?+
-		?| ?\; ?: ?' ?\" ?< ?, ?. ?> ?/ ?\n 32 ?\r ))
-  )
+     )))
 
 ;;;; project files
 
@@ -1156,7 +1205,26 @@ ARG is the prefix the user entered with \\[universal-argument]."
 (defun ada-prj-get (prop &optional plist)
   "Return value of PROP in PLIST.
 Optional PLIST defaults to `ada-prj-current-project'."
-  (plist-get (or plist ada-prj-current-project) prop))
+  (let ((prj (or plist ada-prj-current-project)))
+    (if prj
+	(plist-get prj prop)
+
+      ;; no project, just use default vars
+      ;; must match code in ada-prj-default
+      (cl-case plist
+	(ada_compiler    ada-compiler)
+	(auto_case       ada-auto-case)
+	(case_keyword    ada-case-keyword)
+	(case_identifier ada-case-identifier)
+	(case_strict     ada-case-strict)
+	(casing          (if (listp ada-case-exception-file)
+			     ada-case-exception-file
+			   (list ada-case-exception-file)))
+	(path_sep        path-separator)
+	(proc_env        process-environment)
+	(src_dir         (list "."))
+	(xref_tool       ada-xref-tool)
+	))))
 
 (defun ada-prj-put (prop val &optional plist)
   "Set value of PROP in PLIST to VAL.
@@ -1200,6 +1268,7 @@ Include properties set via `ada-prj-default-compiler-alist',
       'ada_compiler    ada-compiler
       'auto_case       ada-auto-case
       'case_keyword    ada-case-keyword
+      'case_identifier ada-case-identifier
       'case_strict     ada-case-strict
       'casing          (if (listp ada-case-exception-file)
 			   ada-case-exception-file
@@ -1240,6 +1309,9 @@ list. Parser must modify or add to the property list and return it.")
 	(parser (cdr (assoc (file-name-extension prj-file) ada-prj-parser-alist))))
 
     (setq prj-file (expand-file-name prj-file))
+
+    (unless (file-readable-p prj-file)
+      (error "Project file '%s' is not readable" prj-file))
 
     (if parser
 	;; parser may reference the "current project", so bind that now.
@@ -1328,6 +1400,9 @@ Return new value of PROJECT."
 
 	   ((string= (match-string 1) "case_keyword")
 	    (setq project (plist-put project 'case_keyword (intern (match-string 2)))))
+
+	   ((string= (match-string 1) "case_identifier")
+	    (setq project (plist-put project 'case_identifier (intern (match-string 2)))))
 
 	   ((string= (match-string 1) "case_strict")
 	    (setq project (plist-put project 'case_strict (intern (match-string 2)))))
@@ -2339,9 +2414,6 @@ The paragraph is indented on the first line."
   '("some")
   "List of keywords new in Ada 2012.")
 
-(defvar ada-keywords nil
-  "List of Ada keywords for current `ada-language-version'.")
-
 (defun ada-font-lock-keywords ()
   "Return Ada mode value for `font-lock-keywords', depending on `ada-language-version'."
   (list
@@ -2490,6 +2562,10 @@ The paragraph is indented on the first line."
 
 ;;;; ada-mode
 
+;; ada-mode does not derive from prog-mode, because we need to call
+;; ada-mode-post-local-vars, and prog-mode does not provide a way to
+;; do that.
+;;
 ;; autoload required by automatic mode setting
 ;;;###autoload
 (defun ada-mode ()
@@ -2585,8 +2661,6 @@ The paragraph is indented on the first line."
 
   ;; This means to fully set ada-mode interactively, user must
   ;; do M-x ada-mode M-; (hack-local-variables)
-
-  (when ada-auto-case (ada-case-activate-keys))
 
   (when global-font-lock-mode
     ;; This calls ada-font-lock-keywords, which depends on
