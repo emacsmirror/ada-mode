@@ -6,7 +6,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012, 2013  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -53,7 +53,9 @@
     )
 
   (let* ((arg (format "%s:%s:%d:%d" identifier file line col))
-	 (switches (when (ada-prj-get 'gpr_ext) (concat "--ext=" (ada-prj-get 'gpr_ext))))
+	 (switches (concat
+                    "-a"
+                    (when (ada-prj-get 'gpr_ext) (concat "--ext=" (ada-prj-get 'gpr_ext)))))
 	 status
 	 (result nil))
     (with-current-buffer (gnat-run-buffer)
@@ -96,13 +98,14 @@
   "For `ada-xref-parents-function', using 'gnat find', which is Ada-specific."
 
   (let* ((arg (format "%s:%s:%d:%d" identifier file line col))
-	 (switches (concat
+	 (switches (list
+                    "-a"
 		    "-d"
 		    (when (ada-prj-get 'gpr_ext) (concat "--ext=" (ada-prj-get 'gpr_ext)))
 		    ))
 	 (result nil))
     (with-current-buffer (gnat-run-buffer)
-      (gnat-run-gnat "find" (list switches arg))
+      (gnat-run-gnat "find" (append switches (list arg)))
 
       (goto-char (point-min))
       (forward-line 2); skip GPR_PROJECT_PATH, 'gnat find'
@@ -149,7 +152,7 @@
   ;; is asynchronous, and automatically runs the compilation error
   ;; filter.
 
-  (let* ((cmd (format "gnat find -r %s:%s:%d:%d" identifier file line col)))
+  (let* ((cmd (format "gnat find -a -r %s:%s:%d:%d" identifier file line col)))
 
     (with-current-buffer (gnat-run-buffer); for default-directory
       (let ((compilation-environment (ada-prj-get 'proc_env))
