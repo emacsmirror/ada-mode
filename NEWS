@@ -1,0 +1,64 @@
+GNU Emacs Ada mode NEWS -- history of user-visible changes.
+
+Copyright (C) 2014 Free Software Foundation, Inc.
+See the end of the file for license conditions.
+
+Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
+'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
+
+
+* Ada mode 5.1.2
+16 Mar 2014
+
+** fix another packaging bug; forgot to add files to ELPA git!
+
+* Ada mode 5.1.1
+14 Mar 2014
+
+** require wisi-1.0.2, to fix packaging bug
+
+** gnat-find now called with -a to include read-only .ali files in the results.
+
+* Ada mode 5.1.0
+13 Mar 2014
+
+** Emacs 24.2 supported, via cl-lib in Gnu ELPA
+
+** Better handling of aspects.
+
+** 'record' is aligned with 'type' in derived types
+
+** Several minor indentation bugs have been fixed.
+
+** Added "2.2 Upgrading from previous versions" to the user guide.
+
+** ada-align now properly handles subprograms with the opening paren
+   on the same line as the preceding code and code on the same line as
+   the closing paren:
+
+    function Foo (Param_1 : Integer;
+                  Param_2 : Integer) return Integer;
+
+** When no project file is selected, the default variables are
+   consistently used instead. Previously, the default variables were
+   only used when parsing a project file.
+
+** info files are properly visible in main info menu
+
+** 'C-c ;' used to run `comment-dim', which is bound to 'M-;' in the
+   global keymap. 'C-c ;' now gives an error with a message saying
+   'use M-; instead'.
+
+* Ada mode 5.0.1
+Feb 2 2014
+
+First public release, via ELPA
+
+* Ada mode 5.0.0
+Dec 24 2013
+
+** first release in ELPA
+
+** Previous version was 4.00, in Emacs core. 5.0.1 is a complete
+   rewrite, using a generalized LALR parser that caches syntactic
+   information in text properties.

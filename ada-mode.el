@@ -5,8 +5,8 @@
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.1.1
-;; package-requires: ((wisi "1.0.2") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.1.2
+;; package-requires: ((wisi "1.0.3") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -167,7 +167,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.1"))
+  (let ((version-string "5.1.2"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
