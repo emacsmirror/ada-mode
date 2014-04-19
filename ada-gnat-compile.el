@@ -6,7 +6,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012, 2013  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -51,63 +51,63 @@ For `compilation-filter-hook'."
     ;; `compilation-mode-font-lock-keywords'.
     ;;
     ;; compilation-filter might insert partial lines, or it might insert multiple lines
-    (when (bolp)
-      (while (not (eobp))
-	;; We don't want 'next-error' to always go to secondary
-	;; references, so we _don't_ set 'compilation-message text
-	;; property. Instead, we set 'ada-secondary-error, so
-	;; `ada-goto-secondary-error' will handle it. We also set
-	;; fonts, so the user can see the reference.
+    (goto-char (line-beginning-position))
+    (while (not (eobp))
+      ;; We don't want 'next-error' to always go to secondary
+      ;; references, so we _don't_ set 'compilation-message text
+      ;; property. Instead, we set 'ada-secondary-error, so
+      ;; `ada-goto-secondary-error' will handle it. We also set
+      ;; fonts, so the user can see the reference.
 
-	;; typical secondary references look like:
-	;;
-	;; trivial_productions_test.adb:57:77:   ==> in call to "Get" at \
-	;;    opentoken-token-enumerated-analyzer.ads:88, instance at line 41
-	;;
-	;; c:/foo/bar/lookahead_test.adb:379:14: found type access to "Standard.String" defined at line 379
-	;;
-	;; lookahead_test.ads:23:09: "Name" has been inherited from subprogram at aunit-simple_test_cases.ads:47
-	;;
-	;; lalr.adb:668:37: non-visible declaration at analyzer.ads:60, instance at parser.ads:38
-	;;
-	;; save the file from the primary reference, look for "*.ad?:nn", "at line nnn"
+      ;; typical secondary references look like:
+      ;;
+      ;; trivial_productions_test.adb:57:77:   ==> in call to "Get" at \
+      ;;    opentoken-token-enumerated-analyzer.ads:88, instance at line 41
+      ;;
+      ;; c:/foo/bar/lookahead_test.adb:379:14: found type access to "Standard.String" defined at line 379
+      ;;
+      ;; lookahead_test.ads:23:09: "Name" has been inherited from subprogram at aunit-simple_test_cases.ads:47
+      ;;
+      ;; lalr.adb:668:37: non-visible declaration at analyzer.ads:60, instance at parser.ads:38
+      ;;
+      ;; save the file from the primary reference, look for "*.ad?:nn", "at line nnn"
 
-	(let (file)
-	  (when (looking-at "^\\(\\(.:\\)?[^ :\n]+\\):")
-	    (setq file (match-string-no-properties 1)))
+      (let (file)
+	(when (looking-at "^\\(\\(.:\\)?[^ :\n]+\\):")
+	  (setq file (match-string-no-properties 1)))
 
-	  (skip-syntax-forward "^-"); space following primary reference
+	(skip-syntax-forward "^-"); space following primary reference
 
-	  (while (search-forward-regexp "\\s-\\(\\([^[:blank:]]+\\.[[:alpha:]]+\\):\\([0-9]+\\)\\)"
-					(line-end-position) t)
+	(while (search-forward-regexp "\\s-\\(\\([^[:blank:]]+\\.[[:alpha:]]+\\):\\([0-9]+\\)\\)"
+				      (line-end-position) t)
 
-	    (goto-char (match-end 0))
-	    (with-silent-modifications
-	      (compilation--put-prop 2 'font-lock-face compilation-info-face); file
-	      (compilation--put-prop 3 'font-lock-face compilation-line-face); line
-	      (put-text-property
-	       (match-beginning 0) (match-end 0)
-	       'ada-secondary-error
-	       (list
-		(match-string-no-properties 2); file
-		(string-to-number (match-string-no-properties 3)); line
-		1)); column
-	      ))
+	  (goto-char (match-end 0))
+	  (with-silent-modifications
+	    (compilation--put-prop 2 'font-lock-face compilation-info-face); file
+	    (compilation--put-prop 3 'font-lock-face compilation-line-face); line
+	    (put-text-property
+	     (match-beginning 0) (match-end 0)
+	     'ada-secondary-error
+	     (list
+	      (match-string-no-properties 2); file
+	      (string-to-number (match-string-no-properties 3)); line
+	      1)); column
+	    ))
 
-	  (when (search-forward-regexp "\\(at line \\)\\([0-9]+\\)" (line-end-position) t)
-	    (with-silent-modifications
-	      (compilation--put-prop 1 'font-lock-face compilation-info-face); "at line" instead of file
-	      (compilation--put-prop 2 'font-lock-face compilation-line-face); line
-	      (put-text-property
-	       (match-beginning 1) (match-end 1)
-	       'ada-secondary-error
-	       (list
-		file
-		(string-to-number (match-string-no-properties 2)); line
-		1)); column
-	      ))
-	  (forward-line 1))
-	))
+	(when (search-forward-regexp "\\(at line \\)\\([0-9]+\\)" (line-end-position) t)
+	  (with-silent-modifications
+	    (compilation--put-prop 1 'font-lock-face compilation-info-face); "at line" instead of file
+	    (compilation--put-prop 2 'font-lock-face compilation-line-face); line
+	    (put-text-property
+	     (match-beginning 1) (match-end 1)
+	     'ada-secondary-error
+	     (list
+	      file
+	      (string-to-number (match-string-no-properties 2)); line
+	      1)); column
+	    ))
+	(forward-line 1))
+      )
     ))
 
 (defun ada-gnat-debug-filter ()
@@ -198,27 +198,37 @@ Prompt user if more than one."
 		 pos choices unit-name)
 	     ;; next line may contain a reference to where ident is
 	     ;; defined; if present, it will have been marked by
-	     ;; ada-gnat-compilation-filter
+	     ;; ada-gnat-compilation-filter:
+	     ;;
+	     ;; gnatquery.adb:255:13: "Has_Element" is not visible
+	     ;; gnatquery.adb:255:13: non-visible declaration at a-convec.ads:68, instance at gnatcoll-arg_lists.ads:157
+	     ;; gnatquery.adb:255:13: non-visible declaration at a-coorse.ads:62, instance at gnatcoll-xref.ads:912
+	     ;; gnatquery.adb:255:13: non-visible declaration at a-coorse.ads:62, instance at gnatcoll-xref.ads:799
+	     ;; gnatquery.adb:255:13: non-visible declaration at gnatcoll-xref.ads:314
 	     ;;
 	     ;; or the next line may contain "multiple use clauses cause hiding"
 	     ;;
 	     ;; the lines after that may contain alternate matches;
 	     ;; collect all, let user choose.
-	     (while (not done)
-	       (forward-line 1)
-	       (unless (looking-at ".* multiple use clauses cause hiding")
-		 (setq done (not
-			     (and
-			      (equal file-line-struct (ada-get-compilation-message))
-			      (let ((limit (1- (line-end-position))))
-				;; 1- because next compilation error is at next line beginning
+	     (forward-line 1)
+	     (unless (looking-at ".* multiple use clauses cause hiding")
+	       (while (not done)
+		 (let ((limit (1- (line-end-position))))
+		   ;; 1- because next compilation error is at next line beginning
+		   (setq done (not
+			       (and
+				(equal file-line-struct (ada-get-compilation-message))
 				(setq pos (next-single-property-change (point) 'ada-secondary-error nil limit))
-				(< pos limit)))))
-		 (when (not done)
-		   (let* ((item (get-text-property pos 'ada-secondary-error))
-			  (unit-file (nth 0 item)))
-		     (add-to-list 'choices (ada-ada-name-from-file-name unit-file)))))
-	       );; while
+				(< pos limit))))
+		   (when (not done)
+		     (let* ((item (get-text-property pos 'ada-secondary-error))
+			    (unit-file (nth 0 item)))
+		       (add-to-list 'choices (ada-ada-name-from-file-name unit-file))
+		       (goto-char (1+ pos))
+		       (goto-char (1+ (next-single-property-change (point) 'ada-secondary-error nil limit)))
+		       (when (eolp) (forward-line 1))
+		       ))
+		   )));; unless while let
 
 	     (cond
 	      ((= 0 (length choices))
@@ -332,13 +342,21 @@ Prompt user if more than one."
 	   (let ((type (match-string 2)))
 	     (forward-line 1)
 	     (move-to-column message-column)
-	     (when (or (looking-at "found type access")
-		       (looking-at "found type .*_Access_Type"))
+	     (cond
+	      ((looking-at "found type access")
+	       (pop-to-buffer source-buffer)
+	       (if (looking-at "'Access")
+		   (kill-word 1)
+		 (forward-word 1)
+		 (insert ".all"))
+	       t)
+	     ((looking-at "found type .*_Access_Type")
 	       ;; assume just need '.all'
 	       (pop-to-buffer source-buffer)
 	       (forward-word 1)
 	       (insert ".all")
-	       t)))
+	       t)
+	     )))
 
 	  ((looking-at "extra \".\" ignored")
 	   (set-buffer source-buffer)
@@ -486,17 +504,15 @@ Prompt user if more than one."
 
 ;;;; style errors
 	  ((looking-at "(style) \".*\" in wrong column")
-	   (progn
-	     (set-buffer source-buffer)
-	     (funcall indent-line-function))
+	   (set-buffer source-buffer)
+	   (funcall indent-line-function)
 	   t)
 
 	  ((looking-at "(style) bad capitalization, mixed case required")
-	   (progn
-	     (set-buffer source-buffer)
-	     (forward-word)
-	     (ada-case-adjust-identifier)
-	     t))
+	   (set-buffer source-buffer)
+	   (forward-word)
+	   (ada-case-adjust-identifier)
+	   t)
 
 	  ((looking-at (concat "(style) bad casing of " ada-gnat-quoted-name-regexp))
 	   (let ((correct (match-string-no-properties 1))
@@ -516,6 +532,11 @@ Prompt user if more than one."
 	    (looking-at "(style) incorrect layout"))
 	   (set-buffer source-buffer)
 	   (funcall indent-line-function)
+	   t)
+
+	  ((looking-at "(style) misplaced \"then\"")
+	   (set-buffer source-buffer)
+	   (delete-indentation)
 	   t)
 
          ((looking-at "(style) missing \"overriding\" indicator")

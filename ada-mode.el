@@ -5,8 +5,8 @@
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.1.2
-;; package-requires: ((wisi "1.0.3") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.1.3
+;; package-requires: ((wisi "1.0.4") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -167,7 +167,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.2"))
+  (let ((version-string "5.1.3"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
@@ -233,8 +233,8 @@ Function to call to adjust the case of Ada keywords."
 Global value is default for project variable `case_keyword'.
 Function to call to adjust the case of Ada keywords."
   :type '(choice (const ada-mixed-case)
-		 (const downcase-word)
-		 (const upcase-word))
+		 (const downcase-region)
+		 (const upcase-region))
   :group 'ada
   :safe  'functionp)
 (make-variable-buffer-local 'ada-case-identifier)
@@ -952,9 +952,17 @@ list."
 	    (car casing))
 
 	   (t
-	    (error
-	     "No exception file specified. See variable `ada-case-exception-file'")))
-	  ))
+	    (if ada-prj-current-file
+		(error "No exception file specified; set `casing' in project file.")
+	      ;; IMPROVEME: could prompt, but then need to write to actual project file
+	      ;; 	(let ((temp
+	      ;; 	       (read-file-name
+	      ;; 		"No exception file specified; adding to project. file: ")))
+	      ;; 	  (message "remember to add %s to project file" temp)
+	      ;; 	  (ada-prj-put 'casing temp)
+	      ;; 	  temp)
+	      (error "No exception file specified, and no project active. See variable `ada-case-exception-file'.")))
+	   )))
 
   (unless word
     (if (use-region-p)
@@ -1099,25 +1107,30 @@ If IN-COMMENT is non-nil, adjust case of words in comments."
 		 (not (ada-in-numeric-literal-p))
 		 ))
 
-      (cond
-       ;; Some attributes are also keywords, but captialized as
-       ;; attributes. So check for attribute first.
-       ((and
-	 (not in-comment)
-	 (save-excursion
-	   (skip-syntax-backward "w_")
-	   (eq (char-before) ?')))
-	(ada-case-adjust-identifier))
+      ;; The indentation engine may trigger a reparse on
+      ;; non-whitespace changes, but we know we don't need to reparse
+      ;; for this change (assuming the user has not abused case
+      ;; exceptions!).
+      (let ((inhibit-modification-hooks t))
+	(cond
+	 ;; Some attributes are also keywords, but captialized as
+	 ;; attributes. So check for attribute first.
+	 ((and
+	   (not in-comment)
+	   (save-excursion
+	     (skip-syntax-backward "w_")
+	     (eq (char-before) ?')))
+	  (ada-case-adjust-identifier))
 
-       ((and
-	 (not in-comment)
-	 (not (eq typed-char ?_))
-	 (ada-after-keyword-p))
-	(funcall ada-case-keyword -1))
+	 ((and
+	   (not in-comment)
+	   (not (eq typed-char ?_))
+	   (ada-after-keyword-p))
+	  (funcall ada-case-keyword -1))
 
-       (t (ada-case-adjust-identifier))
-       ))
-    ))
+	 (t (ada-case-adjust-identifier))
+	 ))
+      )))
 
 (defun ada-case-adjust-at-point (&optional in-comment)
   "Adjust case of word at point, move to end of word.
@@ -1125,7 +1138,10 @@ With prefix arg, adjust case even if in comment."
   (interactive "P")
   (when
       (and (not (eobp))
-	   (memq (char-syntax (char-after)) '(?w ?_)))
+	   ;; we use '(syntax-after (point))' here, not '(char-syntax
+	   ;; (char-after))', because the latter does not respect
+	   ;; ada-syntax-propertize.
+	   (memq (syntax-class (syntax-after (point))) '(2 3)))
     (skip-syntax-forward "w_"))
   (ada-case-adjust nil in-comment))
 
@@ -1612,41 +1628,40 @@ race conditions with the grammar parser.")
   "Assign `syntax-table' properties in accessible part of buffer.
 In particular, character constants are set to have string syntax."
   ;; (info "(elisp)Syntax Properties")
-  (let ((modified (buffer-modified-p))
-	(buffer-undo-list t)
-	(inhibit-read-only t)
-	(inhibit-point-motion-hooks t)
-	(inhibit-modification-hooks t))
+  ;;
+  ;; called from `syntax-propertize', inside save-excursion with-silent-modifications
+  (let ((inhibit-read-only t)
+	(inhibit-point-motion-hooks t))
     (goto-char start)
-    (while (re-search-forward
-	    (concat
-	     "[^a-zA-Z0-9)]\\('\\)[^'\n]\\('\\)"; 1, 2: character constants, not attributes
-	     "\\|[^a-zA-Z0-9)]\\('''\\)"; 3: character constant '''
-	     "\\|\\(--\\)"; 4: comment start
-	     )
-	    end t)
-      ;; The help for syntax-propertize-extend-region-functions
-      ;; implies that 'start end' will always include whole lines, in
-      ;; which case we don't need
-      ;; syntax-propertize-extend-region-functions
-      (cond
-       ((match-beginning 1)
-	(put-text-property
-	 (match-beginning 1) (match-end 1) 'syntax-table '(7 . ?'))
-	(put-text-property
-	 (match-beginning 2) (match-end 2) 'syntax-table '(7 . ?')))
-       ((match-beginning 3)
-	(put-text-property
-	 (match-beginning 3) (1+ (match-beginning 3)) 'syntax-table '(7 . ?'))
-	(put-text-property
-	 (1- (match-end 3)) (match-end 3) 'syntax-table '(7 . ?')))
-       ((match-beginning 4)
-	(put-text-property
-	 (match-beginning 4) (match-end 4) 'syntax-table '(11 . nil)))
-       ))
-    (run-hook-with-args 'ada-syntax-propertize-hook start end)
-    (unless modified
-      (restore-buffer-modified-p nil))))
+    (save-match-data
+      (while (re-search-forward
+	      (concat
+	       "[^a-zA-Z0-9)]\\('\\)[^'\n]\\('\\)"; 1, 2: character literal, not attribute
+	       "\\|[^a-zA-Z0-9)]\\('''\\)"; 3: character literal '''
+	       "\\|\\(--\\)"; 4: comment start
+	       )
+	      end t)
+	;; The help for syntax-propertize-extend-region-functions
+	;; implies that 'start end' will always include whole lines, in
+	;; which case we don't need
+	;; syntax-propertize-extend-region-functions
+	(cond
+	 ((match-beginning 1)
+	  (put-text-property
+	   (match-beginning 1) (match-end 1) 'syntax-table '(7 . ?'))
+	  (put-text-property
+	   (match-beginning 2) (match-end 2) 'syntax-table '(7 . ?')))
+	 ((match-beginning 3)
+	  (put-text-property
+	   (match-beginning 3) (1+ (match-beginning 3)) 'syntax-table '(7 . ?'))
+	  (put-text-property
+	   (1- (match-end 3)) (match-end 3) 'syntax-table '(7 . ?')))
+	 ((match-beginning 4)
+	  (put-text-property
+	   (match-beginning 4) (match-end 4) 'syntax-table '(11 . nil)))
+	 )))
+    (run-hook-with-args 'ada-syntax-propertize-hook start end))
+  )
 
 (defun ada-in-comment-p (&optional parse-result)
   "Return t if inside a comment.
@@ -1822,8 +1837,10 @@ previously set by a file navigation command."
       ;; This will still be confused by multiple references; we need
       ;; to use compiler cross reference info for more precision.
       (while (not done)
-	(when (search-forward-regexp ff-function-name nil t)
-	  (setq found (match-beginning 0)))
+	(if (search-forward-regexp ff-function-name nil t)
+	    (setq found (match-beginning 0))
+	  ;; not in remainder of buffer
+	  (setq done t))
 	(if (ada-in-string-or-comment-p)
 	    (setq found nil)
 	  (setq done t)))
@@ -1938,8 +1955,14 @@ identifier.  May be an Ada identifier or operator function name."
 FILE may be absolute, or on `compilation-search-path'.
 
 If OTHER-WINDOW is non-nil, show the buffer in another window."
-  (or (file-name-absolute-p file)
-      (setq file (ff-get-file-name compilation-search-path file)))
+  (let ((file-1
+	 (if (file-name-absolute-p file) file
+	   (ff-get-file-name compilation-search-path file))))
+    (if file-1
+	(setq file file-1)
+      (error "File %s not found; installed library, or set project?" file))
+    )
+
   (let ((buffer (get-file-buffer file)))
     (cond
      ((bufferp buffer)
@@ -1989,7 +2012,7 @@ If OTHER-WINDOW is non-nil, show the buffer in another window."
   "Function that returns cross reference information.
 Function is called with four arguments:
 - an Ada identifier or operator_symbol
-- filename containing the identifier
+- filename containing the identifier (full path)
 - line number containing the identifier
 - column of the start of the identifier
 Returns a list '(file line column) giving the corresponding location.
@@ -2011,7 +2034,7 @@ buffer in another window."
     (let ((target
 	   (funcall ada-xref-other-function
 		    (ada-identifier-at-point)
-		    (file-name-nondirectory (buffer-file-name))
+		    (buffer-file-name)
 		    (line-number-at-pos)
 		    (1+ (current-column))
 		    )))
@@ -2067,9 +2090,7 @@ identifier is declared or referenced.")
 	   (ada-identifier-at-point)
 	   (file-name-nondirectory (buffer-file-name))
 	   (line-number-at-pos)
-	   (cl-case (char-after)
-	     (?\" (+ 2 (current-column))) ;; FIXME: work around bug in gnat find
-	     (t (1+ (current-column)))))
+	   (1+ (current-column)))
   )
 
 (defvar ada-xref-overriding-function nil
@@ -2281,30 +2302,33 @@ into a subprogram body stub, by calling `ada-make-subprogram-body'."
     (error "`ada-make-subprogram-body' not set")))
 
 (defvar ada-make-package-body nil
-  ;; Supplied by compiler
+  ;; Supplied by xref tool
   "Function to create a package body from a package spec.
 Called with one argument; the absolute path to the body
 file. Current buffer is the package spec.  Should create the
 package body file, containing skeleton code that will compile.")
 
 (defun ada-make-package-body (body-file-name)
-  (if ada-make-package-body
-      (funcall ada-make-package-body body-file-name)
-    (error "`ada-make-package-body' not set")))
+  ;; no error if not set; let ada-skel do its thing.
+  (when ada-make-package-body
+      (funcall ada-make-package-body body-file-name)))
 
 (defun ada-ff-create-body ()
-  ;; ff-find-other-file calls us with point in an empty buffer for the
-  ;; body file; ada-make-package-body expects to be in the spec. So go
-  ;; back.
-  (let ((body-file-name (buffer-file-name)))
-    (ff-find-the-other-file)
-    (ada-make-package-body body-file-name)
-    ;; FIXME (later): if 'ada-make-package-body' fails, delete the body buffer
-    ;; so it doesn't get written to disk, and we can try again.
+  ;; no error if not set; let ada-skel do its thing.
+  (when ada-make-package-body
+    ;; ff-find-other-file calls us with point in an empty buffer for the
+    ;; body file; ada-make-package-body expects to be in the spec. So go
+    ;; back.
+    (let ((body-file-name (buffer-file-name)))
+      (ff-find-the-other-file)
 
-    ;; back to the body, read in from the disk.
-    (ff-find-the-other-file)
-    (revert-buffer t t)
+      (ada-make-package-body body-file-name)
+      ;; FIXME (later): if 'ada-make-package-body' fails, delete the body buffer
+      ;; so it doesn't get written to disk, and we can try again.
+
+      ;; back to the body, read in from the disk.
+      (ff-find-the-other-file)
+      (revert-buffer t t))
     ))
 
 ;;;; fill-comment
@@ -2613,6 +2637,9 @@ The paragraph is indented on the first line."
 	ff-file-created-hook 'ada-ff-create-body)
   (add-hook 'ff-pre-load-hook 'ada-which-function)
   (setq ff-search-directories 'compilation-search-path)
+  (when (null (car compilation-search-path))
+    ;; find-file doesn't handle nil in search path
+    (setq compilation-search-path (list (file-name-directory (buffer-file-name)))))
   (ada-set-ff-special-constructs)
 
   (set (make-local-variable 'add-log-current-defun-function)
@@ -2700,14 +2727,15 @@ The paragraph is indented on the first line."
 (unless (featurep 'ada-indent-engine)
   (require 'ada-wisi))
 
-(unless (featurep 'ada-compiler)
-  (require 'ada-gnat-compile))
-
 (unless (featurep 'ada-xref-tool)
   (cl-case ada-xref-tool
     ((nil 'gnat) (require 'ada-gnat-xref))
     ('gnat_inspect (require 'gnat-inspect))
+    ('gpr_query (require 'gpr-query))
     ))
+
+(unless (featurep 'ada-compiler)
+  (require 'ada-gnat-compile))
 
 (unless (featurep 'ada-skeletons)
   (require 'ada-skel))

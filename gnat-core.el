@@ -24,6 +24,7 @@
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 (require 'cl-lib)
+(require 'ada-mode) ;; for ada-prj-* etc; will be refactored sometime
 
 ;;;;; code
 
@@ -94,61 +95,85 @@ See also `gnat-parse-emacs-final'."
 
   project)
 
-(defun gnat-get-paths (project)
-  "Add project and/or compiler source, object paths to PROJECT src_dir and/or prc_dir."
+(defun gnat-get-paths-1 (src-dirs prj-dirs)
+  "Append list of source and project dirs in current gpr project to SRC-DIRS, PRJ-DIRS.
+Uses 'gnat list'. Returns new '(src-dirs prj-dirs)."
   (with-current-buffer (gnat-run-buffer)
     ;; gnat list -v -P can return status 0 or 4; always lists compiler dirs
-    (let ((src-dirs (ada-prj-get 'src_dir project))
-	  (prj-dirs (ada-prj-get 'prj_dir project)))
+    ;;
+    ;; WORKAROUND: GNAT 7.2.1 gnatls does not support C++ fully; it
+    ;; does not return src_dirs from C++ projects (see AdaCore ticket
+    ;; M724-045). The workaround is to include the src_dirs in an
+    ;; Emacs Ada mode project.
+    (gnat-run-gnat "list" (list "-v") '(0 4))
 
-      (gnat-run-gnat "list" (list "-v") '(0 4))
+    (goto-char (point-min))
 
-      (goto-char (point-min))
+    (condition-case nil
+	(progn
+	  ;; Source path
+	  (search-forward "Source Search Path:")
+	  (forward-line 1)
+	  (while (not (looking-at "^$")) ; terminate on blank line
+	    (back-to-indentation) ; skip whitespace forward
+	    (if (looking-at "<Current_Directory>")
+		(add-to-list 'src-dirs  (directory-file-name default-directory))
+	      (add-to-list 'src-dirs
+			   (expand-file-name ; canonicalize path part
+			    (directory-file-name
+			     (buffer-substring-no-properties (point) (point-at-eol))))))
+	    (forward-line 1))
 
-      (condition-case nil
-	  (progn
-	    ;; Source path
-	    (search-forward "Source Search Path:")
-	    (forward-line 1)
-	    (while (not (looking-at "^$")) ; terminate on blank line
-	      (back-to-indentation) ; skip whitespace forward
-	      (if (looking-at "<Current_Directory>")
-		  (add-to-list 'src-dirs  (directory-file-name default-directory))
-		(add-to-list 'src-dirs
-			     (expand-file-name ; canonicalize path part
-			      (directory-file-name
-			       (buffer-substring-no-properties (point) (point-at-eol))))))
-	      (forward-line 1))
+	  ;; Project path
+	  ;;
+	  ;; These are also added to src_dir, so compilation errors
+	  ;; reported in project files are found.
+	  (search-forward "Project Search Path:")
+	  (forward-line 1)
+	  (while (not (looking-at "^$"))
+	    (back-to-indentation)
+	    (if (looking-at "<Current_Directory>")
+		(add-to-list 'prj-dirs ".")
+	      (add-to-list 'prj-dirs
+			   (expand-file-name
+			    (buffer-substring-no-properties (point) (point-at-eol))))
+	      (add-to-list 'src-dirs
+			   (expand-file-name
+			    (buffer-substring-no-properties (point) (point-at-eol)))))
+	    (forward-line 1))
 
-	    ;; Project path
-	    ;;
-	    ;; These are also added to src_dir, so compilation errors
-	    ;; reported in project files are found.
-	    (search-forward "Project Search Path:")
-	    (forward-line 1)
-	    (while (not (looking-at "^$"))
-	      (back-to-indentation)
-	      (if (looking-at "<Current_Directory>")
-		  (add-to-list 'prj-dirs ".")
-		(add-to-list 'prj-dirs
-			     (expand-file-name
-			      (buffer-substring-no-properties (point) (point-at-eol))))
-		(add-to-list 'src-dirs
-			     (expand-file-name
-			      (buffer-substring-no-properties (point) (point-at-eol)))))
-	      (forward-line 1))
+	  )
+      ('error
+       (pop-to-buffer (current-buffer))
+       ;; search-forward failed
+       (error "parse gpr failed")
+       ))
+    (list src-dirs prj-dirs)))
 
-	    )
-	('error
-	 (pop-to-buffer (current-buffer))
-	 ;; search-forward failed
-	 (error "parse gpr failed")
-	 ))
+(defun gnat-get-paths (project)
+  "Add project and/or compiler source, project paths to PROJECT src_dir and/or prj_dir."
+  (let ((src-dirs (ada-prj-get 'src_dir project))
+	(prj-dirs (ada-prj-get 'prj_dir project)))
 
-      (setq project (plist-put project 'src_dir (reverse src-dirs)))
-      (mapc (lambda (dir) (gnat-prj-add-prj-dir dir project))
-	    (reverse prj-dirs))
-      ))
+    ;; FIXME: use a dispatching function instead, to avoid "require" here,
+    ;; which gives "warning: function not known".
+    ;; Using 'require' at top level gives the wrong default ada-xref-tool
+    (cl-ecase (ada-prj-get 'xref_tool project)
+      ((gnat gnat_inspect)
+       (let ((res (gnat-get-paths-1 src-dirs prj-dirs)))
+	 (setq src-dirs (car res))
+	 (setq prj-dirs (cadr res))))
+
+      (gpr_query
+       (require 'gpr-query)
+       (setq src-dirs (gpr-query-get-src-dirs src-dirs))
+       (setq prj-dirs (gpr-query-get-prj-dirs prj-dirs)))
+      )
+
+    (setq project (plist-put project 'src_dir (reverse src-dirs)))
+    (mapc (lambda (dir) (gnat-prj-add-prj-dir dir project))
+	  (reverse prj-dirs))
+    )
   project)
 
 (defun gnat-parse-gpr (gpr-file project)
@@ -201,9 +226,12 @@ src_dir will include compiler runtime."
 
 (defun gnat-run (exec command &optional err-msg expected-status)
   "Run a gnat command line tool, as \"EXEC COMMAND\".
-EXEC must be an executable found on `exec-path'. COMMAND must be a list of strings.
+EXEC must be an executable found on `exec-path'.
+COMMAND must be a list of strings.
 ERR-MSG must be nil or a string.
-EXPECTED-STATUS must be nil or a list of integers.
+EXPECTED-STATUS must be nil or a list of integers; throws an error if
+process status is not a member.
+
 Return process status.
 Assumes current buffer is (gnat-run-buffer)"
   (set 'buffer-read-only nil)
@@ -247,8 +275,8 @@ Assumes current buffer is (gnat-run-buffer)"
 
 (defun gnat-run-no-prj (command &optional dir)
   "Run the gnat command line tool, as \"gnat COMMAND\", with DIR as current directory.
-Return process status.  Assumes current buffer
-is (gnat-run-buffer)"
+Return process status.  Process output goes to current buffer,
+which is displayed on error."
   (set 'buffer-read-only nil)
   (erase-buffer)
 
@@ -288,17 +316,18 @@ list."
 
 (defun gnatprep-syntax-propertize (start end)
   (goto-char start)
-  (while (re-search-forward
-	  "^[ \t]*\\(#\\(?:if\\|else\\|elsif\\|end\\)\\)"; gnatprep keywords.
-	  end t)
-    (cond
-     ((match-beginning 1)
-      (put-text-property
-       (match-beginning 1) (match-end 1) 'syntax-table '(11 . ?\n)))
-     )
-    ))
+  (save-match-data
+    (while (re-search-forward
+	    "^[ \t]*\\(#\\(?:if\\|else\\|elsif\\|end\\)\\)"; gnatprep keywords.
+	    end t)
+      (cond
+       ((match-beginning 1)
+	(put-text-property
+	 (match-beginning 1) (match-end 1) 'syntax-table '(11 . ?\n)))
+       )
+      )))
 
-;;;; support for ada-gnat-xref and ada-gnatinspect
+;;;; support for xref tools
 (defun ada-gnat-file-name-from-ada-name (ada-name)
   "For `ada-file-name-from-ada-name'."
   (let ((result nil))
@@ -331,6 +360,8 @@ list."
     ("a-string" . "Ada.Strings")
     ("a-strmap" . "Ada.Strings.Maps")
     ("a-strunb" . "Ada.Strings.Unbounded")
+    ("g-comlin" . "GNAT.Command_Line")
+    ("g-dirope" . "GNAT.Directory_Operations")
     ("g-socket" . "GNAT.Sockets")
     ("interfac" . "Interfaces")
     ("i-c"      . "Interfaces.C")
@@ -380,6 +411,9 @@ list."
     (save-some-buffers t)
     (add-to-list 'opts "-f")
     (with-current-buffer (gnat-run-buffer)
+      ;; FIXME: gnat-run-buffer requires a project, but we don't
+      ;; actually need one. Just use a temp buffer. Same for other
+      ;; uses of gnat-run-no-prj.
       (gnat-run-no-prj
        (append (list "stub") opts (list start-file "-cargs") switches)
        (file-name-directory body-file-name))
@@ -390,6 +424,28 @@ list."
       (set-buffer start-buffer)
       )
     nil))
+
+(defun ada-gnat-syntax-propertize (start end)
+  (goto-char start)
+  (save-match-data
+    (while (re-search-forward
+	    (concat
+	     "[^a-zA-Z0-9)]\\('\\)\\[[\"a-fA-F0-9]+\"\\]\\('\\)"; 1, 2: non-ascii character literal, not attributes
+	     "\\|\\(\\[\"[a-fA-F0-9]+\"\\]\\)"; 3: non-ascii character in identifier
+	     )
+	    end t)
+      (cond
+       ((match-beginning 1)
+	(put-text-property
+	 (match-beginning 1) (match-end 1) 'syntax-table '(7 . ?'))
+	(put-text-property
+	 (match-beginning 2) (match-end 2) 'syntax-table '(7 . ?')))
+
+       ((match-beginning 3)
+	(put-text-property
+	 (match-beginning 3) (match-end 3) 'syntax-table '(2 . nil)))
+       )
+      )))
 
 (provide 'gnat-core)
 

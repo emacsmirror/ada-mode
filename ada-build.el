@@ -141,7 +141,7 @@ including the directory and extension."
     )))
 
 (defun ada-build-select-default-prj ()
-  "Create and select a new default project, with current buffer as main program."
+  "Create and select a new default project."
   (let ((prj-file (expand-file-name "default.adp"))
 	project)
 

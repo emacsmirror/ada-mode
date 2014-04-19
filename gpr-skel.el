@@ -1,6 +1,6 @@
 ;;; gpr-skel.el --- an extension to Gpr mode for inserting statement skeletons
 
-;; Copyright (C) 2013 Free Software Foundation, Inc.
+;; Copyright (C) 2013, 2014 Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -94,14 +94,14 @@ Each user will probably want to override this."
 
 (define-skeleton gpr-skel-package
   "Insert a package with name from `str'."
-  ()
+  "Package name: "
   "package " str " is\n"
   _
   "end " str ";")
 
 (define-skeleton gpr-skel-project
   "Insert a project with name from `str'."
-  ()
+  "Project name: "
   "project " str " is\n"
   _
   "end " str ";")
@@ -148,7 +148,7 @@ trailing `...' if there are more keys."
   "Expand the token or placeholder before point to a skeleton, as defined by `skeleton-token-alist'.
 A token is a symbol in the current syntax.
 A placeholder is a symbol enclosed in generic comment delimiters.
-If the word before point is not in `gpr-skel-token-alist', assume
+If the word before point is not in `skeleton-token-alist', assume
 it is a name, and use the word before that as the token."
   (interactive "*")
 
@@ -212,17 +212,32 @@ it is a name, and use the word before that as the token."
   (if old
       ;; hippie is asking us to try the "next" completion; we don't have one
       nil
-    (let ((pos (point)))
+    (let ((pos (point))
+	  (undo-len (length pending-undo-list)))
       (undo-boundary)
       (condition-case nil
 	  (progn
 	    (skeleton-expand)
 	    t)
 	('error
-	 ;; undo hook action, motion
-	 (undo)
+	 ;; undo hook action if any
+	 (unless (= undo-len (length pending-undo-list))
+	   (undo))
+
+	 ;; undo motion
 	 (goto-char pos)
 	 nil)))))
+
+(defun skeleton-next-placeholder ()
+  "Move point forward to start of next placeholder."
+  (interactive)
+  (skip-syntax-forward "^!"))
+
+(defun skeleton-prev-placeholder ()
+  "Move point forward to start of next placeholder."
+  (interactive)
+  (skip-syntax-backward "^!"))
+
 ;; end FIXME:
 
 ;;;;; token alist, setup

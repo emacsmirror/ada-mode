@@ -67,7 +67,13 @@
 
 ;;;;; user variables, example skeletons intended to be overwritten
 
-(defcustom ada-skel-initial-string "{header}"
+(defcustom ada-skel-initial-string
+  "{header}
+--  Emacs note: Type C-c C-e with point after the above placeholder
+--
+--  This text was inserted by ada-skel-initial-string;
+--  M-x customize-variable <RET> ada-skel-initial-string <RET>
+--  (info \"(ada-mode)Statement skeletons\")"
   "*String to insert in empty buffer.
 This could end in a token recognized by `ada-skel-expand'."
   :type 'string
@@ -150,7 +156,7 @@ This could end in a token recognized by `ada-skel-expand'."
   "is\n"
   "begin\n"
   _
-  "end " str ";")
+  "end " str ";" >)
 
 (define-skeleton ada-skel-function-spec
   "Insert a function type specification with name from `str'."
@@ -404,20 +410,27 @@ it is a name, and use the word before that as the token."
   (if old
       ;; hippie is asking us to try the "next" completion; we don't have one
       nil
-    (let ((pos (point)))
+    (let ((pos (point))
+	  (undo-len (if (eq 't pending-undo-list)
+			0
+		      (length pending-undo-list))))
       (undo-boundary)
       (condition-case nil
 	  (progn
 	    (ada-skel-expand)
 	    t)
 	('error
-	 ;; undo ada-case-adjust, motion
-	 (undo)
+	 ;; undo hook action if any
+	 (unless (or (eq 't pending-undo-list)
+		     (= undo-len (length pending-undo-list)))
+	   (undo))
+
+	 ;; undo motion
 	 (goto-char pos)
 	 nil)))))
 
 (defun ada-skel-setup ()
-  "Setup a buffer ada-skel."
+  "Setup a buffer for ada-skel."
   (add-hook 'skeleton-end-hook 'ada-indent-statement nil t)
   (when (and ada-skel-initial-string
 	     (= (buffer-size) 0))

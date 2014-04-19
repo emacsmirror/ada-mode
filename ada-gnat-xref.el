@@ -1,7 +1,7 @@
 ;; Ada mode cross-reference functionality provided by the 'gnat xref'
 ;; tool. Includes related functions, such as gnatprep support.
 ;;
-;; These tools are all Ada-specific; see gnat-inspect for
+;; These tools are all Ada-specific; see gpr-query or gnat-inspect for
 ;; multi-language GNAT cross-reference tools.
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
@@ -52,7 +52,8 @@
     (setq col (+ 1 col))
     )
 
-  (let* ((arg (format "%s:%s:%d:%d" identifier file line col))
+  (let* ((file-non-dir (file-name-nondirectory file))
+	 (arg (format "%s:%s:%d:%d" identifier file-non-dir line col))
 	 (switches (concat
                     "-a"
                     (when (ada-prj-get 'gpr_ext) (concat "--ext=" (ada-prj-get 'gpr_ext)))))
@@ -80,7 +81,7 @@
 		(found-col  (string-to-number (match-string 3))))
 	    (if (not
 		 (and
-		  (equal file found-file)
+		  (equal file-non-dir found-file)
 		  (= line found-line)
 		  (= col found-col)))
 		;; found other item
@@ -176,6 +177,7 @@
   (setq ada-make-package-body       'ada-gnat-make-package-body)
 
   (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
+  (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.

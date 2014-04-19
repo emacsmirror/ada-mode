@@ -46,8 +46,8 @@ Copyright (C) 1999 - 2014 Free Software Foundation, Inc.
 * Moving Through Ada Code::     Moving easily through Ada sources
 * Identifier completion::       Finishing words automatically
 * Indentation::                 Indenting your code automatically as you type
-* Statement skeletons::
-* Aligning code::
+* Statement skeletons::         Some code is written for you
+* Aligning code::               Making it pretty
 * Automatic casing::            Adjusting the case of words automatically
 * Comment Handling::            Reformatting comments easily
 * Key summary::
@@ -129,17 +129,22 @@ tool 'gnatinspect', which supports Ada, C, C++, and any other language
 for which gcc provices the '-fdump-xref'.
 
    'gnatinspect' is distributed as part of 'gnatcoll'.  Ada mode
-requires the very latest version, in 'gnatcoll 1.7w' distributed with
-GNATPro 7.2.
+requires the very latest version, in 'gnatcoll 1.6' distributed with
+GNATPro 7.2.  'gnatcoll 1.6' must be compiled with GNATPro 7.2.
 
    To build 'gnatinspect', assuming gnat-7.2 is installed in
-'/usr/gnat-7.2':
+'/usr/gnat-7.2', and gnat-7.2 is in PATH:
 
-     tar xf ~/Downloads/gnatcoll-1.7w-src.tgz
-     cd gnatcoll-1.7w-src
+     tar xf ~/Downloads/gnatcoll-1.6-src.tgz
+     cd gnatcoll-1.6-src
      ./configure --prefix=/usr/gnat-7.2
      make Gnatcoll_Build=Debug
      sudo make Gnatcoll_Build=Debug install
+
+   To build an sqlite3 executable that is compatible with the database
+created by gnatinspect:
+
+     gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
 
 
 File: ada-mode.info,  Node: Upgrading,  Prev: gnatinspect,  Up: Installation
@@ -1339,10 +1344,12 @@ this is a convenient way to insert statements with correct indentation.
 
    For named statements (packages, loops, etc), the name is taken from
 the word before point, and the name of the statement from the word
-before that.  Some expansions prompt for more information, such as
-whether a spec or body is desired.  For example, 'package A_Package C-c
-C-e' first prompts for "body" or "spec".  If "spec" is selected, the
-following code is inserted:
+before that.
+
+   Some expansions prompt for more information, such as whether a spec
+or body is desired.  For example, 'package A_Package C-c C-e' first
+prompts for "body" or "spec".  If "spec" is selected, the following code
+is inserted:
 
      package A_Package is
      private
@@ -1359,6 +1366,16 @@ following code is inserted:
 
    Note that the order of the keyword 'declare' and the name 'A_Block'
 are reversed in the expansion; this may take some getting used to.
+Alternately, if no name is present in the buffer, you are prompted for a
+name: 'declare C-c C-e' first prompts for a name, then expands to the
+above.
+
+   The variable 'ada-skel-initial-string' defines what to insert in a
+newly created empty buffer.  It defaults to '{header}', which is a
+placeholder defined by 'ada-skel-header', which inserts a typical header
+with a copyright license (choice of GPL or restricted).  Users will
+typically want to override the definition of 'ada-skel-initial-string'
+and/or 'ada-skel-header', or provide more choices of copyright license.
 
 
 File: ada-mode.info,  Node: Aligning code,  Next: Automatic casing,  Prev: Statement skeletons,  Up: Top
@@ -2395,46 +2412,46 @@ Index
 
 Tag Table:
 Node: Top945
-Node: Overview2508
-Node: Installation3719
-Node: gnatinspect4533
-Node: Upgrading5267
-Node: Customization5841
-Node: Non-standard file names6323
-Node: Other compiler8164
-Node: Other cross-reference8743
-Node: Other customization9462
-Node: Compiling Executing11932
-Node: Compile commands12667
-Node: Compiling Examples15405
-Node: No project files16237
-Node: Set compiler options21603
-Node: Set source search path23565
-Node: Use GNAT project file26018
-Node: Use multiple GNAT project files28792
-Node: Use a Makefile31512
-Node: Compiler errors32827
-Node: Project files33644
-Node: Project file overview34671
-Node: Project file variables36199
-Node: Moving Through Ada Code39829
-Node: Identifier completion42528
-Node: Indentation43490
-Node: Statement skeletons47542
-Node: Aligning code48752
-Node: Automatic casing49697
-Node: Comment Handling52401
-Node: Key summary52920
-Node: Developer overview55547
-Node: Directory structure55887
-Node: Package organization59373
-Node: Ada mode59608
-Node: gpr mode61804
-Node: GNAT core62087
-Node: Wisi63033
-Node: OpenToken64000
-Node: ELPA64602
-Node: GNU Free Documentation License65212
-Node: Index90373
+Node: Overview2576
+Node: Installation3787
+Node: gnatinspect4601
+Node: Upgrading5562
+Node: Customization6136
+Node: Non-standard file names6618
+Node: Other compiler8459
+Node: Other cross-reference9038
+Node: Other customization9757
+Node: Compiling Executing12227
+Node: Compile commands12962
+Node: Compiling Examples15700
+Node: No project files16532
+Node: Set compiler options21898
+Node: Set source search path23860
+Node: Use GNAT project file26313
+Node: Use multiple GNAT project files29087
+Node: Use a Makefile31807
+Node: Compiler errors33122
+Node: Project files33939
+Node: Project file overview34966
+Node: Project file variables36494
+Node: Moving Through Ada Code40124
+Node: Identifier completion42823
+Node: Indentation43785
+Node: Statement skeletons47837
+Node: Aligning code49622
+Node: Automatic casing50567
+Node: Comment Handling53271
+Node: Key summary53790
+Node: Developer overview56417
+Node: Directory structure56757
+Node: Package organization60243
+Node: Ada mode60478
+Node: gpr mode62674
+Node: GNAT core62957
+Node: Wisi63903
+Node: OpenToken64870
+Node: ELPA65472
+Node: GNU Free Documentation License66082
+Node: Index91243
 
 End Tag Table

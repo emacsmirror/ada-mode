@@ -144,8 +144,8 @@ point and return nil.")
   "Get compilation message at point.
 Compatible with Emacs 23.4 and 24.x."
   (cl-case emacs-major-version
-    (23 (get-text-property (point) 'message))
-    (24 (get-text-property (point) 'compilation-message))))
+    (23 (get-text-property (line-beginning-position) 'message))
+    (24 (get-text-property (line-beginning-position) 'compilation-message))))
 
 (defun ada-fix-compiler-error ()
   "Attempt to fix the current compiler error. Leave point at fixed code."
