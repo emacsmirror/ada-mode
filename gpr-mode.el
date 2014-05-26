@@ -242,17 +242,6 @@ of the package or project point is in or just after, or nil.")
   (set (make-local-variable 'add-log-current-defun-function)
        'gpr-add-log-current-function)
 
-  ;; used by autofill to break a comment line and continue it on
-  ;; another line. The reason we need this one is that the default
-  ;; behavior does not work correctly with the definition of
-  ;; paragraph-start above when the comment is right after a
-  ;; multi-line subprogram declaration (the comments are aligned under
-  ;; the latest parameter, not under the declaration start).
-  ;; FIXME: need test - should be in gpr-wisi? why doesn't ada-mode do this?
-  (set (make-local-variable 'comment-line-break-function)
-       (lambda (&optional soft) (let ((fill-prefix nil))
-				  (indent-new-comment-line soft))))
-
   (run-hooks 'gpr-mode-hook)
 
   )

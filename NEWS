@@ -7,6 +7,25 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.1.4
+26 May 2014
+
+** support expression functions
+
+** beginning-of-defun-function, end-of-defun-function are now set. A
+   "defun" is a generic, package, protected, subprogram, or task spec
+   or body.
+
+** C-c C-s is now bound to ada-goto-previous-pos, which goes to the
+   first position in ada-goto-pos-ring. Most navigation functions set
+   ada-goto-pos-ring. This allows easy navigation back to the start of
+   a cross-reference chain.
+
+** xref tool error handlers no longer show the xref tool buffer; the
+   new Ada menu item 'show xref tool buffer' can be used instead.
+
+** The parser supports more deeply nested case statements.
+
 * Ada mode 5.1.3
 19 Apr 2014
 

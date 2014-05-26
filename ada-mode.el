@@ -5,7 +5,7 @@
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.1.3
+;; Version: 5.1.4
 ;; package-requires: ((wisi "1.0.4") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
@@ -167,11 +167,10 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.3"))
+  (let ((version-string "5.1.4"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
-    ;; gpr-mode.el
     ;; Version: above
     (if (called-interactively-p 'interactive)
 	(message version-string)
@@ -357,6 +356,7 @@ Values defined by cross reference packages.")
     (define-key map "\C-c\C-q" 	 'ada-xref-refresh)
     (define-key map "\C-c\C-r" 	 'ada-show-references)
     (define-key map "\C-c\M-r" 	 'ada-build-run)
+    (define-key map "\C-c\C-s"   'ada-goto-previous-pos)
     (define-key map "\C-c\C-v"   'ada-build-check)
     (define-key map "\C-c\C-w" 	 'ada-case-adjust-at-point)
     (define-key map "\C-c\C-x"   'ada-show-overriding)
@@ -403,6 +403,7 @@ Values defined by cross reference packages.")
      ["Show references"               ada-show-references          t]
      ["Show overriding"               ada-show-overriding          t]
      ["Show overridden"               ada-show-overridden          t]
+     ["Goto prev position"            ada-goto-previous-pos        t]
      )
     ("Edit"
      ["Expand skeleton"             ada-expand              t]
@@ -425,6 +426,7 @@ Values defined by cross reference packages.")
      )
     ("Misc"
      ["Show last parse error"         ada-show-parse-error         t]
+     ["Show xref tool buffer"         ada-show-xref-tool-buffer    t]
      ["Refresh cross reference cache" ada-xref-refresh             t]
      ["Reset parser"                  ada-reset-parser             t]
      )))
@@ -686,7 +688,7 @@ Each parameter declaration is represented by a list
       )
 
     (let ((space-before-p (save-excursion (skip-chars-backward " \t") (not (bolp))))
-	  (space-after-p (save-excursion (skip-chars-forward " \t") (not (eolp)))))
+	  (space-after-p (save-excursion (skip-chars-forward " \t") (not (or (= (char-after) ?\;) (eolp))))))
       (when space-before-p
 	;; paramlist starts on same line as subprogram identifier; clean
 	;; up whitespace. Allow for code on same line as closing paren
@@ -1566,6 +1568,16 @@ Indexed by project variable xref_tool.")
   (interactive)
   (message "current Emacs Ada mode project file: %s" ada-prj-current-file))
 
+(defvar ada-show-xref-tool-buffer nil
+  ;; Supplied by xref tool
+  "Function to show process buffer used by xref tool."
+  )
+
+(defun ada-show-xref-tool-buffer ()
+  (interactive)
+  (when ada-show-xref-tool-buffer
+    (funcall ada-show-xref-tool-buffer)))
+
 ;;;; syntax properties
 
 (defvar ada-mode-syntax-table
@@ -1850,6 +1862,18 @@ previously set by a file navigation command."
 	(back-to-indentation))
       (setq ff-function-name nil))))
 
+(defun ada-check-current-project (file-name)
+  "Throw error if FILE-NAME (must be absolute) is not found in
+the current project source directories, or if no project has been
+set."
+  (when (null (car compilation-search-path))
+    (error "no file search path defined; set project file?"))
+
+  (unless (string= file-name
+		   (locate-file (file-name-nondirectory file-name)
+				compilation-search-path))
+    (error "current file not part of current project; wrong project?")))
+
 (defun ada-find-other-file-noset (other-window)
   "Same as `ada-find-other-file', but preserve point in the other file,
 don't move to corresponding declaration."
@@ -1893,8 +1917,7 @@ the other file."
   ;;                       information
 
   (interactive "P")
-  (when (null (car compilation-search-path))
-    (error "no file search path defined; set project file?"))
+  (ada-check-current-project (buffer-file-name))
 
   (if mark-active
       (progn
@@ -1950,6 +1973,27 @@ identifier.  May be an Ada identifier or operator function name."
       (error "No identifier around"))
      )))
 
+(defvar ada-goto-pos-ring '()
+  "List of positions selected by navigation functions. Used
+to go back to these positions.")
+
+(defconst ada-goto-pos-ring-max 16
+  "Number of positions kept in the list `ada-goto-pos-ring'.")
+
+(defun ada-goto-push-pos ()
+  "Push current filename, position on `ada-goto-pos-ring'. See `ada-goto-previous-pos'."
+  (setq ada-goto-pos-ring (cons (list (point) (buffer-file-name)) ada-goto-pos-ring))
+  (if (> (length ada-goto-pos-ring) ada-goto-pos-ring-max)
+      (setcdr (nthcdr (1- ada-goto-pos-ring-max) ada-goto-pos-ring) nil)))
+
+(defun ada-goto-previous-pos ()
+  "Go to the first position in `ada-goto-pos-ring', pop `ada-goto-pos-ring'."
+  (interactive)
+  (when ada-goto-pos-ring
+    (let ((pos (pop ada-goto-pos-ring)))
+      (find-file (cadr pos))
+      (goto-char (car pos)))))
+
 (defun ada-goto-source (file line column other-window)
   "Find and select FILE, at LINE and COLUMN.
 FILE may be absolute, or on `compilation-search-path'.
@@ -1962,6 +2006,8 @@ If OTHER-WINDOW is non-nil, show the buffer in another window."
 	(setq file file-1)
       (error "File %s not found; installed library, or set project?" file))
     )
+
+  (ada-goto-push-pos)
 
   (let ((buffer (get-file-buffer file)))
     (cond
@@ -2027,6 +2073,7 @@ If at the declaration, go to the body, and vice versa.
 If OTHER-WINDOW (set by interactive prefix) is non-nil, show the
 buffer in another window."
   (interactive "P")
+  (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-other-function)
     (error "no cross reference information available"))
@@ -2058,6 +2105,8 @@ Displays a buffer in compilation-mode giving locations of the parent type declar
 (defun ada-show-declaration-parents ()
   "Display the locations of the parent type declarations of the type identifier around point."
   (interactive)
+  (ada-check-current-project (buffer-file-name))
+
   (when (null ada-xref-parent-function)
     (error "no cross reference information available"))
 
@@ -2082,6 +2131,7 @@ identifier is declared or referenced.")
 (defun ada-show-references ()
   "Show all references of identifier at point."
   (interactive)
+  (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-all-function)
     (error "no cross reference information available"))
@@ -2106,6 +2156,7 @@ Displays a buffer in compilation-mode giving locations of the overriding declara
 (defun ada-show-overriding ()
   "Show all overridings of identifier at point."
   (interactive)
+  (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-overriding-function)
     (error "no cross reference information available"))
@@ -2131,6 +2182,7 @@ Returns a list '(file line column) giving the corresponding location.
 (defun ada-show-overridden (other-window)
   "Show the overridden declaration of identifier at point."
   (interactive "P")
+  (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-overridden-function)
     (error "'show overridden' not supported, or no cross reference information available"))
@@ -2225,14 +2277,26 @@ buffer in another window."
   ;;
   ;; This is run from ff-pre-load-hook, so ff-function-name may have
   ;; been set by ff-treat-special; don't reset it.
-  "Function to move point to start of the generic, package,
-protected, subprogram, or task declaration point is currently in
-or just after.  Called with no parameters.")
+  "For `beginning-of-defun-function'. Function to move point to
+start of the generic, package, protected, subprogram, or task
+declaration point is currently in or just after.  Called with no
+parameters.")
 
 (defun ada-goto-declaration-start ()
   "Call `ada-goto-declaration-start'."
   (when ada-goto-declaration-start
     (funcall ada-goto-declaration-start)))
+
+(defvar ada-goto-declaration-end nil
+  ;; supplied by indentation engine
+  "For `end-of-defun-function'. Function to move point to end of
+current declaration.")
+
+(defun ada-goto-declaration-end ()
+  "See `ada-goto-declaration-end' variable."
+  (interactive)
+  (when ada-goto-declaration-end
+    (funcall ada-goto-declaration-end)))
 
 (defvar ada-goto-declarative-region-start nil
   ;; Supplied by indentation engine
@@ -2635,6 +2699,7 @@ The paragraph is indented on the first line."
        'ada-other-file-alist)
   (setq ff-post-load-hook    'ada-set-point-accordingly
 	ff-file-created-hook 'ada-ff-create-body)
+  (add-hook 'ff-pre-load-hook 'ada-goto-push-pos)
   (add-hook 'ff-pre-load-hook 'ada-which-function)
   (setq ff-search-directories 'compilation-search-path)
   (when (null (car compilation-search-path))
@@ -2714,6 +2779,12 @@ The paragraph is indented on the first line."
 		  ada-95-keywords
 		  ada-2005-keywords
 		  ada-2012-keywords))))
+
+  (when ada-goto-declaration-start
+    (set (make-local-variable 'beginning-of-defun-function) ada-goto-declaration-start))
+
+  (when ada-goto-declaration-end
+    (set (make-local-variable 'end-of-defun-function) ada-goto-declaration-end))
   )
 
 (put 'ada-mode 'custom-mode-group 'ada)

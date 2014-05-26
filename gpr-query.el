@@ -61,15 +61,13 @@
   (with-current-buffer (gpr-query--session-buffer session)
     (let ((process-environment (ada-prj-get 'proc_env)) ;; for GPR_PROJECT_PATH
 
-	  ;; WORKAROUND: gnatcoll-1.6 can't handle aggregate projects; M910-032
-	  ;; gpr_query can handle some aggregate projects, but not all
-	  (project-file (file-name-nondirectory
-			 (or (ada-prj-get 'gpr_query_file)
-			     (ada-prj-get 'gpr_file)))))
+	  (project-file (file-name-nondirectory (ada-prj-get 'gpr_file))))
       (erase-buffer); delete any previous messages, prompt
       (setf (gpr-query--session-process session)
+	    ;; gnatcoll-1.6 can't handle aggregate projects; M910-032
+	    ;; gpr_query can handle some aggregate projects, but not all
 	    ;; FIXME: need good error message on bad project file:
-	    ;; 		"can't handle aggregate projects? - set gpr_query_file")
+	    ;; 		"can't handle aggregate projects?")
 	    (start-process (concat "gpr_query " (buffer-name))
 			   (gpr-query--session-buffer session)
 			   "gpr_query"
@@ -80,7 +78,6 @@
       ;; check for warnings about invalid directories etc
       (goto-char (point-min))
       (when (search-forward "warning:" nil t)
-	(pop-to-buffer (current-buffer))
 	(error "gpr_query warnings"))
       )))
 
@@ -116,6 +113,9 @@
 
 (defun gpr-query-session-wait (session)
   "Wait for the current command to complete."
+  (unless (process-live-p (gpr-query--session-process session))
+    (error "gpr-query process died"))
+
   (with-current-buffer (gpr-query--session-buffer session)
     (let ((process (gpr-query--session-process session))
 	  (search-start (point-min))
@@ -132,7 +132,6 @@
 	(setq wait-count (1+ wait-count)))
       (if (process-live-p process)
 	  (message (concat "running gpr_query ... done"))
-	(pop-to-buffer (current-buffer))
 	(error "gpr_query process died"))
       )))
 
@@ -170,6 +169,11 @@ Return buffer that holds output."
 	    gpr-query--sessions)
     (message "Killed %d sessions" count)
     ))
+
+(defun gpr-query-show-buffer ()
+  "Show gpr-query buffer for current project."
+  (interactive)
+  (pop-to-buffer (gpr-query--session-buffer (gpr-query-cached-session))))
 
 ;;;;; utils
 
@@ -363,6 +367,7 @@ buffer in another window."
     ["Find and select project ..."   ada-build-prompt-select-prj-file t]
     ["Select project ..."            ada-prj-select                   t]
     ["Show current project"          ada-prj-show                     t]
+    ["Show gpr-query buffer"         gpr-query-show-buffer            t]
     ["Next compilation error"        next-error                       t]
     ["Show secondary error"          ada-show-secondary-error         t]
     ["Goto declaration/body"         gpr-query-goto-declaration       t]
@@ -490,7 +495,6 @@ Enable mode if ARG is positive"
        )
 
       (when (null result)
-	(pop-to-buffer (current-buffer))
 	(error "gpr_query did not return other item; refresh?"))
 
       (message "parsing result ... done")
@@ -529,7 +533,6 @@ Enable mode if ARG is positive"
 	       (string-to-number (match-string 3)))))
 
       (when (null result)
-	(pop-to-buffer (current-buffer))
 	(error "gpr_query did not return a result; refresh?"))
 
       (message "parsing result ... done")
@@ -553,6 +556,7 @@ Enable mode if ARG is positive"
   (setq ada-xref-all-function        'gpr-query-all)
   (setq ada-xref-overriding-function 'gpr-query-overriding)
   (setq ada-xref-overridden-function 'gpr-query-overridden-1)
+  (setq ada-show-xref-tool-buffer    'gpr-query-show-buffer)
 
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files, used for cross reference
   )
@@ -570,6 +574,7 @@ Enable mode if ARG is positive"
   (setq ada-xref-all-function        nil)
   (setq ada-xref-overriding-function nil)
   (setq ada-xref-overridden-function nil)
+  (setq ada-show-xref-tool-buffer    nil)
 
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   )

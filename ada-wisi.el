@@ -297,7 +297,7 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 
 	(name
 	 (cl-case (wisi-cache-nonterm cache)
-	   ((procedure_specification subprogram_specification)
+	   ((function_specification procedure_specification)
 	    ;; test/ada_mode-nominal.ads
 	    ;; not
 	    ;; overriding
@@ -1076,7 +1076,7 @@ cached token, return new indentation for point."
     ))
 
 (defun ada-wisi-comment ()
-  "Compute indentation of a comment. For `wisi-indent-functions'."
+  "Compute indentation of a comment. For `wisi-indent-calculate-functions'."
   ;; We know we are at the first token on a line. We check for comment
   ;; syntax, not comment-start, to accomodate gnatprep, skeleton
   ;; placeholders, etc.
@@ -1190,6 +1190,10 @@ Also return cache at start."
 	(setq done t))
 	)
     cache))
+
+(defun ada-wisi-goto-declaration-end ()
+  "For `ada-goto-declaration-end', which see."
+  (wisi-goto-end-1 (ada-wisi-goto-declaration-start)))
 
 (defun ada-wisi-goto-declarative-region-start ()
   "For `ada-goto-declarative-region-start', which see."
@@ -1521,6 +1525,7 @@ Also return cache at start."
 
 (setq ada-fix-context-clause 'ada-wisi-context-clause)
 (setq ada-goto-declaration-start 'ada-wisi-goto-declaration-start)
+(setq ada-goto-declaration-end 'ada-wisi-goto-declaration-end)
 (setq ada-goto-declarative-region-start 'ada-wisi-goto-declarative-region-start)
 (setq ada-goto-end 'wisi-goto-end)
 (setq ada-in-paramlist-p 'ada-wisi-in-paramlist-p)

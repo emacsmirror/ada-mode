@@ -155,8 +155,9 @@ Uses 'gnat list'. Returns new '(src-dirs prj-dirs)."
   (let ((src-dirs (ada-prj-get 'src_dir project))
 	(prj-dirs (ada-prj-get 'prj_dir project)))
 
-    ;; FIXME: use a dispatching function instead, to avoid "require" here,
-    ;; which gives "warning: function not known".
+    ;; FIXME: use a dispatching function instead, with autoload, to
+    ;; avoid "require" here, which gives "warning: function not
+    ;; known".
     ;; Using 'require' at top level gives the wrong default ada-xref-tool
     (cl-ecase (ada-prj-get 'xref_tool project)
       ((gnat gnat_inspect)
@@ -223,6 +224,10 @@ src_dir will include compiler runtime."
 		   ada-prj-current-file)))
 	)
       buffer)))
+
+(defun ada-gnat-show-run-buffer ()
+  (interactive)
+  (pop-to-buffer (gnat-run-buffer)))
 
 (defun gnat-run (exec command &optional err-msg expected-status)
   "Run a gnat command line tool, as \"EXEC COMMAND\".
@@ -411,9 +416,6 @@ list."
     (save-some-buffers t)
     (add-to-list 'opts "-f")
     (with-current-buffer (gnat-run-buffer)
-      ;; FIXME: gnat-run-buffer requires a project, but we don't
-      ;; actually need one. Just use a temp buffer. Same for other
-      ;; uses of gnat-run-no-prj.
       (gnat-run-no-prj
        (append (list "stub") opts (list start-file "-cargs") switches)
        (file-name-directory body-file-name))

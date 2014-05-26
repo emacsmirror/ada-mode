@@ -103,12 +103,19 @@
 	      (cl-acons ada-prj-current-file session gnat-inspect--sessions))))
     ))
 
+(defun gnat-inspect-show-session-buffer ()
+  (interactive)
+  (pop-to-buffer (gnat-inspect-cached-session)))
+
 (defconst gnat-inspect-prompt "^>>> $"
   ;; gnatinspect output ends with this
   "Regexp matching gnatinspect prompt; indicates previous command is complete.")
 
 (defun gnat-inspect-session-wait (session)
   "Wait for the current command to complete."
+  (unless (process-live-p (gnat-inspect--session-process session))
+    (error "gnatinspect process failed"))
+
   (with-current-buffer (gnat-inspect--session-buffer session)
     (let ((process (gnat-inspect--session-process session))
 	  (search-start (point-min))
@@ -341,7 +348,6 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 
       (cond
        ((null search-type)
-	(pop-to-buffer (current-buffer))
 	(error "gnatinspect did not return other item; refresh?"))
 
        ((and
@@ -354,7 +360,6 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
        )
 
       (when (null result)
-	(pop-to-buffer (current-buffer))
 	(error "gnatinspect did not return other item; refresh?"))
 
       (message "parsing result ... done")
@@ -399,7 +404,6 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 	       (string-to-number (match-string 4)))))
 
       (when (null result)
-	(pop-to-buffer (current-buffer))
 	(error "gnatinspect did not return other item; refresh?"))
 
       (message "parsing result ... done")
@@ -504,6 +508,7 @@ Enable mode if ARG is positive"
   (setq ada-xref-all-function        'gnat-inspect-all)
   (setq ada-xref-overriding-function 'gnat-inspect-overriding)
   (setq ada-xref-overridden-function 'gnat-inspect-overridden-1)
+  (setq ada-show-xref-tool-buffer    'gnat-inspect-show-session-buffer)
 
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files, used for cross reference
   )
@@ -521,6 +526,7 @@ Enable mode if ARG is positive"
   (setq ada-xref-all-function        nil)
   (setq ada-xref-overriding-function nil)
   (setq ada-xref-overridden-function nil)
+  (setq ada-show-xref-tool-buffer    nil)
 
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   )

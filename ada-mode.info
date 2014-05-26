@@ -94,7 +94,8 @@ File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,
 2 Installation
 **************
 
-Ada mode requires Emacs 24.2 or greater.
+Ada mode requires Emacs 24.2 or greater; it also requires the Emacs lisp
+sources (not just the compiled binaries).
 
    Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via 'M-x list-packages' (*note (emacs)Packages::).  You must
@@ -2414,44 +2415,44 @@ Tag Table:
 Node: Top945
 Node: Overview2576
 Node: Installation3787
-Node: gnatinspect4601
-Node: Upgrading5562
-Node: Customization6136
-Node: Non-standard file names6618
-Node: Other compiler8459
-Node: Other cross-reference9038
-Node: Other customization9757
-Node: Compiling Executing12227
-Node: Compile commands12962
-Node: Compiling Examples15700
-Node: No project files16532
-Node: Set compiler options21898
-Node: Set source search path23860
-Node: Use GNAT project file26313
-Node: Use multiple GNAT project files29087
-Node: Use a Makefile31807
-Node: Compiler errors33122
-Node: Project files33939
-Node: Project file overview34966
-Node: Project file variables36494
-Node: Moving Through Ada Code40124
-Node: Identifier completion42823
-Node: Indentation43785
-Node: Statement skeletons47837
-Node: Aligning code49622
-Node: Automatic casing50567
-Node: Comment Handling53271
-Node: Key summary53790
-Node: Developer overview56417
-Node: Directory structure56757
-Node: Package organization60243
-Node: Ada mode60478
-Node: gpr mode62674
-Node: GNAT core62957
-Node: Wisi63903
-Node: OpenToken64870
-Node: ELPA65472
-Node: GNU Free Documentation License66082
-Node: Index91243
+Node: gnatinspect4675
+Node: Upgrading5636
+Node: Customization6210
+Node: Non-standard file names6692
+Node: Other compiler8533
+Node: Other cross-reference9112
+Node: Other customization9831
+Node: Compiling Executing12301
+Node: Compile commands13036
+Node: Compiling Examples15774
+Node: No project files16606
+Node: Set compiler options21972
+Node: Set source search path23934
+Node: Use GNAT project file26387
+Node: Use multiple GNAT project files29161
+Node: Use a Makefile31881
+Node: Compiler errors33196
+Node: Project files34013
+Node: Project file overview35040
+Node: Project file variables36568
+Node: Moving Through Ada Code40198
+Node: Identifier completion42897
+Node: Indentation43859
+Node: Statement skeletons47911
+Node: Aligning code49696
+Node: Automatic casing50641
+Node: Comment Handling53345
+Node: Key summary53864
+Node: Developer overview56491
+Node: Directory structure56831
+Node: Package organization60317
+Node: Ada mode60552
+Node: gpr mode62748
+Node: GNAT core63031
+Node: Wisi63977
+Node: OpenToken64944
+Node: ELPA65546
+Node: GNU Free Documentation License66156
+Node: Index91317
 
 End Tag Table

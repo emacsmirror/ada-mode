@@ -90,7 +90,6 @@
 	    ))
 
 	(when (eobp)
-	  (pop-to-buffer (current-buffer))
 	  (error "gnat find did not return other item"))
 	))
     result))
@@ -136,7 +135,6 @@
 	      (forward-line 1)))
 	  )
 	(when (eobp)
-	  (pop-to-buffer (current-buffer))
 	  (error "gnat find did not return parent types"))
 	))
 
@@ -186,6 +184,7 @@
   (setq ada-xref-other-function  'ada-gnat-xref-other)
   (setq ada-xref-parent-function 'ada-gnat-xref-parents)
   (setq ada-xref-all-function    'ada-gnat-xref-all)
+  (setq ada-show-xref-tool-buffer 'ada-gnat-show-run-buffer)
 
   ;; gnatmake -gnatD generates files with .dg extensions. But we don't
   ;; need to navigate between them.
@@ -207,6 +206,7 @@
   (setq ada-xref-other-function  nil)
   (setq ada-xref-parent-function nil)
   (setq ada-xref-all-function    nil)
+  (setq ada-show-xref-tool-buffer nil)
 
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   (setq compilation-error-regexp-alist (delete 'gnat compilation-error-regexp-alist))
