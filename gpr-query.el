@@ -31,6 +31,7 @@
 ;; M-x gpr-query
 
 (require 'ada-mode) ;; for ada-prj-*, some other things
+(require 'gnat-core)
 (require 'cl-lib)
 (require 'compile)
 
@@ -114,6 +115,7 @@
 (defun gpr-query-session-wait (session)
   "Wait for the current command to complete."
   (unless (process-live-p (gpr-query--session-process session))
+    (gpr-query-show-buffer session)
     (error "gpr-query process died"))
 
   (with-current-buffer (gpr-query--session-buffer session)
@@ -132,6 +134,7 @@
 	(setq wait-count (1+ wait-count)))
       (if (process-live-p process)
 	  (message (concat "running gpr_query ... done"))
+	(gpr-query-show-buffer session)
 	(error "gpr_query process died"))
       )))
 
@@ -147,8 +150,10 @@ If WAIT is non-nil, wait for command to complete.
 Return buffer that holds output."
   (gpr-require-prj)
   (let ((session (gpr-query-cached-session)))
+    ;; always wait for previous command to complete; also checks for
+    ;; dead process.
+    (gpr-query-session-wait session)
     (with-current-buffer (gpr-query--session-buffer session)
-      ;; FIXME: Check prev command complete (might not have waited); look for prompt at EOB
       (erase-buffer)
       (process-send-string (gpr-query--session-process session)
 			   (concat cmd "\n"))
@@ -170,10 +175,10 @@ Return buffer that holds output."
     (message "Killed %d sessions" count)
     ))
 
-(defun gpr-query-show-buffer ()
-  "Show gpr-query buffer for current project."
+(defun gpr-query-show-buffer (&optional session)
+  "For `ada-show-xref-tool-buffer'; show gpr-query buffer for current project."
   (interactive)
-  (pop-to-buffer (gpr-query--session-buffer (gpr-query-cached-session))))
+  (pop-to-buffer (gpr-query--session-buffer (or session (gpr-query-cached-session)))))
 
 ;;;;; utils
 
@@ -440,7 +445,8 @@ Enable mode if ARG is positive"
 	(cond
 	 ((looking-at gpr-query-ident-file-type-regexp)
 	  ;; process line
-	  (let* ((found-file (match-string 1))
+	  ;; 'expand-file-name' converts Windows directory separators to normal Emacs
+	  (let* ((found-file (expand-file-name (match-string 1)))
 		 (found-line (string-to-number (match-string 2)))
 		 (found-col  (string-to-number (match-string 3)))
 		 (found-type (match-string 4))
@@ -544,6 +550,7 @@ Enable mode if ARG is positive"
   (setq ada-make-package-body       'ada-gnat-make-package-body)
 
   (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
+  (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.
@@ -567,6 +574,7 @@ Enable mode if ARG is positive"
   (setq ada-make-package-body       nil)
 
   (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
+  (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-mode-hook (delq 'ada-gpr-query-setup ada-mode-hook))
 
   (setq ada-xref-other-function      nil)

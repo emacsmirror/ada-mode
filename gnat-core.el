@@ -166,9 +166,10 @@ Uses 'gnat list'. Returns new '(src-dirs prj-dirs)."
 	 (setq prj-dirs (cadr res))))
 
       (gpr_query
-       (require 'gpr-query)
-       (setq src-dirs (gpr-query-get-src-dirs src-dirs))
-       (setq prj-dirs (gpr-query-get-prj-dirs prj-dirs)))
+       (when (ada-prj-get 'gpr_file)
+	 (require 'gpr-query)
+	 (setq src-dirs (gpr-query-get-src-dirs src-dirs))
+	 (setq prj-dirs (gpr-query-get-prj-dirs prj-dirs))))
       )
 
     (setq project (plist-put project 'src_dir (reverse src-dirs)))

@@ -7,6 +7,12 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.1.5
+
+** add C-c <, C-c >; goto-declaration-start, -end
+
+** improve parsing speed significantly
+
 * Ada mode 5.1.4
 26 May 2014
 

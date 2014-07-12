@@ -201,6 +201,7 @@
   (setq ada-make-package-body       nil)
 
   (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
+  (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-mode-hook (delq 'ada-gnat-xref-setup ada-mode-hook))
 
   (setq ada-xref-other-function  nil)

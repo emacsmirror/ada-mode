@@ -5,8 +5,8 @@
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.1.4
-;; package-requires: ((wisi "1.0.4") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.1.5
+;; package-requires: ((wisi "1.0.5") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -167,7 +167,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.4"))
+  (let ((version-string "5.1.5"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
@@ -339,6 +339,8 @@ Values defined by cross reference packages.")
     (define-key map [return] 	 'ada-indent-newline-indent)
     (define-key map "\C-c`" 	 'ada-show-secondary-error)
     (define-key map "\C-c;"      (lambda () (error "use M-; instead"))) ; comment-dwim
+    (define-key map "\C-c<" 	 'ada-goto-declaration-start)
+    (define-key map "\C-c>" 	 'ada-goto-declaration-end)
     (define-key map "\C-c\M-`" 	 'ada-fix-compiler-error)
     (define-key map "\C-c\C-a" 	 'ada-align)
     (define-key map "\C-c\C-b" 	 'ada-make-subprogram-body)
@@ -398,7 +400,8 @@ Values defined by cross reference packages.")
      ["Other file don't find decl"    ada-find-other-file-noset    t]
      ["Goto declaration/body"         ada-goto-declaration         t]
      ["Goto next statement keyword"   ada-next-statement-keyword   t]
-     ["Goto prev statement keyword"   ada-next-statement-keyword   t]
+     ["Goto declaration start"        ada-goto-declaration-start   t]
+     ["Goto declaration end"          ada-goto-declaration-end     t]
      ["Show parent declarations"      ada-show-declaration-parents t]
      ["Show references"               ada-show-references          t]
      ["Show overriding"               ada-show-overriding          t]
@@ -1733,6 +1736,7 @@ found.")
 
 (defun ada-file-name-from-ada-name (ada-name)
   "Return the filename in which ADA-NAME is found."
+  (ada-require-project-file)
   (funcall ada-file-name-from-ada-name ada-name))
 
 (defvar ada-ada-name-from-file-name nil
@@ -1742,6 +1746,7 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
 
 (defun ada-ada-name-from-file-name (file-name)
   "Return the ada-name that should be found in FILE-NAME."
+  (ada-require-project-file)
   (funcall ada-ada-name-from-file-name file-name))
 
 (defun ada-ff-special-extract-parent ()
@@ -1869,10 +1874,22 @@ set."
   (when (null (car compilation-search-path))
     (error "no file search path defined; set project file?"))
 
-  (unless (string= file-name
-		   (locate-file (file-name-nondirectory file-name)
-				compilation-search-path))
-    (error "current file not part of current project; wrong project?")))
+  ;; file-truename handles symbolic links
+  (let* ((visited-file (file-truename file-name))
+         (found-file (locate-file (file-name-nondirectory visited-file)
+				  compilation-search-path)))
+    (unless found-file
+      (error "current file not part of current project; wrong project?"))
+
+    (setq found-file (file-truename found-file))
+
+    ;; (nth 10 (file-attributes ...)) is the inode; required when hard
+    ;; links are present.
+    (let* ((visited-file-inode (nth 10 (file-attributes visited-file)))
+           (found-file-inode (nth 10 (file-attributes found-file))))
+      (unless (equal visited-file-inode found-file-inode)
+        (error "%s (opened) and %s (found in project) are two different files"
+               file-name found-file)))))
 
 (defun ada-find-other-file-noset (other-window)
   "Same as `ada-find-other-file', but preserve point in the other file,
@@ -2284,6 +2301,7 @@ parameters.")
 
 (defun ada-goto-declaration-start ()
   "Call `ada-goto-declaration-start'."
+  (interactive)
   (when ada-goto-declaration-start
     (funcall ada-goto-declaration-start)))
 
