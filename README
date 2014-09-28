@@ -1,4 +1,4 @@
-Emacs Ada mode version 5.1.5
+Emacs Ada mode version 5.1.6
 
 Ada mode requires Emacs 24.2 or greater
 
@@ -34,37 +34,7 @@ matching extension (default *.ads, *.adb).
 
 
 By default ada-mode uses gnat find for cross-reference functions.
-There is experimental support for an alternative, gnatinspect. You can
-select that by adding:
-
-(require 'gnat-inspect)
-
-in your ~/.emacs, before anything that loads ada-mode
-
-to build gnatinspect:
-    (gds-lynx-5)
-    cd ~/Projects
-    tar xf ~/Downloads/gnatcoll...
-    cd gnatcoll...
-    case:
-    when linux:
-        ./configure --prefix=/usr/gnat-7.1.2 --enable-gpl
-    when windows:
-        in cygwin bash, with gnat-7.1.2 in path:
-        ./configure --prefix=/Apps/GNAT-7.1.2 --enable-gpl
-    end case
-
-    make Gnatcoll_Build=Debug
-    sudo make Gnatcoll_Build=Debug install
-
-
-gnatinspect references:
-    gnatcoll-1.6-src/docs/xref.rst
-    gnatcoll-1.6-src/src/tools/gnatinspect.adb
-
-debugging gnatinspect:
-    verbosity in .gnatdebug:
-    -- Projects
-    -- ENTITIES.PARSING
+There is experimental support for two alternatives: gnat_inspect and
+gpr_query. See ada-mode.texi section Installation for more.
 
 (end of file)

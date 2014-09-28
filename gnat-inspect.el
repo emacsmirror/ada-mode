@@ -495,7 +495,6 @@ Enable mode if ARG is positive"
   (setq ada-make-package-body       'ada-gnat-make-package-body)
 
   (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
-  (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.
@@ -519,7 +518,6 @@ Enable mode if ARG is positive"
   (setq ada-make-package-body       nil)
 
   (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
-  (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-mode-hook (delq 'ada-gnat-inspect-setup ada-mode-hook))
 
   (setq ada-xref-other-function      nil)

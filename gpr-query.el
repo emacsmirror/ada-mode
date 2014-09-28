@@ -47,9 +47,7 @@
 
 (cl-defstruct (gpr-query--session)
   (process nil) ;; running gpr_query
-  (buffer nil)  ;; receives output of gpr_query
-  (sent-kill-p nil)
-  (closed-p nil))
+  (buffer nil)) ;; receives output of gpr_query
 
 (defconst gpr-query-buffer-name-prefix " *gpr_query-")
 
@@ -161,6 +159,14 @@ Return buffer that holds output."
 	(gpr-query-session-wait session))
       (current-buffer)
       )))
+
+(defun gpr-query-kill-session (session)
+  (let ((process (gpr-query--session-process session)))
+    (when (process-live-p process)
+      (process-send-string (gpr-query--session-process session) "exit\n")
+      (while (process-live-p process)
+    	(accept-process-output process 1.0)))
+    ))
 
 (defun gpr-query-kill-all-sessions ()
   (interactive)
@@ -397,7 +403,10 @@ Enable mode if ARG is positive"
 (defun gpr-query-refresh ()
   "For `ada-xref-refresh-function', using gpr_query."
   (interactive)
-  (with-current-buffer (gpr-query-session-send "refresh" t)))
+  ;; need to kill session to get changed env vars etc
+  (let ((session (gpr-query-cached-session)))
+    (gpr-query-kill-session session)
+    (gpr-query--start-process session)))
 
 (defun gpr-query-other (identifier file line col)
   "For `ada-xref-other-function', using gpr_query."
@@ -406,6 +415,11 @@ Enable mode if ARG is positive"
     (setq col (+ 1 col))
     (setq identifier (substring identifier 1 (1- (length identifier))))
     )
+
+  (when (eq system-type 'windows-nt)
+    ;; Since Windows file system is case insensitive, GNAT and Emacs
+    ;; can disagree on the case, so convert all to lowercase.
+    (setq file (downcase file)))
 
   (let ((cmd (format "refs %s:%s:%d:%d" identifier (file-name-nondirectory file) line col))
 	(decl-loc nil)
@@ -445,13 +459,19 @@ Enable mode if ARG is positive"
 	(cond
 	 ((looking-at gpr-query-ident-file-type-regexp)
 	  ;; process line
-	  ;; 'expand-file-name' converts Windows directory separators to normal Emacs
-	  (let* ((found-file (expand-file-name (match-string 1)))
+	  (let* ((found-file (match-string 1))
 		 (found-line (string-to-number (match-string 2)))
 		 (found-col  (string-to-number (match-string 3)))
 		 (found-type (match-string 4))
 		 (dist       (gpr-query-dist found-line line found-col col))
 		 )
+
+	    (when (eq system-type 'windows-nt)
+	      ;; 'expand-file-name' converts Windows directory
+	      ;; separators to normal Emacs.  Since Windows file
+	      ;; system is case insensitive, GNAT and Emacs can
+	      ;; disagree on the case, so convert all to lowercase.
+	      (setq found-file (downcase (expand-file-name found-file))))
 
 	    (when (string-equal found-type "declaration")
 	      (setq decl-loc (list found-file found-line (1- found-col))))
@@ -550,7 +570,6 @@ Enable mode if ARG is positive"
   (setq ada-make-package-body       'ada-gnat-make-package-body)
 
   (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
-  (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.
@@ -574,7 +593,6 @@ Enable mode if ARG is positive"
   (setq ada-make-package-body       nil)
 
   (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
-  (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-mode-hook (delq 'ada-gpr-query-setup ada-mode-hook))
 
   (setq ada-xref-other-function      nil)

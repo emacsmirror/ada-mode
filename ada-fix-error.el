@@ -36,10 +36,11 @@
   :group 'ada)
 
 (defvar ada-fix-context-clause nil
-  "Function to return the region containing the context clause for the current buffer.
-Called with no arguments; return (BEGIN . END). BEGIN and
-END must be at beginning of line.  If there is no context
-clause, BEGIN = END, at start of compilation unit.")
+  "Function to return the region containing the context clause for the current buffer,
+excluding leading pragmas.  Called with no arguments;
+return (BEGIN . END). BEGIN and END must be at beginning of line.
+If there is no context clause, BEGIN = END, at start of
+compilation unit.")
 
 (defun ada-fix-context-clause ()
   (when ada-fix-context-clause

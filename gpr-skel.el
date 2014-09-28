@@ -213,7 +213,7 @@ it is a name, and use the word before that as the token."
       ;; hippie is asking us to try the "next" completion; we don't have one
       nil
     (let ((pos (point))
-	  (undo-len (length pending-undo-list)))
+	  (undo-len (if (sequencep pending-undo-list) (length pending-undo-list) 0)))
       (undo-boundary)
       (condition-case nil
 	  (progn
@@ -221,7 +221,7 @@ it is a name, and use the word before that as the token."
 	    t)
 	('error
 	 ;; undo hook action if any
-	 (unless (= undo-len (length pending-undo-list))
+	 (unless (= undo-len (if (sequencep pending-undo-list) (length pending-undo-list) 0))
 	   (undo))
 
 	 ;; undo motion

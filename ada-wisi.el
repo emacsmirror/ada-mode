@@ -33,12 +33,19 @@
 (require 'cl-lib)
 (require 'wisi)
 
+(defcustom ada-wisi-font-lock-size-threshold 100000
+  "Max size (in characters) for using wisi parser results for syntax highlighting."
+  :type 'integer
+  :group 'ada-indentation
+  :safe 'integerp)
+
 (defconst ada-wisi-class-list
   '(
     block-end
     block-middle ;; not start of statement
     block-start ;; start of block is start of statement
     close-paren
+    keyword    ;; cached only for face; not used in indentation
     list-break
     name
     name-paren ;; anything that looks like a procedure call, since the grammar can't distinguish most of them
@@ -49,24 +56,27 @@
     statement-end
     statement-other
     statement-start
-    type
     ))
 
 ;;;; indentation
 
 (defun ada-wisi-current-indentation ()
-  "Return indentation of current line, incremented by 1 if starts with open-paren."
+  "Return indentation appropriate for point on current line:
+if not in paren, beginning of line
+if in paren, pos following paren."
   (if (not (ada-in-paren-p))
       (current-indentation)
 
-    (save-excursion
-      (back-to-indentation)
-      (let ((cache (wisi-get-cache (point))))
-	(if (and cache
-		 (eq 'open-paren (wisi-cache-class cache)))
-	    (1+ (current-column))
-	  (current-column))
-	))))
+    (or
+     (save-excursion
+       (let ((line (line-number-at-pos)))
+	 (ada-goto-open-paren 1)
+	 (when (= line (line-number-at-pos))
+	   (current-column))))
+     (save-excursion
+       (back-to-indentation)
+       (current-column)))
+    ))
 
 (defun ada-wisi-indent-cache (offset cache)
   "Return indentation of OFFSET plus indentation of line containing point. Point must be at CACHE."
@@ -295,6 +305,10 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 
 	(close-paren (wisi-indent-paren 0))
 
+	(keyword
+	 ;; defer to after-cache)
+	 nil)
+
 	(name
 	 (cl-case (wisi-cache-nonterm cache)
 	   ((function_specification procedure_specification)
@@ -388,7 +402,7 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 	      ;;     (Local_2 = 1)
 	      (+ (ada-wisi-current-indentation) ada-indent-broken))
 
-	     (name
+	     ((IDENTIFIER selected_component name)
 	      ;; test/indent.ads
 	      ;; CSCL_Type'
 	      ;;   (
@@ -408,6 +422,12 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 	      ;;      (1.0),
 	      ;;    B => Integer
 	      ;;      (2.0));
+	      ;;
+	      ;; test/ada_mode-parens.adb
+	      ;; Local_12 : Local_11_Type
+	      ;;   := Local_11_Type'(A => Integer
+	      ;;     (1.0),
+	      ;; indenting (1.0)
 	      (+ (ada-wisi-current-indentation) ada-indent-broken))
 
 	     (t
@@ -497,6 +517,13 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		 ;; indenting 'with'
 		 (+ (current-column) 1))
 
+		(association_list
+		 ;; test/ada_mode-parens.adb
+		 ;; Local_13 : Local_11_Type
+		 ;;   := (Integer'(1),
+		 ;;       Integer'(2));
+		 (ada-wisi-indent-cache 0 containing))
+
 		(association_opt
 		 ;; test/indent.ads
 		 ;; 1 =>  --  Used to be aligned on "CSCL_Type'"
@@ -544,6 +571,12 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		 ;; type Limited_Derived_Type_2a is abstract limited new Private_Type_1
 		 ;; with record
 		 ;; indenting 'with record'
+		 ;;
+		 ;; test/access_in_record.ads
+		 ;; type A
+		 ;;    is new Ada.Streams.Root_Stream_Type with record
+		 ;; FIXME: line with 'record' use ada-indent-record-rel-type
+
 		 (while (not (eq 'TYPE (wisi-cache-token containing)))
 		   (setq containing (wisi-goto-containing containing)))
 
@@ -597,6 +630,12 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		    ;;   := Local_1;
 		    (+ (current-indentation) ada-indent-broken))
 		   ))
+
+		(private_extension_declaration
+		 ;; test/ada_mode-nominal.ads
+		 ;; type Limited_Derived_Type_3 is abstract limited
+		 ;;   new Private_Type_1 with private;
+		 (+ (current-indentation) ada-indent-broken))
 
 		(private_type_declaration
 		 ;; test/aspects.ads
@@ -683,9 +722,6 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		  nil)
 		 ))))
 	     ))
-
-	(type
-	 (ada-wisi-indent-containing ada-indent-broken cache t))
 	))
     ))
 
@@ -701,7 +737,7 @@ cached token, return new indentation for point."
 	0)
 
      (t
-      (while (memq (wisi-cache-class cache) '(name name-paren type))
+      (while (memq (wisi-cache-class cache) '(keyword name name-paren type))
 	;; not useful for indenting
 	(setq cache (wisi-backward-cache)))
 
@@ -826,8 +862,24 @@ cached token, return new indentation for point."
 	     (+ paren-column 1 ada-indent-broken))))
 
 	((return-1 return-2)
-	 ;; hanging. Intent relative to line containing matching 'function'
-	 (ada-prev-statement-keyword)
+	 ;; test/ada_mode-nominal.adb
+	 ;; function Function_Access_1
+	 ;;   (A_Param : in Float)
+	 ;;   return
+	 ;;     Standard.Float
+	 ;; indenting 'Standard.Float'
+	 ;;
+	 ;; test/ada_mode-expression_functions.ads
+	 ;; function Square (A : in Float) return Float
+	 ;;   is (A * A);
+	 ;; indenting 'is'
+	 ;;
+	 ;; test/ada_mode-nominal.ads
+	 ;; function Function_2g
+	 ;;   (Param : in Private_Type_1)
+	 ;;   return Float
+	 ;;   is abstract;
+	 ;; indenting 'is'
 	 (back-to-indentation)
  	 (+ (current-column) ada-indent-broken))
 
@@ -1135,11 +1187,12 @@ cached token, return new indentation for point."
       (while (not end)
 	(setq cache (wisi-forward-cache))
 	(cl-case (wisi-cache-nonterm cache)
-	  (pragma nil)
-	  (use_clause nil)
+	  (pragma (wisi-goto-end-1 cache))
+	  (use_clause (wisi-goto-end-1 cache))
 	  (with_clause
 	   (when (not begin)
-	     (setq begin (point-at-bol))))
+	     (setq begin (point-at-bol)))
+	   (wisi-goto-end-1 cache))
 	  (t
 	   ;; start of compilation unit
 	   (setq end (point-at-bol))
@@ -1148,6 +1201,43 @@ cached token, return new indentation for point."
 	  ))
       (cons begin end)
     )))
+
+(defun ada-wisi-on-context-clause ()
+  "For `ada-on-context-clause'."
+
+  (save-excursion
+    (and (wisi-goto-statement-start)
+	 (memq (wisi-cache-nonterm (wisi-goto-statement-start)) '(use_clause with_clause)))))
+
+(defun ada-wisi-goto-subunit-name ()
+  "For `ada-goto-subunit-name'."
+  (wisi-validate-cache (point-max))
+  (let ((end nil)
+	cache
+	(name-pos nil))
+    (save-excursion
+      ;; move to top declaration
+      (goto-char (point-min))
+      (setq cache (or (wisi-get-cache (point))
+		      (wisi-forward-cache)))
+      (while (not end)
+	(cl-case (wisi-cache-nonterm cache)
+	  ((pragma use_clause with_clause)
+	   (wisi-goto-end-1 cache)
+	   (setq cache (wisi-forward-cache)))
+	  (t
+	   ;; start of compilation unit
+	   (setq end t))
+	  ))
+      (when (eq (wisi-cache-nonterm cache) 'subunit)
+	(wisi-forward-find-token '(IDENTIFIER name selected_component) (point-max)) ;; parent name
+	(wisi-forward-token)
+	(wisi-forward-find-token '(IDENTIFIER name selected_component) (point-max)) ;; subunit name
+	(setq name-pos (point)))
+      )
+    (when name-pos
+      (goto-char name-pos))
+    ))
 
 (defun ada-wisi-goto-declaration-start ()
   "For `ada-goto-declaration-start', which see.
@@ -1296,6 +1386,7 @@ Also return cache at start."
   (let (token
 	text
 	identifiers
+	(aliased-p nil)
 	(in-p nil)
 	(out-p nil)
 	(not-null-p nil)
@@ -1322,10 +1413,11 @@ Also return cache at start."
 	(skip-syntax-forward " ")
 	(setq type-begin (point))
 	(save-excursion
-	  (while (member (car (wisi-forward-token)) '(IN OUT NOT NULL ACCESS CONSTANT PROTECTED))
+	  (while (member (car (wisi-forward-token)) '(ALIASED IN OUT NOT NULL ACCESS CONSTANT PROTECTED))
 	    (skip-syntax-forward " ")
 	    (setq type-begin (point)))))
 
+       ((equal token 'ALIASED) (setq aliased-p t))
        ((equal token 'IN) (setq in-p t))
        ((equal token 'OUT) (setq out-p t))
        ((and (not type-end)
@@ -1343,26 +1435,25 @@ Also return cache at start."
 	(wisi-forward-find-token 'SEMICOLON end t))
 
        ((member token '(SEMICOLON RIGHT_PAREN))
-	(if (equal token 'RIGHT_PAREN)
-	    ;; all done
-	    (progn
-	      (setq done t)
-	      (when (not type-end) (setq type-end (1- (point))))
-	      (when default-begin (setq default (buffer-substring-no-properties default-begin (1- (point)))))
-	      )
-	  ;; else semicolon - one param done
-	  (when (not type-end) (setq type-end (1- (point))))
-	  (when default-begin (setq default (buffer-substring-no-properties default-begin (1- (point)))))
-	  )
+	(when (not type-end)
+	  (setq type-end (save-excursion (backward-char 1) (skip-syntax-backward " ") (point))))
 
 	(setq type (buffer-substring-no-properties type-begin type-end))
+
+	(when default-begin
+	  (setq default (buffer-substring-no-properties default-begin (1- (point)))))
+
+	(when (equal token 'RIGHT_PAREN)
+	  (setq done t))
+
 	(setq param (list (reverse identifiers)
-			  in-p out-p not-null-p access-p constant-p protected-p
+			  aliased-p in-p out-p not-null-p access-p constant-p protected-p
 			  type default))
 	(if paramlist
 	    (add-to-list 'paramlist param)
 	  (setq paramlist (list param)))
 	(setq identifiers nil
+	      aliased-p nil
 	      in-p nil
 	      out-p nil
 	      not-null-p nil
@@ -1434,7 +1525,7 @@ Also return cache at start."
 	   (setq result (ada-wisi-which-function-1 "protected" t)))
 
 	  ((subprogram_declaration
-	    subprogram_specification ;; after 'generic'
+	    generic_subprogram_declaration ;; after 'generic'
 	    null_procedure_declaration)
 	   (setq result (ada-wisi-which-function-1
 			 (wisi-cache-text (wisi-forward-find-token '(FUNCTION PROCEDURE) (point-max)))
@@ -1457,7 +1548,7 @@ Also return cache at start."
   (interactive)
   (define-key ada-mode-map "\M-e" 'wisi-show-parse-error)
   (define-key ada-mode-map "\M-h" 'wisi-show-containing-or-previous-cache)
-  (define-key ada-mode-map "\M-i" 'wisi-goto-end)
+  (define-key ada-mode-map "\M-i" 'wisi-goto-statement-end)
   (define-key ada-mode-map "\M-j" 'wisi-show-cache)
   (define-key ada-mode-map "\M-k" 'wisi-show-token)
   )
@@ -1476,58 +1567,80 @@ Also return cache at start."
   ;; Handle escaped quotes in strings
   (setq wisi-string-quote-escape-doubled t)
 
-  ;; Handle bracket notation for non-ascii characters in strings. This
-  ;; is actually more forgiving than that; it will treat
-  ;; '"foo["bar"]baz" as a single string. But that will be caught by
-  ;; the compiler, so it's ok for us.
-  (setq wisi-string-quote-escape '(?\" . ?\[ ))
-
   (set (make-local-variable 'comment-indent-function) 'wisi-comment-indent)
 
   (add-hook 'hack-local-variables-hook 'ada-wisi-post-local-vars nil t)
   )
 
+(defun ada-wisi-face ()
+  "Return face for token in match-data 2"
+  (let (cache)
+    (when (< (point-max) ada-wisi-font-lock-size-threshold)
+      (wisi-validate-cache (line-end-position)))
+
+    (if	(setq cache (wisi-get-cache (match-beginning 2)))
+	(wisi-cache-face cache)
+      'default)
+    ))
+
 (defun ada-wisi-post-local-vars ()
   ;; run after file local variables are read because font-lock-add-keywords
   ;; evaluates font-lock-defaults, which depends on ada-language-version.
-  (font-lock-add-keywords 'ada-mode
-   ;; use keyword cache to distinguish between 'function ... return <type>;' and 'return ...;'
+  ;;
+  ;; use parse results to distinguish difficult cases, but don't
+  ;; require parse just for font-lock
+  ;;
+  ;; name is not found if on next line
+  (font-lock-add-keywords nil
    (list
+    (list
+     "\\<\\(of[ \t]+reverse\\)\\>"  ;; following word is object
+     '(1 font-lock-keyword-face)
+     )
     (list
      (concat
       "\\<\\("
+      "aliased[ \t]+not[ \t]+null[ \t]+access\\|"
+      "aliased[ \t]+not[ \t]+null\\|"
       "return[ \t]+access[ \t]+constant\\|"
-      "return[ \t]+access\\|"
+      "return[ \t]+access"
+      "\\)\\>[ \t]*"
+      ada-name-regexp "?")
+     '(1 font-lock-keyword-face)
+     '(2 font-lock-type-face nil t)
+     )
+    (list
+     (concat
+      "\\<\\("
+      "aliased\\|"
+      "and\\|"
+      "of\\|"
+      "new\\|"
+      "renames\\|"
       "return"
       "\\)\\>[ \t]*"
       ada-name-regexp "?")
      '(1 font-lock-keyword-face)
-     '(2 (if (eq (when (not (ada-in-string-or-comment-p))
-		   (wisi-validate-cache (match-end 2))
-		   (and (wisi-get-cache (match-beginning 2))
-			(wisi-cache-class (wisi-get-cache (match-beginning 2)))))
-		 'type)
-	     font-lock-type-face
-	   'default)
-	 nil t)
-     )))
+     '(2 (ada-wisi-face) nil t)
+     ))
+   nil ;; add at start of list, so these have precedence
+   )
 
-  (when global-font-lock-mode
-    ;; ensure the modified keywords are applied
-    (font-lock-refresh-defaults))
   )
 
 (add-hook 'ada-mode-hook 'ada-wisi-setup)
 
 (setq ada-fix-context-clause 'ada-wisi-context-clause)
-(setq ada-goto-declaration-start 'ada-wisi-goto-declaration-start)
 (setq ada-goto-declaration-end 'ada-wisi-goto-declaration-end)
+(setq ada-goto-declaration-start 'ada-wisi-goto-declaration-start)
 (setq ada-goto-declarative-region-start 'ada-wisi-goto-declarative-region-start)
-(setq ada-goto-end 'wisi-goto-end)
+(setq ada-goto-end 'wisi-goto-statement-end)
+(setq ada-goto-subunit-name 'ada-wisi-goto-subunit-name)
 (setq ada-in-paramlist-p 'ada-wisi-in-paramlist-p)
 (setq ada-indent-statement 'wisi-indent-statement)
 (setq ada-make-subprogram-body 'ada-wisi-make-subprogram-body)
 (setq ada-next-statement-keyword 'wisi-forward-statement-keyword)
+(setq ada-on-context-clause 'ada-wisi-on-context-clause)
 (setq ada-prev-statement-keyword 'wisi-backward-statement-keyword)
 (setq ada-reset-parser 'wisi-invalidate-cache)
 (setq ada-scan-paramlist 'ada-wisi-scan-paramlist)

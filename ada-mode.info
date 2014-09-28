@@ -114,15 +114,28 @@ the distribution.
    To see what version of Ada mode you have installed, invoke 'M-x
 ada-mode-version'.
 
+   You may also want to install additional utilities:
+
 * Menu:
 
+* Ada Reference Manual::
 * gnatinspect::
+* gpr_query::
 * Upgrading::
 
 
-File: ada-mode.info,  Node: gnatinspect,  Next: Upgrading,  Prev: Installation,  Up: Installation
+File: ada-mode.info,  Node: Ada Reference Manual,  Next: gnatinspect,  Up: Installation
 
-2.1 gnatinspect
+2.1 Ada Reference Manual
+========================
+
+The ELPA package ada-ref-man includes the Ada Reference Manual and
+Annotated Ada Reference Manual in info format.
+
+
+File: ada-mode.info,  Node: gnatinspect,  Next: gpr_query,  Prev: Installation,  Up: Installation
+
+2.2 gnatinspect
 ===============
 
 Ada mode has experimental support for the new AdaCore cross reference
@@ -149,9 +162,22 @@ created by gnatinspect:
      gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
 
 
-File: ada-mode.info,  Node: Upgrading,  Prev: gnatinspect,  Up: Installation
+File: ada-mode.info,  Node: gpr_query,  Next: Upgrading,  Prev: gnatinspect,  Up: Installation
 
-2.2 Upgrading from previous versions
+2.3 gpr_query
+=============
+
+'gpr_query' is similar to 'gnatinspect', but customized for Emacs
+ada-mode use.  To install it, install 'gnatinspect' as above (*note
+gnatinspect::), then:
+
+     cd ~/.emacs.d/elpa/ada-mode-5.xx/build
+     make install-gpr_query
+
+
+File: ada-mode.info,  Node: Upgrading,  Prev: gpr_query,  Up: Installation
+
+2.4 Upgrading from previous versions
 ====================================
 
 See the file NEWS for more details; here we summarize only important
@@ -259,12 +285,22 @@ is used to index several variables that point to the
 cross-reference-tool-specific functions for corresponding Ada mode
 operations.
 
-   To use a cross reference tool other than gnatxref, you must write
-Emacs lisp code that provides the interface to the compiler, and set
-'ada-xref-tool' and the indirection variables.  This has already been
-done for 'gnatinspect'; set 'ada-xref-tool' to ''gnat_inspect'.
+   The default cross-reference tool is 'gnatxref', provided by the file
+'ada-gnat-xref.el'.  Two other tools are supported: 'gnat_inspect' and
+'gpr_query'.  To use these, add one of the following to '~/.emacs':
 
-   See 'ada-gnat-xref.el' and 'gnat-inspect.el' for examples.
+     (require 'gnat-inspect)
+     (require 'gpr-query)
+
+   To use 'gpr_query', the Ada code 'gpr_query.adb' must be compiled;
+see *note Installation::.
+
+   To use a cross reference tool other than the above, you must write
+Emacs lisp code that provides the interface to the compiler, and set
+'ada-xref-tool' and the indirection variables.
+
+   See 'ada-gnat-xref.el', 'gnat-inspect.el', 'gpr-query.el' for
+examples.
 
 
 File: ada-mode.info,  Node: Other customization,  Prev: Other cross-reference,  Up: Customization
@@ -1452,7 +1488,7 @@ specifies the casing of one word or word fragment.  If an exception is
 defined in multiple files, the first occurrence is used.
 
    If the word starts with an asterisk ('*'), it defines the casing of a
-word fragemnt (or "substring"); part of a word between two underscores
+word fragment (or "substring"); part of a word between two underscores
 or word boundary.
 
    For example:
@@ -2416,44 +2452,46 @@ Tag Table:
 Node: Top945
 Node: Overview2576
 Node: Installation3787
-Node: gnatinspect4675
-Node: Upgrading5672
-Node: Customization6246
-Node: Non-standard file names6728
-Node: Other compiler8569
-Node: Other cross-reference9148
-Node: Other customization9867
-Node: Compiling Executing12337
-Node: Compile commands13072
-Node: Compiling Examples15810
-Node: No project files16642
-Node: Set compiler options22008
-Node: Set source search path23970
-Node: Use GNAT project file26423
-Node: Use multiple GNAT project files29197
-Node: Use a Makefile31917
-Node: Compiler errors33232
-Node: Project files34049
-Node: Project file overview35076
-Node: Project file variables36604
-Node: Moving Through Ada Code40234
-Node: Identifier completion42933
-Node: Indentation43895
-Node: Statement skeletons47947
-Node: Aligning code49732
-Node: Automatic casing50677
-Node: Comment Handling53381
-Node: Key summary53900
-Node: Developer overview56527
-Node: Directory structure56867
-Node: Package organization60353
-Node: Ada mode60588
-Node: gpr mode62784
-Node: GNAT core63067
-Node: Wisi64013
-Node: OpenToken64980
-Node: ELPA65582
-Node: GNU Free Documentation License66192
-Node: Index91353
+Node: Ada Reference Manual4769
+Node: gnatinspect5026
+Node: gpr_query6023
+Node: Upgrading6380
+Node: Customization6952
+Node: Non-standard file names7434
+Node: Other compiler9275
+Node: Other cross-reference9854
+Node: Other customization10865
+Node: Compiling Executing13335
+Node: Compile commands14070
+Node: Compiling Examples16808
+Node: No project files17640
+Node: Set compiler options23006
+Node: Set source search path24968
+Node: Use GNAT project file27421
+Node: Use multiple GNAT project files30195
+Node: Use a Makefile32915
+Node: Compiler errors34230
+Node: Project files35047
+Node: Project file overview36074
+Node: Project file variables37602
+Node: Moving Through Ada Code41232
+Node: Identifier completion43931
+Node: Indentation44893
+Node: Statement skeletons48945
+Node: Aligning code50730
+Node: Automatic casing51675
+Node: Comment Handling54379
+Node: Key summary54898
+Node: Developer overview57525
+Node: Directory structure57865
+Node: Package organization61351
+Node: Ada mode61586
+Node: gpr mode63782
+Node: GNAT core64065
+Node: Wisi65011
+Node: OpenToken65978
+Node: ELPA66580
+Node: GNU Free Documentation License67190
+Node: Index92351
 
 End Tag Table

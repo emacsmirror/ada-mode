@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title{gpr Mode}
+@title gpr Mode
 @sp 2
 @subtitle An Emacs major mode for editing and navigating gpr files
 @sp 2

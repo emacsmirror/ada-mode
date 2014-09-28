@@ -7,7 +7,20 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.1.6
+
+** improve syntax highlighting of names after 'of', 'new', 'renames'
+
+** fix ada-format-paramlist to handle 'aliased' keyword (new in Ada
+   2012), and 'not null' without 'access'.
+
+** fix ada-find-other-file in separate bodies; now navigates to the
+   spec.
+
+** restore ada-indent-newline-indent for [return]
+
 * Ada mode 5.1.5
+12 Jul 2014
 
 ** add C-c <, C-c >; goto-declaration-start, -end
 

@@ -145,7 +145,7 @@ This could end in a token recognized by `ada-skel-expand'."
 (define-skeleton ada-skel-for
   "Insert a for loop statement with an optional name (from `str')."
   ()
-  str & ":\n"
+  str & " :\n"
   "for " _ " loop\n"
   "end loop " str | -1 ";")
 
@@ -429,6 +429,15 @@ it is a name, and use the word before that as the token."
 	 (goto-char pos)
 	 nil)))))
 
+(defun ada-skel-next-placeholder ()
+  "Move point to after next placeholder."
+  (skip-syntax-forward "^!")
+  (skip-syntax-forward "w!"))
+
+(defun ada-skel-prev-placeholder ()
+  "Move point to after previous placeholder."
+  (skip-syntax-backward "^!"))
+
 (defun ada-skel-setup ()
   "Setup a buffer for ada-skel."
   (add-hook 'skeleton-end-hook 'ada-indent-statement nil t)
@@ -441,6 +450,8 @@ it is a name, and use the word before that as the token."
 (provide 'ada-skel)
 
 (setq ada-expand 'ada-skel-expand)
+(setq ada-next-placeholder 'ada-skel-next-placeholder)
+(setq ada-prev-placeholder 'ada-skel-prev-placeholder)
 
 (add-hook 'ada-mode-hook 'ada-skel-setup)
 

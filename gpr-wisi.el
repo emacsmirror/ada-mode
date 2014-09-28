@@ -44,6 +44,7 @@
     block-middle
     block-end
     close-paren
+    list-break
     open-paren
     statement-end
     statement-other
@@ -51,7 +52,8 @@
     ))
 
 (defun gpr-wisi-indent-cache (offset cache)
-  "Return indentation of OFFSET relative to CACHE or containing ancestor of CACHE that is at a line beginning."
+  "Return indentation of OFFSET relative to indentation of line containing CACHE
+or containing ancestor of CACHE that is at a line beginning."
   (let ((indent (current-indentation)))
     (while (and cache
 		(not (= (current-column) indent)))
@@ -112,6 +114,20 @@
 	   (t
 	    (gpr-wisi-indent-cache ada-indent cache))
 	   ))
+
+	(list-break
+	 ;; test/gpr/simple.gpr
+	 ;; type GNAT_Version_Type
+	 ;;   is ("7.0.1",
+	 ;;       "6.2.2", "6.2.1",
+	 ;;       "GPL-2012", "GPL-2011");
+	 ;;
+	 ;; for Source_Dirs use
+	 ;;   ("../auto",
+	 ;;    External ("GNAT_VERSION") & "/foo",
+	 ;;    "../../1553");
+	 (wisi-goto-containing cache)
+	 (1+ (current-column)))
 
 	(open-paren
 	 (1+ (current-column)))

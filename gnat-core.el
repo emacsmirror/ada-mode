@@ -56,6 +56,18 @@
 
     project))
 
+(defun gnat-prj-show-path ()
+  "For `ada-prj-show-path'."
+    (interactive)
+  (if (ada-prj-get 'prj_dir)
+      (progn
+	(pop-to-buffer (get-buffer-create "*GNAT project search path*"))
+	(erase-buffer)
+	(dolist (file (ada-prj-get 'prj_dir))
+	  (insert (format "%s\n" file))))
+    (message "no GNAT project search path files")
+    ))
+
 (defun gnat-prj-parse-emacs-one (name value project)
   "Handle gnat-specific Emacs Ada project file settings.
 Return new PROJECT if NAME recognized, nil otherwise.

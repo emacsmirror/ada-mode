@@ -4,9 +4,10 @@
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
-;; Keywords FIXME: languages, ada ELPA broken for multiple keywords
-;; Version: 5.1.5
-;; package-requires: ((wisi "1.0.5") (cl-lib "0.4") (emacs "24.2"))
+;; Keywords: languages
+;;  ada
+;; Version: 5.1.6
+;; package-requires: ((wisi "1.0.6") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -167,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.5"))
+  (let ((version-string "5.1.6"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
@@ -304,31 +305,20 @@ Values defined by cross reference packages.")
 
 ;;;; keymap and menus
 
-(defvar ada-ret-binding nil)
-(defvar ada-lfd-binding nil)
+(defvar ada-ret-binding 'ada-indent-newline-indent)
+(defvar ada-lfd-binding 'newline-and-indent)
 
-(defun ada-case-activate-keys ()
+(defun ada-case-activate-keys (map)
   "Modify the key bindings for all the keys that should adjust casing."
-  (interactive)
-  ;; We can't use post-self-insert-hook for \n, \r, because they are
-  ;; not self-insert.
-
-  ;; The 'or ...' is there to be sure that the value will not be
-  ;; changed again when this is called more than once, since we
-  ;; are rebinding the keys.
-  (or ada-ret-binding (setq ada-ret-binding (key-binding "\C-M")))
-  (or ada-lfd-binding (setq ada-lfd-binding (key-binding "\C-j")))
-
+  ;; we could just put these in the keymap below, but this is easier.
   (mapc (function
 	 (lambda(key)
 	   (define-key
-	     ada-mode-map
+	     map
 	     (char-to-string key)
 	     'ada-case-adjust-interactive)))
 	'( ?_ ?% ?& ?* ?( ?) ?- ?= ?+
 	      ?| ?\; ?: ?' ?\" ?< ?, ?. ?> ?/ ?\n 32 ?\r ))
-
-  (define-key ada-mode-map [return] 'ada-case-adjust-interactive)
   )
 
 (defvar ada-mode-map
@@ -336,7 +326,7 @@ Values defined by cross reference packages.")
     ;; C-c <letter> are reserved for users
 
     ;; global-map has C-x ` 'next-error
-    (define-key map [return] 	 'ada-indent-newline-indent)
+    (define-key map [return] 	 'ada-case-adjust-interactive)
     (define-key map "\C-c`" 	 'ada-show-secondary-error)
     (define-key map "\C-c;"      (lambda () (error "use M-; instead"))) ; comment-dwim
     (define-key map "\C-c<" 	 'ada-goto-declaration-start)
@@ -352,9 +342,11 @@ Values defined by cross reference packages.")
     (define-key map "\C-c\C-i" 	 'ada-indent-statement)
     (define-key map "\C-c\C-m"   'ada-build-set-make)
     (define-key map "\C-c\C-n" 	 'ada-next-statement-keyword)
+    (define-key map "\C-c\M-n" 	 'ada-next-placeholder)
     (define-key map "\C-c\C-o" 	 'ada-find-other-file)
     (define-key map "\C-c\M-o" 	 'ada-find-other-file-noset)
     (define-key map "\C-c\C-p" 	 'ada-prev-statement-keyword)
+    (define-key map "\C-c\M-p" 	 'ada-prev-placeholder)
     (define-key map "\C-c\C-q" 	 'ada-xref-refresh)
     (define-key map "\C-c\C-r" 	 'ada-show-references)
     (define-key map "\C-c\M-r" 	 'ada-build-run)
@@ -366,6 +358,8 @@ Values defined by cross reference packages.")
     (define-key map "\C-c\C-y" 	 'ada-case-create-exception)
     (define-key map "\C-c\M-y"   'ada-case-create-partial-exception)
     (define-key map [C-down-mouse-3] 'ada-popup-menu)
+
+    (ada-case-activate-keys map)
 
     map
   )  "Local keymap used for Ada mode.")
@@ -383,6 +377,7 @@ Values defined by cross reference packages.")
      ["Find and select project ..."   ada-build-prompt-select-prj-file t]
      ["Select project ..."            ada-prj-select                   t]
      ["Show project"                  ada-prj-show                     t]
+     ["Show project search path"      ada-prj-show-path                t]
     )
     ("Build"
      ["Next compilation error"     next-error                t]
@@ -407,6 +402,8 @@ Values defined by cross reference packages.")
      ["Show overriding"               ada-show-overriding          t]
      ["Show overridden"               ada-show-overridden          t]
      ["Goto prev position"            ada-goto-previous-pos        t]
+     ["Next placeholder"              ada-next-placeholder    t]
+     ["Previous placeholder"          ada-prev-placeholder    t]
      )
     ("Edit"
      ["Expand skeleton"             ada-expand              t]
@@ -426,6 +423,7 @@ Values defined by cross reference packages.")
      ["Adjust case at point"        ada-case-adjust-at-point  t]
      ["Adjust case region"          ada-case-adjust-region    t]
      ["Adjust case buffer"          ada-case-adjust-buffer    t]
+     ["Show casing files list"      ada-case-show-files       t]
      )
     ("Misc"
      ["Show last parse error"         ada-show-parse-error         t]
@@ -433,7 +431,6 @@ Values defined by cross reference packages.")
      ["Refresh cross reference cache" ada-xref-refresh             t]
      ["Reset parser"                  ada-reset-parser             t]
      )))
-(ada-case-activate-keys)
 
 ;; This doesn't need to be buffer-local because there can be only one
 ;; popup menu at a time.
@@ -514,6 +511,28 @@ Function is called with no arguments.")
   (interactive)
   (when ada-expand
     (funcall ada-expand)))
+
+(defvar ada-next-placeholder nil
+  ;; skeleton function
+  "Function to call to goto next placeholder.")
+
+(defun ada-next-placeholder ()
+  "Goto next placeholder.
+Placeholders are defined by the skeleton backend."
+  (interactive)
+  (when ada-next-placeholder
+    (funcall ada-next-placeholder)))
+
+(defvar ada-prev-placeholder nil
+  ;; skeleton function
+  "Function to call to goto previous placeholder.")
+
+(defun ada-prev-placeholder ()
+  "Goto previous placeholder.
+Placeholders are defined by the skeleton backend."
+  (interactive)
+  (when ada-prev-placeholder
+    (funcall ada-prev-placeholder)))
 
 ;;;; abbrev, align
 
@@ -632,9 +651,9 @@ Function is called with no arguments.")
   "Function to scan a region, return a list of subprogram parameter declarations (in inverse declaration order).
 Function is called with two args BEGIN END (the region).
 Each parameter declaration is represented by a list
-'((identifier ...) in-p out-p not-null-p access-p constant-p protected-p type default)."
-  ;; mode is 'in | out | in out | [not null] access [constant | protected]'
-  ;; IMPROVEME: handle single-line trailing comments, or longer comments, in paramlist?
+'((identifier ...) aliased-p in-p out-p not-null-p access-p constant-p protected-p type default)."
+  ;; Summary of Ada syntax for a parameter specification:
+  ;; ... : [aliased] {[in] | out | in out | [null_exclusion] access [constant | protected]} ...
   )
 
 (defun ada-scan-paramlist (begin end)
@@ -649,12 +668,14 @@ Each parameter declaration is represented by a list
 	len
 	(ident-len 0)
 	(type-len 0)
+	(aliased-p nil)
 	(in-p nil)
 	(out-p nil)
 	(not-null-p nil)
 	(access-p nil)
 	ident-col
 	colon-col
+	in-col
 	out-col
 	type-col
 	default-col)
@@ -676,18 +697,19 @@ Each parameter declaration is represented by a list
 
       ;; we align the defaults after the types that have defaults, not after all types.
       ;; "constant", "protected" are treated as part of 'type'
-      (when (nth 8 param)
+      (when (nth 9 param)
 	(setq type-len
 	      (max type-len
-		   (+ (length (nth 7 param))
-		      (if (nth 5 param) 10 0); "constant "
-		      (if (nth 6 param) 10 0); protected
+		   (+ (length (nth 8 param))
+		      (if (nth 6 param) 10 0); "constant "
+		      (if (nth 7 param) 10 0); protected
 		      ))))
 
-      (setq in-p (or in-p (nth 1 param)))
-      (setq out-p (or out-p (nth 2 param)))
-      (setq not-null-p (or not-null-p (nth 3 param)))
-      (setq access-p (or access-p (nth 4 param)))
+      (setq aliased-p (or aliased-p (nth 1 param)))
+      (setq in-p (or in-p (nth 2 param)))
+      (setq out-p (or out-p (nth 3 param)))
+      (setq not-null-p (or not-null-p (nth 4 param)))
+      (setq access-p (or access-p (nth 5 param)))
       )
 
     (let ((space-before-p (save-excursion (skip-chars-backward " \t") (not (bolp))))
@@ -710,16 +732,19 @@ Each parameter declaration is represented by a list
     ;; compute columns.
     (setq ident-col (current-column))
     (setq colon-col (+ ident-col ident-len 1))
-    (setq out-col (+ colon-col (if in-p 5 0))); ": in "
+    (setq in-col
+	  (+ colon-col (if aliased-p 10 2))); ": aliased ..."
+    (setq out-col (+ in-col (if in-p 3 0))); ": [aliased] in "
     (setq type-col
-	  (+ colon-col
+	  (+ in-col
 	     (cond
-	      (not-null-p 18);    ": not null access "
-	      (access-p 9);        ": access"
-	      ((and in-p out-p) 9); ": in out "
-	      (out-p 6);           ": out "
-	      (in-p 5);            ": in "
-	      (t 2))));           ": "
+	      ;; 'not null' without access is part of the type
+	      ((and not-null-p access-p) 16); ": [aliased] not null access "
+	      (access-p 7);         ": [aliased] access "
+	      ((and in-p out-p) 7); ": [aliased] in out "
+	      (in-p 3);             ": [aliased] in "
+	      (out-p 4);            ": [aliased] out "
+	      (t 0))));             ": [aliased] "
 
     (setq default-col (+ 1 type-col type-len))
 
@@ -738,29 +763,42 @@ Each parameter declaration is represented by a list
       (insert ": ")
 
       (when (nth 1 param)
+	(insert "aliased "))
+
+      (indent-to in-col)
+      (when (nth 2 param)
 	(insert "in "))
 
-      (when (nth 2 param)
+      (when (nth 3 param)
 	(indent-to out-col)
 	(insert "out "))
 
-      (when (nth 3 param)
-	(insert "not null "))
+      (when (and (nth 4 param) ;; not null
+		 (nth 5 param)) ;; access
+	(insert "not null access"))
 
-      (when (nth 4 param)
-	(insert "access "))
+      (when (and (not (nth 4 param)) ;; not null
+		 (nth 5 param)) ;; access
+	(insert "access"))
 
       (indent-to type-col)
-      (when (nth 5 param)
-	(insert "constant "))
-      (when (nth 6 param)
-	(insert "protected "))
-      (insert (nth 7 param)); type
 
-      (when (nth 8 param); default
+      (when (and (nth 4 param) ;; not null
+		 (not (nth 5 param))) ;; access
+	(insert "not null "))
+
+      (when (nth 6 param)
+	(insert "constant "))
+
+      (when (nth 7 param)
+	(insert "protected "))
+
+      (insert (nth 8 param)); type
+
+      (when (nth 9 param); default
 	(indent-to default-col)
 	(insert ":= ")
-	(insert (nth 8 param)))
+	(insert (nth 9 param)))
 
       (if (zerop i)
 	  (insert ")")
@@ -795,26 +833,29 @@ Each parameter declaration is represented by a list
       (insert " : ")
 
       (when (nth 1 param)
-	(insert "in "))
+	(insert "aliased "))
 
       (when (nth 2 param)
-	(insert "out "))
+	(insert "in "))
 
       (when (nth 3 param)
-	(insert "not null "))
+	(insert "out "))
 
       (when (nth 4 param)
-	(insert "access "))
+	(insert "not null "))
 
       (when (nth 5 param)
-	(insert "constant "))
-      (when (nth 6 param)
-	(insert "protected "))
-      (insert (nth 7 param)); type
+	(insert "access "))
 
-      (when (nth 8 param); default
+      (when (nth 6 param)
+	(insert "constant "))
+      (when (nth 7 param)
+	(insert "protected "))
+      (insert (nth 8 param)); type
+
+      (when (nth 9 param); default
 	(insert " := ")
-	(insert (nth 8 param)))
+	(insert (nth 9 param)))
 
       (if (zerop i)
 	  (if (= (char-after) ?\;)
@@ -848,13 +889,25 @@ Each parameter declaration is represented by a list
 
 (defvar ada-case-full-exceptions '()
   "Alist of words (entities) that have special casing, built from
-`ada-case-exception-file' full word exceptions. Indexed by
+project file casing file list full word exceptions. Indexed by
 properly cased word; value is t.")
 
 (defvar ada-case-partial-exceptions '()
   "Alist of partial words that have special casing, built from
-`ada-case-exception-file' partial word exceptions. Indexed by
+project casing files list partial word exceptions. Indexed by
 properly cased word; value is t.")
+
+(defun ada-case-show-files ()
+  "Show current casing files list."
+  (interactive)
+  (if (ada-prj-get 'casing)
+      (progn
+	(pop-to-buffer (get-buffer-create "*casing files*"))
+	(erase-buffer)
+	(dolist (file (ada-prj-get 'casing))
+	  (insert (format "%s\n" file))))
+    (message "no casing files")
+    ))
 
 (defun ada-case-save-exceptions (full-exceptions partial-exceptions file-name)
   "Save FULL-EXCEPTIONS, PARTIAL-EXCEPTIONS to the file FILE-NAME."
@@ -896,7 +949,7 @@ Return (cons full-exceptions partial-exceptions)."
 	(cons full-exceptions partial-exceptions))
 
     ;; else file not readable; might be a new project with no
-    ;; exceptions yet, so just warn user, return empty pair
+    ;; exceptions yet, so just return empty pair
     (message "'%s' is not a readable file." file-name)
     '(nil . nil)
     ))
@@ -915,7 +968,7 @@ An item in both lists has the RESULT value."
   (setq ada-case-partial-exceptions (ada-case-merge-exceptions ada-case-partial-exceptions (cdr exceptions))))
 
 (defun ada-case-read-all-exceptions ()
-  "Read case exceptions from all files in `ada-case-exception-file',
+  "Read case exceptions from all files in project casing files,
 replacing current values of `ada-case-full-exceptions', `ada-case-partial-exceptions'."
   (interactive)
   (setq ada-case-full-exceptions '()
@@ -1232,7 +1285,7 @@ Optional PLIST defaults to `ada-prj-current-project'."
 
       ;; no project, just use default vars
       ;; must match code in ada-prj-default
-      (cl-case plist
+      (cl-case prop
 	(ada_compiler    ada-compiler)
 	(auto_case       ada-auto-case)
 	(case_keyword    ada-case-keyword)
@@ -1499,9 +1552,6 @@ Return new value of PROJECT."
     project
     ))
 
-(defvar ada-project-search-path nil
-  "Search path for finding Ada project files")
-
 (defvar ada-select-prj-compiler nil
   "Alist of functions to call for compiler specific project file selection.
 Indexed by project variable ada_compiler.")
@@ -1549,7 +1599,6 @@ Indexed by project variable xref_tool.")
   (ada-case-read-all-exceptions)
 
   (setq compilation-search-path (ada-prj-get 'src_dir))
-  (setq ada-project-search-path (ada-prj-get 'prj_dir))
 
   (let ((func (cdr (assq (ada-prj-get 'ada_compiler) ada-select-prj-compiler))))
     (when func (funcall func)))
@@ -1570,6 +1619,16 @@ Indexed by project variable xref_tool.")
   "Show current Emacs Ada mode project file."
   (interactive)
   (message "current Emacs Ada mode project file: %s" ada-prj-current-file))
+
+(defvar ada-prj-show-path nil
+  ;; Supplied by compiler
+  "Function to show project search path used by compiler (and possibly xref tool)."
+  )
+
+(defun ada-prj-show-path ()
+  (interactive)
+  (when ada-prj-show-path
+    (funcall ada-prj-show-path)))
 
 (defvar ada-show-xref-tool-buffer nil
   ;; Supplied by xref tool
@@ -1656,10 +1715,10 @@ In particular, character constants are set to have string syntax."
 	       "\\|\\(--\\)"; 4: comment start
 	       )
 	      end t)
-	;; The help for syntax-propertize-extend-region-functions
-	;; implies that 'start end' will always include whole lines, in
-	;; which case we don't need
-	;; syntax-propertize-extend-region-functions
+	;; syntax-propertize-extend-region-functions is set to
+	;; syntax-propertize-wholelines by default. We assume no
+	;; coding standard will permit a character literal at the
+	;; start of a line (not preceded by whitespace).
 	(cond
 	 ((match-beginning 1)
 	  (put-text-property
@@ -1740,7 +1799,7 @@ found.")
   (funcall ada-file-name-from-ada-name ada-name))
 
 (defvar ada-ada-name-from-file-name nil
-  ;; depends on ada-compiler, per-project
+  ;; supplied by compiler
   "Function called with one parameter FILE-NAME, which is a library
 unit name; it should return the Ada name that should be found in FILE-NAME.")
 
@@ -1760,6 +1819,7 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
     (error "parent '%s' not found; set project file?" ff-function-name))))
 
 (defun ada-ff-special-extract-separate ()
+  ;; match-string contains "separate (parent_name)"
   (let ((package-name (match-string 1)))
     (save-excursion
       (goto-char (match-end 0))
@@ -1831,6 +1891,30 @@ other file.")
   (interactive)
   (when ada-which-function
     (funcall ada-which-function)))
+
+(defvar ada-on-context-clause nil
+  ;; supplied by indentation engine
+  "Function called with no parameters; it should return non-nil
+  if point is on a context clause.")
+
+(defun ada-on-context-clause ()
+  "See `ada-on-context-clause' variable."
+  (interactive)
+  (when ada-on-context-clause
+    (funcall ada-on-context-clause)))
+
+(defvar ada-goto-subunit-name nil
+  ;; supplied by indentation engine
+  "Function called with no parameters; if the current buffer
+  contains a subunit, move point to the subunit name (for
+  `ada-goto-declaration'), return t; otherwise leave point alone,
+  return nil.")
+
+(defun ada-goto-subunit-name ()
+  "See `ada-goto-subunit-name' variable."
+  (interactive)
+  (when ada-goto-subunit-name
+    (funcall ada-goto-subunit-name)))
 
 (defun ada-add-log-current-function ()
   "For `add-log-current-defun-function'; uses `ada-which-function'."
@@ -1936,18 +2020,23 @@ the other file."
   (interactive "P")
   (ada-check-current-project (buffer-file-name))
 
-  (if mark-active
-      (progn
-	(setq ff-function-name (buffer-substring-no-properties (point) (mark)))
-	(ff-get-file
-	 compilation-search-path
-	 (ada-file-name-from-ada-name ff-function-name)
-	 ada-spec-suffixes
-	 other-window)
-	(deactivate-mark))
+  (cond
+   (mark-active
+    (setq ff-function-name (buffer-substring-no-properties (point) (mark)))
+    (ff-get-file
+     compilation-search-path
+     (ada-file-name-from-ada-name ff-function-name)
+     ada-spec-suffixes
+     other-window)
+    (deactivate-mark))
 
-    ;; else use name at point
+   ((and (not (ada-on-context-clause))
+	 (ada-goto-subunit-name))
+    (ada-goto-declaration other-window))
+
+   (t
     (ff-find-other-file other-window)))
+  )
 
 (defvar ada-operator-re
   "\\+\\|-\\|/\\|\\*\\*\\|\\*\\|=\\|&\\|abs\\|mod\\|rem\\|and\\|not\\|or\\|xor\\|<=\\|<\\|>=\\|>"
@@ -1955,7 +2044,7 @@ the other file."
 
 (defun ada-identifier-at-point ()
   "Return the identifier around point, move point to start of
-identifier.  May be an Ada identifier or operator function name."
+identifier.  May be an Ada identifier or operator."
 
   (when (ada-in-comment-p)
     (error "Inside comment"))
@@ -1964,7 +2053,8 @@ identifier.  May be an Ada identifier or operator function name."
 
     (skip-chars-backward "a-zA-Z0-9_<>=+\\-\\*/&")
 
-    ;; Just in front of, or inside, a string => we could have an operator
+    ;; Just in front of, or inside, a string => we could have an
+    ;; operator function declaration.
     (cond
      ((ada-in-string-p)
       (cond
@@ -1983,7 +2073,7 @@ identifier.  May be an Ada identifier or operator function name."
 	   (looking-at (concat "\"\\(" ada-operator-re "\\)\"")))
       (setq identifier (concat "\"" (match-string-no-properties 1) "\"")))
 
-     ((looking-at "[a-zA-Z0-9_]+")
+     ((looking-at "[a-zA-Z0-9_]+\\|[+\\-*/&=<>]")
       (setq identifier (match-string-no-properties 0)))
 
      (t
@@ -2095,18 +2185,18 @@ buffer in another window."
   (when (null ada-xref-other-function)
     (error "no cross reference information available"))
 
-    (let ((target
-	   (funcall ada-xref-other-function
-		    (ada-identifier-at-point)
-		    (buffer-file-name)
-		    (line-number-at-pos)
-		    (1+ (current-column))
-		    )))
+  (let ((target
+	 (funcall ada-xref-other-function
+		  (ada-identifier-at-point)
+		  (buffer-file-name)
+		  (line-number-at-pos)
+		  (1+ (current-column))
+		  )))
 
-      (ada-goto-source (nth 0 target)
-		       (nth 1 target)
-		       (nth 2 target)
-		       other-window)
+    (ada-goto-source (nth 0 target)
+		     (nth 1 target)
+		     (nth 2 target)
+		     other-window)
     ))
 
 (defvar ada-xref-parent-function nil
@@ -2426,7 +2516,8 @@ The paragraph is indented on the first line."
 	   (not (looking-at "[ \t]*--")))
       (error "Not inside comment"))
 
-  (let* (indent from to
+  (let* ((inhibit-modification-hooks t) ;; don't run parser for font-lock; comment text is exposed
+	 indent from to
 	 (opos (point-marker))
 	 ;; we bind `fill-prefix' here rather than in ada-mode because
 	 ;; setting it in ada-mode causes indent-region to use it for
@@ -2562,14 +2653,23 @@ The paragraph is indented on the first line."
 	  "access\\|"
 	  "constant\\|"
 	  "in[ \t]+reverse\\|"; loop iterator
+	  "in[ \t]+not[ \t]+null[ \t]+access\\|"
 	  "in[ \t]+not[ \t]+null\\|"
+	  "in[ \t]+out[ \t]+not[ \t]+null[ \t]+access\\|"
 	  "in[ \t]+out[ \t]+not[ \t]+null\\|"
 	  "in[ \t]+out\\|"
 	  "in\\|"
-	  ;; "return\\|" can't distinguish between 'function ... return <type>;' and 'return ...;'
-	  ;; An indentation engine can, so a rule for this is added there
-	  "of[ \t]+reverse\\|"
-	  "of\\|"
+	  ;; "return" can't distinguish between 'function ... return <type>;' and 'return ...;'
+	  ;; "new" can't distinguish between generic instantiation
+	  ;;       package foo is new bar (...)
+	  ;;    and allocation
+	  ;;       a := new baz (...)
+	  ;; A parsing indentation engine can, so rules for these are added there
+	  "not[ \t]+null[ \t]access[ \t]all\\|"
+	  "not[ \t]+null[ \t]access[ \t]constant\\|"
+	  "not[ \t]+null[ \t]access\\|"
+	  "not[ \t]+null\\|"
+	  ;; "of" can't distinguish between array and iterable_name
 	  "out\\|"
 	  "subtype\\|"
 	  "type"
@@ -2584,15 +2684,17 @@ The paragraph is indented on the first line."
    	  (regexp-opt
    	   (append
    	    '("abort" "abs" "accept" "all"
-   	      "and" "array" "at" "begin" "case" "declare" "delay" "delta"
+	      ;; "and" requires parser for types in interface_lists
+   	      "array" "at" "begin" "case" "declare" "delay" "delta"
    	      "digits" "do" "else" "elsif" "entry" "exception" "exit" "for"
    	      "generic" "if" "in" "limited" "loop" "mod" "not"
    	      "null" "or" "others" "private" "raise"
-   	      "range" "record" "rem" "renames" "reverse"
+   	      "range" "record" "rem" "reverse"
    	      "select" "separate" "task" "terminate"
    	      "then" "when" "while" "xor")
    	    (when (member ada-language-version '(ada95 ada2005 ada2012))
-   	      '("abstract" "aliased" "requeue" "tagged" "until"))
+	      ;; "aliased" can't distinguish between object declaration and paramlist
+   	      '("abstract" "requeue" "tagged" "until"))
    	    (when (member ada-language-version '(ada2005 ada2012))
    	      '("interface" "overriding" "synchronized"))
    	    (when (member ada-language-version '(ada2012))
@@ -2601,6 +2703,12 @@ The paragraph is indented on the first line."
    	   t)
    	  "\\>")
    	 '(0 font-lock-keyword-face))
+
+   ;; after the above to handle 'is begin' in blocks
+   (list (concat
+	  "\\<\\(is\\)\\>[ \t]*"
+	  ada-name-regexp "?")
+	 '(1 font-lock-keyword-face) '(2 font-lock-type-face nil t))
 
    ;; object and parameter declarations; word after ":" should be in
    ;; type-face if not already fontified or an exception.
@@ -2615,32 +2723,9 @@ The paragraph is indented on the first line."
 
    ;; keywords followed by a name that should be in function-name-face if not already fontified
    (list (concat
-	  "\\<\\("
-	  "end"
-	  "\\)\\>[ \t]*"
+	  "\\<\\(end\\)\\>[ \t]*"
 	  ada-name-regexp "?")
      '(1 font-lock-keyword-face) '(2 font-lock-function-name-face nil t))
-
-   ;; Keywords followed by a name that could be a type or a function (generic instantiation).
-   (list (concat
-	  "\\<\\("
-	  "new"
-	  "\\)\\>[ \t]*"
-	  ada-name-regexp "?[ \t]*\\((\\)?")
-	 '(1 font-lock-keyword-face)
-	 '(2 (if (match-beginning 3)
-		 font-lock-function-name-face
-	       font-lock-type-face)
-	     nil t))
-
-   ;; keywords followed by a name that should be in type-face if not already fontified (for subtypes)
-   ;; after "new" to handle "is new"
-   (list (concat
-	  "\\<\\("
-	  "is"
-	  "\\)\\>[ \t]*"
-	  ada-name-regexp "?")
-     '(1 font-lock-keyword-face) '(2 font-lock-type-face nil t))
 
    ;; Keywords followed by a comma separated list of names which
    ;; should be in constant-face, unless already fontified. Ada mode 4.01 used this.
@@ -2708,6 +2793,7 @@ The paragraph is indented on the first line."
 
   (set (make-local-variable 'require-final-newline) t)
 
+  ;; 'font-lock-defaults' is a confusing name; it's buffer local
   (setq font-lock-defaults
 	'(ada-font-lock-keywords
 	  nil t
@@ -2750,6 +2836,8 @@ The paragraph is indented on the first line."
   (setq align-mode-rules-list ada-align-rules)
 
   (easy-menu-add ada-mode-menu ada-mode-map)
+
+  (setq ada-case-strict (ada-prj-get 'case_strict))
 
   (run-mode-hooks 'ada-mode-hook)
 
