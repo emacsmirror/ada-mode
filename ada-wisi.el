@@ -1449,9 +1449,7 @@ Also return cache at start."
 	(setq param (list (reverse identifiers)
 			  aliased-p in-p out-p not-null-p access-p constant-p protected-p
 			  type default))
-	(if paramlist
-	    (add-to-list 'paramlist param)
-	  (setq paramlist (list param)))
+        (cl-pushnew param paramlist :test #'equal)
 	(setq identifiers nil
 	      aliased-p nil
 	      in-p nil
@@ -1468,9 +1466,7 @@ Also return cache at start."
 
        (t
 	(when (not type-begin)
-	  (if identifiers
-	      (add-to-list 'identifiers text)
-	    (setq identifiers (list text)))))
+          (cl-pushnew text identifiers :test #'equal)))
        ))
     paramlist))
 

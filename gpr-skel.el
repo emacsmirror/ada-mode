@@ -219,7 +219,7 @@ it is a name, and use the word before that as the token."
 	  (progn
 	    (skeleton-expand)
 	    t)
-	('error
+	(error
 	 ;; undo hook action if any
 	 (unless (= undo-len (if (sequencep pending-undo-list) (length pending-undo-list) 0))
 	   (undo))

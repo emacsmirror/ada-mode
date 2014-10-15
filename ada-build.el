@@ -185,7 +185,7 @@ Returns non-nil if a file is selected, nil otherwise."
   (interactive)
   (let ((ext (append ada-prj-file-extensions ada-prj-file-ext-extra))
 	filename)
-    (condition-case err
+    (condition-case nil
 	(setq filename
 	      (read-file-name
 	       "Project file: " ; prompt
@@ -199,7 +199,7 @@ Returns non-nil if a file is selected, nil otherwise."
 		 ;; return a directory.
 		 (or (file-accessible-directory-p name)
 		     (member (file-name-extension name) ext)))))
-      (err
+      (err                              ;FIXME: Shouldn't this be `error'?
        (setq filename nil))
       )
 

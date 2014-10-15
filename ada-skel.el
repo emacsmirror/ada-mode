@@ -419,7 +419,7 @@ it is a name, and use the word before that as the token."
 	  (progn
 	    (ada-skel-expand)
 	    t)
-	('error
+	(error
 	 ;; undo hook action if any
 	 (unless (or (eq 't pending-undo-list)
 		     (= undo-len (length pending-undo-list)))

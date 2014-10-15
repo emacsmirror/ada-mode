@@ -196,9 +196,9 @@ Uses 'gpr_query'. Returns new list."
     (gpr-query-session-send "source_dirs" t)
     (goto-char (point-min))
     (while (not (looking-at gpr-query-prompt))
-      (add-to-list 'src-dirs
-		   (directory-file-name
-		    (buffer-substring-no-properties (point) (point-at-eol))))
+      (cl-pushnew (directory-file-name
+		    (buffer-substring-no-properties (point) (point-at-eol)))
+                  src-dirs :test #'equal)
       (forward-line 1))
     )
   src-dirs)
@@ -211,9 +211,9 @@ Uses 'gpr_query'. Returns new list."
     (gpr-query-session-send "project_path" t)
     (goto-char (point-min))
     (while (not (looking-at gpr-query-prompt))
-      (add-to-list 'prj-dirs
-		   (directory-file-name
-		    (buffer-substring-no-properties (point) (point-at-eol))))
+      (cl-pushnew (directory-file-name
+		    (buffer-substring-no-properties (point) (point-at-eol)))
+                  prj-dirs :test #'equal)
       (forward-line 1))
     )
   prj-dirs)
@@ -246,6 +246,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
   (let ((cmd-1 (format "%s %s:%s:%d:%d" cmd identifier file line col))
 	(result-count 0)
 	file line column)
+    ;; FIXME: Code duplication with gnat-inspect-compilation!
     (with-current-buffer (gpr-query--session-buffer (gpr-query-cached-session))
       (compilation-mode)
       (setq buffer-read-only nil)
@@ -253,8 +254,13 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       (gpr-query-session-send cmd-1 t)
       ;; point is at EOB. gpr_query returns one line per result plus prompt
       (setq result-count (- (line-number-at-pos) 1))
-      (font-lock-fontify-buffer)
+      ;; Won't be needed in 24.5 any more.
+      (if (fboundp 'font-lock-ensure)
+          (font-lock-ensure)
+        (font-lock-fontify-buffer))
       ;; font-lock-fontify-buffer applies compilation-message text properties
+      ;; NOTE: Won't be needed in 24.5 any more, since compilation-next-error
+      ;; will apply compilation-message text properties on the fly.
       ;; IMPROVEME: for some reason, next-error works, but the font
       ;; colors are not right (no koolaid!)
       (goto-char (point-min))
@@ -269,6 +275,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 	 ;; just go there, don't display session-buffer. We have to
 	 ;; fetch the compilation-message while in the session-buffer.
 	 (let* ((msg (compilation-next-error 0 nil (point-min)))
+                ;; FIXME: Woah!  This is messing with very internal details!
 		(loc (compilation--message->loc msg)))
 	   (setq file (caar (compilation--loc->file-struct loc))
 		 line (caar (cddr (compilation--loc->file-struct loc)))

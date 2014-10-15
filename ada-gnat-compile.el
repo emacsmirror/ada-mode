@@ -222,25 +222,20 @@ Prompt user if more than one."
 				(< pos limit))))
 		   (when (not done)
 		     (let* ((item (get-text-property pos 'ada-secondary-error))
-			    (unit-file (nth 0 item)))
-		       (add-to-list 'choices (ada-ada-name-from-file-name unit-file))
+			    (unit-file (nth 0 item))
+                            (choice (ada-ada-name-from-file-name unit-file)))
+                       (unless (member choice choices) (push choice choices))
 		       (goto-char (1+ pos))
 		       (goto-char (1+ (next-single-property-change (point) 'ada-secondary-error nil limit)))
 		       (when (eolp) (forward-line 1))
 		       ))
 		   )));; unless while let
 
-	     (cond
-	      ((= 0 (length choices))
-	       (setq unit-name nil))
-
-	      ((= 1 (length choices))
-	       (setq unit-name (car choices)))
-
-	      (t ;; multiple choices
-	       (setq unit-name
-		     (completing-read "package name: " choices)))
-	      );; cond
+	     (setq unit-name (cond
+                              ((= 0 (length choices)) nil)
+                              ((= 1 (length choices)) (car choices))
+                              (t ;; multiple choices
+                               (completing-read "package name: " choices))))
 
 	     (when unit-name
 	       (pop-to-buffer source-buffer)

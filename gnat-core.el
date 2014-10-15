@@ -36,7 +36,7 @@
 
     (cond
      ((listp prj-dir)
-	(add-to-list 'prj-dir dir))
+      (cl-pushnew dir prj-dir :test #'equal))
 
      (prj-dir
       (setq prj-dir (list dir)))
@@ -99,7 +99,7 @@ See also `gnat-parse-emacs-final'."
     (kill-buffer (gnat-run-buffer-name))); things may have changed, force re-create
 
   (if (ada-prj-get 'gpr_file project)
-      (set 'project (gnat-parse-gpr (ada-prj-get 'gpr_file project) project))
+      (setq project (gnat-parse-gpr (ada-prj-get 'gpr_file project) project))
 
     ;; add the compiler libraries to src_dir
     (setq project (gnat-get-paths project))
@@ -109,7 +109,7 @@ See also `gnat-parse-emacs-final'."
 
 (defun gnat-get-paths-1 (src-dirs prj-dirs)
   "Append list of source and project dirs in current gpr project to SRC-DIRS, PRJ-DIRS.
-Uses 'gnat list'. Returns new '(src-dirs prj-dirs)."
+Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
   (with-current-buffer (gnat-run-buffer)
     ;; gnat list -v -P can return status 0 or 4; always lists compiler dirs
     ;;
@@ -128,12 +128,14 @@ Uses 'gnat list'. Returns new '(src-dirs prj-dirs)."
 	  (forward-line 1)
 	  (while (not (looking-at "^$")) ; terminate on blank line
 	    (back-to-indentation) ; skip whitespace forward
-	    (if (looking-at "<Current_Directory>")
-		(add-to-list 'src-dirs  (directory-file-name default-directory))
-	      (add-to-list 'src-dirs
-			   (expand-file-name ; canonicalize path part
+            (cl-pushnew (if (looking-at "<Current_Directory>")
+                             (directory-file-name default-directory)
+                           (expand-file-name ; Canonicalize path part.
 			    (directory-file-name
-			     (buffer-substring-no-properties (point) (point-at-eol))))))
+			     (buffer-substring-no-properties
+                              (point) (point-at-eol)))))
+                        src-dirs
+                        :test #'equal)
 	    (forward-line 1))
 
 	  ;; Project path
@@ -145,17 +147,16 @@ Uses 'gnat list'. Returns new '(src-dirs prj-dirs)."
 	  (while (not (looking-at "^$"))
 	    (back-to-indentation)
 	    (if (looking-at "<Current_Directory>")
-		(add-to-list 'prj-dirs ".")
-	      (add-to-list 'prj-dirs
-			   (expand-file-name
-			    (buffer-substring-no-properties (point) (point-at-eol))))
-	      (add-to-list 'src-dirs
-			   (expand-file-name
-			    (buffer-substring-no-properties (point) (point-at-eol)))))
+                (cl-pushnew "." prj-dirs :test #'equal)
+              (let ((f (expand-file-name
+                        (buffer-substring-no-properties
+                         (point) (point-at-eol)))))
+                (cl-pushnew f prj-dirs :test #'equal)
+                (cl-pushnew f src-dirs :test #'equal)))
 	    (forward-line 1))
 
 	  )
-      ('error
+      (error
        (pop-to-buffer (current-buffer))
        ;; search-forward failed
        (error "parse gpr failed")
@@ -427,7 +428,7 @@ list."
     ;; need -f gnat stub option. We won't get here if there is an
     ;; existing body file.
     (save-some-buffers t)
-    (add-to-list 'opts "-f")
+    (cl-pushnew "-f" opts :test #'equal)
     (with-current-buffer (gnat-run-buffer)
       (gnat-run-no-prj
        (append (list "stub") opts (list start-file "-cargs") switches)

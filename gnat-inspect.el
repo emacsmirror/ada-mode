@@ -213,8 +213,12 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       (gnat-inspect-session-send cmd-1 t)
       ;; at EOB. gnatinspect returns one line per result
       (setq result-count (- (line-number-at-pos) 1))
-      (font-lock-fontify-buffer)
+      (if (fboundp 'font-lock-ensure)
+          (font-lock-ensure)
+        (font-lock-fontify-buffer))
       ;; font-lock-fontify-buffer applies compilation-message text properties
+      ;; NOTE: Won't be needed in 24.5 any more, since compilation-next-error
+      ;; will apply compilation-message text properties on the fly.
       ;; IMPROVEME: for some reason, next-error works, but the font
       ;; colors are not right (no koolaid!)
       (goto-char (point-min))
@@ -226,6 +230,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 	 ;; just go there, don't display session-buffer. We have to
 	 ;; fetch the compilation-message while in the session-buffer.
 	 (let* ((msg (compilation-next-error 0 nil (point-min)))
+                ;; FIXME: Woah!  This is messing with very internal details!
 		(loc (compilation--message->loc msg)))
 	   (setq file (caar (compilation--loc->file-struct loc))
 		 line (caar (cddr (compilation--loc->file-struct loc)))
