@@ -169,7 +169,7 @@ or containing ancestor of CACHE that is at a line beginning."
       (setq cache (wisi-goto-containing cache)))
     (when cache
       (wisi-forward-token); package | project
-      (wisi-forward-token t); name
+      (wisi-token-text (wisi-forward-token)); name
       )))
 
 ;;; debugging

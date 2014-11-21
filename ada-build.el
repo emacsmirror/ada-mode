@@ -199,7 +199,7 @@ Returns non-nil if a file is selected, nil otherwise."
 		 ;; return a directory.
 		 (or (file-accessible-directory-p name)
 		     (member (file-name-extension name) ext)))))
-      (err                              ;FIXME: Shouldn't this be `error'?
+      (error
        (setq filename nil))
       )
 

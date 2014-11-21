@@ -215,7 +215,6 @@ of the package or project point is in or just after, or nil.")
   ;; FIXME: need dispatching kill single session
   (cl-ecase ada-xref-tool
     (gnat_xref nil)
-    (gnat_inspect (gnat-inspect-kill-all-sessions))
     (gpr_query (gpr-query-kill-all-sessions))
     )
   (ada-parse-prj-file (or file (buffer-file-name)))

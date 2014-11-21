@@ -109,6 +109,10 @@ This could end in a token recognized by `ada-skel-expand'."
 
 )
 
+;; override ada-mode 4.01 autoloaded functions
+(define-obsolete-function-alias 'ada-header 'ada-skel-header "24.4"
+  "Insert a descriptive header at the top of the file.")
+
 ;;;;; Ada skeletons (alphabetical)
 
 (define-skeleton ada-skel-accept

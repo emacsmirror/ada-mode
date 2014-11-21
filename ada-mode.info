@@ -119,12 +119,11 @@ ada-mode-version'.
 * Menu:
 
 * Ada Reference Manual::
-* gnatinspect::
 * gpr_query::
 * Upgrading::
 
 
-File: ada-mode.info,  Node: Ada Reference Manual,  Next: gnatinspect,  Up: Installation
+File: ada-mode.info,  Node: Ada Reference Manual,  Next: gpr_query,  Prev: Installation,  Up: Installation
 
 2.1 Ada Reference Manual
 ========================
@@ -133,51 +132,40 @@ The ELPA package ada-ref-man includes the Ada Reference Manual and
 Annotated Ada Reference Manual in info format.
 
 
-File: ada-mode.info,  Node: gnatinspect,  Next: gpr_query,  Prev: Installation,  Up: Installation
+File: ada-mode.info,  Node: gpr_query,  Next: Upgrading,  Prev: Ada Reference Manual,  Up: Installation
 
-2.2 gnatinspect
-===============
+2.2 gpr_query
+=============
 
-Ada mode has experimental support for the new AdaCore cross reference
-tool 'gnatinspect', which supports Ada, C, C++, and any other language
-for which gcc provices the '-fdump-xref'.
+Ada mode has support for an external cross reference tool 'gpr_query',
+which supports Ada, C, C++, and any other language for which AdaCore gcc
+provices the '-fdump-xref' ('-fdump-xref' is an AdaCore extension).
 
-   'gnatinspect' is distributed as part of 'gnatcoll'.  Ada mode
-requires the very latest version, in 'gnatcoll 1.7w' distributed with
+   'gpr_query' requires the 'gnatcoll' library provided by AdaCore.  Ada
+mode requires the very latest version 'gnatcoll 1.7w' distributed with
 GNAT GPL 2014.
 
-   To build 'gnatinspect', assuming GNAT GPL 2014 is installed in
+   To build 'gpr_query', assuming GNAT GPL 2014 is installed in
 '/usr/gnat-gpl-2014', and '/usr/gnat-gpl-2014/bin' is in PATH:
 
      tar xf ~/Downloads/gnatcoll-1.7x-src.tgz
      cd gnatcoll-1.7w-src
      ./configure --prefix=/usr/gnat-gpl-2014
-     make Gnatcoll_Build=Debug
-     sudo make Gnatcoll_Build=Debug install
+     make
+     sudo make install
+     cd ~/.emacs.d/elpa/ada-mode-5.xx/build
+     make install-gpr_query
 
    To build an sqlite3 executable that is compatible with the database
-created by gnatinspect:
+created by 'gpr_query':
 
      cd gnatcoll-1.7w-src/src/sqlite/amalgamation/
      gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
 
 
-File: ada-mode.info,  Node: gpr_query,  Next: Upgrading,  Prev: gnatinspect,  Up: Installation
-
-2.3 gpr_query
-=============
-
-'gpr_query' is similar to 'gnatinspect', but customized for Emacs
-ada-mode use.  To install it, install 'gnatinspect' as above (*note
-gnatinspect::), then:
-
-     cd ~/.emacs.d/elpa/ada-mode-5.xx/build
-     make install-gpr_query
-
-
 File: ada-mode.info,  Node: Upgrading,  Prev: gpr_query,  Up: Installation
 
-2.4 Upgrading from previous versions
+2.3 Upgrading from previous versions
 ====================================
 
 See the file NEWS for more details; here we summarize only important
@@ -286,10 +274,9 @@ cross-reference-tool-specific functions for corresponding Ada mode
 operations.
 
    The default cross-reference tool is 'gnatxref', provided by the file
-'ada-gnat-xref.el'.  Two other tools are supported: 'gnat_inspect' and
-'gpr_query'.  To use these, add one of the following to '~/.emacs':
+'ada-gnat-xref.el'.  One other tool is supported: 'gpr_query'.  To use
+it, add the following to '~/.emacs':
 
-     (require 'gnat-inspect)
      (require 'gpr-query)
 
    To use 'gpr_query', the Ada code 'gpr_query.adb' must be compiled;
@@ -299,8 +286,7 @@ see *note Installation::.
 Emacs lisp code that provides the interface to the compiler, and set
 'ada-xref-tool' and the indirection variables.
 
-   See 'ada-gnat-xref.el', 'gnat-inspect.el', 'gpr-query.el' for
-examples.
+   See 'ada-gnat-xref.el' and 'gpr-query.el' for examples.
 
 
 File: ada-mode.info,  Node: Other customization,  Prev: Other cross-reference,  Up: Customization
@@ -341,18 +327,21 @@ the syntax to set a variable is the following:
      defaults to 'ada-skel-expand', is bound to <C-c C-e> (*note
      Statement skeletons::).
 'imenu'
+     Navigate to subprograms and types by name, from a minibuffer menu.
+'speedbar'
+     Navigate to subprograms and types by name, from a list in a
+     dedicated window.
 'which-func'
 
    The above can all be set by the following code in your '~/.emacs'.
 Note that some are functions are added to 'before-save-hook'; they run
 just before a buffer is written to disk.  Also, the order is important;
-ada-mode does not set up the Ada-specific features of imenu and
-which-func unless they are loaded first.
+ada-mode does not set up the Ada-specific features of imenu and speedbar
+unless imenu is loaded first.
 
      (setq-default indent-tabs-mode nil)
      (electric-pair-mode 1)
-     (require 'imenu)
-     (require 'which-func)
+     (require 'imenu) ;; also enables speedbar
      (require 'ada-mode)
      (add-to-list 'hippie-expand-try-functions-list 'ada-skel-hippie-try)
      (define-key ada-mode-map "\C-e"     'hippie-expand)
@@ -1855,19 +1844,17 @@ File: ada-mode.info,  Node: GNAT core,  Next: Wisi,  Prev: gpr mode,  Up: Packag
 
      'gnat-core.el' is a start at a language-agnostic interface to the
      GNAT tools.  It was first factored out from 'ada-gnat.el' and
-     'ada-mode.el' to support the multi-language 'gnat-inspect.el',
-     which is still experimental.
+     'ada-mode.el' to support the multi-language 'gpr_query.el'.
 
      More code currently in 'ada-mode.el' could be migrated to
      'gnat-core.el', in particular the project file support.
 
-'gnat-inspect.el'
-     Provides an experimental interface to the experimental
-     multi-language cross-reference tool 'gnatinspect' from AdaCore,
-     which will supercede 'gnatxref'.
+'gpr-query.el'
+     Provides an interface to the external multi-language
+     cross-reference tool 'gpr_query'.
 
      Implements the Ada mode cross-reference functions for the
-     'gnatinspect' backend, and a minor mode providing similar functions
+     'gpr_query' backend, and a minor mode providing similar functions
      for C++.
 
 
@@ -2452,46 +2439,45 @@ Tag Table:
 Node: Top945
 Node: Overview2576
 Node: Installation3787
-Node: Ada Reference Manual4769
-Node: gnatinspect5026
-Node: gpr_query6023
-Node: Upgrading6380
-Node: Customization6952
-Node: Non-standard file names7434
-Node: Other compiler9275
-Node: Other cross-reference9854
-Node: Other customization10865
-Node: Compiling Executing13335
-Node: Compile commands14070
-Node: Compiling Examples16808
-Node: No project files17640
-Node: Set compiler options23006
-Node: Set source search path24968
-Node: Use GNAT project file27421
-Node: Use multiple GNAT project files30195
-Node: Use a Makefile32915
-Node: Compiler errors34230
-Node: Project files35047
-Node: Project file overview36074
-Node: Project file variables37602
-Node: Moving Through Ada Code41232
-Node: Identifier completion43931
-Node: Indentation44893
-Node: Statement skeletons48945
-Node: Aligning code50730
-Node: Automatic casing51675
-Node: Comment Handling54379
-Node: Key summary54898
-Node: Developer overview57525
-Node: Directory structure57865
-Node: Package organization61351
-Node: Ada mode61586
-Node: gpr mode63782
-Node: GNAT core64065
-Node: Wisi65011
-Node: OpenToken65978
-Node: ELPA66580
-Node: GNU Free Documentation License67190
-Node: Index92351
+Node: Ada Reference Manual4753
+Node: gpr_query5029
+Node: Upgrading6094
+Node: Customization6666
+Node: Non-standard file names7148
+Node: Other compiler8989
+Node: Other cross-reference9568
+Node: Other customization10503
+Node: Compiling Executing13140
+Node: Compile commands13875
+Node: Compiling Examples16613
+Node: No project files17445
+Node: Set compiler options22811
+Node: Set source search path24773
+Node: Use GNAT project file27226
+Node: Use multiple GNAT project files30000
+Node: Use a Makefile32720
+Node: Compiler errors34035
+Node: Project files34852
+Node: Project file overview35879
+Node: Project file variables37407
+Node: Moving Through Ada Code41037
+Node: Identifier completion43736
+Node: Indentation44698
+Node: Statement skeletons48750
+Node: Aligning code50535
+Node: Automatic casing51480
+Node: Comment Handling54184
+Node: Key summary54703
+Node: Developer overview57330
+Node: Directory structure57670
+Node: Package organization61156
+Node: Ada mode61391
+Node: gpr mode63587
+Node: GNAT core63870
+Node: Wisi64704
+Node: OpenToken65671
+Node: ELPA66273
+Node: GNU Free Documentation License66883
+Node: Index92044
 
 End Tag Table

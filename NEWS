@@ -7,7 +7,35 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.1.7
+18 Nov 2014
+
+** add ada-find-file that prompts for a file from the current project,
+   with completion.
+
+** fix bug that prevented
+    Y : Boolean := Boolean'(if True then False);
+
+** add ada-create-select-default-prj, to simplify working with small
+   projects
+
+** Handle deleting whitespace between words, inserting whitespace in
+   the middle of a word properly.
+
+** Change ada-case-adjust to capitalize words in comments and strings
+   by default; C-u adjusts case as if code.
+
+** allow 'raise' in expressions for GNAT GPL 2014 aspects
+
+** move all except keyword face highighting to grammar; much more
+   accurate, easier to maintain, simpler, faster.
+
+** delete gnatinspect support; gpr_query is better
+
+** misc bug fixes
+
 * Ada mode 5.1.6
+28 Sep 2014
 
 ** improve syntax highlighting of names after 'of', 'new', 'renames'
 

@@ -1,8 +1,8 @@
 ;; Ada mode cross-reference functionality provided by the 'gnat xref'
 ;; tool. Includes related functions, such as gnatprep support.
 ;;
-;; These tools are all Ada-specific; see gpr-query or gnat-inspect for
-;; multi-language GNAT cross-reference tools.
+;; These tools are all Ada-specific; see gpr-query for multi-language
+;; GNAT cross-reference tools.
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
@@ -227,7 +227,7 @@
 
   (font-lock-add-keywords 'ada-mode
    ;; gnatprep preprocessor line
-   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-type-face t))))
+   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t))))
 
   (add-hook 'ada-gnat-fix-error-hook 'ada-gnat-fix-error))
 

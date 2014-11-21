@@ -6,7 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords: languages
 ;;  ada
+;; Package-Type: multi
 ;; Version: 2012.0
 ;; url: http://stephe-leake.org/ada/arm.html
-;;
-;; (Gnu ELPA requires single digits between dots in versions)
+
+;;; ada-ref-man.el ends here

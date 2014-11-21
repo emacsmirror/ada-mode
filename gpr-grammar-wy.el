@@ -77,16 +77,16 @@
      ((aggregate
        ((LEFT_PAREN string_list RIGHT_PAREN )
         (progn
-        (wisi-statement-action 1 'open-paren 3 'close-paren)
+        (wisi-statement-action [1 open-paren 3 close-paren])
         (wisi-containing-action 1 2))))
       (attribute_declaration
        ((FOR IDENTIFIER USE expression SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 3 'statement-other 5 'statement-end)
+        (wisi-statement-action [1 statement-start 3 statement-other 5 statement-end])
         (wisi-containing-action 3 4)))
        ((FOR IDENTIFIER LEFT_PAREN STRING_LITERAL RIGHT_PAREN USE expression SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 3 'open-paren 5 'close-paren 6 'statement-other 8 'statement-end)
+        (wisi-statement-action [1 statement-start 3 open-paren 5 close-paren 6 statement-other 8 statement-end])
         (wisi-containing-action 6 7))))
       (attribute_prefix
        ((PROJECT ))
@@ -94,16 +94,16 @@
       (attribute_reference
        ((attribute_prefix QUOTE IDENTIFIER ))
        ((attribute_prefix QUOTE IDENTIFIER LEFT_PAREN STRING_LITERAL RIGHT_PAREN )
-        (wisi-statement-action 4 'open-paren 6 'close-paren)))
+        (wisi-statement-action [4 open-paren 6 close-paren])))
       (case_statement
        ((CASE name IS case_items END CASE SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 3 'block-start 5 'block-end 7 'statement-end)
+        (wisi-statement-action [1 statement-start 3 block-start 5 block-end 7 statement-end])
         (wisi-containing-action 3 4))))
       (case_item
        ((WHEN discrete_choice_list EQUAL_GREATER declarative_items )
         (progn
-        (wisi-statement-action 1 'block-middle 3 'block-start)
+        (wisi-statement-action [1 block-middle 3 block-start])
         (wisi-containing-action 3 4))))
       (case_items
        (())
@@ -152,7 +152,7 @@
       (package_spec
        ((PACKAGE identifier_opt IS simple_declarative_items END identifier_opt SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 3 'block-start 5 'block-end 7 'statement-end)
+        (wisi-statement-action [1 statement-start 3 block-start 5 block-end 7 statement-end])
         (wisi-containing-action 3 4))))
       (project_qualifier_opt
        (())
@@ -165,16 +165,16 @@
       (simple_declarative_item
        ((IDENTIFIER COLON_EQUALS expression SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 4 'statement-end)
+        (wisi-statement-action [1 statement-start 4 statement-end])
         (wisi-containing-action 1 3)))
        ((IDENTIFIER COLON IDENTIFIER COLON_EQUALS expression SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 6 'statement-end)
+        (wisi-statement-action [1 statement-start 6 statement-end])
         (wisi-containing-action 1 5)))
        ((attribute_declaration ))
        ((case_statement ))
        ((NULL SEMICOLON )
-        (wisi-statement-action 1 'statement-start 2 'statement-end)))
+        (wisi-statement-action [1 statement-start 2 statement-end])))
       (simple_declarative_items
        (())
        ((simple_declarative_item ))
@@ -182,7 +182,7 @@
       (simple_project_declaration
        ((PROJECT identifier_opt IS declarative_items END identifier_opt SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 3 'block-start 5 'block-end 7 'statement-end)
+        (wisi-statement-action [1 statement-start 3 block-start 5 block-end 7 statement-end])
         (wisi-containing-action 3 4))))
       (string_expression
        ((string_primary )))
@@ -195,7 +195,7 @@
        ((expression ))
        ((string_list COMMA expression )
         (progn
-        (wisi-statement-action 2 'list-break)
+        (wisi-statement-action [2 list-break])
         (wisi-containing-action 2 3))))
       (term
        ((string_expression ))
@@ -204,7 +204,7 @@
       (typed_string_declaration
        ((TYPE IDENTIFIER IS aggregate SEMICOLON )
         (progn
-        (wisi-statement-action 1 'statement-start 5 'statement-end)
+        (wisi-statement-action [1 statement-start 5 statement-end])
         (wisi-containing-action 1 4))))
       (with_clause
        ((WITH string_list SEMICOLON ))))

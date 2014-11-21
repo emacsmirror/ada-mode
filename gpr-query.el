@@ -1,6 +1,5 @@
 ;;; gpr-query.el --- minor-mode for navigating sources using the
-;;; custom gpr_query tool, based on AdaCore cross reference tool
-;;; gnatinspect.
+;;; custom gpr_query tool.
 ;;;
 ;;; gpr-query supports Ada and any gcc language that supports the
 ;;; AdaCore -fdump-xref switch (which includes C, C++).
@@ -246,7 +245,6 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
   (let ((cmd-1 (format "%s %s:%s:%d:%d" cmd identifier file line col))
 	(result-count 0)
 	file line column)
-    ;; FIXME: Code duplication with gnat-inspect-compilation!
     (with-current-buffer (gpr-query--session-buffer (gpr-query-cached-session))
       (compilation-mode)
       (setq buffer-read-only nil)
@@ -259,7 +257,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
           (font-lock-ensure)
         (font-lock-fontify-buffer))
       ;; font-lock-fontify-buffer applies compilation-message text properties
-      ;; NOTE: Won't be needed in 24.5 any more, since compilation-next-error
+      ;; FIXME: Won't be needed in 24.5 any more, since compilation-next-error
       ;; will apply compilation-message text properties on the fly.
       ;; IMPROVEME: for some reason, next-error works, but the font
       ;; colors are not right (no koolaid!)
@@ -275,7 +273,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 	 ;; just go there, don't display session-buffer. We have to
 	 ;; fetch the compilation-message while in the session-buffer.
 	 (let* ((msg (compilation-next-error 0 nil (point-min)))
-                ;; FIXME: Woah!  This is messing with very internal details!
+                ;; FIXME: '--' indicates internal-only; use compile-goto-error
 		(loc (compilation--message->loc msg)))
 	   (setq file (caar (compilation--loc->file-struct loc))
 		 line (caar (cddr (compilation--loc->file-struct loc)))
@@ -377,7 +375,7 @@ buffer in another window."
     ;; FIXME: (define-key map "\C-c\M-d" 'gpr-query-parents)
     ;; FIXME: overriding
     map
-  )  "Local keymap used for GNAT inspect minor mode.")
+  )  "Local keymap used for gpr query minor mode.")
 
 (defvar gpr-query-menu (make-sparse-keymap "gpr-query"))
 (easy-menu-define gpr-query-menu gpr-query-map "Menu keymap for gpr-query minor mode"
@@ -627,7 +625,7 @@ Enable mode if ARG is positive"
 
   (font-lock-add-keywords 'ada-mode
    ;; gnatprep preprocessor line
-   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-type-face t))))
+   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t))))
   )
 
 (provide 'gpr-query)

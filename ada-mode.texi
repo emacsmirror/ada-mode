@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 5.1.6
+@title Ada Mode Version 5.1.7
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -121,27 +121,27 @@ You may also want to install additional utilities:
 
 @menu
 * Ada Reference Manual::
-* gnatinspect::
 * gpr_query::
 * Upgrading::
 @end menu
 
-@node Ada Reference Manual
+@node Ada Reference Manual, gpr_query, Installation, Installation
 @section Ada Reference Manual
 The ELPA package ada-ref-man includes the Ada Reference Manual and
 Annotated Ada Reference Manual in info format.
 
-@node gnatinspect, gpr_query, Installation, Installation
-@section gnatinspect
-Ada mode has experimental support for the new AdaCore cross reference
-tool @code{gnatinspect}, which supports Ada, C, C++, and any other
-language for which gcc provices the @code{-fdump-xref}.
+@node gpr_query, Upgrading, Ada Reference Manual, Installation
+@section gpr_query
+Ada mode has support for an external cross reference
+tool @code{gpr_query}, which supports Ada, C, C++, and any other
+language for which AdaCore gcc provices the @code{-fdump-xref}
+(@code{-fdump-xref} is an AdaCore extension).
 
-@code{gnatinspect} is distributed as part of @code{gnatcoll}. Ada mode
-requires the very latest version, in @code{gnatcoll 1.7w} distributed
-with GNAT GPL 2014.
+@code{gpr_query} requires the @code{gnatcoll} library provided by
+AdaCore. Ada mode requires the very latest version @code{gnatcoll
+1.7w} distributed with GNAT GPL 2014.
 
-To build @code{gnatinspect}, assuming GNAT GPL 2014 is installed in
+To build @code{gpr_query}, assuming GNAT GPL 2014 is installed in
 @file{/usr/gnat-gpl-2014}, and @file{/usr/gnat-gpl-2014/bin} is in
 PATH:
 
@@ -149,27 +149,20 @@ PATH:
 tar xf ~/Downloads/gnatcoll-1.7x-src.tgz
 cd gnatcoll-1.7w-src
 ./configure --prefix=/usr/gnat-gpl-2014
-make Gnatcoll_Build=Debug
-sudo make Gnatcoll_Build=Debug install
+@c make Gnatcoll_Build=Debug
+@c sudo make Gnatcoll_Build=Debug install
+make
+sudo make install
+cd ~/.emacs.d/elpa/ada-mode-5.xx/build
+make install-gpr_query
 @end example
 
 To build an sqlite3 executable that is compatible with the database
-created by gnatinspect:
+created by @code{gpr_query}:
 
 @example
 cd gnatcoll-1.7w-src/src/sqlite/amalgamation/
 gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
-@end example
-
-@node gpr_query, Upgrading, gnatinspect, Installation
-@section gpr_query
-@file{gpr_query} is similar to @file{gnatinspect}, but customized for
-Emacs ada-mode use. To install it, install @file{gnatinspect} as above
-(@ref{gnatinspect}), then:
-
-@example
-cd ~/.emacs.d/elpa/ada-mode-5.xx/build
-make install-gpr_query
 @end example
 
 @node Upgrading,  , gpr_query, Installation
@@ -277,12 +270,10 @@ the cross-reference-tool-specific functions for corresponding Ada mode
 operations.
 
 The default cross-reference tool is @file{gnatxref}, provided by the
-file @file{ada-gnat-xref.el}. Two other tools are supported:
-@file{gnat_inspect} and @file{gpr_query}. To use these, add one of the
-following to @file{~/.emacs}:
+file @file{ada-gnat-xref.el}. One other tool is supported:
+@file{gpr_query}. To use it, add the following to @file{~/.emacs}:
 
 @example
-(require 'gnat-inspect)
 (require 'gpr-query)
 @end example
 
@@ -293,8 +284,7 @@ To use a cross reference tool other than the above, you must write
 Emacs lisp code that provides the interface to the compiler, and set
 @code{ada-xref-tool} and the indirection variables.
 
-See @file{ada-gnat-xref.el}, @file{gnat-inspect.el},
-@file{gpr-query.el} for examples.
+See @file{ada-gnat-xref.el} and @file{gpr-query.el} for examples.
 
 @node Other customization,  , Other cross-reference, Customization
 @section Other customization
@@ -335,6 +325,9 @@ words from current buffer, other buffers, file names, etc; see
 which defaults to @code{ada-skel-expand}, is bound to @key{C-c C-e}
 (@pxref{Statement skeletons}).
 @item imenu
+Navigate to subprograms and types by name, from a minibuffer menu.
+@item speedbar
+Navigate to subprograms and types by name, from a list in a dedicated window.
 @item which-func
 @end table
 
@@ -342,14 +335,13 @@ The above can all be set by the following code in your
 @file{~/.emacs}. Note that some are functions are added to
 @code{before-save-hook}; they run just before a buffer is written to
 disk. Also, the order is important; ada-mode does not set up the
-Ada-specific features of imenu and which-func unless they are loaded
+Ada-specific features of imenu and speedbar unless imenu is loaded
 first.
 
 @example
 (setq-default indent-tabs-mode nil)
 (electric-pair-mode 1)
-(require 'imenu)
-(require 'which-func)
+(require 'imenu) ;; also enables speedbar
 (require 'ada-mode)
 (add-to-list 'hippie-expand-try-functions-list 'ada-skel-hippie-try)
 (define-key ada-mode-map "\C-e"     'hippie-expand)
@@ -391,7 +383,6 @@ In multi-file projects, there must be one file that is the main
 program. That is given by the @code{main} project file variable;
 it defaults to the current file if not yet set, but is also set by the
 ``set main and build'' command.
-@c IMPROVEME: get main from gpr via gnatinspect? not in gnatcoll 1.6w
 
 @table @code
 
@@ -1945,19 +1936,17 @@ multi-language gcc.
 
 @file{gnat-core.el} is a start at a language-agnostic interface to the
 GNAT tools. It was first factored out from @file{ada-gnat.el} and
-@file{ada-mode.el} to support the multi-language
-@file{gnat-inspect.el}, which is still experimental.
+@file{ada-mode.el} to support the multi-language @file{gpr_query.el}.
 
 More code currently in @file{ada-mode.el} could be migrated to
 @file{gnat-core.el}, in particular the project file support.
 
-@item gnat-inspect.el
-Provides an experimental interface to the experimental multi-language
-cross-reference tool @file{gnatinspect} from AdaCore, which will
-supercede @file{gnatxref}.
+@item gpr-query.el
+Provides an interface to the external multi-language cross-reference
+tool @file{gpr_query}.
 
 Implements the Ada mode cross-reference functions for the
-@file{gnatinspect} backend, and a minor mode providing similar
+@file{gpr_query} backend, and a minor mode providing similar
 functions for C++.
 
 @end table

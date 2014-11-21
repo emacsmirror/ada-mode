@@ -128,14 +128,14 @@ Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
 	  (forward-line 1)
 	  (while (not (looking-at "^$")) ; terminate on blank line
 	    (back-to-indentation) ; skip whitespace forward
-            (cl-pushnew (if (looking-at "<Current_Directory>")
-                             (directory-file-name default-directory)
-                           (expand-file-name ; Canonicalize path part.
-			    (directory-file-name
-			     (buffer-substring-no-properties
-                              (point) (point-at-eol)))))
-                        src-dirs
-                        :test #'equal)
+            (cl-pushnew
+	     (if (looking-at "<Current_Directory>")
+		 (directory-file-name default-directory)
+	       (expand-file-name ; Canonicalize path part.
+		(directory-file-name
+		 (buffer-substring-no-properties (point) (point-at-eol)))))
+	     src-dirs
+	     :test #'equal)
 	    (forward-line 1))
 
 	  ;; Project path
@@ -149,8 +149,7 @@ Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
 	    (if (looking-at "<Current_Directory>")
                 (cl-pushnew "." prj-dirs :test #'equal)
               (let ((f (expand-file-name
-                        (buffer-substring-no-properties
-                         (point) (point-at-eol)))))
+                        (buffer-substring-no-properties (point) (point-at-eol)))))
                 (cl-pushnew f prj-dirs :test #'equal)
                 (cl-pushnew f src-dirs :test #'equal)))
 	    (forward-line 1))
@@ -173,7 +172,7 @@ Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
     ;; known".
     ;; Using 'require' at top level gives the wrong default ada-xref-tool
     (cl-ecase (ada-prj-get 'xref_tool project)
-      ((gnat gnat_inspect)
+      (gnat
        (let ((res (gnat-get-paths-1 src-dirs prj-dirs)))
 	 (setq src-dirs (car res))
 	 (setq prj-dirs (cadr res))))

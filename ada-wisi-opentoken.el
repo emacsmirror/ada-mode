@@ -43,14 +43,14 @@
   ;; included in package specs that exist solely to define OpenToken
   ;; grammar fragments.
   (save-excursion
-    (let ((token-text (nth 1 (wisi-backward-token))))
+    (let ((token-text (wisi-token-text (wisi-backward-token))))
       (cond
        ((equal token-text "<=")
 	(back-to-indentation)
 	(+ (current-column) ada-indent-broken))
 
        ((member token-text '("+" "&"))
-	(while (not (equal "<=" (nth 1 (wisi-backward-token)))))
+	(while (not (equal "<=" (wisi-token-text (wisi-backward-token)))))
 	(back-to-indentation)
 	(+ (current-column) ada-indent-broken))
        ))))

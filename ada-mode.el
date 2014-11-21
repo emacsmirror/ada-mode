@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.1.6
-;; package-requires: ((wisi "1.0.6") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.1.7
+;; package-requires: ((wisi "1.1.0") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -168,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.6"))
+  (let ((version-string "5.1.7"))
     ;; must match:
     ;; ada-mode.texi
     ;; README
@@ -485,7 +485,7 @@ point is where the mouse button was clicked."
   (interactive "*")
   ;; point may be in the middle of a word, so insert newline first,
   ;; then go back and indent.
-  (newline)
+  (insert "\n")
   (forward-char -1)
   (funcall indent-line-function)
   (forward-char 1)
@@ -628,8 +628,7 @@ Function is called with no arguments.")
   (ada-goto-open-paren)
   (funcall indent-line-function); so new list is indented properly
 
-  (let* ((inhibit-modification-hooks t)
-	 (begin (point))
+  (let* ((begin (point))
 	 (delend (progn (forward-sexp) (point))); just after matching closing paren
 	 (end (progn (backward-char) (forward-comment (- (point))) (point))); end of last parameter-declaration
 	 (multi-line (> end (save-excursion (goto-char begin) (line-end-position))))
@@ -1061,6 +1060,7 @@ User is prompted to choose a file from project variable casing if it is a list."
 
 (defun ada-in-numeric-literal-p ()
   "Return t if point is after a prefix of a numeric literal."
+  ;; FIXME: this is actually a based numeric literal; excludes 1234
   (looking-back "\\([0-9]+#[0-9a-fA-F_]+\\)"))
 
 (defvar ada-keywords nil
@@ -1087,8 +1087,7 @@ User is prompted to choose a file from project variable casing if it is a list."
 	     (copy-marker (1+ end))))
 
       ;; upcase first char
-      (insert-char (upcase (following-char)) 1)
-      (delete-char 1)
+      (upcase-region (point) (1+ (point)))
 
       (goto-char next)
       (if (< (point) end)
@@ -1146,7 +1145,7 @@ Uses `ada-case-identifier', with exceptions defined in
   "Adjust the case of the word before point.
 When invoked interactively, TYPED-CHAR must be
 `last-command-event', and it must not have been inserted yet.
-If IN-COMMENT is non-nil, adjust case of words in comments."
+If IN-COMMENT is non-nil, adjust case of words in comments and strings as code."
   (when (not (bobp))
     (when (save-excursion
 	    (forward-char -1); back to last character in word
@@ -1192,16 +1191,25 @@ If IN-COMMENT is non-nil, adjust case of words in comments."
 
 (defun ada-case-adjust-at-point (&optional in-comment)
   "Adjust case of word at point, move to end of word.
-With prefix arg, adjust case even if in comment."
+With prefix arg, adjust case as code even if in comment;
+otherwise, capitalize words in comments."
   (interactive "P")
-  (when
-      (and (not (eobp))
-	   ;; we use '(syntax-after (point))' here, not '(char-syntax
-	   ;; (char-after))', because the latter does not respect
-	   ;; ada-syntax-propertize.
-	   (memq (syntax-class (syntax-after (point))) '(2 3)))
-    (skip-syntax-forward "w_"))
-  (ada-case-adjust nil in-comment))
+  (cond
+   ((and (not in-comment)
+	 (ada-in-string-or-comment-p))
+    (skip-syntax-backward "w_")
+    (capitalize-word 1))
+
+   (t
+    (when
+	(and (not (eobp))
+	     ;; we use '(syntax-after (point))' here, not '(char-syntax
+	     ;; (char-after))', because the latter does not respect
+	     ;; ada-syntax-propertize.
+	     (memq (syntax-class (syntax-after (point))) '(2 3)))
+      (skip-syntax-forward "w_"))
+    (ada-case-adjust nil in-comment))
+   ))
 
 (defun ada-case-adjust-region (begin end)
   "Adjust case of all words in region BEGIN END."
@@ -1329,8 +1337,9 @@ Indexed by ada-xref-tool.  Called with one argument; the default
 project properties list. Function should add to the properties
 list and return it.")
 
-(defun ada-prj-default ()
+(defun ada-prj-default (&optional src-dir)
   "Return the default project properties list.
+If SRC-DIR is non-nil, use it as the default for src_dir.
 Include properties set via `ada-prj-default-compiler-alist',
 `ada-prj-default-xref-alist'."
 
@@ -1349,7 +1358,7 @@ Include properties set via `ada-prj-default-compiler-alist',
 			 (list ada-case-exception-file))
       'path_sep        path-separator;; prj variable so users can override it for their compiler
       'proc_env        process-environment
-      'src_dir         (list ".")
+      'src_dir         (list (if src-dir src-dir "."))
       'xref_tool       ada-xref-tool
       ))
 
@@ -1379,6 +1388,7 @@ list. Parser must modify or add to the property list and return it.")
 (defun ada-parse-prj-file (prj-file)
   "Read Emacs Ada or compiler-specific project file PRJ-FILE, set project properties in `ada-prj-alist'."
   ;; Not called ada-prj-parse-file for Ada mode 4.01 compatibility
+  ;; FIXME: use the right name, add an alias
   (let ((project (ada-prj-default))
 	(parser (cdr (assoc (file-name-extension prj-file) ada-prj-parser-alist))))
 
@@ -1609,6 +1619,19 @@ Indexed by project variable xref_tool.")
   ;; return 't', for decent display in message buffer when called interactively
   t)
 
+(defun ada-create-select-default-prj (&optional directory)
+  "Create a default project with src_dir set to DIRECTORY (default current directory), select it."
+  (let* ((dir (or directory default-directory))
+	 (prj-file (expand-file-name "default_.adp" dir))
+	 (project (ada-prj-default dir)))
+
+    (if (assoc prj-file ada-prj-alist)
+	(setcdr (assoc prj-file ada-prj-alist) project)
+      (add-to-list 'ada-prj-alist (cons prj-file project)))
+
+    (ada-select-prj-file prj-file)
+    ))
+
 (defun ada-prj-select ()
   "Select the current project file from the list of currently available project files."
   (interactive)
@@ -1656,7 +1679,7 @@ Indexed by project variable xref_tool.")
     (modify-syntax-entry ?\" "\"" table)
 
     ;; punctuation; operators etc
-    (modify-syntax-entry ?#  "w" table); based number - word syntax, since we don't need the number
+    (modify-syntax-entry ?#  "." table); based number - ada-wisi-number-literal-p requires this syntax
     (modify-syntax-entry ?&  "." table)
     (modify-syntax-entry ?*  "." table)
     (modify-syntax-entry ?+  "." table)
@@ -1818,26 +1841,6 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
      ada-spec-suffixes)
     (error "parent '%s' not found; set project file?" ff-function-name))))
 
-(defun ada-ff-special-extract-separate ()
-  ;; match-string contains "separate (parent_name)"
-  (let ((package-name (match-string 1)))
-    (save-excursion
-      (goto-char (match-end 0))
-      (when (eolp) (forward-char 1))
-      (skip-syntax-forward " ")
-      (looking-at
-       (concat "\\(function\\|package body\\|procedure\\|protected body\\|task body\\)\\s +"
-	       ada-name-regexp))
-      (setq ff-function-name (match-string 0))
-      )
-    (file-name-nondirectory
-     (or
-      (ff-get-file-name
-       compilation-search-path
-       (ada-file-name-from-ada-name package-name)
-       ada-body-suffixes)
-      (error "package '%s' not found; set project file?" package-name)))))
-
 (defun ada-ff-special-with ()
   (let ((package-name (match-string 1)))
     (setq ff-function-name (concat "^package\\s-+" package-name "\\([^_]\\|$\\)"))
@@ -1864,10 +1867,6 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
 	 (cons (concat "^\\(?:private[ \t]+\\)?\\(?:package\\|procedure\\|function\\)[ \t]+"
 		       ada-parent-name-regexp "\\(?:;\\|[ \t]+\\|$\\)")
 	       'ada-ff-special-extract-parent)
-
-	 ;; A "separate" clause.
-	 (cons (concat "^separate[ \t\n]*(" ada-name-regexp ")")
-	       'ada-ff-special-extract-separate)
 
 	 ;; A "with" clause. Note that it may refer to a procedure body, as well as a spec
 	 (cons (concat "^\\(?:limited[ \t]+\\)?\\(?:private[ \t]+\\)?with[ \t]+" ada-name-regexp)
@@ -1991,11 +1990,11 @@ don't move to corresponding declaration."
   subprogram declaration, position point on the corresponding
   parent package specification.
 
-- If point is in the start line of a separate body,
-  position point on the corresponding separate stub declaration.
-
 - If point is in a context clause line, position point on the
   first package declaration that is mentioned.
+
+- If point is in a separate body, position point on the
+  corresponding specification.
 
 - If point is in a subprogram body or specification, position point
   on the corresponding specification or body.
@@ -2036,6 +2035,17 @@ the other file."
 
    (t
     (ff-find-other-file other-window)))
+  )
+
+(defun ada-find-file (filename)
+  ;; we assume compliation-search-path is set, either by an
+  ;; ada-mode project, or by some other means.
+  ;; FIXME: option to filter with ada-*-suffixes?
+  (interactive (list (completing-read "File: "
+				      (apply-partially
+				       'locate-file-completion-table
+				       compilation-search-path nil))))
+  (find-file (locate-file filename compilation-search-path))
   )
 
 (defvar ada-operator-re
@@ -2441,6 +2451,8 @@ Called with no parameters.")
   "See `ada-next-statement-keyword' variable."
   (interactive)
   (when ada-next-statement-keyword
+    (unless (region-active-p)
+      (push-mark))
     (funcall ada-next-statement-keyword)))
 
 (defvar ada-prev-statement-keyword nil
@@ -2454,6 +2466,8 @@ keyword in the previous statement or containing statement.")
   "See `ada-prev-statement-keyword' variable."
   (interactive)
   (when ada-prev-statement-keyword
+    (unless (region-active-p)
+      (push-mark))
     (funcall ada-prev-statement-keyword)))
 
 ;;;; code creation
@@ -2583,7 +2597,13 @@ The paragraph is indented on the first line."
 	    (forward-line))
 	  ))
 
-    (goto-char opos)))
+    (goto-char opos)
+
+    ;; we disabled modification hooks, so font-lock will not run to
+    ;; re-fontify the comment prefix; do that here.
+    (when (memq 'jit-lock-after-change after-change-functions)
+      (jit-lock-after-change from to 0))
+    ))
 
 ;;;; support for font-lock.el
 
@@ -2613,142 +2633,10 @@ The paragraph is indented on the first line."
 
 (defun ada-font-lock-keywords ()
   "Return Ada mode value for `font-lock-keywords', depending on `ada-language-version'."
+   ;; Grammar actions set `font-lock-face' property for all
+   ;; non-keyword tokens that need it.
   (list
-
-   ;; keywords followed by a name that should be in function-name-face.
-   (list
-    (apply
-     'concat
-     (append
-      '("\\<\\("
-	"accept\\|"
-	"entry\\|"
-	"function\\|"
-	"package[ \t]+body\\|"
-	"package\\|"
-	"pragma\\|"
-	"procedure\\|"
-	"task[ \t]+body\\|"
-	"task[ \t]+type\\|"
-	"task\\|"
-	)
-      (when (member ada-language-version '(ada95 ada2005 ada2012))
-	'("\\|"
-	  "protected[ \t]+body\\|"
-	  "protected[ \t]+function\\|"
-	  "protected[ \t]+procedure\\|"
-	  "protected[ \t]+type\\|"
-	  "protected"
-	  ))
-      (list
-       "\\)\\>[ \t]*"
-       ada-name-regexp "?")))
-    '(1 font-lock-keyword-face) '(2 font-lock-function-name-face nil t))
-
-   ;; keywords followed by a name that should be in type-face.
-   (list (concat
-	  "\\<\\("
-	  "access[ \t]+all\\|"
-	  "access[ \t]+constant\\|"
-	  "access\\|"
-	  "constant\\|"
-	  "in[ \t]+reverse\\|"; loop iterator
-	  "in[ \t]+not[ \t]+null[ \t]+access\\|"
-	  "in[ \t]+not[ \t]+null\\|"
-	  "in[ \t]+out[ \t]+not[ \t]+null[ \t]+access\\|"
-	  "in[ \t]+out[ \t]+not[ \t]+null\\|"
-	  "in[ \t]+out\\|"
-	  "in\\|"
-	  ;; "return" can't distinguish between 'function ... return <type>;' and 'return ...;'
-	  ;; "new" can't distinguish between generic instantiation
-	  ;;       package foo is new bar (...)
-	  ;;    and allocation
-	  ;;       a := new baz (...)
-	  ;; A parsing indentation engine can, so rules for these are added there
-	  "not[ \t]+null[ \t]access[ \t]all\\|"
-	  "not[ \t]+null[ \t]access[ \t]constant\\|"
-	  "not[ \t]+null[ \t]access\\|"
-	  "not[ \t]+null\\|"
-	  ;; "of" can't distinguish between array and iterable_name
-	  "out\\|"
-	  "subtype\\|"
-	  "type"
-	  "\\)\\>[ \t]*"
-	  ada-name-regexp "?")
-	 '(1 font-lock-keyword-face nil t) '(2 font-lock-type-face nil t))
-
-   ;; Keywords not treated elsewhere. After above so it doesn't
-   ;; override fontication of second or third word in those patterns.
-   (list (concat
-   	  "\\<"
-   	  (regexp-opt
-   	   (append
-   	    '("abort" "abs" "accept" "all"
-	      ;; "and" requires parser for types in interface_lists
-   	      "array" "at" "begin" "case" "declare" "delay" "delta"
-   	      "digits" "do" "else" "elsif" "entry" "exception" "exit" "for"
-   	      "generic" "if" "in" "limited" "loop" "mod" "not"
-   	      "null" "or" "others" "private" "raise"
-   	      "range" "record" "rem" "reverse"
-   	      "select" "separate" "task" "terminate"
-   	      "then" "when" "while" "xor")
-   	    (when (member ada-language-version '(ada95 ada2005 ada2012))
-	      ;; "aliased" can't distinguish between object declaration and paramlist
-   	      '("abstract" "requeue" "tagged" "until"))
-   	    (when (member ada-language-version '(ada2005 ada2012))
-   	      '("interface" "overriding" "synchronized"))
-   	    (when (member ada-language-version '(ada2012))
-   	      '("some"))
-   	    )
-   	   t)
-   	  "\\>")
-   	 '(0 font-lock-keyword-face))
-
-   ;; after the above to handle 'is begin' in blocks
-   (list (concat
-	  "\\<\\(is\\)\\>[ \t]*"
-	  ada-name-regexp "?")
-	 '(1 font-lock-keyword-face) '(2 font-lock-type-face nil t))
-
-   ;; object and parameter declarations; word after ":" should be in
-   ;; type-face if not already fontified or an exception.
-   (list (concat
-	  ":[ \t]*"
-	  ada-name-regexp
-	  "[ \t]*\\(=>\\)?")
-     '(1 (if (match-beginning 2)
-	     'default
-	   font-lock-type-face)
-	 nil t))
-
-   ;; keywords followed by a name that should be in function-name-face if not already fontified
-   (list (concat
-	  "\\<\\(end\\)\\>[ \t]*"
-	  ada-name-regexp "?")
-     '(1 font-lock-keyword-face) '(2 font-lock-function-name-face nil t))
-
-   ;; Keywords followed by a comma separated list of names which
-   ;; should be in constant-face, unless already fontified. Ada mode 4.01 used this.
-   (list (concat
-   	  "\\<\\("
-   	  "goto\\|"
-   	  "use\\|"
-   	  ;; don't need "limited" "private" here; they are matched separately
-   	  "with"; context clause
-   	  "\\)\\>[ \t]*"
-   	  "\\(\\(?:\\sw\\|[_., \t]\\)+\\>\\)?"; ada-name-regexp, plus ", \t"
-   	  )
-   	 '(1 font-lock-keyword-face) '(2 font-lock-constant-face nil t))
-
-   ;; statement labels
-   '("<<\\(\\sw+\\)>>" 1 font-lock-constant-face)
-
-   ;; based numberic literals
-   (list "\\([0-9]+#[0-9a-fA-F_]+#\\)" '(1 font-lock-constant-face t))
-
-   ;; numeric literals
-   (list "\\W\\([-+]?[0-9._]+\\)\\>" '(1 font-lock-constant-face))
-
+   (list (concat "\\<" (regexp-opt ada-keywords t) "\\>") '(0 font-lock-keyword-face))
    ))
 
 ;;;; ada-mode
@@ -2860,10 +2748,11 @@ The paragraph is indented on the first line."
   ;; This means to fully set ada-mode interactively, user must
   ;; do M-x ada-mode M-; (hack-local-variables)
 
-  (when global-font-lock-mode
-    ;; This calls ada-font-lock-keywords, which depends on
-    ;; ada-language-version
-    (font-lock-refresh-defaults))
+  ;; fill-region-as-paragraph in ada-fill-comment-paragraph does not
+  ;; call syntax-propertize, so set comment syntax on
+  ;; ada-fill-comment-prefix. In post-local because user may want to
+  ;; set it per-file.
+  (put-text-property 0 2 'syntax-table '(11 . nil) ada-fill-comment-prefix)
 
   (cl-case ada-language-version
    (ada83
@@ -2886,6 +2775,11 @@ The paragraph is indented on the first line."
 		  ada-2005-keywords
 		  ada-2012-keywords))))
 
+  (when global-font-lock-mode
+    ;; This calls ada-font-lock-keywords, which depends on
+    ;; ada-keywords
+    (font-lock-refresh-defaults))
+
   (when ada-goto-declaration-start
     (set (make-local-variable 'beginning-of-defun-function) ada-goto-declaration-start))
 
@@ -2906,9 +2800,8 @@ The paragraph is indented on the first line."
 
 (unless (featurep 'ada-xref-tool)
   (cl-case ada-xref-tool
-    ((nil gnat) (require 'ada-gnat-xref))
-    (gnat_inspect (require 'gnat-inspect))
-    (gpr_query (require 'gpr-query))
+    ((nil 'gnat) (require 'ada-gnat-xref))
+    ('gpr_query (require 'gpr-query))
     ))
 
 (unless (featurep 'ada-compiler)

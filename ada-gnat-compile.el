@@ -231,11 +231,12 @@ Prompt user if more than one."
 		       ))
 		   )));; unless while let
 
-	     (setq unit-name (cond
-                              ((= 0 (length choices)) nil)
-                              ((= 1 (length choices)) (car choices))
-                              (t ;; multiple choices
-                               (completing-read "package name: " choices))))
+	     (setq unit-name
+		   (cond
+		    ((= 0 (length choices)) nil)
+		    ((= 1 (length choices)) (car choices))
+		    (t ;; multiple choices
+		     (completing-read "package name: " choices))))
 
 	     (when unit-name
 	       (pop-to-buffer source-buffer)
