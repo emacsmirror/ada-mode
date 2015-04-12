@@ -3,7 +3,7 @@
 @settitle Ada Mode
 
 @copying
-Copyright @copyright{} 1999 - 2014  Free Software Foundation, Inc.
+Copyright @copyright{} 1999 - 2015  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 5.1.7
+@title Ada Mode Version 5.1.8
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -94,8 +94,7 @@ information on debugging.
 @node Installation, Customization, Overview, Top
 @chapter Installation
 
-Ada mode requires Emacs 24.2 or greater; it also requires the Emacs
-lisp sources (not just the compiled binaries).
+Ada mode requires Emacs 24.2 or greater.
 
 Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via @code{M-x list-packages} (@pxref{Packages,,,emacs,Emacs
@@ -134,21 +133,21 @@ Annotated Ada Reference Manual in info format.
 @section gpr_query
 Ada mode has support for an external cross reference
 tool @code{gpr_query}, which supports Ada, C, C++, and any other
-language for which AdaCore gcc provices the @code{-fdump-xref}
+language for which AdaCore gcc provides the @code{-fdump-xref}
 (@code{-fdump-xref} is an AdaCore extension).
 
 @code{gpr_query} requires the @code{gnatcoll} library provided by
-AdaCore. Ada mode requires the very latest version @code{gnatcoll
-1.7w} distributed with GNAT GPL 2014.
+AdaCore, distributed with GNAT GPL 2014.
 
 To build @code{gpr_query}, assuming GNAT GPL 2014 is installed in
 @file{/usr/gnat-gpl-2014}, and @file{/usr/gnat-gpl-2014/bin} is in
-PATH:
+PATH (if you are running Windows, use Cygwin bash to run these
+commands):
 
 @example
-tar xf ~/Downloads/gnatcoll-1.7x-src.tgz
-cd gnatcoll-1.7w-src
-./configure --prefix=/usr/gnat-gpl-2014
+tar xf ~/Downloads/gnatcoll-gpl-2014-src.tar.gz
+cd gnatcoll-gpl-2014-src
+./configure --enable-projects --prefix=/usr/gnat-gpl-2014
 @c make Gnatcoll_Build=Debug
 @c sudo make Gnatcoll_Build=Debug install
 make
@@ -278,7 +277,8 @@ file @file{ada-gnat-xref.el}. One other tool is supported:
 @end example
 
 To use @file{gpr_query}, the Ada code @file{gpr_query.adb} must be
-compiled; see @ref{Installation}.
+compiled; see @ref{Installation}. In addition, non-Ada code must be
+compiled with the AdaCore gcc extension @code{-fdump-xref}.
 
 To use a cross reference tool other than the above, you must write
 Emacs lisp code that provides the interface to the compiler, and set

@@ -1,13 +1,13 @@
 ;;; ada-mode.el --- major-mode for editing Ada sources
 ;;
-;;; Copyright (C) 1994, 1995, 1997 - 2014  Free Software Foundation, Inc.
+;;; Copyright (C) 1994, 1995, 1997 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.1.7
-;; package-requires: ((wisi "1.1.0") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.1.8
+;; package-requires: ((wisi "1.1.1") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -168,10 +168,10 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.7"))
+  (let ((version-string "5.1.8"))
     ;; must match:
     ;; ada-mode.texi
-    ;; README
+    ;; README-ada-mode
     ;; Version: above
     (if (called-interactively-p 'interactive)
 	(message version-string)
@@ -231,12 +231,20 @@ Function to call to adjust the case of Ada keywords."
 (defcustom ada-case-identifier 'ada-mixed-case
   "Buffer-local value that may override project variable `case_keyword'.
 Global value is default for project variable `case_keyword'.
-Function to call to adjust the case of Ada keywords."
+Function to call to adjust the case of Ada keywords.
+Called with three args;
+start      - buffer pos of start of identifier
+end        - end of identifier
+force-case - if t, treat `ada-strict-case' as t"
   :type '(choice (const ada-mixed-case)
-		 (const downcase-region)
-		 (const upcase-region))
+		 (const ada-lower-case)
+		 (const ada-upper-case))
   :group 'ada
   :safe  'functionp)
+;; we'd like to check that there are 3 args, since the previous
+;; release required 2 here. But there doesn't seem to be a way to
+;; access the arg count, which is only available for byte-compiled
+;; functions
 (make-variable-buffer-local 'ada-case-identifier)
 
 (defcustom ada-case-strict t
@@ -393,6 +401,7 @@ Values defined by cross reference packages.")
     ("Navigate"
      ["Other file"                    ada-find-other-file          t]
      ["Other file don't find decl"    ada-find-other-file-noset    t]
+     ["Find file in project"          ada-find-file                t]
      ["Goto declaration/body"         ada-goto-declaration         t]
      ["Goto next statement keyword"   ada-next-statement-keyword   t]
      ["Goto declaration start"        ada-goto-declaration-start   t]
@@ -591,7 +600,7 @@ Placeholders are defined by the skeleton backend."
      "return\\|"
      "type\\|"
      "when"
-     "\\)\\>\\)"))
+     "\\)\\>[^_]\\)")) ;; in case "_" has punctuation syntax
   "See the variable `align-region-separate' for more information.")
 
 (defun ada-align ()
@@ -1025,12 +1034,13 @@ list."
     (if (use-region-p)
 	(setq word (buffer-substring-no-properties (region-beginning) (region-end)))
       (save-excursion
-	(skip-syntax-backward "w_")
-	(setq word
-	      (buffer-substring-no-properties
-	       (point)
-	       (progn (skip-syntax-forward "w_") (point))
-	       )))))
+	(let ((syntax (if partial "w" "w_")))
+	  (skip-syntax-backward syntax)
+	  (setq word
+		(buffer-substring-no-properties
+		 (point)
+		 (progn (skip-syntax-forward syntax) (point))
+		 ))))))
 
   (let* ((exceptions (ada-case-read-exceptions file-name))
 	 (full-exceptions (car exceptions))
@@ -1073,11 +1083,17 @@ User is prompted to choose a file from project variable casing if it is a list."
 	       (point))))
     (member (downcase word) ada-keywords)))
 
-(defun ada-mixed-case (start end)
+(defun ada-lower-case (start end force-case-strict)
+  (downcase-region start end))
+
+(defun ada-upper-case (start end force-case-strict)
+  (upcase-region start end))
+
+(defun ada-mixed-case (start end force-case-strict)
   "Adjust case of region START END to Mixed_Case."
   (let ((done nil)
 	next)
-    (if ada-case-strict
+    (if (or force-case-strict ada-case-strict)
 	(downcase-region start end))
     (goto-char start)
     (while (not done)
@@ -1095,7 +1111,7 @@ User is prompted to choose a file from project variable casing if it is a list."
 	(setq done t))
       )))
 
-(defun ada-case-adjust-identifier ()
+(defun ada-case-adjust-identifier (&optional force-case)
   "Adjust case of the previous word as an identifier.
 Uses `ada-case-identifier', with exceptions defined in
 `ada-case-full-exceptions', `ada-case-partial-exceptions'."
@@ -1118,7 +1134,7 @@ Uses `ada-case-identifier', with exceptions defined in
 	    (delete-region (point) end))
 
 	;; else apply ada-case-identifier
-	(funcall ada-case-identifier start end)
+	(funcall ada-case-identifier start end force-case)
 
 	;; apply partial-exceptions
 	(goto-char start)
@@ -1145,7 +1161,8 @@ Uses `ada-case-identifier', with exceptions defined in
   "Adjust the case of the word before point.
 When invoked interactively, TYPED-CHAR must be
 `last-command-event', and it must not have been inserted yet.
-If IN-COMMENT is non-nil, adjust case of words in comments and strings as code."
+If IN-COMMENT is non-nil, adjust case of words in comments and strings as code,
+and treat `ada-case-strict' as t in code.."
   (when (not (bobp))
     (when (save-excursion
 	    (forward-char -1); back to last character in word
@@ -1177,7 +1194,7 @@ If IN-COMMENT is non-nil, adjust case of words in comments and strings as code."
 	   (save-excursion
 	     (skip-syntax-backward "w_")
 	     (eq (char-before) ?')))
-	  (ada-case-adjust-identifier))
+	  (ada-case-adjust-identifier in-comment))
 
 	 ((and
 	   (not in-comment)
@@ -1185,7 +1202,7 @@ If IN-COMMENT is non-nil, adjust case of words in comments and strings as code."
 	   (ada-after-keyword-p))
 	  (funcall ada-case-keyword -1))
 
-	 (t (ada-case-adjust-identifier))
+	 (t (ada-case-adjust-identifier in-comment))
 	 ))
       )))
 
@@ -2090,6 +2107,7 @@ identifier.  May be an Ada identifier or operator."
       (error "No identifier around"))
      )))
 
+;; FIXME: use find-tag-marker-ring, ring-insert, pop-tag-mark (see xref.el)
 (defvar ada-goto-pos-ring '()
   "List of positions selected by navigation functions. Used
 to go back to these positions.")

@@ -1,7 +1,7 @@
 This is ada-mode.info, produced by makeinfo version 5.2 from
 ada-mode.texi.
 
-Copyright (C) 1999 - 2014 Free Software Foundation, Inc.
+Copyright (C) 1999 - 2015 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -22,7 +22,7 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Copyright (C) 1999 - 2014 Free Software Foundation, Inc.
+Copyright (C) 1999 - 2015 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -94,8 +94,7 @@ File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,
 2 Installation
 **************
 
-Ada mode requires Emacs 24.2 or greater; it also requires the Emacs lisp
-sources (not just the compiled binaries).
+Ada mode requires Emacs 24.2 or greater.
 
    Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via 'M-x list-packages' (*note (emacs)Packages::).  You must
@@ -139,18 +138,18 @@ File: ada-mode.info,  Node: gpr_query,  Next: Upgrading,  Prev: Ada Reference Ma
 
 Ada mode has support for an external cross reference tool 'gpr_query',
 which supports Ada, C, C++, and any other language for which AdaCore gcc
-provices the '-fdump-xref' ('-fdump-xref' is an AdaCore extension).
+provides the '-fdump-xref' ('-fdump-xref' is an AdaCore extension).
 
-   'gpr_query' requires the 'gnatcoll' library provided by AdaCore.  Ada
-mode requires the very latest version 'gnatcoll 1.7w' distributed with
-GNAT GPL 2014.
+   'gpr_query' requires the 'gnatcoll' library provided by AdaCore,
+distributed with GNAT GPL 2014.
 
    To build 'gpr_query', assuming GNAT GPL 2014 is installed in
-'/usr/gnat-gpl-2014', and '/usr/gnat-gpl-2014/bin' is in PATH:
+'/usr/gnat-gpl-2014', and '/usr/gnat-gpl-2014/bin' is in PATH (if you
+are running Windows, use Cygwin bash to run these commands):
 
-     tar xf ~/Downloads/gnatcoll-1.7x-src.tgz
-     cd gnatcoll-1.7w-src
-     ./configure --prefix=/usr/gnat-gpl-2014
+     tar xf ~/Downloads/gnatcoll-gpl-2014-src.tar.gz
+     cd gnatcoll-gpl-2014-src
+     ./configure --enable-projects --prefix=/usr/gnat-gpl-2014
      make
      sudo make install
      cd ~/.emacs.d/elpa/ada-mode-5.xx/build
@@ -280,7 +279,8 @@ it, add the following to '~/.emacs':
      (require 'gpr-query)
 
    To use 'gpr_query', the Ada code 'gpr_query.adb' must be compiled;
-see *note Installation::.
+see *note Installation::.  In addition, non-Ada code must be compiled
+with the AdaCore gcc extension '-fdump-xref'.
 
    To use a cross reference tool other than the above, you must write
 Emacs lisp code that provides the interface to the compiler, and set
@@ -2439,45 +2439,45 @@ Tag Table:
 Node: Top945
 Node: Overview2576
 Node: Installation3787
-Node: Ada Reference Manual4753
-Node: gpr_query5029
-Node: Upgrading6094
-Node: Customization6666
-Node: Non-standard file names7148
-Node: Other compiler8989
-Node: Other cross-reference9568
-Node: Other customization10503
-Node: Compiling Executing13140
-Node: Compile commands13875
-Node: Compiling Examples16613
-Node: No project files17445
-Node: Set compiler options22811
-Node: Set source search path24773
-Node: Use GNAT project file27226
-Node: Use multiple GNAT project files30000
-Node: Use a Makefile32720
-Node: Compiler errors34035
-Node: Project files34852
-Node: Project file overview35879
-Node: Project file variables37407
-Node: Moving Through Ada Code41037
-Node: Identifier completion43736
-Node: Indentation44698
-Node: Statement skeletons48750
-Node: Aligning code50535
-Node: Automatic casing51480
-Node: Comment Handling54184
-Node: Key summary54703
-Node: Developer overview57330
-Node: Directory structure57670
-Node: Package organization61156
-Node: Ada mode61391
-Node: gpr mode63587
-Node: GNAT core63870
-Node: Wisi64704
-Node: OpenToken65671
-Node: ELPA66273
-Node: GNU Free Documentation License66883
-Node: Index92044
+Node: Ada Reference Manual4679
+Node: gpr_query4955
+Node: Upgrading6058
+Node: Customization6630
+Node: Non-standard file names7112
+Node: Other compiler8953
+Node: Other cross-reference9532
+Node: Other customization10557
+Node: Compiling Executing13194
+Node: Compile commands13929
+Node: Compiling Examples16667
+Node: No project files17499
+Node: Set compiler options22865
+Node: Set source search path24827
+Node: Use GNAT project file27280
+Node: Use multiple GNAT project files30054
+Node: Use a Makefile32774
+Node: Compiler errors34089
+Node: Project files34906
+Node: Project file overview35933
+Node: Project file variables37461
+Node: Moving Through Ada Code41091
+Node: Identifier completion43790
+Node: Indentation44752
+Node: Statement skeletons48804
+Node: Aligning code50589
+Node: Automatic casing51534
+Node: Comment Handling54238
+Node: Key summary54757
+Node: Developer overview57384
+Node: Directory structure57724
+Node: Package organization61210
+Node: Ada mode61445
+Node: gpr mode63641
+Node: GNAT core63924
+Node: Wisi64758
+Node: OpenToken65725
+Node: ELPA66327
+Node: GNU Free Documentation License66937
+Node: Index92098
 
 End Tag Table

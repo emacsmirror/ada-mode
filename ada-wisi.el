@@ -2,7 +2,7 @@
 ;;
 ;; [1] ISO/IEC 8652:2012(E); Ada 2012 reference manual
 ;;
-;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
+;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -44,8 +44,8 @@
     name-paren ;; anything that looks like a procedure call, since the grammar can't distinguish most of them
     open-paren
     return
-    return-1
-    return-2
+    return-with-params
+    return-without-params
     statement-end
     statement-other
     statement-start
@@ -462,7 +462,7 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		))
 	     )))
 
-	(return-1;; parameter list
+	(return-with-params;; parameter list
 	 (let ((return-pos (point)))
 	   (wisi-goto-containing cache nil) ;; matching 'function'
 	   (cond
@@ -475,7 +475,7 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 	     (+ (current-column) ada-indent-return))
 	    )))
 
-	(return-2;; no parameter list
+	(return-without-params;; no parameter list
 	 (wisi-goto-containing cache nil) ;; matching 'function'
 	 (+ (current-column) ada-indent-broken))
 
@@ -563,8 +563,13 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		     ;; indenting 'new'; containing is 'with'
 		     (+ (current-column) ada-indent-broken))
 
-		    ((full_type_declaration subtype_declaration)
-		     (while (not (memq (wisi-cache-token containing) '(TYPE SUBTYPE)))
+		    ((full_type_declaration
+		      single_protected_declaration
+		      single_task_declaration
+		      subtype_declaration
+		      task_type_declaration)
+
+		     (while (not (memq (wisi-cache-token containing) '(PROTECTED SUBTYPE TASK TYPE)))
 		       (setq containing (wisi-goto-containing containing)))
 
 		     (cond
@@ -577,6 +582,18 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 			   ;; test/aspects.ads
 			   ;; subtype Integer_String is String
 			   ;;   with Dynamic_Predicate => Integer'Value (Integer_String) in Integer
+			   ;; indenting 'with'
+			   ;;
+			   ;; test/ada_mode.ads
+			   ;; protected Separate_Protected_Body
+			   ;; with
+			   ;;   Priority => 5
+			   ;; indenting 'with'
+			   ;;
+			   ;; test/ada_nominal.ads
+			   ;; task type Task_Type_1 (Name : access String)
+			   ;; with
+			   ;;    Storage_Size => 512 + 256
 			   ;; indenting 'with'
 			   type-col)
 
@@ -898,7 +915,7 @@ cached token, return new indentation for point."
 	       ;; 1)
 	       (+ paren-column 1 ada-indent-broken))))
 
-	  ((return-1 return-2)
+	  ((return-with-params return-without-params)
 	   ;; test/ada_mode-nominal.adb
 	   ;; function Function_Access_1
 	   ;;   (A_Param : in Float)
@@ -1136,7 +1153,7 @@ cached token, return new indentation for point."
 	      (ada-wisi-indent-containing ada-indent-broken cache))
 
 	     (WITH
-	      (cl-case (wisi-cache-nonterm cache)
+	      (cl-ecase (wisi-cache-nonterm cache)
 		(aggregate
 		 ;; test/ada_mode-nominal-child.ads
 		 ;;   (Default_Parent with
@@ -1270,10 +1287,13 @@ cached token, return new indentation for point."
 
 (defun ada-wisi-on-context-clause ()
   "For `ada-on-context-clause'."
-
-  (save-excursion
-    (and (wisi-goto-statement-start)
-	 (memq (wisi-cache-nonterm (wisi-goto-statement-start)) '(use_clause with_clause)))))
+  (let (cache)
+    (save-excursion
+      ;; Don't require parse of large file just for ada-find-other-file
+      (and (< (point-max) wisi-size-threshold)
+	   (setq cache (wisi-goto-statement-start))
+	   (memq (wisi-cache-nonterm cache) '(use_clause with_clause))
+	   ))))
 
 (defun ada-wisi-goto-subunit-name ()
   "For `ada-goto-subunit-name'."
@@ -1639,12 +1659,12 @@ TOKEN-TEXT; move point to just past token."
   (let ((end (point)))
     ;; this first test must be very fast; it is executed for every token
     (when (and (memq (aref token-text 0) '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9))
-	       (string-match "^[0-9]+" token-text))
+	       (string-match "^[0-9_]+$" token-text))
       (cond
        ((= (char-after) ?#)
 	;; based number
 	(forward-char 1)
-	(if (not (looking-at "[0-9a-fA-F]+"))
+	(if (not (looking-at "[0-9a-fA-F_]+"))
 	    (progn (goto-char end) nil)
 
 	  (goto-char (match-end 0))
@@ -1689,7 +1709,7 @@ TOKEN-TEXT; move point to just past token."
        ((= (char-after) ?.)
 	;; decimal real number?
 	(forward-char 1)
-	(if (not (looking-at "[0-9]+"))
+	(if (not (looking-at "[0-9_]+"))
 	    ;; decimal integer
 	    (progn (goto-char end) t)
 

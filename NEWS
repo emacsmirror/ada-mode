@@ -7,6 +7,21 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.1.8
+10 Apr 2015
+
+** requires OpenToken 6.0
+
+** ada-align handle identifiers that start with Ada keywords
+
+** functions for ada-case-identifier now take three args: start, end,
+   force-case
+
+** parsing is not required by find-other-file if the current buffer is
+   larger than wisi-size-threshold
+
+** fix misc bugs
+
 * Ada mode 5.1.7
 18 Nov 2014
 

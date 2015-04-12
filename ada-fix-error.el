@@ -1,7 +1,7 @@
 ;;; ada-fix-error.el --- utilities for automatically fixing
 ;; errors reported by the compiler.
 
-;; Copyright (C) 1999-2009, 2012-2014 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2009, 2012-2015 Free Software Foundation, Inc.
 
 ;; Author     : Stephen Leake      <Stephen_Leake@stephe-leake.org>
 ;; Maintainer : Stephen Leake      <Stephen_Leake@stephe-leake.org>
@@ -142,11 +142,8 @@ fixed, leaving point at fix. Otherwise, they should preserve
 point and return nil.")
 
 (defun ada-get-compilation-message ()
-  "Get compilation message at point.
-Compatible with Emacs 23.4 and 24.x."
-  (cl-case emacs-major-version
-    (23 (get-text-property (line-beginning-position) 'message))
-    (24 (get-text-property (line-beginning-position) 'compilation-message))))
+  "Get compilation message at line beginning."
+  (get-text-property (line-beginning-position) 'compilation-message))
 
 (defun ada-fix-compiler-error ()
   "Attempt to fix the current compiler error. Leave point at fixed code."
@@ -158,6 +155,8 @@ Compatible with Emacs 23.4 and 24.x."
 
     (with-current-buffer compilation-last-buffer
       (when (not (ada-get-compilation-message))
+	(beep)
+	(message "FIXME: ada-fix-compiler-error")
 	;; not clear why this can happens, but it does
 	(compilation-next-error 1))
       (let ((comp-buf-pt (point))

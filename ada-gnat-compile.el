@@ -1,12 +1,12 @@
 ;; Ada mode compiling functionality provided by the 'gnat'
-;; tool.
+;; tool. Includes related functions, such as gnatprep support.
 ;;
 ;; These tools are all Ada-specific; use Makefiles for multi-language
 ;; GNAT compilation tools.
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -584,9 +584,16 @@ Prompt user if more than one."
   (setq ada-prj-show-path 'gnat-prj-show-path)
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files
   (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
+  (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
 
+  ;; There is no common convention for a file extension for gnatprep files.
+  ;;
   ;; find error locations in .gpr files
   (setq compilation-search-path (append compilation-search-path (ada-prj-get 'prj_dir)))
+
+  ;; must be after indentation engine setup, because that resets the
+  ;; indent function list.
+  (add-hook 'ada-mode-hook 'gnatprep-setup t)
 
   (add-hook 'compilation-filter-hook 'ada-gnat-compilation-filter)
 
@@ -598,9 +605,12 @@ Prompt user if more than one."
 (defun ada-gnat-compile-deselect-prj ()
   (setq ada-fix-error-hook nil)
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
+  (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
 
   ;; don't need to delete from compilation-search-path; completely rewritten in ada-select-prj-file
+
+  (setq ada-mode-hook (delq 'gnatprep-setup ada-mode-hook))
 
   (setq compilation-filter-hook (delete 'ada-gnat-compilation-filter compilation-filter-hook))
   (setq compilation-error-regexp-alist (delete 'gnat compilation-error-regexp-alist))
@@ -615,6 +625,10 @@ Prompt user if more than one."
 
   (add-to-list 'ada-prj-parse-one-compiler   (cons 'gnat 'gnat-prj-parse-emacs-one))
   (add-to-list 'ada-prj-parse-final-compiler (cons 'gnat 'gnat-prj-parse-emacs-final))
+
+  (font-lock-add-keywords 'ada-mode
+   ;; gnatprep preprocessor line
+   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t))))
 
   (add-hook 'ada-gnat-fix-error-hook 'ada-gnat-fix-error))
 
@@ -637,7 +651,7 @@ Prompt user if more than one."
    ;;   foo.c:2 : `TRUE' undeclared here (not in a function)
    "^\\(\\(.:\\)?[^ :\n]+\\):\\([0-9]+\\)\\s-?:?\\([0-9]+\\)?" 1 3 4))
 
-(unless (default-value ada-compiler)
+(unless (default-value 'ada-compiler)
     (set-default 'ada-compiler 'gnat))
 
 ;; end of file

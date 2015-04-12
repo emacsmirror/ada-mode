@@ -3,7 +3,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -344,6 +344,11 @@ list."
 	 (match-beginning 1) (match-end 1) 'syntax-table '(11 . ?\n)))
        )
       )))
+
+(defun gnatprep-setup ()
+  (when (boundp 'wisi-indent-calculate-functions)
+    (add-to-list 'wisi-indent-calculate-functions 'gnatprep-indent))
+  )
 
 ;;;; support for xref tools
 (defun ada-gnat-file-name-from-ada-name (ada-name)

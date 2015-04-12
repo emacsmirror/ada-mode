@@ -1,12 +1,12 @@
 ;; Ada mode cross-reference functionality provided by the 'gnat xref'
-;; tool. Includes related functions, such as gnatprep support.
+;; tool.
 ;;
 ;; These tools are all Ada-specific; see gpr-query for multi-language
 ;; GNAT cross-reference tools.
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2014  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -174,12 +174,6 @@
   (setq ada-ada-name-from-file-name 'ada-gnat-ada-name-from-file-name)
   (setq ada-make-package-body       'ada-gnat-make-package-body)
 
-  (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
-
-  ;; must be after indentation engine setup, because that resets the
-  ;; indent function list.
-  (add-hook 'ada-mode-hook 'ada-gnat-xref-setup t)
-
   (setq ada-xref-other-function  'ada-gnat-xref-other)
   (setq ada-xref-parent-function 'ada-gnat-xref-parents)
   (setq ada-xref-all-function    'ada-gnat-xref-all)
@@ -187,8 +181,6 @@
 
   ;; gnatmake -gnatD generates files with .dg extensions. But we don't
   ;; need to navigate between them.
-  ;;
-  ;; There is no common convention for a file extension for gnatprep files.
 
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files, used for cross reference
   (add-to-list 'compilation-error-regexp-alist 'gnat)
@@ -199,9 +191,6 @@
   (setq ada-ada-name-from-file-name nil)
   (setq ada-make-package-body       nil)
 
-  (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
-  (setq ada-mode-hook (delq 'ada-gnat-xref-setup ada-mode-hook))
-
   (setq ada-xref-other-function  nil)
   (setq ada-xref-parent-function nil)
   (setq ada-xref-all-function    nil)
@@ -209,11 +198,6 @@
 
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   (setq compilation-error-regexp-alist (delete 'gnat compilation-error-regexp-alist))
-  )
-
-(defun ada-gnat-xref-setup ()
-  (when (boundp 'wisi-indent-calculate-functions)
-    (add-to-list 'wisi-indent-calculate-functions 'gnatprep-indent))
   )
 
 (defun ada-gnat-xref ()
@@ -224,10 +208,6 @@
   (add-to-list 'ada-deselect-prj-xref-tool '(gnat  . ada-gnat-xref-deselect-prj))
 
   ;; no parse-*-xref yet
-
-  (font-lock-add-keywords 'ada-mode
-   ;; gnatprep preprocessor line
-   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t))))
 
   (add-hook 'ada-gnat-fix-error-hook 'ada-gnat-fix-error))
 

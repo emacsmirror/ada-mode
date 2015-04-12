@@ -87,6 +87,9 @@ or containing ancestor of CACHE that is at a line beginning."
 	     0
 	   ;; not at bob
 	   (gpr-wisi-indent-containing ada-indent cache)))
+
+	(statement-end
+	   (gpr-wisi-indent-containing ada-indent-broken cache))
 	))
     ))
 

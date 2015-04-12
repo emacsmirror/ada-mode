@@ -4,7 +4,7 @@
 ;;; gpr-query supports Ada and any gcc language that supports the
 ;;; AdaCore -fdump-xref switch (which includes C, C++).
 ;;
-;;; Copyright (C) 2013, 2014  Free Software Foundation, Inc.
+;;; Copyright (C) 2013 - 2015  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -250,9 +250,10 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       (setq buffer-read-only nil)
       (set (make-local-variable 'compilation-error-regexp-alist) (list comp-err))
       (gpr-query-session-send cmd-1 t)
+
       ;; point is at EOB. gpr_query returns one line per result plus prompt
       (setq result-count (- (line-number-at-pos) 1))
-      ;; Won't be needed in 24.5 any more.
+
       (if (fboundp 'font-lock-ensure)
           (font-lock-ensure)
         (font-lock-fontify-buffer))
@@ -260,7 +261,8 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       ;; FIXME: Won't be needed in 24.5 any more, since compilation-next-error
       ;; will apply compilation-message text properties on the fly.
       ;; IMPROVEME: for some reason, next-error works, but the font
-      ;; colors are not right (no koolaid!)
+      ;; colors are not right (no koolaid!) (fixed in 24.5?)
+
       (goto-char (point-min))
 
       (cl-case result-count
@@ -574,12 +576,6 @@ Enable mode if ARG is positive"
   (setq ada-ada-name-from-file-name 'ada-gnat-ada-name-from-file-name)
   (setq ada-make-package-body       'ada-gnat-make-package-body)
 
-  (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
-
-  ;; must be after indentation engine setup, because that resets the
-  ;; indent function list.
-  (add-hook 'ada-mode-hook 'ada-gpr-query-setup t)
-
   (setq ada-xref-refresh-function    'gpr-query-refresh)
   (setq ada-xref-all-function        'gpr-query-all)
   (setq ada-xref-other-function      'gpr-query-other)
@@ -597,9 +593,6 @@ Enable mode if ARG is positive"
   (setq ada-ada-name-from-file-name nil)
   (setq ada-make-package-body       nil)
 
-  (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
-  (setq ada-mode-hook (delq 'ada-gpr-query-setup ada-mode-hook))
-
   (setq ada-xref-other-function      nil)
   (setq ada-xref-parent-function     nil)
   (setq ada-xref-all-function        nil)
@@ -610,11 +603,6 @@ Enable mode if ARG is positive"
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   )
 
-(defun ada-gpr-query-setup ()
-  (when (boundp 'wisi-indent-calculate-functions)
-    (add-to-list 'wisi-indent-calculate-functions 'gnatprep-indent))
-  )
-
 (defun ada-gpr-query ()
   "Set Ada mode global vars to use gpr_query."
   (add-to-list 'ada-prj-parser-alist       '("gpr" . gnat-parse-gpr))
@@ -622,10 +610,6 @@ Enable mode if ARG is positive"
   (add-to-list 'ada-deselect-prj-xref-tool '(gpr_query . ada-gpr-query-deselect-prj))
 
   ;; no parse-*-xref
-
-  (font-lock-add-keywords 'ada-mode
-   ;; gnatprep preprocessor line
-   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t))))
   )
 
 (provide 'gpr-query)
