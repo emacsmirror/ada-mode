@@ -256,7 +256,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 
       (if (fboundp 'font-lock-ensure)
           (font-lock-ensure)
-        (font-lock-fontify-buffer))
+        (with-no-warnings (font-lock-fontify-buffer)))
       ;; font-lock-fontify-buffer applies compilation-message text properties
       ;; FIXME: Won't be needed in 24.5 any more, since compilation-next-error
       ;; will apply compilation-message text properties on the fly.

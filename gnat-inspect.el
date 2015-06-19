@@ -4,7 +4,7 @@
 ;;; gnatinspect supports Ada and any gcc language that supports the
 ;;; -fdump-xref switch (which includes C, C++).
 ;;
-;;; Copyright (C) 2013, 2014  Free Software Foundation, Inc.
+;;; Copyright (C) 2013-2015  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -215,7 +215,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       (setq result-count (- (line-number-at-pos) 1))
       (if (fboundp 'font-lock-ensure)
           (font-lock-ensure)
-        (font-lock-fontify-buffer))
+        (with-no-warnings (font-lock-fontify-buffer)))
       ;; font-lock-fontify-buffer applies compilation-message text properties
       ;; NOTE: Won't be needed in 24.5 any more, since compilation-next-error
       ;; will apply compilation-message text properties on the fly.

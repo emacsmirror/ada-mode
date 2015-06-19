@@ -1071,7 +1071,7 @@ User is prompted to choose a file from project variable casing if it is a list."
 (defun ada-in-numeric-literal-p ()
   "Return t if point is after a prefix of a numeric literal."
   ;; FIXME: this is actually a based numeric literal; excludes 1234
-  (looking-back "\\([0-9]+#[0-9a-fA-F_]+\\)"))
+  (looking-back "\\([0-9]+#[0-9a-fA-F_]+\\)" (line-beginning-position)))
 
 (defvar ada-keywords nil
   "List of Ada keywords for current `ada-language-version'.")
@@ -2818,8 +2818,8 @@ The paragraph is indented on the first line."
 
 (unless (featurep 'ada-xref-tool)
   (cl-case ada-xref-tool
-    ((nil 'gnat) (require 'ada-gnat-xref))
-    ('gpr_query (require 'gpr-query))
+    ((nil gnat) (require 'ada-gnat-xref))
+    (gpr_query (require 'gpr-query))
     ))
 
 (unless (featurep 'ada-compiler)

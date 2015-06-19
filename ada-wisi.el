@@ -1571,12 +1571,9 @@ Also return cache at start."
     paramlist))
 
 (defun ada-wisi-which-function-1 (keyword add-body)
-  "used in `ada-wisi-which-function'."
-  (let (region
-	result
-	(cache (wisi-forward-find-class 'name (point-max))))
-
-    (setq result (wisi-cache-text cache))
+  "Used in `ada-wisi-which-function'."
+  (let* ((cache (wisi-forward-find-class 'name (point-max)))
+         (result (wisi-cache-text cache)))
 
     (when (not ff-function-name)
       (setq ff-function-name

@@ -1,6 +1,6 @@
 ;;; ada-skel.el --- an extension to Ada mode for inserting statement skeletons
 
-;; Copyright (C) 1987, 1993, 1994, 1996-2014  Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1993, 1994, 1996-2015  Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -453,10 +453,10 @@ it is a name, and use the word before that as the token."
 (provide 'ada-skeletons)
 (provide 'ada-skel)
 
-(setq ada-expand 'ada-skel-expand)
-(setq ada-next-placeholder 'ada-skel-next-placeholder)
-(setq ada-prev-placeholder 'ada-skel-prev-placeholder)
+(setq ada-expand #'ada-skel-expand)
+(setq ada-next-placeholder #'ada-skel-next-placeholder)
+(setq ada-prev-placeholder #'ada-skel-prev-placeholder)
 
-(add-hook 'ada-mode-hook 'ada-skel-setup)
+(add-hook 'ada-mode-hook #'ada-skel-setup)
 
 ;;; ada-skel.el ends here
