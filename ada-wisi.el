@@ -1,4 +1,4 @@
-;;; An indentation engine for Ada mode, using the wisi generalized LALR parser
+;;; ada-wisi.el --- Indentation engine for Ada mode, using the wisi generalized LALR parser  -*- lexical-binding:t -*-
 ;;
 ;; [1] ISO/IEC 8652:2012(E); Ada 2012 reference manual
 ;;

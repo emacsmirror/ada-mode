@@ -1,4 +1,4 @@
-;;; ada-fix-error.el --- utilities for automatically fixing
+;;; ada-fix-error.el --- utilities for automatically fixing  -*- lexical-binding:t -*-
 ;; errors reported by the compiler.
 
 ;; Copyright (C) 1999-2009, 2012-2015 Free Software Foundation, Inc.

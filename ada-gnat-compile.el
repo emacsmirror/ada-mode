@@ -1,5 +1,5 @@
-;; Ada mode compiling functionality provided by the 'gnat'
-;; tool. Includes related functions, such as gnatprep support.
+;; ada-gnat-compile.el --- Ada mode compiling functionality provided by 'gnat'  -*- lexical-binding:t -*-
+;; Includes related functions, such as gnatprep support.
 ;;
 ;; These tools are all Ada-specific; use Makefiles for multi-language
 ;; GNAT compilation tools.
@@ -165,7 +165,7 @@ Prompt user if more than one."
       (completing-read "correct spelling: " choices))
      )))
 
-(defun ada-gnat-fix-error (msg source-buffer source-window)
+(defun ada-gnat-fix-error (_msg source-buffer _source-window)
   "For `ada-gnat-fix-error-hook'."
   (let ((start-pos (point))
 	message-column
@@ -192,8 +192,7 @@ Prompt user if more than one."
 	  ;; Then style errors.
 
 	  ((looking-at (concat ada-gnat-quoted-name-regexp " is not visible"))
-	   (let ((ident (match-string 1))
-		 (done nil)
+	   (let ((done nil)
 		 (file-line-struct (progn (beginning-of-line) (ada-get-compilation-message)))
 		 pos choices unit-name)
 	     ;; next line may contain a reference to where ident is
@@ -348,7 +347,7 @@ Prompt user if more than one."
 	       t)))
 
 	  ((looking-at (concat "expected \\(private \\)?type " ada-gnat-quoted-name-regexp))
-	   (let ((type (match-string 2)))
+	   (progn
 	     (forward-line 1)
 	     (move-to-column message-column)
 	     (cond
@@ -470,8 +469,7 @@ Prompt user if more than one."
 	   t)
 
 	  ((looking-at (concat "warning: formal parameter " ada-gnat-quoted-name-regexp " is not modified"))
-	   (let ((param (match-string 1))
-		 (mode-regexp "\"\\([in out]+\\)\"")
+	   (let ((mode-regexp "\"\\([in out]+\\)\"")
 		 new-mode
 		 old-mode)
 	     (forward-line 1)

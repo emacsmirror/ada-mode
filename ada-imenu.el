@@ -1,6 +1,6 @@
-;;; ada-imenu.el - Ada mode interface to imenu for Ada Mode
+;;; ada-imenu.el - Ada mode interface to imenu for Ada Mode  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2012, 2013  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Simon Wright <simon@pushface.org>
 ;; Contributors: see ada-mode.el, and specifically Christian Egli
@@ -70,7 +70,7 @@ each type of entity that can be found in an Ada file.")
 )
 
 ;; ada--imenu-mode does not depend on file local variables
-(add-hook 'ada-mode-hook 'ada--imenu-mode)
+(add-hook 'ada-mode-hook #'ada--imenu-mode)
 
 (provide 'ada-imenu)
 

@@ -1,4 +1,4 @@
-;; Support for running GNAT tools, which support multiple programming
+;; gnat-core.el --- Support for running GNAT tools, which support multiple programming  -*- lexical-binding:t -*-
 ;; languages.
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
@@ -396,9 +396,8 @@ list."
 
 (defun ada-gnat-ada-name-from-file-name (file-name)
   "For `ada-ada-name-from-file-name'."
-  (let* (status
-	 (ada-name (file-name-sans-extension (file-name-nondirectory file-name)))
-	(predefined (cdr (assoc ada-name ada-gnat-predefined-package-alist))))
+  (let* ((ada-name (file-name-sans-extension (file-name-nondirectory file-name)))
+         (predefined (cdr (assoc ada-name ada-gnat-predefined-package-alist))))
 
     (if predefined
         predefined

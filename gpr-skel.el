@@ -1,6 +1,6 @@
-;;; gpr-skel.el --- an extension to Gpr mode for inserting statement skeletons
+;;; gpr-skel.el --- an extension to Gpr mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2013, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2013-2015 Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -42,11 +42,11 @@
 ;;;;; user variables, example skeletons intended to be overwritten
 
 (defcustom gpr-skel-initial-string "{header}\n{project}"
-  "*String to insert in empty buffer.
+  "String to insert in empty buffer.
 This could end in a token recognized by `gpr-skel-expand'."
   :type 'string
-  :group 'gpr
-  :safe 'stringp)
+  :group 'gpr                           ;FIXME: Unknown!
+  :safe #'stringp)
 
 (define-skeleton gpr-skel-user-restricted
   "Example copyright/license skeleton, with automatic year and owner."
@@ -264,8 +264,8 @@ it is a name, and use the word before that as the token."
 (provide 'gpr-skeletons)
 (provide 'gpr-skel)
 
-(setq gpr-expand 'skeleton-expand)
+(setq gpr-expand #'skeleton-expand)
 
-(add-hook 'gpr-mode-hook 'gpr-skel-setup)
+(add-hook 'gpr-mode-hook #'gpr-skel-setup)
 
 ;;; end of file

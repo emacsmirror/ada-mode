@@ -1,10 +1,9 @@
-;;; gnat-inspect.el --- minor-mode for navigating sources using the
-;;; AdaCore cross reference tool gnatinspect.
-;;;
-;;; gnatinspect supports Ada and any gcc language that supports the
-;;; -fdump-xref switch (which includes C, C++).
+;;; gnat-inspect.el --- Minor-mode for navigating sources using gnatinspect  -*- lexical-binding:t -*-
+
+;; gnatinspect supports Ada and any gcc language that supports the
+;; -fdump-xref switch (which includes C, C++).
 ;;
-;;; Copyright (C) 2013-2015  Free Software Foundation, Inc.
+;; Copyright (C) 2013-2015  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>

@@ -1,4 +1,4 @@
-;;; ada-skel.el --- an extension to Ada mode for inserting statement skeletons
+;;; ada-skel.el --- Extension to Ada mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 1987, 1993, 1994, 1996-2015  Free Software Foundation, Inc.
 
@@ -74,11 +74,11 @@
 --  This text was inserted by ada-skel-initial-string;
 --  M-x customize-variable <RET> ada-skel-initial-string <RET>
 --  (info \"(ada-mode)Statement skeletons\")"
-  "*String to insert in empty buffer.
+  "String to insert in empty buffer.
 This could end in a token recognized by `ada-skel-expand'."
   :type 'string
   :group 'ada
-  :safe 'stringp)
+  :safe #'stringp)
 
 (define-skeleton ada-skel-user-restricted
   "Example copyright/license skeleton, with automatic year and owner."

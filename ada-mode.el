@@ -1,6 +1,6 @@
-;;; ada-mode.el --- major-mode for editing Ada sources
+;;; ada-mode.el --- major-mode for editing Ada sources  -*- lexical-binding:t -*-
 ;;
-;;; Copyright (C) 1994, 1995, 1997 - 2015  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -196,8 +196,7 @@ Non-nil means automatically change case of preceding word while typing.
 Casing of Ada keywords is done according to `ada-case-keyword',
 identifiers are Mixed_Case."
   :type  'boolean
-  :group 'ada
-  :safe  'booleanp)
+  :safe  #'booleanp)
 (make-variable-buffer-local 'ada-auto-case)
 
 (defcustom ada-case-exception-file nil
@@ -215,8 +214,8 @@ character, and end either at the end of the word or at a _
 character.  Characters after the first word are ignored, and not
 preserved when the list is written back to the file."
   :type  '(repeat (file))
-  :group 'ada
-  :safe  'listp)
+  ;; :safe  #'listp    ;FIXME: is '("~/.emacs" "~/.bashrc" "/etc/passwd") safe?
+  )
 
 (defcustom ada-case-keyword 'downcase-word
   "Buffer-local value that may override project variable `case_keyword'.
@@ -224,8 +223,8 @@ Global value is default for project variable `case_keyword'.
 Function to call to adjust the case of Ada keywords."
   :type '(choice (const downcase-word)
 		 (const upcase-word))
-  :group 'ada
-  :safe  'functionp)
+  ;; :safe #'functionp ; FIXME: `functionp' CANNOT be safe!
+  )
 (make-variable-buffer-local 'ada-case-keyword)
 
 (defcustom ada-case-identifier 'ada-mixed-case
@@ -239,8 +238,8 @@ force-case - if t, treat `ada-strict-case' as t"
   :type '(choice (const ada-mixed-case)
 		 (const ada-lower-case)
 		 (const ada-upper-case))
-  :group 'ada
-  :safe  'functionp)
+  ;; :safe #'functionp ; FIXME: `functionp' CANNOT be safe!
+  )
 ;; we'd like to check that there are 3 args, since the previous
 ;; release required 2 here. But there doesn't seem to be a way to
 ;; access the arg count, which is only available for byte-compiled
@@ -253,8 +252,7 @@ Global value is default for project variable `case_strict'.
 If non-nil, force Mixed_Case for identifiers.
 Otherwise, allow UPPERCASE for identifiers."
   :type 'boolean
-  :group 'ada
-  :safe  'booleanp)
+  :safe  #'booleanp)
 (make-variable-buffer-local 'ada-case-strict)
 
 (defcustom ada-language-version 'ada2012
@@ -265,36 +263,29 @@ indentation parser accepts."
 		 (const ada95)
 		 (const ada2005)
 		 (const ada2012))
-  :group 'ada
-  :safe  'symbolp)
+  :safe  #'symbolp)
 (make-variable-buffer-local 'ada-language-version)
 
 (defcustom ada-fill-comment-prefix "-- "
   "Comment fill prefix."
-  :type 'string
-  :group 'ada)
-(make-variable-buffer-local 'ada-language-version)
+  :type 'string)
 
 (defcustom ada-fill-comment-postfix " --"
   "Comment fill postfix."
-  :type 'string
-  :group 'ada)
-(make-variable-buffer-local 'ada-language-version)
+  :type 'string)
 
 (defcustom ada-prj-file-extensions '("adp" "prj")
   "List of Emacs Ada mode project file extensions.
 Used when searching for a project file.
 Any file with one of these extensions will be parsed by `ada-prj-parse-file-1'."
-  :type 'list
-  :group 'ada)
+  :type 'list)
 
 (defcustom ada-prj-file-ext-extra nil
   "List of secondary project file extensions.
 Used when searching for a project file that can be a primary or
 secondary project file (referenced from a primary).  The user
 must provide a parser for a file with one of these extensions."
-  :type 'list
-  :group 'ada)
+  :type 'list)
 
 ;;;;; end of user variables
 
@@ -468,7 +459,7 @@ Values defined by cross reference packages.")
     ["Other File"                  ada-find-other-file        t]
     ["Other file don't find decl"  ada-find-other-file-noset  t]))
 
-(defun ada-popup-menu (position)
+(defun ada-popup-menu (_position)
   "Pops up a `ada-context-menu', with `ada-context-menu-on-identifer' set appropriately.
 POSITION is the location the mouse was clicked on.
 Sets `ada-context-menu-last-point' to the current position before
@@ -994,6 +985,8 @@ replacing current values of `ada-case-full-exceptions', `ada-case-partial-except
     (push (cons word t) exceptions))
   exceptions)
 
+(defvar ada-prj-current-file)
+
 (defun ada-case-create-exception (&optional word file-name partial)
   "Define WORD as an exception for the casing system, save it in FILE-NAME.
 If PARTIAL is non-nil, create a partial word exception.  WORD
@@ -1083,10 +1076,10 @@ User is prompted to choose a file from project variable casing if it is a list."
 	       (point))))
     (member (downcase word) ada-keywords)))
 
-(defun ada-lower-case (start end force-case-strict)
+(defun ada-lower-case (start end _force-case-strict)
   (downcase-region start end))
 
-(defun ada-upper-case (start end force-case-strict)
+(defun ada-upper-case (start end _force-case-strict)
   (upcase-region start end))
 
 (defun ada-mixed-case (start end force-case-strict)
@@ -1997,7 +1990,7 @@ don't move to corresponding declaration."
   (interactive "P")
   (ada-find-other-file other-window t))
 
-(defun ada-find-other-file (other-window &optional no-set-point)
+(defun ada-find-other-file (other-window &optional _no-set-point)
   "Move to the corresponding declaration in another file.
 
 - If region is active, assume it contains a package name;
@@ -2076,36 +2069,34 @@ identifier.  May be an Ada identifier or operator."
   (when (ada-in-comment-p)
     (error "Inside comment"))
 
-  (let (identifier)
+  (skip-chars-backward "a-zA-Z0-9_<>=+\\-\\*/&")
 
-    (skip-chars-backward "a-zA-Z0-9_<>=+\\-\\*/&")
-
-    ;; Just in front of, or inside, a string => we could have an
-    ;; operator function declaration.
+  ;; Just in front of, or inside, a string => we could have an
+  ;; operator function declaration.
+  (cond
+   ((ada-in-string-p)
     (cond
-     ((ada-in-string-p)
-      (cond
 
-       ((and (= (char-before) ?\")
-	     (progn
-	       (forward-char -1)
-	       (looking-at (concat "\"\\(" ada-operator-re "\\)\""))))
-	(setq identifier (concat "\"" (match-string-no-properties 1) "\"")))
-
-       (t
-	(error "Inside string or character constant"))
-       ))
-
-     ((and (= (char-after) ?\")
-	   (looking-at (concat "\"\\(" ada-operator-re "\\)\"")))
-      (setq identifier (concat "\"" (match-string-no-properties 1) "\"")))
-
-     ((looking-at "[a-zA-Z0-9_]+\\|[+\\-*/&=<>]")
-      (setq identifier (match-string-no-properties 0)))
+     ((and (= (char-before) ?\")
+           (progn
+             (forward-char -1)
+             (looking-at (concat "\"\\(" ada-operator-re "\\)\""))))
+      (concat "\"" (match-string-no-properties 1) "\""))
 
      (t
-      (error "No identifier around"))
-     )))
+      (error "Inside string or character constant"))
+     ))
+
+   ((and (= (char-after) ?\")
+         (looking-at (concat "\"\\(" ada-operator-re "\\)\"")))
+    (concat "\"" (match-string-no-properties 1) "\""))
+
+   ((looking-at "[a-zA-Z0-9_]+\\|[+\\-*/&=<>]")
+    (match-string-no-properties 0))
+
+   (t
+    (error "No identifier around"))
+   ))
 
 ;; FIXME: use find-tag-marker-ring, ring-insert, pop-tag-mark (see xref.el)
 (defvar ada-goto-pos-ring '()

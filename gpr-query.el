@@ -1,10 +1,9 @@
-;;; gpr-query.el --- minor-mode for navigating sources using the
-;;; custom gpr_query tool.
-;;;
-;;; gpr-query supports Ada and any gcc language that supports the
-;;; AdaCore -fdump-xref switch (which includes C, C++).
+;;; gpr-query.el --- Minor-mode for navigating sources using gpr_query  -*- lexical-binding:t -*-
 ;;
-;;; Copyright (C) 2013 - 2015  Free Software Foundation, Inc.
+;; gpr-query supports Ada and any gcc language that supports the
+;; AdaCore -fdump-xref switch (which includes C, C++).
+;;
+;; Copyright (C) 2013 - 2015  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>

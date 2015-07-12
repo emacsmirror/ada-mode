@@ -1,6 +1,6 @@
-;;; gpr-mode --- major-mode for editing GNAT project files
+;;; gpr-mode.el --- Major-mode for editing GNAT project files  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2004, 2007, 2008, 2012-2014  Free Software Foundation, Inc.
+;; Copyright (C) 2004, 2007, 2008, 2012-2015  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>

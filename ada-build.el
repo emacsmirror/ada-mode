@@ -1,7 +1,7 @@
-;;; ada-build.el --- extensions to ada-mode for compiling and running
-;;; Ada projects without 'make' or similar tool
+;;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
+;; Ada projects without 'make' or similar tool
 ;;
-;;; Copyright (C) 1994, 1995, 1997 - 2014  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2015  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -52,35 +52,30 @@
 		 (const prompt-default)
 		 (const prompt-exist)
 		 (const error))
-  :group 'ada-build
-  :safe  'symbolp)
+  :safe  #'symbolp)
 
 (defcustom ada-build-confirm-command nil
   "If non-nil, prompt for confirmation/edit of each command before it is run."
   :type  'boolean
-  :group 'ada-build
-  :safe  'booleanp)
+  :safe  #'booleanp)
 
 (defcustom ada-build-check-cmd
   (concat "${cross_prefix}gnatmake -u -c -gnatc ${gnatmake_opt} ${full_current} -cargs -I${src_dir} ${comp_opt}")
   "Default command to syntax check a single file.
 Overridden by project variable 'check_cmd'."
-  :type 'string
-  :group 'ada-build)
+  :type 'string)
 
 (defcustom ada-build-make-cmd
   (concat "${cross_prefix}gnatmake -P${gpr_file} -o ${main} ${main} ${gnatmake_opt} "
 	  "-cargs -I${src_dir} ${comp_opt} -bargs ${bind_opt} -largs ${link_opt}")
   "Default command to compile the application.
 Overridden by project variable 'make_cmd'."
-  :type 'string
-  :group 'ada-build)
+  :type 'string)
 
 (defcustom ada-build-run-cmd "./${main}"
   "Default command to run the application, in a spawned shell.
 Overridden by project variable 'run_cmd'."
-  :type 'string
-  :group 'ada-build)
+  :type 'string)
 
 ;;;; code
 
