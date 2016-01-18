@@ -1,4 +1,4 @@
-This is ada-mode.info, produced by makeinfo version 5.2 from
+This is ada-mode.info, produced by makeinfo version 6.0 from
 ada-mode.texi.
 
 Copyright (C) 1999 - 2015 Free Software Foundation, Inc.
@@ -22,7 +22,9 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Copyright (C) 1999 - 2015 Free Software Foundation, Inc.
+Ada Mode Version 5.1.9
+
+   Copyright (C) 1999 - 2015 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -145,15 +147,17 @@ distributed with GNAT GPL 2014.
 
    To build 'gpr_query', assuming GNAT GPL 2014 is installed in
 '/usr/gnat-gpl-2014', and '/usr/gnat-gpl-2014/bin' is in PATH (if you
-are running Windows, use Cygwin bash to run these commands):
+are running Windows, use Cygwin bash to run these commands, with GNAT
+GPL bin first in PATH) (note that gnatcoll-gpl-2014-src.tar.gz unzips to
+gnatcoll-1.7w-src):
 
      tar xf ~/Downloads/gnatcoll-gpl-2014-src.tar.gz
-     cd gnatcoll-gpl-2014-src
-     ./configure --enable-projects --prefix=/usr/gnat-gpl-2014
+     cd gnatcoll-1.7w-src
+     ./configure --prefix=/usr/gnat-gpl-2014
      make
      sudo make install
      cd ~/.emacs.d/elpa/ada-mode-5.xx/build
-     make install-gpr_query
+     make install
 
    To build an sqlite3 executable that is compatible with the database
 created by 'gpr_query':
@@ -332,6 +336,15 @@ the syntax to set a variable is the following:
      Navigate to subprograms and types by name, from a list in a
      dedicated window.
 'which-func'
+'jit-lock-defer-time'
+     In large files, parsing is slow, so it gets in the way of
+     interactive typing due to immediate font-lock triggering a parse.
+     Delay the font-lock by setting an Emacs file-local variable in an
+     Ada comment:
+
+          --  Local Variables:
+          --  jit-lock-defer-time: 0.5
+          --  End:
 
    The above can all be set by the following code in your '~/.emacs'.
 Note that some are functions are added to 'before-save-hook'; they run
@@ -1020,7 +1033,7 @@ line specifies a project variable name and its value, separated by "="
 concatenated.
 
    There must be no space between the variable name and "=", and no
-trailing spaces.
+trailing spaces after the value.
 
    The current project file is given by the lisp variable
 'ada-prj-default-project-file', and shown by the menu command <Ada |
@@ -1050,10 +1063,14 @@ File: ada-mode.info,  Node: Project file variables,  Prev: Project file overview
 ==========================
 
 To set a project variable that is a list, specify each element of the
-list on a separate line in the project file.
+list on a separate line in the project file.  The value on the last line
+is the last element in the list.
 
-   Process environment variables can be referenced using the normal
-'$var' syntax.
+   A variable name that starts with '$' is set as a process environment
+variable, for processes launched from Emacs for the project.
+
+   In variable values, process environment variables can be referenced
+using the normal '$var' syntax.
 
    Most project variables have defaults that can be changed by setting
 elisp variables; the table below identifies the elisp variable for each
@@ -1258,6 +1275,15 @@ can also configure the indentation, via the following variables:
      If non-nil, comments currently starting in column 0 are left in
      column 0.  Otherwise, they are indented with previous comments or
      code.
+
+'ada-indent-comment-gnat' (default value: nil)
+     If non-nil, comments are indented to meet the GNAT style check; one
+     of:
+        * multiple of 'ada-indent'
+        * next non-blank line
+        * previous non-blank line
+
+     Otherwise, they are indented with previous comments or code.
 
 'ada-indent-label' (default value: -3)
      Number of columns to indent a label.
@@ -2437,47 +2463,47 @@ Index
 
 Tag Table:
 Node: Top945
-Node: Overview2576
-Node: Installation3787
-Node: Ada Reference Manual4679
-Node: gpr_query4955
-Node: Upgrading6058
-Node: Customization6630
-Node: Non-standard file names7112
-Node: Other compiler8953
-Node: Other cross-reference9532
-Node: Other customization10557
-Node: Compiling Executing13194
-Node: Compile commands13929
-Node: Compiling Examples16667
-Node: No project files17499
-Node: Set compiler options22865
-Node: Set source search path24827
-Node: Use GNAT project file27280
-Node: Use multiple GNAT project files30054
-Node: Use a Makefile32774
-Node: Compiler errors34089
-Node: Project files34906
-Node: Project file overview35933
-Node: Project file variables37461
-Node: Moving Through Ada Code41091
-Node: Identifier completion43790
-Node: Indentation44752
-Node: Statement skeletons48804
-Node: Aligning code50589
-Node: Automatic casing51534
-Node: Comment Handling54238
-Node: Key summary54757
-Node: Developer overview57384
-Node: Directory structure57724
-Node: Package organization61210
-Node: Ada mode61445
-Node: gpr mode63641
-Node: GNAT core63924
-Node: Wisi64758
-Node: OpenToken65725
-Node: ELPA66327
-Node: GNU Free Documentation License66937
-Node: Index92098
+Node: Overview2603
+Node: Installation3814
+Node: Ada Reference Manual4706
+Node: gpr_query4982
+Node: Upgrading6155
+Node: Customization6727
+Node: Non-standard file names7209
+Node: Other compiler9050
+Node: Other cross-reference9629
+Node: Other customization10654
+Node: Compiling Executing13626
+Node: Compile commands14361
+Node: Compiling Examples17099
+Node: No project files17931
+Node: Set compiler options23297
+Node: Set source search path25259
+Node: Use GNAT project file27712
+Node: Use multiple GNAT project files30486
+Node: Use a Makefile33206
+Node: Compiler errors34521
+Node: Project files35338
+Node: Project file overview36365
+Node: Project file variables37909
+Node: Moving Through Ada Code41754
+Node: Identifier completion44453
+Node: Indentation45415
+Node: Statement skeletons49763
+Node: Aligning code51548
+Node: Automatic casing52493
+Node: Comment Handling55197
+Node: Key summary55716
+Node: Developer overview58343
+Node: Directory structure58683
+Node: Package organization62169
+Node: Ada mode62404
+Node: gpr mode64600
+Node: GNAT core64883
+Node: Wisi65717
+Node: OpenToken66684
+Node: ELPA67286
+Node: GNU Free Documentation License67896
+Node: Index93057
 
 End Tag Table

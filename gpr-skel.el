@@ -1,4 +1,4 @@
-;;; gpr-skel.el --- an extension to Gpr mode for inserting statement skeletons  -*- lexical-binding:t -*-
+;; gpr-skel.el --- Extension to gpr-mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2013-2015 Free Software Foundation, Inc.
 
@@ -41,11 +41,14 @@
 
 ;;;;; user variables, example skeletons intended to be overwritten
 
+(defgroup gpr nil
+  "Major mode for editing GNAT project files in Emacs."
+  :group 'languages)
+
 (defcustom gpr-skel-initial-string "{header}\n{project}"
   "String to insert in empty buffer.
 This could end in a token recognized by `gpr-skel-expand'."
   :type 'string
-  :group 'gpr                           ;FIXME: Unknown!
   :safe #'stringp)
 
 (define-skeleton gpr-skel-user-restricted

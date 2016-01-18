@@ -1,4 +1,4 @@
-;;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
+;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
 ;; Ada projects without 'make' or similar tool
 ;;
 ;; Copyright (C) 1994, 1995, 1997 - 2015  Free Software Foundation, Inc.
@@ -34,9 +34,7 @@
 ;; compiling and running capabilities in Ada mode 4.01, done in 2013 by
 ;; Stephen Leake <stephen_leake@stephe-leake.org>.
 
-(when (and (= emacs-major-version 24)
-	   (= emacs-minor-version 2))
-  (require 'ada-mode-compat-24.2))
+(require 'ada-mode-compat-24.2)
 
 (require 'ada-mode)
 
@@ -72,6 +70,9 @@ Overridden by project variable 'check_cmd'."
 Overridden by project variable 'make_cmd'."
   :type 'string)
 
+;; FIXME: make this more intelligent to work on Windows cmd shell?
+;; either detect Windows and drop "./", or expand to full path at
+;; runtime.
 (defcustom ada-build-run-cmd "./${main}"
   "Default command to run the application, in a spawned shell.
 Overridden by project variable 'run_cmd'."
@@ -90,8 +91,8 @@ a list, the prefix is prepended to each list element. For
 example, if src_dir contains 'dir_1 dir_2', '-I${src_dir}'
 expands to '-Idir_1 -Idir_2'.
 
-As a special case, ${full_current} is replaced by the name
-including the directory and extension."
+As a special case, ${full_current} is replaced by the current
+buffer file name including the directory and extension."
 
   (while (string-match "\\(-[^-$ ]+\\)?\\${\\([^}]+\\)}" cmd-string)
     (let ((prefix (match-string 1 cmd-string))

@@ -1,4 +1,4 @@
-;;; gpr-mode.el --- Major-mode for editing GNAT project files  -*- lexical-binding:t -*-
+;; gpr-mode --- Major mode for editing GNAT project files  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2004, 2007, 2008, 2012-2015  Free Software Foundation, Inc.
 
@@ -46,19 +46,16 @@
     (define-key map [return]   'ada-indent-newline-indent)
     (define-key map "\C-c`"    'ada-show-secondary-error)
     ;; comment-dwim is in global map on M-;
-    (define-key map "\C-c\C-c" 'compile)
+    (define-key map "\C-c\C-c" 'ada-build-make)
     (define-key map "\C-c\C-e" 'gpr-expand)
     (define-key map "\C-c\C-f" 'gpr-show-parse-error)
     (define-key map "\C-c\C-i" 'gpr-indent-statement)
-            ;; FIXME (later): implement?
-    ;; (define-key map "\C-c\C-n" 'ada-next-statement-keyword)
-    ;; (define-key map "\C-c\C-p" 'ada-prev-statement-keyword)
     (define-key map "\C-c\C-o" 	 'ff-find-other-file)
     (define-key map "\C-c\C-P" 'gpr-set-as-project)
     (define-key map "\C-c\C-t" 'ada-case-read-all-exceptions)
     (define-key map "\C-c\C-w" 'ada-case-adjust-at-point)
     (define-key map "\C-c\C-y" 'ada-case-create-exception)
-    (define-key map "\C-c\C-\M-y" (lambda () (ada-case-create-exception nil nil t)))
+    (define-key map "\C-c\C-\M-y" 'ada-case-create-partial-exception)
     (define-key map "\M-n" 'skeleton-next-placeholder)
     (define-key map "\M-p" 'skeleton-prev-placeholder)
     map
@@ -76,6 +73,7 @@
 
     ["Customize"     (customize-group 'ada)];; we reuse the Ada indentation options
     ["------"        nil nil]
+    ["Build current project"       ada-build-make                   t]
     ["Find and select project ..." ada-build-prompt-select-prj-file t]
     ["Select project ..."          ada-prj-select                   t]
     ["Parse and select current file" gpr-set-as-project             t]
@@ -131,11 +129,38 @@ Function is called with no arguments.")
   (when gpr-indent-statement
     (funcall gpr-indent-statement)))
 
+(defconst gpr-casing-keywords
+  '(
+    "abstract"
+    "aggregate"
+    "case"
+    "configuration"
+    "end"
+    "extends"
+    "external"
+    "external_as_list"
+    "for"
+    "is"
+    "library"
+    "limited"
+    "null"
+    "others"
+    "package"
+    "project"
+    "renames"
+    "standard"
+    "type"
+    "use"
+    "when"
+    "with"
+    )
+  "List of gpr mode keywords for auto-casing.")
+
 (defvar gpr-font-lock-keywords
   (progn
     (list
      ;;
-     ;; keyword plus name.
+     ;; keyword plus name. FIXME: move to grammar action, use gpr-keywords here (see ada-font-lock-keywords).
      (list (concat
 	    "\\<\\("
 	    "package\\|"
@@ -148,8 +173,10 @@ Function is called with no arguments.")
      ;; Main keywords
      (list (concat "\\<"
 		   (regexp-opt
-		    '("abstract" "aggregate" "case" "configuration" "external" "is" "library" "null" "others"
-		      "renames" "standard" "type" "use" "when" "with") t)
+		    '("abstract" "aggregate" "case" "configuration" "extends"
+                      "external" "external_as_list" "is" "library" "null"
+                      "others" "renames" "standard" "type" "use" "when" "with")
+		    t)
 		   "\\>")
 	   '(1 font-lock-keyword-face))
      ;;
@@ -207,6 +234,7 @@ of the package or project point is in or just after, or nil.")
     (end-of-line 1)
     (gpr-which-function)))
 
+(declare-function gpr-query-kill-all-sessions "gpr-query.el" nil)
 (defun gpr-set-as-project (&optional file)
   "Set FILE (default current buffer file) as Emacs project file."
   (interactive)
@@ -231,7 +259,9 @@ of the package or project point is in or just after, or nil.")
   (setq mode-name "GNAT Project")
   (use-local-map gpr-mode-map)
   (set-syntax-table ada-mode-syntax-table)
-  (set (make-local-variable 'syntax-begin-function) nil)
+  (when (boundp 'syntax-begin-function)
+    ;; obsolete in emacs-25.1
+    (set (make-local-variable 'syntax-begin-function) nil))
   (set 'case-fold-search t); gpr is case insensitive; the syntax parsing requires this setting
   (set (make-local-variable 'comment-start) "--")
   (set (make-local-variable 'comment-end) "")
@@ -239,6 +269,9 @@ of the package or project point is in or just after, or nil.")
   (set (make-local-variable 'comment-multi-line) nil)
 
   (set (make-local-variable 'require-final-newline) t)
+
+  (ada-case-activate-keys gpr-mode-map)
+  (set (make-local-variable 'ada-keywords) gpr-casing-keywords)
 
   (set (make-local-variable 'font-lock-defaults)
        '(gpr-font-lock-keywords

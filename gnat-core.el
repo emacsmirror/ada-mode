@@ -56,16 +56,16 @@
 
     project))
 
-(defun gnat-prj-show-path ()
-  "For `ada-prj-show-path'."
+(defun gnat-prj-show-prj-path ()
+  "For `ada-prj-show-prj-path'."
     (interactive)
   (if (ada-prj-get 'prj_dir)
       (progn
-	(pop-to-buffer (get-buffer-create "*GNAT project search path*"))
+	(pop-to-buffer (get-buffer-create "*GNAT project file search path*"))
 	(erase-buffer)
 	(dolist (file (ada-prj-get 'prj_dir))
 	  (insert (format "%s\n" file))))
-    (message "no GNAT project search path files")
+    (message "no project file search path set")
     ))
 
 (defun gnat-prj-parse-emacs-one (name value project)
@@ -147,7 +147,7 @@ Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
 	  (while (not (looking-at "^$"))
 	    (back-to-indentation)
 	    (if (looking-at "<Current_Directory>")
-                (cl-pushnew "." prj-dirs :test #'equal)
+                (cl-pushnew (directory-file-name default-directory) prj-dirs :test #'equal)
               (let ((f (expand-file-name
                         (buffer-substring-no-properties (point) (point-at-eol)))))
                 (cl-pushnew f prj-dirs :test #'equal)
@@ -162,15 +162,16 @@ Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
        ))
     (list src-dirs prj-dirs)))
 
+;; FIXME: use a dispatching function instead, with autoload, to
+;; avoid "require" here, and this declare
+;; Using 'require' at top level gives the wrong default ada-xref-tool
+(declare-function gpr-query-get-src-dirs "gpr-query.el" (src-dirs))
+(declare-function gpr-query-get-prj-dirs "gpr-query.el" (prj-dirs))
 (defun gnat-get-paths (project)
   "Add project and/or compiler source, project paths to PROJECT src_dir and/or prj_dir."
   (let ((src-dirs (ada-prj-get 'src_dir project))
 	(prj-dirs (ada-prj-get 'prj_dir project)))
 
-    ;; FIXME: use a dispatching function instead, with autoload, to
-    ;; avoid "require" here, which gives "warning: function not
-    ;; known".
-    ;; Using 'require' at top level gives the wrong default ada-xref-tool
     (cl-ecase (ada-prj-get 'xref_tool project)
       (gnat
        (let ((res (gnat-get-paths-1 src-dirs prj-dirs)))
@@ -378,6 +379,7 @@ list."
   '(("a-textio" . "Ada.Text_IO")
     ("a-chahan" . "Ada.Characters.Handling")
     ("a-comlin" . "Ada.Command_Line")
+    ("a-contai" . "Ada.Containers")
     ("a-except" . "Ada.Exceptions")
     ("a-numeri" . "Ada.Numerics")
     ("a-string" . "Ada.Strings")
@@ -397,7 +399,7 @@ list."
 (defun ada-gnat-ada-name-from-file-name (file-name)
   "For `ada-ada-name-from-file-name'."
   (let* ((ada-name (file-name-sans-extension (file-name-nondirectory file-name)))
-         (predefined (cdr (assoc ada-name ada-gnat-predefined-package-alist))))
+	 (predefined (cdr (assoc ada-name ada-gnat-predefined-package-alist))))
 
     (if predefined
         predefined
@@ -419,19 +421,15 @@ list."
   ;; contain path info. So we pass a directory to gnat-run-no-prj.
   (let ((start-buffer (current-buffer))
 	(start-file (buffer-file-name))
-	;; can also specify gnat stub options/switches in .gpr file, in package 'gnatstub'.
 	(opts (when (ada-prj-get 'gnat_stub_opts)
 		(split-string (ada-prj-get 'gnat_stub_opts))))
 	(switches (when (ada-prj-get 'gnat_stub_switches)
 		    (split-string (ada-prj-get 'gnat_stub_switches))))
+	(process-environment (ada-prj-get 'proc_env)) ;; for GPR_PROJECT_PATH
 	)
 
-    ;; Make sure all relevant files are saved to disk. This also saves
-    ;; the bogus body buffer created by ff-find-the-other-file, so we
-    ;; need -f gnat stub option. We won't get here if there is an
-    ;; existing body file.
+    ;; Make sure all relevant files are saved to disk.
     (save-some-buffers t)
-    (cl-pushnew "-f" opts :test #'equal)
     (with-current-buffer (gnat-run-buffer)
       (gnat-run-no-prj
        (append (list "stub") opts (list start-file "-cargs") switches)

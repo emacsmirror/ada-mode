@@ -63,6 +63,57 @@ compilation unit.")
     (ada-case-adjust-identifier)
     (delete-char 1)))
 
+(defun ada-fix-sort-context-pred (a b)
+  "Predicate for `sort-subr'; sorts \"limited with\", \"private with\" last.
+Returns non-nil if a should preceed b in buffer."
+  ;; a, b are buffer ranges in the current buffer
+  (cl-flet
+      ((starts-with
+	(pat reg)
+	(string= pat (buffer-substring-no-properties (car reg)
+						     (min (point-max)
+							  (+(car reg) (length pat)))))))
+    (cond
+     ((and
+       (starts-with "limited with" a)
+       (starts-with "private with" b))
+      t)
+
+     ((and
+       (starts-with "limited with" a)
+       (not (starts-with "limited with" b)))
+      nil)
+
+     ((and
+       (not (starts-with "limited with" a))
+       (starts-with "limited with" b))
+      t)
+
+     ((and
+       (starts-with "private with" a)
+       (not (starts-with "private with" b)))
+      nil)
+
+     ((and
+       (not (starts-with "private with" a))
+       (starts-with "private with" b))
+      t)
+
+     (t
+      (> 0 (compare-buffer-substrings
+	    nil (car a) (cdr a)
+	    nil (car b) (cdr b))) )
+     )))
+
+(defun ada-fix-sort-context-clause (beg end)
+  "Sort context clauses in range BEG END."
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (sort-subr nil 'forward-line 'end-of-line nil nil 'ada-fix-sort-context-pred)
+      )))
+
 (defun ada-fix-add-with-clause (package-name)
   "Add a with_clause for PACKAGE_NAME.
 If ada-fix-sort-context-clause, sort the context clauses using
@@ -78,8 +129,7 @@ sort-lines."
 
     (when (and (< (car context-clause) (cdr context-clause))
 	       ada-fix-sort-context-clause)
-      ;; FIXME (later): this puts "limited with", "private with" at top of list; prefer at bottom
-      (sort-lines nil (car context-clause) (point)))
+      (ada-fix-sort-context-clause (car context-clause) (point)))
     ))
 
 (defun ada-fix-extend-with-clause (child-name)
@@ -157,7 +207,7 @@ point and return nil.")
       (when (not (ada-get-compilation-message))
 	(beep)
 	(message "FIXME: ada-fix-compiler-error")
-	;; not clear why this can happens, but it does
+	;; not clear why this can happen, but it has
 	(compilation-next-error 1))
       (let ((comp-buf-pt (point))
 	    (success

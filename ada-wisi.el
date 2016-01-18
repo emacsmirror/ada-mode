@@ -2,7 +2,7 @@
 ;;
 ;; [1] ISO/IEC 8652:2012(E); Ada 2012 reference manual
 ;;
-;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
+;; Copyright (C) 2012 - 2016  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -135,7 +135,11 @@ if in paren, pos following paren."
 	;; test/ada_mode-opentoken.ads
 	;; private package GDS.Commands.Add_Statement is
 	;;    type Instance is new Nonterminal.Instance with null record;
-	offset)
+	;;
+	;; test/ada_mode-nominal.adb
+	;;     return B : Integer :=
+	;;       (Local_Function);
+	(+ indent offset))
 
        ((eq 'label_opt (wisi-cache-token cache))
 	(+ indent (- ada-indent-label) offset))
@@ -300,6 +304,17 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 
 	(keyword
 	 ;; defer to after-cache)
+	 nil)
+
+	(list-break
+	;; test/ada_mode-parens.adb
+	 ;; Foo (X
+	 ;;        ,    --  used to get an error here; don't care about the actual indentation
+	 ;; indenting ','
+	 ;;
+	 ;; We don't actually care what the indentation is, since this
+	 ;; should only occur while editing; defer to after-cache
+	 ;; avoids an error and does something reasonable.
 	 nil)
 
 	(name
@@ -564,6 +579,7 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		     (+ (current-column) ada-indent-broken))
 
 		    ((full_type_declaration
+                      protected_type_declaration
 		      single_protected_declaration
 		      single_task_declaration
 		      subtype_declaration
@@ -669,10 +685,21 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		       ))
 
 		    (private_extension_declaration
-		     ;; test/ada_mode-nominal.ads
-		     ;; type Limited_Derived_Type_3 is abstract limited
-		     ;;   new Private_Type_1 with private;
-		     (+ (current-indentation) ada-indent-broken))
+		     (cl-ecase (wisi-cache-token cache)
+		       (WITH
+			;; test/aspects.ads
+			;; type Date_Set is tagged private
+			;; with
+			;; indenting 'with'
+			(current-indentation))
+
+		       (t
+			;; test/ada_mode-nominal.ads
+			;; type Limited_Derived_Type_3 is abstract limited
+			;;   new Private_Type_1 with private;
+			;; indenting 'new'
+			(+ (current-indentation) ada-indent-broken))
+		       ))
 
 		    (private_type_declaration
 		     ;; test/aspects.ads
@@ -703,7 +730,12 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 			(ada-wisi-indent-cache ada-indent-broken cache))
 		       ))
 
-		    ((subprogram_body subprogram_declaration subprogram_specification null_procedure_declaration)
+		    ((abstract_subprogram_declaration
+		      expression_function_declaration
+		      subprogram_body
+		      subprogram_declaration
+		      subprogram_specification
+		      null_procedure_declaration)
 		     (cl-ecase (wisi-cache-token cache)
 		       (IS
 			;; test/ada_mode-nominal.ads
@@ -761,9 +793,6 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		 (list-break
 		  (ada-wisi-indent-list-break cache prev-token))
 
-		 (statement-other
-		  ;; defer to ada-wisi-after-cache
-		  nil)
 		 ))))
 	     ))
 	))
@@ -1104,11 +1133,15 @@ cached token, return new indentation for point."
 		  ;; type Synchronized_Formal_Derived_Type is abstract synchronized new Formal_Private_Type and Interface_Type
 		  ;;   with private;
 
-		  subtype_declaration)
-		 ;; test/ada_mode-nominal.ads
-		 ;;    subtype Subtype_2 is Signed_Integer_Type range 10 ..
-		 ;;      20;
+		  subtype_declaration
+		  ;; test/ada_mode-nominal.ads
+		  ;;    subtype Subtype_2 is Signed_Integer_Type range 10 ..
+		  ;;      20;
 
+		  private_type_declaration
+		  ;; type Private_Type_2 is abstract tagged limited
+		  ;;  private;
+		  )
 		 (+ (current-column) ada-indent-broken))
 
 		(null_procedure_declaration
@@ -1228,8 +1261,47 @@ cached token, return new indentation for point."
       ;; would align the comment with the block-middle, which is wrong. So
       ;; we only call ada-wisi-after-cache.
 
-      ;; FIXME: need option to match gnat style check; change indentation to match (ie mod 3)
-      (ada-wisi-after-cache))
+      (let ((indent (ada-wisi-after-cache))
+	    prev-indent next-indent)
+	(if ada-indent-comment-gnat
+	  ;; match the gnat comment indent style check; comments must
+	  ;; be aligned to one of:
+	  ;;
+	  ;; - multiple of ada-indent
+	  ;; - next non-blank line
+	  ;; - previous non-blank line
+	  ;;
+	  ;; Note that we must indent the prev and next lines, in case
+	  ;; they are not currently correct.
+	  (cond
+	   ((= 0 (% indent ada-indent))
+	    ;; this will handle comments at bob and eob, so we don't
+	    ;; need to worry about those positions in the next checks.
+	    indent)
+
+	   ((and (setq prev-indent
+		       (save-excursion (forward-line -1)(indent-according-to-mode)(current-indentation)))
+		 (= indent prev-indent))
+	    indent)
+
+	   ((and (setq next-indent
+		       ;; we use forward-comment here, instead of
+		       ;; forward-line, because consecutive comment
+		       ;; lines are indented to the current one, which
+		       ;; we don't know yet.
+		       (save-excursion (forward-comment (point-max))(indent-according-to-mode)(current-indentation)))
+		 (= indent next-indent))
+	    indent)
+
+	   (t
+	    (or
+	     prev-indent
+	     next-indent
+	     (floor indent ada-indent)))
+	   )
+
+	  ;; not forcing gnat style
+	  indent)))
 
       (t
        ;; comment is after a comment
@@ -1295,6 +1367,17 @@ cached token, return new indentation for point."
 	   (memq (wisi-cache-nonterm cache) '(use_clause with_clause))
 	   ))))
 
+(defun ada-wisi-in-case-expression ()
+  "For `ada-in-case-expression'."
+  (save-excursion
+    ;; Used by ada-align, which does indent, which will require parse
+    ;; We know we are in a paren.
+    (ada-goto-open-paren 1)
+    (let ((cache (wisi-get-cache (point))))
+      (and cache
+	   (eq (wisi-cache-nonterm cache) 'case_expression)))
+    ))
+
 (defun ada-wisi-goto-subunit-name ()
   "For `ada-goto-subunit-name'."
   (wisi-validate-cache (point-max))
@@ -1356,7 +1439,10 @@ Also return cache at start."
 		    ((protected_body protected_type_declaration single_protected_declaration)
 		     (eq (wisi-cache-token cache) 'PROTECTED))
 
-		    ((subprogram_body subprogram_declaration null_procedure_declaration)
+		    ((abstract_subprogram_declaration
+		      subprogram_body
+		      subprogram_declaration
+		      null_procedure_declaration)
 		     (memq (wisi-cache-token cache) '(NOT OVERRIDING FUNCTION PROCEDURE)))
 
 		    (task_type_declaration
@@ -1439,11 +1525,11 @@ Also return cache at start."
       (when first (setq first nil)))
     ))
 
-(defun ada-wisi-in-paramlist-p ()
+(defun ada-wisi-in-paramlist-p (&optional parse-result)
   "For `ada-in-paramlist-p'."
   (wisi-validate-cache (point))
   ;; (info "(elisp)Parser State" "*syntax-ppss*")
-  (let* ((parse-result (syntax-ppss))
+  (let ((parse-result (or parse-result (syntax-ppss)))
 	 cache)
     (and (> (nth 0 parse-result) 0)
 	 ;; cache is nil if the parse failed
@@ -1534,6 +1620,10 @@ Also return cache at start."
 	(setq default-begin (point))
 	(wisi-forward-find-token 'SEMICOLON end t))
 
+       ((equal token 'LEFT_PAREN)
+	;; anonymous access procedure type
+	(goto-char (scan-sexps (1- (point)) 1)))
+
        ((member token '(SEMICOLON RIGHT_PAREN))
 	(when (not type-end)
 	  (setq type-end (save-excursion (backward-char 1) (skip-syntax-backward " ") (point))))
@@ -1575,6 +1665,7 @@ Also return cache at start."
   (let* ((cache (wisi-forward-find-class 'name (point-max)))
          (result (wisi-cache-text cache)))
 
+    ;; See comment at ada-mode.el on why we don't overwrite ff-function-name.
     (when (not ff-function-name)
       (setq ff-function-name
 	    (concat
@@ -1595,12 +1686,11 @@ Also return cache at start."
 	  ;; bob or failed parse
 	  (setq result "")
 
-	(cl-case (wisi-cache-nonterm cache)
-	  ((generic_package_declaration generic_subprogram_declaration)
-	   ;; name is after next statement keyword
-	   (wisi-next-statement-cache cache)
-	   (setq cache (wisi-get-cache (point))))
-	  )
+	(when (memq (wisi-cache-nonterm cache)
+		    '(generic_package_declaration generic_subprogram_declaration))
+	  ;; name is after next statement keyword
+	  (wisi-next-statement-cache cache)
+	  (setq cache (wisi-get-cache (point))))
 
 	;; add or delete 'body' as needed
 	(cl-ecase (wisi-cache-nonterm cache)
@@ -1617,7 +1707,8 @@ Also return cache at start."
 	  ((protected_type_declaration single_protected_declaration)
 	   (setq result (ada-wisi-which-function-1 "protected" t)))
 
-	  ((subprogram_declaration
+	  ((abstract_subprogram_declaration
+	    subprogram_declaration
 	    generic_subprogram_declaration ;; after 'generic'
 	    null_procedure_declaration)
 	   (setq result (ada-wisi-which-function-1
@@ -1761,6 +1852,7 @@ TOKEN-TEXT; move point to just past token."
 (setq ada-make-subprogram-body 'ada-wisi-make-subprogram-body)
 (setq ada-next-statement-keyword 'wisi-forward-statement-keyword)
 (setq ada-on-context-clause 'ada-wisi-on-context-clause)
+(setq ada-in-case-expression 'ada-wisi-in-case-expression)
 (setq ada-prev-statement-keyword 'wisi-backward-statement-keyword)
 (setq ada-reset-parser 'wisi-invalidate-cache)
 (setq ada-scan-paramlist 'ada-wisi-scan-paramlist)

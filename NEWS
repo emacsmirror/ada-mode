@@ -7,6 +7,55 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.1.9
+20 Jan 2016
+
+** New option ada-indent-comment-gnat matches the GNAT style check for
+   comments in all cases (previously, there were some cases where the
+   comment indent algorithm did not match the GNAT check).
+
+** New menu command "Show source file search path"; displays
+   compilation-search-path in a buffer.
+
+** Adding missing grammar statements to allow removing parens around
+   conditional and quantified expressions.
+
+** Key binding for ada-case-create-partial-exception in ada-mode
+   changed to C-c C-M-y; this is easier to type, and matches the key
+   binding in gpr-mode.
+
+** ada-case-keyword changed to accept the symbols 'lower-case,
+   'upper-case instead of the functions downcase-word, upcase-word.
+
+** ada-case-identifier changed to accept the symbols 'mixed-case,
+   'lower-case, 'upper-case instead of the functions 'ada-mixed-case,
+   'ada-lower-case, 'ada-upper-case.
+
+** ada-fix-add-context-clause now sorts "limited with" and "private
+   with" clauses after other clauses.
+
+** ada-align now aligns '=>' in case expressions.
+
+** ada-align-paramlist now handles access function parameters:
+
+   procedure Choose
+     (X, Y, Z    :        Integer;
+      Preference : access function (A, B : Integer) return Boolean);
+
+** ada-next-statement-keyword now moves to matching close paren if on
+   open paren, ada-prev-statement-keyword moves from close paren to
+   open paren.
+
+** New hook ada-prj-parse-hook, run from ada-parse-prj-file.
+
+** GPR mode now does case adjust similar to Ada mode.
+
+** gpr parser handles nested case statements without blowing up.
+
+** gpr parser handles package renames
+
+** fix other bugs
+
 * Ada mode 5.1.8
 10 Apr 2015
 

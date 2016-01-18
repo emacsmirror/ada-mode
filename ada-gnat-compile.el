@@ -347,24 +347,23 @@ Prompt user if more than one."
 	       t)))
 
 	  ((looking-at (concat "expected \\(private \\)?type " ada-gnat-quoted-name-regexp))
-	   (progn
-	     (forward-line 1)
-	     (move-to-column message-column)
-	     (cond
-	      ((looking-at "found type access")
-	       (pop-to-buffer source-buffer)
-	       (if (looking-at "'Access")
-		   (kill-word 1)
-		 (forward-word 1)
-		 (insert ".all"))
-	       t)
-	     ((looking-at "found type .*_Access_Type")
-	       ;; assume just need '.all'
-	       (pop-to-buffer source-buffer)
+	   (forward-line 1)
+	   (move-to-column message-column)
+	   (cond
+	    ((looking-at "found type access")
+	     (pop-to-buffer source-buffer)
+	     (if (looking-at "'Access")
+		 (kill-word 1)
 	       (forward-word 1)
-	       (insert ".all")
-	       t)
-	     )))
+	       (insert ".all"))
+	     t)
+	    ((looking-at "found type .*_Access_Type")
+	     ;; assume just need '.all'
+	     (pop-to-buffer source-buffer)
+	     (forward-word 1)
+	     (insert ".all")
+	     t)
+	    ))
 
 	  ((looking-at "extra \".\" ignored")
 	   (set-buffer source-buffer)
@@ -381,7 +380,9 @@ Prompt user if more than one."
 	   ;; also 'possible missing "with Ada.Text_IO; use Ada.Text_IO"' - ignoring the 'use'
 	   (let ((package-name (match-string-no-properties 1)))
 	     (pop-to-buffer source-buffer)
-	     ;; FIXME (later): should check if prefix is already with'd, extend it
+	     ;; Could check if prefix is already with'd, extend
+	     ;; it. But no one has reported that case yet; this
+	     ;; message only occurs for predefined Ada packages.
 	     (ada-fix-add-with-clause package-name))
 	   t)
 
@@ -579,7 +580,7 @@ Prompt user if more than one."
 
 (defun ada-gnat-compile-select-prj ()
   (setq ada-fix-error-hook 'ada-gnat-fix-error-hook)
-  (setq ada-prj-show-path 'gnat-prj-show-path)
+  (setq ada-prj-show-prj-path 'gnat-prj-show-prj-path)
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files
   (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
   (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)

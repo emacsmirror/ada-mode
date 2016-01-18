@@ -1,4 +1,4 @@
-;;; ada-gnat-xref.el --- Ada mode cross-reference functionality provided by the 'gnat xref' tool  -*- lexical-binding:t -*-
+;;; ada-gnat-xref.el --- Ada mode cross-reference functionality provided by 'gnat xref'  -*- lexical-binding:t -*-
 ;;
 ;; These tools are all Ada-specific; see gpr-query for multi-language
 ;; GNAT cross-reference tools.
@@ -119,15 +119,14 @@
 	    ;; error in *.gpr; ignore here.
 	    (forward-line 1)
 	  ;; else process line
-	  (progn
-	    (skip-syntax-forward "^ ")
-	    (skip-syntax-forward " ")
-	    (if (looking-at (concat "derived from .* (" ada-gnat-file-line-col-regexp ")"))
-		;; found other item
-		(setq result (list (match-string 1)
-				   (string-to-number (match-string 2))
-				   (1- (string-to-number (match-string 3)))))
-	      (forward-line 1)))
+	  (skip-syntax-forward "^ ")
+	  (skip-syntax-forward " ")
+	  (if (looking-at (concat "derived from .* (" ada-gnat-file-line-col-regexp ")"))
+	      ;; found other item
+	      (setq result (list (match-string 1)
+				 (string-to-number (match-string 2))
+				 (1- (string-to-number (match-string 3)))))
+	    (forward-line 1))
 	  )
 	(when (eobp)
 	  (error "gnat find did not return parent types"))
@@ -159,7 +158,7 @@
 
 	(compilation-start cmd
 			   'compilation-mode
-			   (lambda (mode) (concat mode "-gnatfind")))
+			   (lambda (name) (concat name "-gnatfind")))
     ))))
 
 ;;;;; setup

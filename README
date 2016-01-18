@@ -1,4 +1,4 @@
-Emacs Ada mode version 5.1.8
+Emacs Ada mode version 5.1.9
 
 Ada mode requires Emacs 24.2 or greater
 
@@ -22,7 +22,7 @@ Unzip to a convenient place (we will use ~/ada-mode in the following).
 
 In a shell:
 $ cd ~/ada-mode/build/wisi
-$ byte-compile
+$ make byte-compile
 
 Edit your ~/.emacs, add:
 

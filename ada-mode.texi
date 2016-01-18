@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 5.1.8
+@title Ada Mode Version 5.1.9
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -35,6 +35,8 @@ developing GNU and promoting software freedom.''
 @contents
 
 @node Top, Overview, (dir), (dir)
+
+Ada Mode Version 5.1.9
 
 @ifnottex
 @insertcopying
@@ -136,24 +138,32 @@ tool @code{gpr_query}, which supports Ada, C, C++, and any other
 language for which AdaCore gcc provides the @code{-fdump-xref}
 (@code{-fdump-xref} is an AdaCore extension).
 
+@c FIXME: list xref features supported by gpr_query but not gnatfind
+@c at least:
+@c C and C++ source code
+@c ada-xref-overriding-function
+@c ada-xref-overridden-function
+
 @code{gpr_query} requires the @code{gnatcoll} library provided by
 AdaCore, distributed with GNAT GPL 2014.
 
 To build @code{gpr_query}, assuming GNAT GPL 2014 is installed in
 @file{/usr/gnat-gpl-2014}, and @file{/usr/gnat-gpl-2014/bin} is in
 PATH (if you are running Windows, use Cygwin bash to run these
-commands):
+commands, with GNAT GPL bin first in PATH) (note that
+gnatcoll-gpl-2014-src.tar.gz unzips to gnatcoll-1.7w-src):
 
 @example
 tar xf ~/Downloads/gnatcoll-gpl-2014-src.tar.gz
-cd gnatcoll-gpl-2014-src
-./configure --enable-projects --prefix=/usr/gnat-gpl-2014
+cd gnatcoll-1.7w-src
+./configure --prefix=/usr/gnat-gpl-2014
+@c on cygwin, finds cygwin as build type; not a problem
 @c make Gnatcoll_Build=Debug
 @c sudo make Gnatcoll_Build=Debug install
 make
 sudo make install
 cd ~/.emacs.d/elpa/ada-mode-5.xx/build
-make install-gpr_query
+make install
 @end example
 
 To build an sqlite3 executable that is compatible with the database
@@ -329,6 +339,18 @@ Navigate to subprograms and types by name, from a minibuffer menu.
 @item speedbar
 Navigate to subprograms and types by name, from a list in a dedicated window.
 @item which-func
+@item jit-lock-defer-time
+In large files, parsing is slow, so it gets in the way of
+interactive typing due to immediate font-lock triggering a
+parse. Delay the font-lock by setting an Emacs file-local variable
+in an Ada comment:
+
+@example
+--  Local Variables:
+--  jit-lock-defer-time: 0.5
+--  End:
+@end example
+
 @end table
 
 The above can all be set by the following code in your
@@ -1061,7 +1083,7 @@ Some variables (like @code{src_dir}) are lists; multiple occurrences
 are concatenated.
 
 There must be no space between the variable name and ``='', and no
-trailing spaces.
+trailing spaces after the value.
 
 The current project file is given by the lisp variable
 @code{ada-prj-default-project-file}, and shown by the menu command
@@ -1091,10 +1113,15 @@ just @code{ada-select-prj-file}, or by selecting it from the menu.
 @section Project file variables
 
 To set a project variable that is a list, specify each element of the
-list on a separate line in the project file.
+list on a separate line in the project file. The value on the last
+line is the last element in the list.
 
-Process environment variables can be referenced using the
-normal @code{$var} syntax.
+A variable name that starts with @code{$} is set as a process
+environment variable, for processes launched from Emacs for the
+project.
+
+In variable values, process environment variables can be referenced
+using the normal @code{$var} syntax.
 
 Most project variables have defaults that can be changed by setting
 elisp variables; the table below identifies the elisp variable for each
@@ -1188,6 +1215,7 @@ project file.
 @item @code{gpr_project_path}   [default: @code{""}]
 Same as @code{ada_project_path}.
 
+@c FIXME: add ada-build project vars
 @end table
 
 @node Moving Through Ada Code, Identifier completion, Project files, Top
@@ -1322,6 +1350,20 @@ Number of columns to indent the continuation of a broken line.
 @item @code{ada-indent-comment-col-0}  (default value: nil)
 If non-nil, comments currently starting in column 0 are left in column
 0.  Otherwise, they are indented with previous comments or code.
+
+@item @code{ada-indent-comment-gnat}  (default value: nil)
+If non-nil, comments are indented to meet the GNAT style check; one
+of:
+   @itemize
+   @item
+   multiple of @code{ada-indent}
+   @item
+   next non-blank line
+   @item
+   previous non-blank line
+   @end itemize
+
+Otherwise, they are indented with previous comments or code.
 
 @item @code{ada-indent-label}            (default value: -3)
 Number of columns to indent a label.

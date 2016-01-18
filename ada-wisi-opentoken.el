@@ -1,5 +1,5 @@
-;;; ada-wisi-opentoken.el --- An indentation function for ada-wisi that indents OpenToken  -*- lexical-binding:t -*-
-;; grammar statements nicely.
+;; ada-wisi-opentoken.el --- An indentation function for ada-wisi that indents  -*- lexical-binding:t -*-
+;; OpenTokengrammar statements nicely.
 
 ;; Copyright (C) 2013-2015  Free Software Foundation, Inc.
 

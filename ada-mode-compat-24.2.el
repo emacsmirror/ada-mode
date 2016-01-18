@@ -1,4 +1,5 @@
-;;; ada-mode-compat-24.2.el --- Implement current Emacs features not present in Emacs 24.2  -*- lexical-binding:t -*-
+;; ada-mode-compat-24.2.el --- Implement current Emacs features not present in Emacs 24.2  -*- lexical-binding:t -*-
+;; FIXME: rename to ada-mode-compat.el, rely on functionp etc. doc emacs version for each item
 
 ;; Copyright (C) 2014-2015 Free Software Foundation, Inc.
 
@@ -19,13 +20,18 @@
 
 ;; using cl-lib 0.4 from Gnu ELPA
 
-(defun file-name-base (&optional filename)
-  "Return the base name of the FILENAME: no directory, no extension.
+(when (not (functionp 'file-name-base))
+  (defun file-name-base (&optional filename)
+    "Return the base name of the FILENAME: no directory, no extension.
 FILENAME defaults to `buffer-file-name'."
-  (file-name-sans-extension
-   (file-name-nondirectory (or filename (buffer-file-name)))))
+    (file-name-sans-extension
+     (file-name-nondirectory (or filename (buffer-file-name))))))
 
+(when (not (functionp 'font-lock-ensure))
+  (defun font-lock-ensure (&optional beg end)
+    (font-lock-fontify-region (or beg (point-min)) (or end (point-max)))))
 
+;; FIXME: need cl-flet, but there is no macrop
 (provide 'ada-mode-compat-24.2)
 
 ;; end of file
