@@ -2598,8 +2598,8 @@ If POSTFIX and JUSTIFY are non-nil, `ada-fill-comment-postfix' is appended
 to each line filled and justified.
 The paragraph is indented on the first line."
   (interactive "P")
-  (if (and (not (ada-in-comment-p))
-	   (not (looking-at "[ \t]*--")))
+  (if (not (or (ada-in-comment-p)
+               (looking-at "[ \t]*--")))
       (error "Not inside comment"))
 
   ;; fill-region-as-paragraph leaves comment text exposed (without
