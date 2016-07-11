@@ -110,7 +110,7 @@ Example :
 (make-variable-buffer-local 'ada-indent-label)
 
 (defcustom ada-indent-record-rel-type 3
-  "Indentation for 'record' relative to 'type' or 'use'.
+  "Indentation for `record' relative to `type' or `use'.
 
 An example is:
    type A is
@@ -120,9 +120,9 @@ An example is:
 (make-variable-buffer-local 'ada-indent-record-rel-type)
 
 (defcustom ada-indent-renames 2
-  "Indentation for 'renames' relative to the matching subprogram keyword.
+  "Indentation for `renames' relative to the matching subprogram keyword.
 
-For 'renames' of non-subprograms the indentation is
+For `renames' of non-subprograms the indentation is
 `ada-indent-broken' relative to the line containing the matching
 keyword.
 
@@ -149,15 +149,15 @@ Examples:
 (make-variable-buffer-local 'ada-indent-renames)
 
 (defcustom ada-indent-return 0
-  "Indentation for 'return' relative to the matching 'function' keyword.
+  "Indentation for `return' relative to the matching `function' keyword.
 
 If the function has parameters, then if `ada-indent-return' is
 zero or less the indentation is abs `ada-indent-return' relative
 to the open parenthesis; if `ada-indent-return' is one or more,
-indentation is relative to line containing 'function'.
+indentation is relative to line containing `function'.
 
 If the function has no parameters, `ada-indent-broken' is used
-relative to line containing 'function'.
+relative to line containing `function'.
 
 An example is:
    function A (B : Integer)
@@ -178,7 +178,7 @@ An example is:
 	(message "WARNING: setting `ada-indent-use' to obsolete `ada-use-indent'")
 	ada-use-indent)
       ada-indent-broken)
-  "Indentation for the lines in a 'use' statement.
+  "Indentation for the lines in a `use' statement.
 
 An example is:
    use Ada.Text_IO,
@@ -199,7 +199,7 @@ An example is:
 	(message "WARNING: setting `ada-indent-when' to obsolete `ada-when-indent'")
 	ada-when-indent)
       3)
-  "Indentation for 'when' relative to 'exception', 'case', 'or' in select.
+  "Indentation for `when' relative to `exception', `case', `or' in select.
 
 An example is:
    case A is
@@ -220,7 +220,7 @@ An example is:
 	(message "WARNING: setting `ada-indent-with' to obsolete `ada-with-indent'")
 	ada-with-indent)
       ada-indent-broken)
-  "Indentation for the lines in a 'with' context clause.
+  "Indentation for the lines in a `with' context clause.
 
 An example is:
    with Ada.Text_IO,

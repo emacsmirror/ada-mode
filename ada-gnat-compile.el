@@ -616,7 +616,7 @@ Prompt user if more than one."
   )
 
 (defun ada-gnat-compile ()
-  "Set Ada mode global vars to use 'gnat' for compiling."
+  "Set Ada mode global vars to use `gnat' for compiling."
   (add-to-list 'ada-prj-file-ext-extra     "gpr")
   (add-to-list 'ada-prj-parser-alist       '("gpr" . gnat-parse-gpr))
   (add-to-list 'ada-select-prj-compiler    '(gnat  . ada-gnat-compile-select-prj))

@@ -44,7 +44,7 @@
 (defconst ada-gnat-file-line-col-regexp "\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)")
 
 (defun ada-gnat-xref-other (identifier file line col)
-  "For `ada-xref-other-function', using 'gnat find', which is Ada-specific."
+  "For `ada-xref-other-function', using `gnat find', which is Ada-specific."
 
   (when (eq ?\" (aref identifier 0))
     ;; gnat find wants the quotes on operators, but the column is after the first quote.
@@ -93,7 +93,7 @@
     result))
 
 (defun ada-gnat-xref-parents (identifier file line col)
-  "For `ada-xref-parents-function', using 'gnat find', which is Ada-specific."
+  "For `ada-xref-parents-function', using `gnat find', which is Ada-specific."
 
   (let* ((arg (format "%s:%s:%d:%d" identifier file line col))
 	 (switches (list

@@ -60,14 +60,14 @@
 (defcustom ada-build-check-cmd
   (concat "${cross_prefix}gnatmake -u -c -gnatc ${gnatmake_opt} ${full_current} -cargs -I${src_dir} ${comp_opt}")
   "Default command to syntax check a single file.
-Overridden by project variable 'check_cmd'."
+Overridden by project variable `check_cmd'."
   :type 'string)
 
 (defcustom ada-build-make-cmd
   (concat "${cross_prefix}gnatmake -P${gpr_file} -o ${main} ${main} ${gnatmake_opt} "
 	  "-cargs -I${src_dir} ${comp_opt} -bargs ${bind_opt} -largs ${link_opt}")
   "Default command to compile the application.
-Overridden by project variable 'make_cmd'."
+Overridden by project variable `make_cmd'."
   :type 'string)
 
 ;; FIXME: make this more intelligent to work on Windows cmd shell?
@@ -75,7 +75,7 @@ Overridden by project variable 'make_cmd'."
 ;; runtime.
 (defcustom ada-build-run-cmd "./${main}"
   "Default command to run the application, in a spawned shell.
-Overridden by project variable 'run_cmd'."
+Overridden by project variable `run_cmd'."
   :type 'string)
 
 ;;;; code
@@ -85,11 +85,11 @@ Overridden by project variable 'run_cmd'."
 ${var} is a project variable or environment variable, $var an
 environment variable.
 
-A prefix may be specified with the format '-<prefix>${var}'; then
+A prefix may be specified with the format `-<prefix>${var}'; then
 the value is expanded with the prefix prepended. If the value is
 a list, the prefix is prepended to each list element. For
-example, if src_dir contains 'dir_1 dir_2', '-I${src_dir}'
-expands to '-Idir_1 -Idir_2'.
+example, if src_dir contains `dir_1 dir_2', `-I${src_dir}'
+expands to `-Idir_1 -Idir_2'.
 
 As a special case, ${full_current} is replaced by the current
 buffer file name including the directory and extension."
@@ -153,7 +153,7 @@ buffer file name including the directory and extension."
 (defun ada-build-find-select-prj-file ()
   "Search for a project file in the current directory, parse and select it.
 The file must have the same basename as the project variable
-'main' or the current buffer if 'main' is nil, and extension from
+`main' or the current buffer if `main' is nil, and extension from
 `ada-prj-file-extensions'.  Returns non-nil if a file is
 selected, nil otherwise."
   (let* ((base-file-name (file-name-base

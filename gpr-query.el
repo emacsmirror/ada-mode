@@ -195,7 +195,7 @@ Return buffer that holds output."
 
 (defun gpr-query-get-src-dirs (src-dirs)
   "Append list of source dirs in current gpr project to SRC-DIRS.
-Uses 'gpr_query'. Returns new list."
+Uses `gpr_query'. Returns new list."
 
   (with-current-buffer (gpr-query--session-buffer (gpr-query-cached-session))
     (gpr-query-session-send "source_dirs" t)
@@ -210,7 +210,7 @@ Uses 'gpr_query'. Returns new list."
 
 (defun gpr-query-get-prj-dirs (prj-dirs)
   "Append list of project dirs in current gpr project to PRJ-DIRS.
-Uses 'gpr_query'. Returns new list."
+Uses `gpr_query'. Returns new list."
 
   (with-current-buffer (gpr-query--session-buffer (gpr-query-cached-session))
     (gpr-query-session-send "project_path" t)

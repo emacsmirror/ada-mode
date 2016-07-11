@@ -109,7 +109,7 @@ See also `gnat-parse-emacs-final'."
 
 (defun gnat-get-paths-1 (src-dirs prj-dirs)
   "Append list of source and project dirs in current gpr project to SRC-DIRS, PRJ-DIRS.
-Uses 'gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
+Uses `gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
   (with-current-buffer (gnat-run-buffer)
     ;; gnat list -v -P can return status 0 or 4; always lists compiler dirs
     ;;

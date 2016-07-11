@@ -201,7 +201,7 @@ identifiers are Mixed_Case."
 
 (defcustom ada-case-exception-file nil
   "Default list of special casing exceptions dictionaries for identifiers.
-Override with 'casing' project variable.
+Override with `casing' project variable.
 
 New exceptions may be added interactively via `ada-case-create-exception'.
 If an exception is defined in multiple files, the first occurence is used.
@@ -597,7 +597,7 @@ Placeholders are defined by the skeleton backend."
   "See the variable `align-region-separate' for more information.")
 
 (defun ada-align ()
-  "If region is active, apply 'align'. If not, attempt to align
+  "If region is active, apply `align'. If not, attempt to align
 current construct."
   (interactive)
   (if (use-region-p)
@@ -661,7 +661,7 @@ Function is called with one optional argument; syntax-ppss result.")
   "Function to scan a region, return a list of subprogram parameter declarations (in inverse declaration order).
 Function is called with two args BEGIN END (the region).
 Each parameter declaration is represented by a list
-'((identifier ...) aliased-p in-p out-p not-null-p access-p constant-p protected-p type default)."
+((identifier ...) aliased-p in-p out-p not-null-p access-p constant-p protected-p type default)."
   ;; Summary of Ada syntax for a parameter specification:
   ;; ... : [aliased] {[in] | out | in out | [null_exclusion] access [constant | protected]} ...
   )
@@ -1169,7 +1169,7 @@ Uses `ada-case-identifier', with exceptions defined in
 
 (defun ada-case-adjust-keyword ()
   "Adjust the case of the previous word as a keyword.
-'word' here is allowed to be underscore-separated (GPR external_as_list)."
+`word' here is allowed to be underscore-separated (GPR external_as_list)."
   (save-excursion
     (let ((end   (point-marker))
 	  (start (progn (skip-syntax-backward "w_") (point))))
@@ -2233,8 +2233,8 @@ Function is called with four arguments:
 - filename containing the identifier (full path)
 - line number containing the identifier
 - column of the start of the identifier
-Returns a list '(file line column) giving the corresponding location.
-'file' may be absolute, or on `compilation-search-path'.  If point is
+Returns a list (FILE LINE COLUMN) giving the corresponding location.
+FILE may be absolute, or on `compilation-search-path'.  If point is
 at the specification, the corresponding location is the body, and vice
 versa.")
 
@@ -2348,8 +2348,8 @@ Called with four arguments:
 - filename containing the identifier
 - line number containing the identifier
 - column of the start of the identifier
-Returns a list '(file line column) giving the corresponding location.
-'file' may be absolute, or on `compilation-search-path'.")
+Returns a list (FILE LINE COLUMN) giving the corresponding location.
+FILE may be absolute, or on `compilation-search-path'.")
 
 (defun ada-show-overridden (other-window)
   "Show the overridden declaration of identifier at point."
@@ -2486,7 +2486,7 @@ is currently in.  Called with no parameters.")
   ;; Supplied by indentation engine
   "Function called with no parameters; it should move forward to
 the next keyword in the statement following the one point is
-in (ie from 'if' to 'then'). If not in a keyword, move forward to
+in (ie from `if' to `then'). If not in a keyword, move forward to
 the next keyword in the current statement. If at the last
 keyword, move forward to the first keyword in the next statement
 or next keyword in the containing statement.")
@@ -2520,7 +2520,7 @@ if on open parenthesis move to matching closing parenthesis."
   ;; Supplied by indentation engine
   "Function called with no parameters; it should move to the previous
 keyword in the statement following the one point is in (ie from
-'then' to 'if').  If at the first keyword, move to the previous
+`then' to `if').  If at the first keyword, move to the previous
 keyword in the previous statement or containing statement.")
 
 (defun ada-prev-statement-keyword ()

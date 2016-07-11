@@ -31,7 +31,7 @@
 (require 'compile)
 
 (defcustom ada-fix-sort-context-clause t
-  "*If non-nil, sort context clause when inserting 'with'"
+  "*If non-nil, sort context clause when inserting `with'"
   :type 'boolean
   :group 'ada)
 
@@ -155,7 +155,7 @@ extend a with_clause to include CHILD-NAME  .	"
       )))
 
 (defun ada-fix-add-use-type (type)
-  "Insert 'use type' clause for TYPE at start of declarative part for current construct."
+  "Insert `use type' clause for TYPE at start of declarative part for current construct."
   (ada-goto-declarative-region-start); leaves point after 'is'
   (newline)
   (insert "use type " type ";")
@@ -164,7 +164,7 @@ extend a with_clause to include CHILD-NAME  .	"
   (indent-according-to-mode))
 
 (defun ada-fix-add-use (package)
-  "Insert 'use' clause for PACKAGE at start of declarative part for current construct."
+  "Insert `use' clause for PACKAGE at start of declarative part for current construct."
   (ada-goto-declarative-region-start); leaves point after 'is'
   (newline)
   (insert "use " package ";")
