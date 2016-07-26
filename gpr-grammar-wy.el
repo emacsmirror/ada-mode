@@ -1,4 +1,4 @@
-;;; gpr-grammar-wy.el --- Generated parser support file
+;;; gpr-grammar-wy.el --- Generated parser support file  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2013 - 2015 Free Software Foundation, Inc.
 

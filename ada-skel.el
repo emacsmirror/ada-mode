@@ -1,6 +1,6 @@
 ;;; ada-skel.el --- Extension to Ada mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 1987, 1993, 1994, 1996-2015  Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1993, 1994, 1996-2016  Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -104,6 +104,34 @@ This could end in a token recognized by `ada-skel-expand'."
   "--  distributed with this program; see file COPYING. If not, write to\n"
   "--  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston,\n"
   "--  MA 02110-1335, USA.\n"
+  "\n"
+  "pragma License (GPL);\n"
+
+)
+
+(define-skeleton ada-skel-modified-gpl
+  "Modified GPLv3 copyright/license skeleton, with automatic year and owner."
+  ()
+  "--  Copyright (C) " (format-time-string "%Y ") user-full-name " All Rights Reserved.\n"
+  "--\n"
+  "--  This program is free software; you can redistribute it and/or\n"
+  "--  modify it under terms of the GNU General Public License as\n"
+  "--  published by the Free Software Foundation; either version 3, or (at\n"
+  "--  your option) any later version. This program is distributed in the\n"
+  "--  hope that it will be useful, but WITHOUT ANY WARRANTY; without even\n"
+  "--  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n"
+  "--  PURPOSE. See the GNU General Public License for more details. You\n"
+  "--  should have received a copy of the GNU General Public License\n"
+  "--  distributed with this program; see file COPYING. If not, write to\n"
+  "--  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston,\n"
+  "--  MA 02110-1335, USA.\n"
+  "--\n"
+  "--  As a special exception, if other files instantiate generics from\n"
+  "--  this unit, or you link this unit with other files to produce an\n"
+  "--  executable, this  unit  does not  by itself cause  the resulting\n"
+  "--  executable to be covered by the GNU General Public License. This\n"
+  "--  exception does not however invalidate any other reasons why the\n"
+  "--  executable file  might be covered by the  GNU Public License.\n"
   "\n"
   "pragma License (GPL);\n"
 
@@ -298,6 +326,7 @@ See `ada-find-other-file' to create library level package body from spec."
     ("case" . ada-skel-case)
     ("copyright_license"
      ("GPL" . ada-skel-gpl)
+     ("Modified GPL" . ada-skel-modified-gpl)
      ("restricted" . ada-skel-user-restricted))
     ("declare" . ada-skel-declare)
     ("entry" . ada-skel-entry)

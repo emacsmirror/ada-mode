@@ -3,7 +3,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2016  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -68,6 +68,10 @@
     (message "no project file search path set")
     ))
 
+(defun ada-gnat-default-prj (prj)
+  "For `ada-prj-default-list'."
+  (gnat-prj-add-prj-dir default-directory prj))
+
 (defun gnat-prj-parse-emacs-one (name value project)
   "Handle gnat-specific Emacs Ada project file settings.
 Return new PROJECT if NAME recognized, nil otherwise.
@@ -89,7 +93,9 @@ See also `gnat-parse-emacs-final'."
       (setq project
 	    (plist-put project
 		       'gpr_file
-		       (expand-file-name (substitute-in-file-name value))))
+		       (or
+			(locate-file (substitute-in-file-name value) (ada-prj-get 'prj_dir))
+			(expand-file-name (substitute-in-file-name value)))))
       project)
      )))
 
@@ -287,9 +293,16 @@ Assumes current buffer is (gnat-run-buffer)"
   (let* ((project-file-switch
 	  (when (ada-prj-get 'gpr_file)
 	    (concat "-P" (file-name-nondirectory (ada-prj-get 'gpr_file)))))
-	 (cmd (append (list command) (list project-file-switch) switches-args)))
+         (target-gnat (concat (ada-prj-get 'target) "gnat"))
+         ;; gnat list understands --RTS without a fully qualified
+         ;; path, gnat find (in particular) doesn't (but it doesn't
+         ;; need to, it uses the ALI files found via the GPR)
+         (runtime
+          (when (and (ada-prj-get 'runtime) (string= command "list"))
+            (list (concat "--RTS=" (ada-prj-get 'runtime)))))
+	 (cmd (append (list command) (list project-file-switch) runtime switches-args)))
 
-    (gnat-run "gnat" cmd nil expected-status)
+    (gnat-run target-gnat cmd nil expected-status)
     ))
 
 (defun gnat-run-no-prj (command &optional dir)
@@ -463,6 +476,9 @@ list."
 	 (match-beginning 3) (match-end 3) 'syntax-table '(2 . nil)))
        )
       )))
+
+;;; setup
+(add-to-list 'ada-prj-default-list 'ada-gnat-default-prj)
 
 (provide 'gnat-core)
 

@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.1.9
-;; package-requires: ((wisi "1.1.2") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.2.0
+;; package-requires: ((wisi "1.1.3") (cl-lib "0.4") (emacs "24.2"))
 ;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -168,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.1.9"))
+  (let ((version-string "5.2.0"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -219,7 +219,7 @@ preserved when the list is written back to the file."
 (defcustom ada-case-keyword 'lower-case
   "Buffer-local value that may override project variable `case_keyword'.
 Global value is default for project variable `case_keyword'.
-Function to call to adjust the case of Ada keywords."
+Indicates how to adjust the case of Ada keywords."
   :type '(choice (const lower-case)
 		 (const upper-case))
   ;; We'd like to specify that the value must be a function that takes
@@ -234,7 +234,7 @@ Function to call to adjust the case of Ada keywords."
 (defcustom ada-case-identifier 'mixed-case
   "Buffer-local value that may override project variable `case_keyword'.
 Global value is default for project variable `case_keyword'.
-Function to call to adjust the case of Ada keywords.
+Indicates how to adjust the case of Ada keywords.
 Called with three args;
 start      - buffer pos of start of identifier
 end        - end of identifier
@@ -415,6 +415,7 @@ Values defined by cross reference packages.")
      ["Show references"               ada-show-references          t]
      ["Show overriding"               ada-show-overriding          t]
      ["Show overridden"               ada-show-overridden          t]
+     ["Goto secondary error"          ada-show-secondary-error     t]
      ["Goto prev position"            ada-goto-previous-pos        t]
      ["Next placeholder"              ada-next-placeholder    t]
      ["Previous placeholder"          ada-prev-placeholder    t]
@@ -636,7 +637,10 @@ Function is called with one optional argument; syntax-ppss result.")
 (defun ada-format-paramlist ()
   "Reformat the parameter list point is in."
   (interactive)
-  (ada-goto-open-paren)
+  (condition-case nil
+      (ada-goto-open-paren)
+    (error
+     (user-error "Not in parameter list")))
   (funcall indent-line-function); so new list is indented properly
 
   (let* ((begin (point))
@@ -1357,8 +1361,10 @@ Optional PLIST defaults to `ada-prj-current-project'."
 (defvar ada-prj-default-list nil
   ;; project file parse
   "List of functions to add default project variables. Called
-with one argument; the default project properties list. Function
-should add to the properties list and return it.")
+with one argument; the default project properties
+list. `default-directory' is set to the directory containing the
+project file. Function should add to the properties list and
+return it.")
 
 (defvar ada-prj-default-compiler-alist nil
   ;; project file parse
@@ -1426,14 +1432,16 @@ list. Parser must modify or add to the property list and return it.")
   "Read Emacs Ada or compiler-specific project file PRJ-FILE, set project properties in `ada-prj-alist'."
   ;; Not called ada-prj-parse-file for Ada mode 4.01 compatibility
   ;; FIXME: need to kill gpr-query session if .gpr file has changed (like from non-agg to agg!)
+  (setq prj-file (expand-file-name prj-file))
+
+  (unless (file-readable-p prj-file)
+    (error "Project file '%s' is not readable" prj-file))
+
   (run-hooks `ada-prj-parse-hook)
-  (let ((project (ada-prj-default))
-	(parser (cdr (assoc (file-name-extension prj-file) ada-prj-parser-alist))))
 
-    (setq prj-file (expand-file-name prj-file))
-
-    (unless (file-readable-p prj-file)
-      (error "Project file '%s' is not readable" prj-file))
+  (let* ((default-directory (file-name-directory prj-file))
+	 (project (ada-prj-default))
+	 (parser (cdr (assoc (file-name-extension prj-file) ada-prj-parser-alist))))
 
     (if parser
 	;; parser may reference the "current project", so bind that now.
@@ -1893,7 +1901,7 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
 
 (defun ada-ff-special-with ()
   (let ((package-name (match-string 1)))
-    (setq ff-function-name (concat "^package\\s-+" package-name "\\([^_]\\|$\\)"))
+    (setq ff-function-name (concat "^\\(function\\|procedure\\|package\\)\\s-+" package-name "\\([^_]\\|$\\)"))
     (file-name-nondirectory
      (or
       (ff-get-file-name
@@ -2882,11 +2890,18 @@ The paragraph is indented on the first line."
 (unless (featurep 'ada-indent-engine)
   (require 'ada-wisi))
 
-(unless (featurep 'ada-xref-tool)
-  (cl-case ada-xref-tool
-    ((nil gnat) (require 'ada-gnat-xref))
-    (gpr_query (require 'gpr-query))
-    ))
+(cl-case ada-xref-tool
+  (gnat (require 'ada-gnat-xref))
+  (gpr_query (require 'gpr-query))
+  (t
+   (if (locate-file "gpr_query" exec-path '("" ".exe"))
+       (progn
+         (require 'gpr-query)
+         (setq ada-xref-tool 'gpr_query))
+     (require 'ada-gnat-xref)
+     (setq ada-xref-tool 'gnat)))
+  )
+;; FIXME: warn if gnat version >= gpl 2016, fsf 6 and no gpr_query installed
 
 (unless (featurep 'ada-compiler)
   (require 'ada-gnat-compile))

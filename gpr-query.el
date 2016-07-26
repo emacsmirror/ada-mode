@@ -3,7 +3,7 @@
 ;; gpr-query supports Ada and any gcc language that supports the
 ;; AdaCore -fdump-xref switch (which includes C, C++).
 ;;
-;; Copyright (C) 2013 - 2015  Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2016  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -432,6 +432,9 @@ Enable mode if ARG is positive."
   "For `ada-xref-refresh-function', using gpr_query."
   (interactive)
   ;; need to kill session to get changed env vars etc
+  ;;
+  ;; sometimes need to delete database, if the compiler version
+  ;; changed; that's beyond the scope of this package.
   (let ((session (gpr-query-cached-session)))
     (gpr-query-kill-session session)
     (gpr-query--start-process session)))
@@ -634,14 +637,9 @@ Enable mode if ARG is positive."
   )
 
 (provide 'gpr-query)
-(provide 'ada-xref-tool)
 
 (add-to-list 'compilation-error-regexp-alist-alist
-	     (cons 'gpr-query-ident-file       gpr-query-ident-file-regexp-alist))
-
-(unless (and (boundp 'ada-xref-tool)
-	     (default-value 'ada-xref-tool))
-  (setq ada-xref-tool 'gpr_query))
+	     (cons 'gpr-query-ident-file gpr-query-ident-file-regexp-alist))
 
 (ada-gpr-query)
 

@@ -5,7 +5,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2016  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -145,7 +145,9 @@
   ;; is asynchronous, and automatically runs the compilation error
   ;; filter.
 
-  (let* ((cmd (format "gnat find -a -r %s:%s:%d:%d" identifier file line col)))
+  (let* ((cmd (format "%sgnat find -a -r %s:%s:%d:%d"
+                      (or (ada-prj-get 'target) "")
+                      identifier file line col)))
 
     (with-current-buffer (gnat-run-buffer); for default-directory
       (let ((compilation-environment (ada-prj-get 'proc_env))
@@ -208,9 +210,5 @@
 (ada-gnat-xref)
 
 (provide 'ada-gnat-xref)
-(provide 'ada-xref-tool)
-
-(unless (default-value 'ada-xref-tool)
-  (set-default 'ada-xref-tool 'gnat))
 
 ;; end of file

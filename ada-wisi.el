@@ -552,6 +552,9 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 
 		 (t
 		  (cl-ecase (wisi-cache-nonterm containing)
+
+		    ;; abstract_subprogram_declaration with subprogram_body
+
 		    (aggregate
 		     ;; test/ada_mode-nominal-child.adb
 		     ;; return (Parent_Type_1
@@ -571,6 +574,8 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		     ;; indenting 'when'; containing is 'entry'
 		     (+ (current-column) ada-indent-broken))
 
+		    ;; expression_function_declaration with subprogram_body
+
 		    (formal_package_declaration
 		     ;; test/ada_mode-generic_package.ads
 		     ;; with package A_Package_7 is
@@ -579,6 +584,8 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		     (+ (current-column) ada-indent-broken))
 
 		    ((full_type_declaration
+
+		      ;; shared code, but out of alphabetical order:
                       protected_type_declaration
 		      single_protected_declaration
 		      single_task_declaration
@@ -660,6 +667,8 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		     ;; indenting keyword following 'generic'
 		     (current-column))
 
+		    ;; null_procedure_declaration with subprogram_body
+
 		    (object_declaration
 		     (cl-ecase (wisi-cache-token containing)
 		       (COLON
@@ -683,6 +692,23 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 			;;   := Local_1;
 			(+ (current-indentation) ada-indent-broken))
 		       ))
+
+                    ((package_declaration
+		      package_body)
+ 		     ;; test/ada_mode-nominal.ads
+		     ;; package Ada_Mode.Nominal
+		     ;; with
+		     ;;   SPARK_Mode => On
+		     ;; is
+		     ;; indenting 'with'
+		     ;;
+ 		     ;; test/ada_mode-nominal.adb
+		     ;; package body Ada_Mode.Nominal
+		     ;; with
+		     ;;   SPARK_Mode => On
+		     ;; is
+		     (save-excursion
+                       (current-column)))
 
 		    (private_extension_declaration
 		     (cl-ecase (wisi-cache-token cache)
@@ -708,12 +734,17 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 		     ;; indenting 'with'
 		     (current-indentation))
 
+		    ;; protected_type_declaration with full_type_declaration
+
 		    (qualified_expression
 		     ;; test/ada_mode-nominal-child.ads
 		     ;; Child_Obj_5 : constant Child_Type_1 :=
 		     ;;   (Parent_Type_1'
 		     ;;     (Parent_Element_1 => 1,
 		     (ada-wisi-indent-cache ada-indent-broken containing))
+
+		    ;; single_protected_declaration with full_type_declaration
+		    ;; single_task_declaration with full_type_declaration
 
 		    (statement
 		     (cl-case (wisi-cache-token containing)
@@ -730,11 +761,13 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 			(ada-wisi-indent-cache ada-indent-broken cache))
 		       ))
 
-		    ((abstract_subprogram_declaration
-		      expression_function_declaration
-		      subprogram_body
+		    ((subprogram_body
 		      subprogram_declaration
 		      subprogram_specification
+
+		      ;; shared code, but out of alphabetical order:
+		      abstract_subprogram_declaration
+		      expression_function_declaration
 		      null_procedure_declaration)
 		     (cl-ecase (wisi-cache-token cache)
 		       (IS
@@ -764,6 +797,8 @@ point must be on CACHE. PREV-TOKEN is the token before the one being indented."
 			;; indenting 'with'
 			(current-column))
 		       ))
+
+		    ;; subtype_declaration, task_type_declaration with full_type_declaration
 
 		    ))))
 	      )))) ;; end statement-other
@@ -1086,6 +1121,13 @@ cached token, return new indentation for point."
 		   ;; not indenting keyword following 'generic'
 		   (+ (current-column) ada-indent-broken))
 
+                  (paren_expression
+		   ;; test/ada_mode-expression_functions.ads
+		   ;; (for some X of Y =>
+		   ;;    Pred (X));
+		   ;; indenting "Pred"
+                   (+ (current-column) ada-indent))
+
 		  (primary
 		   ;; test/ada_mode-quantified_expressions.adb
 		   ;; if (for some J in 1 .. 10 =>
@@ -1201,6 +1243,14 @@ cached token, return new indentation for point."
 		 ;;   Constant_Indexing => Constant_Reference,
 		 ;; indenting 'Constant_Indexing'; point is on 'with'
 		 (+ (current-indentation) ada-indent-broken))
+
+		(derived_type_definition
+		 ;; test/ada_mode-nominal-child.ads
+		 ;; type Child_Type_1 is new Parent_Type_1 with
+		 ;;   -- comment between 'with' and 'record'
+		 ;;    record
+		 ;; indenting comment
+		 (+ (current-indentation) ada-indent-broken))
 		))
 
 	     ;; otherwise just hanging
@@ -1294,10 +1344,9 @@ cached token, return new indentation for point."
 	    indent)
 
 	   (t
-	    (or
-	     prev-indent
-	     next-indent
-	     (floor indent ada-indent)))
+	    ;; prev-indent and next-indent are both set here;
+	    ;; could add more checks to decide which one to use.
+	     prev-indent)
 	   )
 
 	  ;; not forcing gnat style

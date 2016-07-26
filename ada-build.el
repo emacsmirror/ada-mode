@@ -1,7 +1,7 @@
 ;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
 ;; Ada projects without 'make' or similar tool
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2015  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2016  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -66,7 +66,7 @@ Overridden by project variable `check_cmd'."
 (defcustom ada-build-make-cmd
   (concat "${cross_prefix}gnatmake -P${gpr_file} -o ${main} ${main} ${gnatmake_opt} "
 	  "-cargs -I${src_dir} ${comp_opt} -bargs ${bind_opt} -largs ${link_opt}")
-  "Default command to compile the application.
+  "Default command and link to compile the application.
 Overridden by project variable `make_cmd'."
   :type 'string)
 
