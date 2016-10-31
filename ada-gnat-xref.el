@@ -139,28 +139,31 @@
 		     )
     ))
 
-(defun ada-gnat-xref-all (identifier file line col)
+(defun ada-gnat-xref-all (identifier file line col local-only)
   "For `ada-xref-all-function'."
   ;; we use `compilation-start' to run gnat, not `gnat-run', so it
   ;; is asynchronous, and automatically runs the compilation error
   ;; filter.
 
-  (let* ((cmd (format "%sgnat find -a -r %s:%s:%d:%d"
+  (let* ((cmd (format "%sgnat find -a -r %s %s:%s:%d:%d %s"
                       (or (ada-prj-get 'target) "")
-                      identifier file line col)))
+		      (if ada-xref-full-path "-f" "")
+                      identifier file line col (if local-only file ""))))
 
     (with-current-buffer (gnat-run-buffer); for default-directory
-      (let ((compilation-environment (ada-prj-get 'proc_env))
-	    (compilation-error "reference")
+      (let ((compilation-error "reference")
 	    ;; gnat find uses standard gnu format for output, so don't
 	    ;; need to set compilation-error-regexp-alist
 	    )
+	;; compilation-environment is buffer-local; don't set in 'let'
+	(setq compilation-environment (ada-prj-get 'proc_env))
+
 	(when (ada-prj-get 'gpr_file)
 	  (setq cmd (concat cmd " -P" (file-name-nondirectory (ada-prj-get 'gpr_file)))))
 
 	(compilation-start cmd
 			   'compilation-mode
-			   (lambda (name) (concat name "-gnatfind")))
+			   (lambda (name) (concat "*" name "-gnatfind*")))
     ))))
 
 ;;;;; setup

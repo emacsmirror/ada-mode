@@ -22,7 +22,7 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Ada Mode Version 5.2.0
+Ada Mode Version 5.2.1
 
    Copyright (C) 1999 - 2016 Free Software Foundation, Inc.
 
@@ -1705,6 +1705,8 @@ here's an overview.
 * Package organization::
 * OpenToken::
 * ELPA::
+* Savannah::
+* ada-france::
 
 
 File: ada-mode.info,  Node: Directory structure,  Next: Package organization,  Prev: Developer overview,  Up: Developer overview
@@ -1990,6 +1992,26 @@ Gnu ELPA via git:
 
    'build/Makefile' contains targets for copying Ada mode source to the
 elpa workspace, and for building the elpa archive there.
+
+
+File: ada-mode.info,  Node: Savannah,  Prev: OpenToken,  Up: Developer overview
+
+14.5 Savannah
+=============
+
+The ada-mode web page, mailing list, and tarball download are hosted on
+savannah.non-gnu.org, project Emacs Ada mode
+(<https://savannah.nongnu.org/projects/ada-mode/>).  See the project
+admin page there for more information.
+
+
+File: ada-mode.info,  Node: ada-france,  Prev: OpenToken,  Up: Developer overview
+
+14.6 ada-france
+===============
+
+The source code for ada-mode is maintained in a monotone repository in
+the ada-france server <mtn://www.ada-france.org>.
 
 
 File: ada-mode.info,  Node: GNU Free Documentation License,  Next: Index,  Prev: Developer overview,  Up: Top
@@ -2538,15 +2560,17 @@ Node: Automatic casing53921
 Node: Comment Handling56625
 Node: Key summary57144
 Node: Developer overview59771
-Node: Directory structure60111
-Node: Package organization64082
-Node: Ada mode64317
-Node: gpr mode66513
-Node: GNAT core66796
-Node: Wisi67630
-Node: OpenToken68530
-Node: ELPA69132
-Node: GNU Free Documentation License69742
-Node: Index94903
+Node: Directory structure60139
+Node: Package organization64110
+Node: Ada mode64345
+Node: gpr mode66541
+Node: GNAT core66824
+Node: Wisi67658
+Node: OpenToken68558
+Node: ELPA69160
+Node: Savannah69770
+Node: ada-france70108
+Node: GNU Free Documentation License70348
+Node: Index95509
 
 End Tag Table

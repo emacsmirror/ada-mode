@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 5.2.0
+@title Ada Mode Version 5.2.1
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -36,7 +36,7 @@ developing GNU and promoting software freedom.''
 
 @node Top, Overview, (dir), (dir)
 
-Ada Mode Version 5.2.0
+Ada Mode Version 5.2.1
 
 @ifnottex
 @insertcopying
@@ -1821,6 +1821,8 @@ sources, here's an overview.
 * Package organization::
 * OpenToken::
 * ELPA::
+* Savannah::
+* ada-france::
 @end menu
 
 @node Directory structure, Package organization, Developer overview, Developer overview
@@ -2094,6 +2096,20 @@ git clone <login>@@git.savannah.gnu.org/emacs/elpa.git
 
 @file{build/Makefile} contains targets for copying Ada mode source to
 the elpa workspace, and for building the elpa archive there.
+
+@node Savannah,  , OpenToken, Developer overview
+@section Savannah
+
+The ada-mode web page, mailing list, and tarball download are hosted
+on savannah.non-gnu.org, project Emacs Ada mode
+(@url{https://savannah.nongnu.org/projects/ada-mode/}). See the
+project admin page there for more information.
+
+@node ada-france,  , OpenToken, Developer overview
+@section ada-france
+
+The source code for ada-mode is maintained in a monotone repository in
+the ada-france server @url{mtn://www.ada-france.org}.
 
 @node GNU Free Documentation License, Index, Developer overview, Top
 @appendix GNU Free Documentation License

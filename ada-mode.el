@@ -6,9 +6,9 @@
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.2.0
-;; package-requires: ((wisi "1.1.3") (cl-lib "0.4") (emacs "24.2"))
-;; url: http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html
+;; Version: 5.2.1
+;; package-requires: ((wisi "1.1.4") (cl-lib "0.4") (emacs "24.2"))
+;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
 ;;
@@ -168,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.2.0"))
+  (let ((version-string "5.2.1"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -300,6 +300,12 @@ Useful for setting `ada-xref-tool' and similar vars."
   :type 'function
   :group 'ada)
 
+(defcustom ada-xref-full-path nil
+  "If t, cross-references show the full path to source files; if
+nil, only the file name."
+  :type 'boolean
+  :safe #'booleanp)
+
 ;;;;; end of user variables
 
 (defconst ada-symbol-end
@@ -352,6 +358,7 @@ Values defined by cross reference packages.")
     (define-key map "\C-c\C-e" 	 'ada-expand)
     (define-key map "\C-c\C-f" 	 'ada-show-parse-error)
     (define-key map "\C-c\C-i" 	 'ada-indent-statement)
+    (define-key map "\C-c\C-l" 	 'ada-show-local-references)
     (define-key map "\C-c\C-m"   'ada-build-set-make)
     (define-key map "\C-c\C-n" 	 'ada-next-statement-keyword)
     (define-key map "\C-c\M-n" 	 'ada-next-placeholder)
@@ -1344,7 +1351,7 @@ Optional PLIST defaults to `ada-prj-current-project'."
 			     ada-case-exception-file
 			   (list ada-case-exception-file)))
 	(path_sep        path-separator)
-	(proc_env        process-environment)
+	(proc_env        (cl-copy-list process-environment))
 	(src_dir         (list (directory-file-name default-directory)))
 	(xref_tool       ada-xref-tool)
 	))))
@@ -1400,7 +1407,7 @@ Include properties set via `ada-prj-default-compiler-alist',
 			   ada-case-exception-file
 			 (list ada-case-exception-file))
       'path_sep        path-separator;; prj variable so users can override it for their compiler
-      'proc_env        process-environment
+      'proc_env        (cl-copy-list process-environment)
       'src_dir         (if src-dir (list src-dir) nil)
       'xref_tool       ada-xref-tool
       ))
@@ -1574,11 +1581,11 @@ Return new value of PROJECT."
 		  ;; process env var. We don't do expand-file-name
 		  ;; here because the application may be expecting a
 		  ;; simple string.
-		  (let ((process-environment (plist-get project 'proc_env)))
+		  (let ((process-environment (cl-copy-list (plist-get project 'proc_env))))
 		    (setenv (substring (match-string 1) 1)
 			    (substitute-in-file-name (match-string 2)))
 		    (setq project
-			  (plist-put project 'proc_env process-environment)))
+			  (plist-put project 'proc_env (cl-copy-list process-environment))))
 
 		;; not recognized; assume it is a user-defined variable like "comp_opt"
 		(setq project (plist-put project (intern (match-string 1)) (match-string 2)))
@@ -2305,6 +2312,7 @@ Called with four arguments:
 - filename containing the identifier
 - line number containing the identifier
 - column of the start of the identifier
+- local-only; if t, show references in current file only
 Displays a buffer in compilation-mode giving locations where the
 identifier is declared or referenced.")
 
@@ -2320,7 +2328,24 @@ identifier is declared or referenced.")
 	   (ada-identifier-at-point)
 	   (file-name-nondirectory (buffer-file-name))
 	   (line-number-at-pos)
-	   (1+ (current-column)))
+	   (1+ (current-column))
+	   nil)
+  )
+
+(defun ada-show-local-references ()
+  "Show all references of identifier at point."
+  (interactive)
+  (ada-check-current-project (buffer-file-name))
+
+  (when (null ada-xref-all-function)
+    (error "no cross reference information available"))
+
+  (funcall ada-xref-all-function
+	   (ada-identifier-at-point)
+	   (file-name-nondirectory (buffer-file-name))
+	   (line-number-at-pos)
+	   (1+ (current-column))
+	   t)
   )
 
 (defvar ada-xref-overriding-function nil

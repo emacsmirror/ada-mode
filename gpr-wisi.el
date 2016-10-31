@@ -1,6 +1,6 @@
 ;; gpr-wisi.el --- Indentation engine for gpr mode, using the wisi parser  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2013 - 2015 Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -161,16 +161,19 @@ or containing ancestor of CACHE that is at a line beginning."
 (defun gpr-wisi-which-function ()
   "For `gpr-which-function'."
   (wisi-validate-cache (point))
-  (let ((cache (wisi-backward-cache)))
-    (while (and cache
-		(not (and
-		      (memq (wisi-cache-nonterm cache) '(package_spec simple_project_declaration))
-		      (eq (wisi-cache-class cache) 'statement-start))))
-      (setq cache (wisi-goto-containing cache)))
-    (when cache
-      (wisi-forward-token); package | project
-      (wisi-token-text (wisi-forward-token)); name
-      )))
+  ;; no message on parse fail, since this could be called from which-func-mode
+  (when (> wisi-cache-max (point))
+    (let ((cache (wisi-backward-cache)))
+      (while (and cache
+		  (not (and
+			(memq (wisi-cache-nonterm cache) '(package_spec simple_project_declaration))
+			(eq (wisi-cache-class cache) 'statement-start))))
+	(setq cache (wisi-goto-containing cache)))
+      (when cache
+	(wisi-forward-token); package | project
+	(wisi-token-text (wisi-forward-token)); name
+	))
+    ))
 
 ;;; debugging
 (defun gpr-wisi-debug-keys ()

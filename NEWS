@@ -7,7 +7,34 @@ Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada mode 5.2.1
+31 Oct 2016
+
+** A line starting with '(' is now always indented with
+   ada-indent-broken. Previously, in some cases it was indented by
+   ada-indent - 1. Since the defaults set ada-indent = 3,
+   ada-indent-broken = 2, this is transparent unless you use other
+   values.
+
+** GPR_PROJECT_PATH is set in the compilation process environment when
+   the Ada project is selected, and cleared when the project is
+   deselected. This allows selecting other Emacs projects, then
+   returning to an Ada project.
+
+** New function ada-show-local-references (bound to C-c C-l) searches
+   for references within the current file only.
+
+** New option ada-xref-full-path (default nil) if t, shows full paths
+   in cross references.
+
+** The indentation functions are significantly rewritten to make them
+   better organized and easier to understand and maintain. This
+   resulted in some minor indentation changes, mostly for consistency;
+   in particular, case expressions are indented by ada-indent-broken,
+   to match if espressions.
+
 * Ada mode 5.2.0
+26 Jul 2016
 
 ** GNAT 2016 drops support for 'gnat find'; users must use gpr_query.
 

@@ -45,13 +45,13 @@
 
     (setq project (plist-put project 'prj_dir prj-dir))
 
-    (let ((process-environment (plist-get project 'proc_env)))
+    (let ((process-environment (cl-copy-list (plist-get project 'proc_env))))
       (setenv "GPR_PROJECT_PATH"
 	      (mapconcat 'identity
 			 (plist-get project 'prj_dir)
 			 (plist-get project 'path_sep)))
 
-      (setq project (plist-put project 'proc_env process-environment))
+      (setq project (plist-put project 'proc_env (cl-copy-list process-environment)))
       )
 
     project))
@@ -76,7 +76,7 @@
   "Handle gnat-specific Emacs Ada project file settings.
 Return new PROJECT if NAME recognized, nil otherwise.
 See also `gnat-parse-emacs-final'."
-  (let ((process-environment (plist-get project 'proc_env))); for substitute-in-file-name
+  (let ((process-environment (cl-copy-list (plist-get project 'proc_env)))); for substitute-in-file-name
     (cond
      ((or
        ;; we allow either name here for backward compatibility
@@ -264,7 +264,7 @@ Assumes current buffer is (gnat-run-buffer)"
 
   (setq command (cl-delete-if 'null command))
 
-  (let ((process-environment (ada-prj-get 'proc_env)) ;; for GPR_PROJECT_PATH
+  (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env))) ;; for GPR_PROJECT_PATH
 	status)
 
     (insert (format "GPR_PROJECT_PATH=%s\n%s " (getenv "GPR_PROJECT_PATH") exec)); for debugging
@@ -438,7 +438,7 @@ list."
 		(split-string (ada-prj-get 'gnat_stub_opts))))
 	(switches (when (ada-prj-get 'gnat_stub_switches)
 		    (split-string (ada-prj-get 'gnat_stub_switches))))
-	(process-environment (ada-prj-get 'proc_env)) ;; for GPR_PROJECT_PATH
+	(process-environment (cl-copy-list (ada-prj-get 'proc_env))) ;; for GPR_PROJECT_PATH
 	)
 
     ;; Make sure all relevant files are saved to disk.

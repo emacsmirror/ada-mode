@@ -6,7 +6,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2015  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2016  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -34,6 +34,7 @@
 ;; By default, ada-mode is configured to load this file, so nothing
 ;; special needs to done to use it.
 
+(require 'cl-lib)
 (require 'compile)
 (require 'gnat-core)
 
@@ -589,6 +590,10 @@ Prompt user if more than one."
   ;;
   ;; find error locations in .gpr files
   (setq compilation-search-path (append compilation-search-path (ada-prj-get 'prj_dir)))
+  (setq compilation-environment
+	(list
+	 (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env))))
+	   (concat "GPR_PROJECT_PATH=" (getenv "GPR_PROJECT_PATH")))))
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.
@@ -608,6 +613,7 @@ Prompt user if more than one."
   (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
 
   ;; don't need to delete from compilation-search-path; completely rewritten in ada-select-prj-file
+  (setq compilation-environment nil)
 
   (setq ada-mode-hook (delq 'gnatprep-setup ada-mode-hook))
 

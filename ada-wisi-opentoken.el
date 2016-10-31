@@ -1,7 +1,7 @@
 ;; ada-wisi-opentoken.el --- An indentation function for ada-wisi that indents  -*- lexical-binding:t -*-
 ;; OpenTokengrammar statements nicely.
 
-;; Copyright (C) 2013-2015  Free Software Foundation, Inc.
+;; Copyright (C) 2013-2016  Free Software Foundation, Inc.
 
 ;; This file is part of GNU Emacs.
 
@@ -46,13 +46,22 @@
     (let ((token-text (wisi-token-text (wisi-backward-token))))
       (cond
        ((equal token-text "<=")
-	(back-to-indentation)
-	(+ (current-column) ada-indent-broken))
+	(+ (current-indentation) ada-indent-broken))
 
        ((member token-text '("+" "&"))
 	(while (not (equal "<=" (wisi-token-text (wisi-backward-token)))))
-	(back-to-indentation)
-	(+ (current-column) ada-indent-broken))
+	(+ (current-indentation) ada-indent-broken))
+
+       ((equal token-text "and")
+	(wisi-goto-containing (wisi-backward-cache))
+	;; test/ada_mode-opentoken.ads
+	;; Tokens.Statement <= Add_Statement and
+	;; Add_Statement <=
+	;;   ... and
+	;; Add_Statement <=
+	;;
+	;; point is on :=
+	(+ (current-indentation) ada-indent-broken))
        ))))
 
 (defconst ada-wisi-opentoken-align

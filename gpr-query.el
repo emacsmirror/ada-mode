@@ -58,13 +58,11 @@
     (setf (gpr-query--session-buffer session) (gnat-run-buffer gpr-query-buffer-name-prefix)))
 
   (with-current-buffer (gpr-query--session-buffer session)
-    (let ((process-environment (ada-prj-get 'proc_env)) ;; for GPR_PROJECT_PATH
+    (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env))) ;; for GPR_PROJECT_PATH
 
 	  (project-file (file-name-nondirectory (ada-prj-get 'gpr_file))))
       (erase-buffer); delete any previous messages, prompt
       (setf (gpr-query--session-process session)
-	    ;; gnatcoll-1.6 can't handle aggregate projects; M910-032
-	    ;; gpr_query can handle some aggregate projects, but not all
 	    (start-process (concat "gpr_query " (buffer-name))
 			   (gpr-query--session-buffer session)
 			   "gpr_query"
@@ -245,9 +243,9 @@ Uses `gpr_query'. Returns new list."
 (defun gpr-query-compilation (identifier file line col cmd comp-err)
   "Run gpr_query IDENTIFIER:FILE:LINE:COL CMD,
 set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
-  ;; Useful when gpr_query will return a list of references; we use
-  ;; `compilation-start' to run gpr_query, so the user can navigate
-  ;; to each result in turn via `next-error'.
+  ;; Useful when gpr_query will return a list of references; the user
+  ;; can navigate to each result in turn via `next-error'.
+  ;; FIXME: implement ada-xref-full-path.
   (let ((cmd-1 (format "%s %s:%s:%d:%d" cmd identifier file line col))
 	(result-count 0)
 	target-file target-line target-col)
@@ -557,8 +555,9 @@ Enable mode if ARG is positive."
       (message "parsing result ... done")
       result)))
 
-(defun gpr-query-all (identifier file line col)
+(defun gpr-query-all (identifier file line col _local-only)
   "For `ada-xref-all-function', using gpr_query."
+  ;; FIXME: implement local-only
   (gpr-query-compilation identifier file line col "refs" 'gpr-query-ident-file))
 
 (defun gpr-query-parents (identifier file line col)

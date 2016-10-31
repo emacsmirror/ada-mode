@@ -37,6 +37,7 @@
 (require 'ada-mode-compat-24.2)
 
 (require 'ada-mode)
+(require 'cl-lib)
 
 ;;;; User customization
 
@@ -249,7 +250,7 @@ If CONFIRM or `ada-build-confirm-command' are non-nil, ask for
 user confirmation of the command, using PROMPT."
   (ada-build-require-project-file)
   (let ((cmd (ada-prj-get prj-field))
-	(process-environment (ada-prj-get 'proc_env)))
+	(process-environment (cl-copy-list (ada-prj-get 'proc_env))))
 
     (unless cmd
       (setq cmd '("")
