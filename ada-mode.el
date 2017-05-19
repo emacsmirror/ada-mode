@@ -1,6 +1,6 @@
 ;;; ada-mode.el --- major-mode for editing Ada sources  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2016  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -335,7 +335,7 @@ Values defined by cross reference packages.")
 	     map
 	     (char-to-string key)
 	     'ada-case-adjust-interactive)))
-	'( ?_ ?% ?& ?* ?( ?) ?- ?= ?+
+	'( ?_ ?% ?& ?* ?\( ?\) ?- ?= ?+
 	      ?| ?\; ?: ?' ?\" ?< ?, ?. ?> ?/ ?\n 32 ?\r ))
   )
 
@@ -2937,4 +2937,4 @@ The paragraph is indented on the first line."
 (when (featurep 'imenu)
   (require 'ada-imenu))
 
-;;; end of file
+;;; ada-mode.el ends here
