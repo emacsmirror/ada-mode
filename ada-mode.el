@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.2.1
-;; package-requires: ((wisi "1.1.4") (cl-lib "0.4") (emacs "24.2"))
+;; Version: 5.2.2
+;; package-requires: ((wisi "1.1.5") (cl-lib "0.4") (emacs "24.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -168,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.2.1"))
+  (let ((version-string "5.2.2"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -306,6 +306,12 @@ nil, only the file name."
   :type 'boolean
   :safe #'booleanp)
 
+(defcustom ada-gps-indent-exec "ada_mode_gps_indent"
+  ;; declared here, not in ada-gps.el, for auto-detection of indent engine below
+  "Name of executable to use for ada_mode_gps_indent,"
+  :type 'string
+  :group 'ada-indentation)
+
 ;;;;; end of user variables
 
 (defconst ada-symbol-end
@@ -360,11 +366,11 @@ Values defined by cross reference packages.")
     (define-key map "\C-c\C-i" 	 'ada-indent-statement)
     (define-key map "\C-c\C-l" 	 'ada-show-local-references)
     (define-key map "\C-c\C-m"   'ada-build-set-make)
-    (define-key map "\C-c\C-n" 	 'ada-next-statement-keyword)
+    (define-key map "\C-c\C-n" 	 'forward-sexp)
     (define-key map "\C-c\M-n" 	 'ada-next-placeholder)
     (define-key map "\C-c\C-o" 	 'ada-find-other-file)
     (define-key map "\C-c\M-o" 	 'ada-find-other-file-noset)
-    (define-key map "\C-c\C-p" 	 'ada-prev-statement-keyword)
+    (define-key map "\C-c\C-p" 	 'backward-sexp)
     (define-key map "\C-c\M-p" 	 'ada-prev-placeholder)
     (define-key map "\C-c\C-q" 	 'ada-xref-refresh)
     (define-key map "\C-c\C-r" 	 'ada-show-references)
@@ -415,7 +421,9 @@ Values defined by cross reference packages.")
      ["Other file don't find decl"    ada-find-other-file-noset    t]
      ["Find file in project"          ada-find-file                t]
      ["Goto declaration/body"         ada-goto-declaration         t]
-     ["Goto next statement keyword"   ada-next-statement-keyword   t]
+     ["Goto next statement keyword"   forward-sexp   t]
+     ["Goto prev statement keyword"   backward-sexp   t]
+     ["Goto declarative region start" ada-goto-declarative-region-start   t]
      ["Goto declaration start"        ada-goto-declaration-start   t]
      ["Goto declaration end"          ada-goto-declaration-end     t]
      ["Show parent declarations"      ada-show-declaration-parents t]
@@ -454,31 +462,36 @@ Values defined by cross reference packages.")
      ["Reset parser"                  ada-reset-parser             t]
      )))
 
-;; This doesn't need to be buffer-local because there can be only one
-;; popup menu at a time.
-(defvar ada-context-menu-on-identifier nil)
-
 (easy-menu-define ada-context-menu nil
   "Context menu keymap for Ada mode"
   '("Ada"
-    ["Make body for subprogram"      ada-make-subprogram-body     t]
-    ["Goto declaration/body"         ada-goto-declaration         :included ada-context-menu-on-identifier]
-    ["Show parent declarations"      ada-show-declaration-parents :included ada-context-menu-on-identifier]
-    ["Show references"               ada-show-references          :included ada-context-menu-on-identifier]
-    ["Show overriding"               ada-show-overriding          :included ada-context-menu-on-identifier]
-    ["Show overridden"               ada-show-overridden          :included ada-context-menu-on-identifier]
-    ["Expand skeleton"               ada-expand                        t]
-    ["Create full case exception"    ada-case-create-exception         t]
-    ["Create partial case exception" ada-case-create-partial-exception t]
+    ["Goto declaration/body"         ada-goto-declaration         t]
+    ["Show parent declarations"      ada-show-declaration-parents t]
+    ["Goto declarative region start" ada-goto-declarative-region-start   t]
+    ["Goto declaration start"        ada-goto-declaration-start   t]
+    ["Goto declaration end"          ada-goto-declaration-end     t]
+    ["Show parent declarations"      ada-show-declaration-parents t]
+    ["Show references"               ada-show-references          t]
+    ["Show overriding"               ada-show-overriding          t]
+    ["Show overridden"               ada-show-overridden          t]
+    ["Goto next statement keyword"   forward-sexp   t]
+    ["Goto prev statement keyword"   backward-sexp   t]
 
     ["-"                nil nil]
+
     ["Align"                       ada-align                  t]
+    ["Comment/uncomment selection" comment-dwim               t]
+    ["Fill comment paragraph"         ada-fill-comment-paragraph           (ada-in-comment-p)]
+    ["Fill comment paragraph justify" (ada-fill-comment-paragraph 'full)   (ada-in-comment-p)]
+    ["Fill comment paragraph postfix" (ada-fill-comment-paragraph 'full t) (ada-in-comment-p)]
     ["Adjust case at point"        ada-case-adjust-at-point   (not (use-region-p))]
     ["Adjust case region"          ada-case-adjust-region     (use-region-p)]
+    ["Create full case exception"    ada-case-create-exception         t]
+    ["Create partial case exception" ada-case-create-partial-exception t]
     ["Indent current statement"    ada-indent-statement       t]
-    ["Goto next statement keyword" ada-next-statement-keyword t]
-    ["Goto prev statement keyword" ada-next-statement-keyword t]
-    ["Other File"                  ada-find-other-file        t]))
+    ["Expand skeleton"               ada-expand                        t]
+    ["Make body for subprogram"    ada-make-subprogram-body   t]
+    ))
 
 (defun ada-popup-menu ()
   "Pops up `ada-context-menu'.
@@ -1353,6 +1366,7 @@ Optional PLIST defaults to `ada-prj-current-project'."
 	(path_sep        path-separator)
 	(proc_env        (cl-copy-list process-environment))
 	(src_dir         (list (directory-file-name default-directory)))
+        (obj_dir         (list (directory-file-name default-directory)))
 	(xref_tool       ada-xref-tool)
 	))))
 
@@ -1468,8 +1482,20 @@ list. Parser must modify or add to the property list and return it.")
 (defun ada-prj-reparse-select-current ()
   "Reparse the current project file, re-select it.
 Useful when the project file has been edited."
+  (interactive)
   (ada-parse-prj-file ada-prj-current-file)
   (ada-select-prj-file ada-prj-current-file))
+
+(defun ada-reset-comp-prj ()
+  "Reset compilation and project vars affected by a change in compiler version.
+Useful when experimenting with an upgraded compiler."
+  (interactive)
+  (when (buffer-live-p "*compilation*")
+    (with-current-buffer "*compilation*"
+      (setq compilation-environment nil)))
+  (setq ada-prj-alist nil)
+  (setq ada-prj-current-project nil)
+  )
 
 (defvar ada-prj-parse-one-compiler nil
   ;; project file parse
@@ -1507,7 +1533,7 @@ should add to or modify the list and return it.")
   "Parse the Ada mode project file PRJ-FILE, set project properties in PROJECT.
 Return new value of PROJECT."
   (let (;; fields that are lists or that otherwise require special processing
-	casing src_dir
+	casing src_dir obj_dir
 	tmp-prj
 	(parse-one-compiler (cdr (assoc ada-compiler ada-prj-parse-one-compiler)))
 	(parse-final-compiler (cdr (assoc ada-compiler ada-prj-parse-final-compiler)))
@@ -1560,6 +1586,11 @@ Return new value of PROJECT."
                          (expand-file-name (match-string 2)))
                         src_dir :test #'equal))
 
+	   ((string= (match-string 1) "obj_dir")
+	    (cl-pushnew (file-name-as-directory
+			 (expand-file-name (match-string 2)))
+			obj_dir :test #'equal))
+
 	   ((string= (match-string 1) "xref_tool")
 	    (let ((xref (intern (match-string 2))))
 	      (setq project (plist-put project 'xref_tool xref))
@@ -1599,6 +1630,7 @@ Return new value of PROJECT."
     ;; process accumulated lists
     (if casing (setq project (plist-put project 'casing (reverse casing))))
     (if src_dir (setq project (plist-put project 'src_dir (reverse src_dir))))
+    (if obj_dir (setq project (plist-put project 'obj_dir (reverse obj_dir))))
 
     (when parse-final-compiler
       ;; parse-final-compiler may reference the "current project", so
@@ -1787,8 +1819,10 @@ Called by `syntax-propertize', which is called by font-lock in
 race conditions with the grammar parser.")
 
 (defun ada-syntax-propertize (start end)
-  "Assign `syntax-table' properties in accessible part of buffer.
-In particular, character constants are set to have string syntax."
+  "For `syntax-propertize-function'.
+Assign `syntax-table' properties in region START .. END.
+In particular, character constants are set to have string syntax.
+Runs `ada-syntax-propertize-hook'."
   ;; (info "(elisp)Syntax Properties")
   ;;
   ;; called from `syntax-propertize', inside save-excursion with-silent-modifications
@@ -1845,6 +1879,15 @@ If PARSE-RESULT is non-nil, use it instead of calling `syntax-ppss'."
   "Return t if point is inside a pair of parentheses.
 If PARSE-RESULT is non-nil, use it instead of calling `syntax-ppss'."
   (> (nth 0 (or parse-result (syntax-ppss))) 0))
+
+(defun ada-pos-in-paren-p (pos)
+  "Return t if POS is inside a pair of parentheses."
+  (save-excursion
+    (> (nth 0 (syntax-ppss pos)) 0)))
+
+(defun ada-same-paren-depth-p (pos1 pos2)
+  "Return t if POS1 is at same parentheses depth as POS2."
+  (= (nth 0 (syntax-ppss pos1)) (nth 0 (syntax-ppss pos2))))
 
 (defun ada-goto-open-paren (&optional offset parse-result)
   "Move point to innermost opening paren surrounding current point, plus OFFSET.
@@ -1945,10 +1988,10 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
   ;; been set by ff-treat-special; don't reset it.
   "Function called with no parameters; it should return the name
 of the package, protected type, subprogram, or task type whose
-definition/declaration point is in or just after, or nil.  In
-addition, if ff-function-name is non-nil, store in
-ff-function-name a regexp that will find the function in the
-other file.")
+definition/declaration point is in, or for declarations that
+don't have declarative regions, just after; or nil.  In addition,
+if `ff-function-name' is non-nil, store in `ff-function-name' a
+regexp that will find the function in the other file.")
 
 (defun ada-which-function ()
   "See `ada-which-function' variable."
@@ -2119,7 +2162,7 @@ buffer in another window."
   )
 
 (defvar ada-operator-re
-  "\\+\\|-\\|/\\|\\*\\*\\|\\*\\|=\\|&\\|abs\\|mod\\|rem\\|and\\|not\\|or\\|xor\\|<=\\|<\\|>=\\|>"
+  "\\+\\|-\\|/\\|\\*\\*\\|\\*\\|=\\|&\\|\\_<\\(abs\\|mod\\|rem\\|and\\|not\\|or\\|xor\\)\\_>\\|<=\\|<\\|>=\\|>"
   "Regexp matching Ada operator_symbol.")
 
 (defun ada-identifier-at-point ()
@@ -2129,7 +2172,16 @@ identifier.  May be an Ada identifier or operator."
   (when (ada-in-comment-p)
     (error "Inside comment"))
 
-  (skip-chars-backward "a-zA-Z0-9_<>=+\\-\\*/&")
+  ;; Handle adjacent operator/identifer like:
+  ;; test/ada_mode-slices.adb
+  ;;   D1, D2 : Day := +Sun;
+
+  ;; Move to the beginning of the identifier or operator
+  (if (looking-at "[a-zA-Z0-9_]")
+      ;; In an identifier
+      (skip-chars-backward "a-zA-Z0-9_")
+    ;; In an operator
+    (skip-chars-backward "+\\-\\*/&<>="))
 
   ;; Just in front of, or inside, a string => we could have an
   ;; operator function declaration.
@@ -2151,7 +2203,11 @@ identifier.  May be an Ada identifier or operator."
 	 (looking-at (concat "\"\\(" ada-operator-re "\\)\"")))
     (concat "\"" (match-string-no-properties 1) "\""))
 
-   ((looking-at "[a-zA-Z0-9_]+\\|[+\\-*/&=<>]")
+   ((looking-at ada-operator-re)
+    ;; Return quoted operator, as this is what the back end expects.
+    (concat "\"" (match-string-no-properties 0) "\""))
+
+   ((looking-at "[a-zA-Z0-9_]+")
     (match-string-no-properties 0))
 
    (t
@@ -2247,7 +2303,8 @@ Function is called with four arguments:
 - an Ada identifier or operator_symbol
 - filename containing the identifier (full path)
 - line number containing the identifier
-- column of the start of the identifier
+- Emacs column of the start of the identifier
+Point is on the start of the identifier.
 Returns a list (FILE LINE COLUMN) giving the corresponding location.
 FILE may be absolute, or on `compilation-search-path'.  If point is
 at the specification, the corresponding location is the body, and vice
@@ -2270,7 +2327,7 @@ buffer in another window."
 		  (ada-identifier-at-point)
 		  (buffer-file-name)
 		  (line-number-at-pos)
-		  (1+ (current-column))
+		  (current-column)
 		  )))
 
     (ada-goto-source (nth 0 target)
@@ -2286,7 +2343,7 @@ Function is called with four arguments:
 - an Ada identifier or operator_symbol
 - filename containing the identifier
 - line number containing the identifier
-- column of the start of the identifier
+- Emacs column of the start of the identifier
 Displays a buffer in compilation-mode giving locations of the parent type declarations.")
 
 (defun ada-show-declaration-parents ()
@@ -2301,7 +2358,7 @@ Displays a buffer in compilation-mode giving locations of the parent type declar
 	   (ada-identifier-at-point)
 	   (file-name-nondirectory (buffer-file-name))
 	   (line-number-at-pos)
-	   (1+ (current-column)))
+	   (current-column))
   )
 
 (defvar ada-xref-all-function nil
@@ -2311,14 +2368,16 @@ Called with four arguments:
 - an Ada identifier or operator_symbol
 - filename containing the identifier
 - line number containing the identifier
-- column of the start of the identifier
+- Emacs column of the start of the identifier
 - local-only; if t, show references in current file only
+- append; if t, keep previous output in result buffer
 Displays a buffer in compilation-mode giving locations where the
 identifier is declared or referenced.")
 
-(defun ada-show-references ()
-  "Show all references of identifier at point."
-  (interactive)
+(defun ada-show-references (&optional append)
+  "Show all references of identifier at point.
+With prefix, keep previous references in output buffer."
+  (interactive "P")
   (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-all-function)
@@ -2328,13 +2387,15 @@ identifier is declared or referenced.")
 	   (ada-identifier-at-point)
 	   (file-name-nondirectory (buffer-file-name))
 	   (line-number-at-pos)
-	   (1+ (current-column))
-	   nil)
+	   (current-column)
+	   nil ;; local-only
+	   append)
   )
 
-(defun ada-show-local-references ()
-  "Show all references of identifier at point."
-  (interactive)
+(defun ada-show-local-references (&optional append)
+  "Show all references of identifier at point.
+With prefix, keep previous references in output buffer."
+  (interactive "P")
   (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-all-function)
@@ -2344,8 +2405,9 @@ identifier is declared or referenced.")
 	   (ada-identifier-at-point)
 	   (file-name-nondirectory (buffer-file-name))
 	   (line-number-at-pos)
-	   (1+ (current-column))
-	   t)
+	   (current-column)
+	   t ;; local-only
+	   append)
   )
 
 (defvar ada-xref-overriding-function nil
@@ -2355,7 +2417,7 @@ Called with four arguments:
 - an Ada identifier or operator_symbol
 - filename containing the identifier
 - line number containing the identifier
-- column of the start of the identifier
+- Emacs column of the start of the identifier
 Displays a buffer in compilation-mode giving locations of the overriding declarations.")
 
 (defun ada-show-overriding ()
@@ -2370,7 +2432,7 @@ Displays a buffer in compilation-mode giving locations of the overriding declara
 	   (ada-identifier-at-point)
 	   (file-name-nondirectory (buffer-file-name))
 	   (line-number-at-pos)
-	   (1+ (current-column)))
+	   (current-column))
   )
 
 (defvar ada-xref-overridden-function nil
@@ -2380,7 +2442,7 @@ Called with four arguments:
 - an Ada identifier or operator_symbol
 - filename containing the identifier
 - line number containing the identifier
-- column of the start of the identifier
+- Emacs column of the start of the identifier
 Returns a list (FILE LINE COLUMN) giving the corresponding location.
 FILE may be absolute, or on `compilation-search-path'.")
 
@@ -2397,7 +2459,7 @@ FILE may be absolute, or on `compilation-search-path'.")
 		  (ada-identifier-at-point)
 		  (file-name-nondirectory (buffer-file-name))
 		  (line-number-at-pos)
-		  (1+ (current-column)))))
+		  (current-column))))
 
     (ada-goto-source (nth 0 target)
 		     (nth 1 target)
@@ -2452,21 +2514,26 @@ buffer in another window."
   (let ((start-buffer (current-buffer))
 	(start-window (selected-window))
 	pos item file)
-    (set-buffer compilation-last-buffer)
-    (setq pos (next-single-property-change (point) 'ada-secondary-error))
-    (when pos
-      (setq item (get-text-property pos 'ada-secondary-error))
-      ;; file-relative-name handles absolute Windows paths from
-      ;; g++. Do this in compilation buffer to get correct
-      ;; default-directory.
-      (setq file (file-relative-name (nth 0 item)))
+    ;; We use `pop-to-buffer', not `set-buffer', so `forward-line'
+    ;; works. But that might eat an `other-frame-window-mode' prefix;
+    ;; disable that temporarily.
+    (let ((display-buffer-overriding-action nil))
+      (pop-to-buffer compilation-last-buffer nil t)
+      (setq pos (next-single-property-change (point) 'ada-secondary-error))
+      (when pos
+	(setq item (get-text-property pos 'ada-secondary-error))
+	;; file-relative-name handles absolute Windows paths from
+	;; g++. Do this in compilation buffer to get correct
+	;; default-directory.
+	(setq file (file-relative-name (nth 0 item)))
 
-      ;; Set point in compilation buffer past this secondary error, so
-      ;; user can easily go to the next one. For some reason, this
-      ;; doesn't change the visible point!?
-      (forward-line 1))
+	;; Set point in compilation buffer past this secondary error, so
+	;; user can easily go to the next one.
+	(goto-char pos)
+	(forward-line 1))
 
-    (set-buffer start-buffer);; for windowing history
+      (pop-to-buffer start-buffer nil t);; for windowing history
+      )
     (when item
       (ada-goto-source
        file
@@ -2512,17 +2579,9 @@ is currently in.  Called with no parameters.")
 
 (defun ada-goto-declarative-region-start ()
   "Call `ada-goto-declarative-region-start'."
+  (interactive)
   (when ada-goto-declarative-region-start
     (funcall ada-goto-declarative-region-start)))
-
-(defvar ada-next-statement-keyword nil
-  ;; Supplied by indentation engine
-  "Function called with no parameters; it should move forward to
-the next keyword in the statement following the one point is
-in (ie from `if' to `then'). If not in a keyword, move forward to
-the next keyword in the current statement. If at the last
-keyword, move forward to the first keyword in the next statement
-or next keyword in the containing statement.")
 
 (defvar ada-goto-end nil
   ;; Supplied by indentation engine
@@ -2533,42 +2592,6 @@ Called with no parameters.")
   "Call `ada-goto-end'."
   (when ada-goto-end
     (funcall ada-goto-end)))
-
-(defun ada-next-statement-keyword ()
-  ;; Supplied by indentation engine
-  "See `ada-next-statement-keyword' variable. In addition,
-if on open parenthesis move to matching closing parenthesis."
-  (interactive)
-  (if (= (syntax-class (syntax-after (point))) 4)
-      ;; on open paren
-      (forward-sexp)
-
-    ;; else move by keyword
-    (when ada-next-statement-keyword
-      (unless (region-active-p)
-	(push-mark))
-      (funcall ada-next-statement-keyword))))
-
-(defvar ada-prev-statement-keyword nil
-  ;; Supplied by indentation engine
-  "Function called with no parameters; it should move to the previous
-keyword in the statement following the one point is in (ie from
-`then' to `if').  If at the first keyword, move to the previous
-keyword in the previous statement or containing statement.")
-
-(defun ada-prev-statement-keyword ()
-  "See `ada-prev-statement-keyword' variable. In addition,
-if on close parenthesis move to matching open parenthesis."
-  (interactive)
-  (if (= (syntax-class (syntax-after (1- (point)))) 5)
-      ;; on close paren
-      (backward-sexp)
-
-    ;; else move by keyword
-    (when ada-prev-statement-keyword
-      (unless (region-active-p)
-	(push-mark))
-      (funcall ada-prev-statement-keyword))))
 
 ;;;; code creation
 
@@ -2776,8 +2799,11 @@ The paragraph is indented on the first line."
   (setq local-abbrev-table ada-mode-abbrev-table)
 
   (set (make-local-variable 'syntax-propertize-function) 'ada-syntax-propertize)
+  (syntax-ppss-flush-cache (point-min));; reparse with new function
+
   (when (boundp 'syntax-begin-function)
-    ;; obsolete in emacs-25.1
+    ;; default ‘beginning-of-defun’ in emacs-24.2; we need it nil
+    ;; obsolete in 25.1
     (set (make-local-variable 'syntax-begin-function) nil))
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
@@ -2813,7 +2839,9 @@ The paragraph is indented on the first line."
   (setq ff-search-directories 'compilation-search-path)
   (when (null (car compilation-search-path))
     ;; find-file doesn't handle nil in search path
-    (setq compilation-search-path (list (file-name-directory (buffer-file-name)))))
+    (setq compilation-search-path (list (if buffer-file-name
+                                            (file-name-directory (buffer-file-name))
+                                          "."))))
   (ada-set-ff-special-constructs)
 
   (set (make-local-variable 'add-log-current-defun-function)
@@ -2846,11 +2874,7 @@ The paragraph is indented on the first line."
 
   (run-mode-hooks 'ada-mode-hook)
 
-  ;; If global-font-lock is not enabled, ada-syntax-propertize is
-  ;; not run when the text is first loaded into the buffer. Recover
-  ;; from that.
-  (syntax-ppss-flush-cache (point-min))
-  (syntax-propertize (point-max))
+  (when (< emacs-major-version 25) (syntax-propertize (point-max)))
 
   (add-hook 'hack-local-variables-hook 'ada-mode-post-local-vars nil t)
   )
@@ -2864,6 +2888,8 @@ The paragraph is indented on the first line."
 
   ;; This means to fully set ada-mode interactively, user must
   ;; do M-x ada-mode M-; (hack-local-variables)
+
+  (setq hack-local-variables-hook (delq 'ada-mode-post-local-vars hack-local-variables-hook))
 
   ;; fill-region-as-paragraph in ada-fill-comment-paragraph does not
   ;; call syntax-propertize, so set comment syntax on
@@ -2912,7 +2938,8 @@ The paragraph is indented on the first line."
 
 (require 'ada-build)
 
-(unless (featurep 'ada-indent-engine)
+(if (locate-file ada-gps-indent-exec exec-path '("" ".exe"))
+    (require 'ada-gps)
   (require 'ada-wisi))
 
 (cl-case ada-xref-tool
@@ -2926,7 +2953,6 @@ The paragraph is indented on the first line."
      (require 'ada-gnat-xref)
      (setq ada-xref-tool 'gnat)))
   )
-;; FIXME: warn if gnat version >= gpl 2016, fsf 6 and no gpr_query installed
 
 (unless (featurep 'ada-compiler)
   (require 'ada-gnat-compile))
@@ -2937,4 +2963,4 @@ The paragraph is indented on the first line."
 (when (featurep 'imenu)
   (require 'ada-imenu))
 
-;;; ada-mode.el ends here
+;;; end of file

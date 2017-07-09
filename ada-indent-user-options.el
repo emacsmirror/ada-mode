@@ -1,6 +1,6 @@
 ;; user options shared by Ada mode indentation engines  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2012, 2013, 2015  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015, 2017  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Contributors: Simon Wright <simon.j.wright@mac.com>
@@ -131,9 +131,9 @@ zero or less the indentation is abs `ada-indent-renames' relative
 to the open parenthesis; if `ada-indent-renames' is one or more
 the indentation is relative to the line containing the keyword.
 
-If the subprogram has no parameters then `ada-indent-broken' the
-indentation is relative to the indentation of the line containing
-the keyword.
+If the subprogram has no parameters then the indentation is
+`ada-indent-broken' relative to the indentation of the line
+containing the keyword.
 
 Examples:
    ada-indent-renames = 2
@@ -228,6 +228,13 @@ An example is:
   :type 'integer
   :safe #'integerp)
 (make-variable-buffer-local 'ada-indent-with)
+
+(defcustom ada-indent-hanging-rel-exp nil
+  "If non-nil, indent hanging lines relative to start of expression.
+Otherwise, indent relative to previous line."
+  :type 'boolean
+  :safe #'booleanp)
+(make-variable-buffer-local 'ada-indent-hanging-rel-exp)
 
 (provide 'ada-indent-user-options)
 

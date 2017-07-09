@@ -1,7 +1,7 @@
-This is ada-mode.info, produced by makeinfo version 6.1 from
+This is ada-mode.info, produced by makeinfo version 6.3 from
 ada-mode.texi.
 
-Copyright (C) 1999 - 2016 Free Software Foundation, Inc.
+Copyright (C) 1999 - 2017 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -22,9 +22,9 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Ada Mode Version 5.2.1
+Ada Mode Version 5.2.2
 
-   Copyright (C) 1999 - 2016 Free Software Foundation, Inc.
+   Copyright (C) 1999 - 2017 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -57,6 +57,67 @@ Ada Mode Version 5.2.1
 * GNU Free Documentation License::
 * Index::
 
+ -- The Detailed Node Listing --
+
+Installation
+
+* Ada Reference Manual::
+* gpr_query::
+* ada_mode_gps_indent::
+
+gpr_query
+
+* Building GNATCOLL::
+
+ada_mode_gps_indent
+
+* ada_mode_gps_indent install::
+* ada_mode_gps_indent configure::
+
+Customizing Ada mode
+
+* Non-standard file names::
+* Other compiler::
+* Other cross-reference::
+* Other customization::
+
+Compiling Executing
+
+* Compile commands::
+* Compiling Examples::
+* Compiler errors::
+
+Compiling Examples
+
+* No project files::            Just menus
+* Set compiler options::        A basic Ada mode project file
+* Set source search path::      Source in multiple directories
+* Use GNAT project file::
+* Use multiple GNAT project files::
+* Use a Makefile::
+
+Project files
+
+* Project file overview::
+* Project file variables::
+
+Developer overview
+
+* Directory structure::
+* Package organization::
+* OpenToken::
+* ELPA::
+* Savannah::
+* ada-france::
+
+Package organization
+
+* Ada mode::
+* gpr mode::
+* GNAT core::
+* Wisi::
+
+
 
 File: ada-mode.info,  Node: Overview,  Next: Installation,  Prev: Top,  Up: Top
 
@@ -73,7 +134,7 @@ powerful code navigation (jump to definition, find all uses, etc).
 will automatically load and activate Ada mode.
 
    Ada mode works without any customization, if you are using the GNAT
-compiler (<https://libre2.adacore.com/>) and the GNAT default naming
+compiler (<https://libre.adacore.com/>) and the GNAT default naming
 convention.
 
    You must customize a few things if you are using a different file
@@ -96,7 +157,7 @@ File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,
 2 Installation
 **************
 
-Ada mode requires Emacs 24.2 or greater.
+Ada mode requires Emacs 24.3 or greater.
 
    Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via 'M-x list-packages' (*note (emacs)Packages::).  You must
@@ -121,6 +182,7 @@ ada-mode-version'.
 
 * Ada Reference Manual::
 * gpr_query::
+* ada_mode_gps_indent::
 
 
 File: ada-mode.info,  Node: Ada Reference Manual,  Next: gpr_query,  Prev: Installation,  Up: Installation
@@ -161,8 +223,15 @@ format can change with each compiler version.  'gpr_query' creates a
 database of cross reference information; that database must be deleted
 if the compiler version changes, to force a complete rebuild.
 
-2.2.1 Building GNATCOLL if required
------------------------------------
+* Menu:
+
+* Building GNATCOLL::
+
+
+File: ada-mode.info,  Node: Building GNATCOLL,  Up: gpr_query
+
+2.2.1 Building GNATCOLL
+-----------------------
 
 'GNATCOLL' may already be installed on your system: if it is,
 '$prefix/lib/gnat' will contain 'gnatcoll' GPR files.  If not, configure
@@ -191,15 +260,81 @@ executable that is compatible with the database it creates:
 2.2.2 Building 'gpr_query'
 --------------------------
 
-To build and install 'gpr_query', assuming the 'ada-mode-5.2.0' GNU ELPA
-package is installed:
+To build and install 'gpr_query', assuming the 'ada-mode-5.2.xx' GNU
+ELPA package is installed:
 
-     cd ~/.emacs.d/elpa/ada-mode-5.2.0
+     cd ~/.emacs.d/elpa/ada-mode-5.2.xx
      gprbuild -p -P gpr_query.gpr
      gprinstall -P gpr_query.gpr
 
    'ada-mode' will use 'gpr_query' for cross reference functions if
 'gpr_query' is found in 'PATH'.
+
+
+File: ada-mode.info,  Node: ada_mode_gps_indent,  Prev: gpr_query,  Up: Installation
+
+2.3 ada_mode_gps_indent
+=======================
+
+'ada_mode_gps_indent' is an alternate indentation engine, using the
+indentation engine from AdaCore's GPS. It is fast for indenting in very
+large files; the default ada-wisi is slow in that case.  It also
+tolerates most syntax errors, producing reasonable indentation.
+
+   It can be used either as the primary indentation engine, or as a
+fallback when ada-wisi fails due to syntax errors or in large files.
+
+   In either case, the ada-wisi parser is still used for syntax
+highlighting (font-lock) and navigation.
+
+   The ada-mode Gnu ELPA package includes a copy of the source code for
+the GPS indentation engine from GPS GPS 2016, patched to be more
+consistent with the ada-wisi indentation engine.
+
+* Menu:
+
+* ada_mode_gps_indent install::
+* ada_mode_gps_indent configure::
+
+
+File: ada-mode.info,  Node: ada_mode_gps_indent install,  Next: ada_mode_gps_indent configure,  Up: ada_mode_gps_indent
+
+2.3.1 Install
+-------------
+
+To install 'ada_mode_gps_indent', assuming the 'ada-mode-5.2.xx' GNU
+ELPA package is installed:
+   * Install 'gnatcoll' (*note Building GNATCOLL::).
+
+   * Compile and install 'ada_mode_gps_indent.adb':
+          cd ~/.emacs.d/elpa/ada-mode-5.xx/build/Makefile
+          export GPS_ROOT=<path to GPS>
+          gprbuild -p -P ada_mode_gps_indent.gpr
+          gprinstall -p -P ada_mode_gps_indent.gpr
+
+
+File: ada-mode.info,  Node: ada_mode_gps_indent configure,  Prev: ada_mode_gps_indent install,  Up: ada_mode_gps_indent
+
+2.3.2 Configure
+---------------
+
+By default, 'ada-mode' will use 'ada_mode_gps_indent' as a fallback
+indentation engine if 'ada_mode_gps_indent' is found on 'PATH'.
+
+   Large files (determined by 'ada-gps-size-threshold') will use
+'ada_mode_gps_indent' as the primary indentation engine.
+
+   To force the use of 'ada_mode_gps_indent', set
+'ada-gps-size-threshold' to 0, either globally, or in a file-local
+variable:
+
+     --  Local Variables:
+     --  ada-gps-size-threshold : 0
+     --  End:
+
+   In addition, files larger than 'wisi-size-threshold' will not run the
+wisi parser for font-lock; some syntax highlighting will be lost.  This
+provides better response in files where the parser is slow.
 
 
 File: ada-mode.info,  Node: Customization,  Next: Compiling Executing,  Prev: Installation,  Up: Top
@@ -322,6 +457,11 @@ the syntax to set a variable is the following:
      (setq variable-name value)
 
    Some general Emacs settings that are useful for Ada files:
+'context menu'
+     By default, the context menu is bound to <C-down-mouse-3>, i.e.
+     control-right-click.  <down-mouse-3> is already bound in the global
+     map; you can override that global binding in the 'ada-mode-hook'
+     (see below for code).
 'delete-trailing-whitespace'
      Deletes space, tab at end of line and blank lines at end of buffer.
 'untabify'
@@ -369,6 +509,7 @@ unless imenu is loaded first.
      (require 'ada-mode)
      (add-to-list 'hippie-expand-try-functions-list 'ada-skel-hippie-try)
      (define-key ada-mode-map "\C-e"     'hippie-expand)
+     (define-key ada-mode-map [down-mouse-3] 'ada-popup-menu)
      (add-hook 'ada-mode-hook
         (lambda ()
          (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)
@@ -1124,11 +1265,16 @@ the project file.
      indentation variables, and any arbitrary elisp code used to
      customize the project.
 
+'obj_dir' [default: '"."']
+     A list of directories to search for object and cross-reference
+     files.  Only needed if you are not using GPR files.
+
 'path_sep' [default: 'path-separator']
      Separator character used in compiler search paths.
 
 'src_dir' [default: '"."']
-     A list of directories to search for source files.
+     A list of directories to search for source files.  Added to the
+     source directories from a GPR file.
 
 'xref_tool' [default: 'ada-xref-tool']
      Cross reference tool for this project.
@@ -2529,48 +2675,52 @@ Index
 
 Tag Table:
 Node: Top945
-Node: Overview2603
-Node: Installation3814
-Node: Ada Reference Manual4692
-Node: gpr_query4968
-Node: Customization7646
-Node: Non-standard file names8128
-Node: Other compiler9969
-Node: Other cross-reference10548
-Node: Other customization11290
-Node: Compiling Executing14319
-Node: Compile commands15054
-Node: Compiling Examples17705
-Node: No project files18537
-Node: Set compiler options23903
-Node: Set source search path25865
-Node: Use GNAT project file28318
-Node: Use multiple GNAT project files31092
-Node: Use a Makefile33812
-Node: Compiler errors35127
-Node: Project files35944
-Node: Project file overview36971
-Node: Project file variables38515
-Node: Moving Through Ada Code43182
-Node: Identifier completion45881
-Node: Indentation46843
-Node: Statement skeletons51191
-Node: Aligning code52976
-Node: Automatic casing53921
-Node: Comment Handling56625
-Node: Key summary57144
-Node: Developer overview59771
-Node: Directory structure60139
-Node: Package organization64110
-Node: Ada mode64345
-Node: gpr mode66541
-Node: GNAT core66824
-Node: Wisi67658
-Node: OpenToken68558
-Node: ELPA69160
-Node: Savannah69770
-Node: ada-france70108
-Node: GNU Free Documentation License70348
-Node: Index95509
+Node: Overview3576
+Node: Installation4786
+Node: Ada Reference Manual5688
+Node: gpr_query5964
+Node: Building GNATCOLL7451
+Node: ada_mode_gps_indent8717
+Node: ada_mode_gps_indent install9631
+Node: ada_mode_gps_indent configure10184
+Node: Customization11007
+Node: Non-standard file names11489
+Node: Other compiler13330
+Node: Other cross-reference13909
+Node: Other customization14651
+Node: Compiling Executing17996
+Node: Compile commands18731
+Node: Compiling Examples21382
+Node: No project files22214
+Node: Set compiler options27580
+Node: Set source search path29542
+Node: Use GNAT project file31995
+Node: Use multiple GNAT project files34769
+Node: Use a Makefile37489
+Node: Compiler errors38804
+Node: Project files39621
+Node: Project file overview40648
+Node: Project file variables42192
+Node: Moving Through Ada Code47067
+Node: Identifier completion49766
+Node: Indentation50728
+Node: Statement skeletons55076
+Node: Aligning code56861
+Node: Automatic casing57806
+Node: Comment Handling60510
+Node: Key summary61029
+Node: Developer overview63656
+Node: Directory structure64024
+Node: Package organization67995
+Node: Ada mode68230
+Node: gpr mode70426
+Node: GNAT core70709
+Node: Wisi71543
+Node: OpenToken72443
+Node: ELPA73045
+Node: Savannah73655
+Node: ada-france73993
+Node: GNU Free Documentation License74233
+Node: Index99394
 
 End Tag Table

@@ -1,7 +1,7 @@
 ;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
 ;; Ada projects without 'make' or similar tool
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2016  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -33,8 +33,6 @@
 ;; see ada-mode.el; the current code is a complete rewrite of the
 ;; compiling and running capabilities in Ada mode 4.01, done in 2013 by
 ;; Stephen Leake <stephen_leake@stephe-leake.org>.
-
-(require 'ada-mode-compat-24.2)
 
 (require 'ada-mode)
 (require 'cl-lib)

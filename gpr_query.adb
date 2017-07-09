@@ -5,7 +5,7 @@
 --
 --  requires gnatcoll 1.7w 20140330, gnat 7.2.1
 --
---  Copyright (C) 2014-2016 Free Software Foundation All Rights Reserved.
+--  Copyright (C) 2014-2017 Free Software Foundation All Rights Reserved.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -43,7 +43,6 @@ with GNATCOLL.Utils;
 with GNATCOLL.VFS;
 with GNATCOLL.VFS_Utils;
 with GNATCOLL.Xref;
-with Prj;
 procedure Gpr_Query is
    use GNATCOLL;
 
@@ -320,7 +319,6 @@ procedure Gpr_Query is
 
       elsif GNATCOLL.Xref.Is_Fuzzy_Match (Ref.Entity) then
          Ada.Text_IO.Put_Line ("warning: fuzzy match for the entity");
-         --  FIXME: gnat-query.el look for this, prompt for reparse?
       end if;
 
       return Ref.Entity;
@@ -439,21 +437,8 @@ procedure Gpr_Query is
       Put (Dirs);
    end Process_Project_Path;
 
-   procedure Process_Refresh (Args : GNATCOLL.Arg_Lists.Arg_List)
-   is
-      use type GNATCOLL.Projects.Project_Environment_Access;
-      pragma Unreferenced (Args);
-   begin
-      Xref.Parse_All_LI_Files
-        (Tree                => Tree,
-         Project             => Tree.Root_Project,
-         Parse_Runtime_Files => False, --  True encounters bug in gnatcoll.projects; null pointer
-         Show_Progress       => Progress_Reporter,
-         ALI_Encoding        => ALI_Encoding.all,
-         From_DB_Name        => Nightly_DB_Name.all,
-         To_DB_Name          => DB_Name.all,
-         Force_Refresh       => Force_Refresh);
-   end Process_Refresh;
+   procedure Process_Refresh (Args : GNATCOLL.Arg_Lists.Arg_List) is separate;
+   --  Requires different code for GNAT GPL 2016 vs 2017
 
    procedure Process_Refs (Args : GNATCOLL.Arg_Lists.Arg_List)
    is
@@ -551,7 +536,7 @@ begin
         (Cmdline,
          Output      => Traces_Config_File'Access,
          Long_Switch => "--tracefile=",
-         Help        => "Specify a traces configuration file");
+         Help        => "Specify a traces configuration file, set projects lib verbose");
 
       Getopt (Cmdline, Callback => null);
    end;
@@ -568,9 +553,6 @@ begin
         (Filename         => Traces_Config_File.all,
          Force_Activation => False);
       Trace (Me, "trace enabled");
-
-      --  Prj.* not controlled by Traces
-      Prj.Current_Verbosity := Prj.High;
    end if;
 
    GNATCOLL.Projects.Initialize (Env); -- for register_default_language

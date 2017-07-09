@@ -3,7 +3,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2016  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2017  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -27,6 +27,14 @@
 (require 'ada-mode) ;; for ada-prj-* etc; will be refactored sometime
 
 ;;;;; code
+
+(defcustom ada-gnat-debug-run nil
+  "If t, compilation buffers containing a GNAT command will show
+the command.  Otherwise, they will show only the output of the
+command.  This applies e.g. to *gnatfind* buffers."
+  :type 'boolean
+  :safe  #'booleanp
+  :group 'ada)
 
 ;;;; project file handling
 
@@ -113,9 +121,9 @@ See also `gnat-parse-emacs-final'."
 
   project)
 
-(defun gnat-get-paths-1 (src-dirs prj-dirs)
-  "Append list of source and project dirs in current gpr project to SRC-DIRS, PRJ-DIRS.
-Uses `gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
+(defun gnat-get-paths-1 (src-dirs obj-dirs prj-dirs)
+  "Append list of source, project and object dirs in current gpr project to SRC-DIRS,
+OBJ-DIRS and PRJ-DIRS. Uses `gnat list'.  Returns new (SRC-DIRS OBJ-DIRS PRJ-DIRS)."
   (with-current-buffer (gnat-run-buffer)
     ;; gnat list -v -P can return status 0 or 4; always lists compiler dirs
     ;;
@@ -144,6 +152,21 @@ Uses `gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
 	     :test #'equal)
 	    (forward-line 1))
 
+          ;; Object path
+          (search-forward "Object Search Path:")
+          (forward-line 1)
+	  (while (not (looking-at "^$")) ; terminate on blank line
+	    (back-to-indentation) ; skip whitespace forward
+            (cl-pushnew
+	     (if (looking-at "<Current_Directory>")
+		 (directory-file-name default-directory)
+	       (expand-file-name ; Canonicalize path part.
+		(directory-file-name
+		 (buffer-substring-no-properties (point) (point-at-eol)))))
+	     obj-dirs
+	     :test #'equal)
+	    (forward-line 1))
+
 	  ;; Project path
 	  ;;
 	  ;; These are also added to src_dir, so compilation errors
@@ -166,7 +189,7 @@ Uses `gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
        ;; search-forward failed
        (error "parse gpr failed")
        ))
-    (list src-dirs prj-dirs)))
+    (list (cl-remove-duplicates src-dirs) (cl-remove-duplicates obj-dirs) (cl-remove-duplicates prj-dirs))))
 
 ;; FIXME: use a dispatching function instead, with autoload, to
 ;; avoid "require" here, and this declare
@@ -174,24 +197,28 @@ Uses `gnat list'.  Returns new (SRC-DIRS PRJ-DIRS)."
 (declare-function gpr-query-get-src-dirs "gpr-query.el" (src-dirs))
 (declare-function gpr-query-get-prj-dirs "gpr-query.el" (prj-dirs))
 (defun gnat-get-paths (project)
-  "Add project and/or compiler source, project paths to PROJECT src_dir and/or prj_dir."
+  "Add project and/or compiler source, object, project paths to PROJECT src_dir, obj_dir and/or prj_dir."
   (let ((src-dirs (ada-prj-get 'src_dir project))
+        (obj-dirs (ada-prj-get 'obj_dir project))
 	(prj-dirs (ada-prj-get 'prj_dir project)))
 
     (cl-ecase (ada-prj-get 'xref_tool project)
       (gnat
-       (let ((res (gnat-get-paths-1 src-dirs prj-dirs)))
-	 (setq src-dirs (car res))
-	 (setq prj-dirs (cadr res))))
+       (let ((res (gnat-get-paths-1 src-dirs obj-dirs prj-dirs)))
+	 (setq src-dirs (pop res))
+         (setq obj-dirs (pop res))
+	 (setq prj-dirs (pop res))))
 
       (gpr_query
        (when (ada-prj-get 'gpr_file)
 	 (require 'gpr-query)
 	 (setq src-dirs (gpr-query-get-src-dirs src-dirs))
+	 (setq obj-dirs nil) ;; gpr-query does not provide obj-dirs
 	 (setq prj-dirs (gpr-query-get-prj-dirs prj-dirs))))
       )
 
     (setq project (plist-put project 'src_dir (reverse src-dirs)))
+    (setq project (plist-put project 'obj_dir (reverse obj-dirs)))
     (mapc (lambda (dir) (gnat-prj-add-prj-dir dir project))
 	  (reverse prj-dirs))
     )
@@ -267,9 +294,10 @@ Assumes current buffer is (gnat-run-buffer)"
   (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env))) ;; for GPR_PROJECT_PATH
 	status)
 
-    (insert (format "GPR_PROJECT_PATH=%s\n%s " (getenv "GPR_PROJECT_PATH") exec)); for debugging
-    (mapc (lambda (str) (insert (concat str " "))) command); for debugging
-    (newline)
+    (when ada-gnat-debug-run
+      (insert (format "GPR_PROJECT_PATH=%s\n%s " (getenv "GPR_PROJECT_PATH") exec))
+      (mapc (lambda (str) (insert (concat str " "))) command)
+      (newline))
 
     (setq status (apply 'call-process exec nil t nil command))
     (cond
@@ -312,9 +340,10 @@ which is displayed on error."
   (set 'buffer-read-only nil)
   (erase-buffer)
 
-  (setq command (cl-delete-if 'null command))
-  (mapc (lambda (str) (insert (concat str " "))) command)
-  (newline)
+  (when ada-gnat-debug-run
+    (setq command (cl-delete-if 'null command))
+    (mapc (lambda (str) (insert (concat str " "))) command)
+    (newline))
 
   (let ((default-directory (or dir default-directory))
 	status)
@@ -383,7 +412,7 @@ list."
 	"0"))
 
       (goto-char (point-min))
-      (forward-line 1); skip  cmd
+      (when ada-gnat-debug-run (forward-line 1)); skip  cmd
       (setq result (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
       )
     result))

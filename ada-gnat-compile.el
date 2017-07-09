@@ -6,7 +6,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2016  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2017  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -37,6 +37,7 @@
 (require 'cl-lib)
 (require 'compile)
 (require 'gnat-core)
+(require 'ada-fix-error)
 
 ;;;;; code
 
@@ -92,7 +93,7 @@ For `compilation-filter-hook'."
 	     (list
 	      (match-string-no-properties 2); file
 	      (string-to-number (match-string-no-properties 3)); line
-	      1)); column
+	      0)); Emacs column; zero indexed
 	    ))
 
 	(when (search-forward-regexp "\\(at line \\)\\([0-9]+\\)" (line-end-position) t)
@@ -305,7 +306,13 @@ Prompt user if more than one."
 	   t)
 
 ;;;; strings
-	  ((looking-at (concat "misspelling of " ada-gnat-quoted-name-regexp))
+	  ((looking-at "package \"Ada\" is hidden")
+	   (pop-to-buffer source-buffer)
+	   (forward-word -1)
+	   (insert "Standard.")
+	   t)
+
+	  ((looking-at (concat "\\(?:possible \\)?misspelling of " ada-gnat-quoted-name-regexp))
 	   (let ((expected-name (match-string 1)))
 	     (pop-to-buffer source-buffer)
 	     (looking-at ada-name-regexp)
@@ -417,10 +424,8 @@ Prompt user if more than one."
 	  ((looking-at (concat "operator for \\(private \\)?type " ada-gnat-quoted-name-regexp))
 	   (let ((type (match-string 2)))
 	     (pop-to-buffer source-buffer)
-	     (ada-goto-declarative-region-start)
-	     (newline-and-indent)
-	     (insert "use type " type ";"))
-	   t)
+	     (ada-fix-add-use-type type)
+	   t))
 
 	  ((looking-at "parentheses required for unary minus")
 	   (set-buffer source-buffer)
@@ -544,6 +549,13 @@ Prompt user if more than one."
 	   (funcall indent-line-function)
 	   t)
 
+	  ((looking-at "(style) \"exit \\(.*\\)\" required")
+	   (let ((name (match-string-no-properties 1)))
+	     (set-buffer source-buffer)
+	     (forward-word 1)
+	     (insert (concat " " name))
+	   t))
+
 	  ((looking-at "(style) misplaced \"then\"")
 	   (set-buffer source-buffer)
 	   (delete-indentation)
@@ -557,6 +569,11 @@ Prompt user if more than one."
 	    t)
            (t
             nil)))
+
+	  ((looking-at "(style) reserved words must be all lower case")
+	   (set-buffer source-buffer)
+	   (downcase-word 1)
+	   t)
 
 	  ((looking-at "(style) space not allowed")
 	   (set-buffer source-buffer)
@@ -585,6 +602,7 @@ Prompt user if more than one."
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files
   (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
   (add-hook 'ada-syntax-propertize-hook 'gnatprep-syntax-propertize)
+  (syntax-ppss-flush-cache (point-min));; force re-evaluate with hook.
 
   ;; There is no common convention for a file extension for gnatprep files.
   ;;
@@ -611,6 +629,7 @@ Prompt user if more than one."
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
+  (syntax-ppss-flush-cache (point-min));; force re-evaluate with hook.
 
   ;; don't need to delete from compilation-search-path; completely rewritten in ada-select-prj-file
   (setq compilation-environment nil)

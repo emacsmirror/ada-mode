@@ -1,12 +1,51 @@
 GNU Emacs Ada mode NEWS -- history of user-visible changes.
 
-Copyright (C) 2014 Free Software Foundation, Inc.
-See the end of the file for license conditions.
-
-Please send Emacs Ada mode bug reports to bug-gnu-emacs@gnu.org, with
-'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
-
 
+* Ada mode 5.2.2
+9 Jul 2017
+
+** GNAT GPL 2017 is _not_ supported for gpr_query; GNAT GPL 2016 is
+   supported.
+
+** New option ada-indent-hanging-rel-exp; if non-nil, indent hanging
+   lines relative to start of expression. Otherwise, indent relative
+   to previous line. Default nil.
+
+** xref-ada allows entering an identifier to search for without
+   completion. The search is only in the current file.
+
+** ada-show-references, ada-show-local-references now take an 'append'
+   argument, set by interactive prefix; if non-nil, preserve previous
+   output in references buffer.
+
+** Support GPS indentation engine, either as primary or backup. See
+   user guide for how to set it up; it requires compiling Ada code.
+
+** ada_mode_gps_indent patch level 001 fixes ada-gps bugs 2, 6. See
+   test/ada-gps for bug descriptions/tests.
+
+** ada-identifier-at-point properly handles adjacent operator and
+   identifier (ie +Tree).
+
+** When a 'use type' clause is inserted by the compile error
+   correction code, 'use all type' is inserted if the lanuage version
+   is 2012 (the default).
+
+** The context menu is simplified.
+
+** The 'obj_dir' project variable is supported.
+
+** ada-next-statement-keyword, ada-prev-statement-keyword are deleted;
+   use forward-sexp instead.
+
+** The license inserted by ada-skel-modified-gpl uses GPL version 3
+   language.
+
+** Several indentation bugs are fixed.
+
+** New option ada-gnat-debug-run controls echoing GNAT commands in
+   GNAT buffers.
+
 * Ada mode 5.2.1
 31 Oct 2016
 

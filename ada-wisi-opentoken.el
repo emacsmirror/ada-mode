@@ -1,7 +1,7 @@
 ;; ada-wisi-opentoken.el --- An indentation function for ada-wisi that indents  -*- lexical-binding:t -*-
 ;; OpenTokengrammar statements nicely.
 
-;; Copyright (C) 2013-2016  Free Software Foundation, Inc.
+;; Copyright (C) 2013-2017  Free Software Foundation, Inc.
 
 ;; This file is part of GNU Emacs.
 
@@ -43,7 +43,8 @@
   ;; included in package specs that exist solely to define OpenToken
   ;; grammar fragments.
   (save-excursion
-    (let ((token-text (wisi-token-text (wisi-backward-token))))
+    (let ((token-text (wisi-token-text (wisi-backward-token)))
+	  cache)
       (cond
        ((equal token-text "<=")
 	(+ (current-indentation) ada-indent-broken))
@@ -53,23 +54,24 @@
 	(+ (current-indentation) ada-indent-broken))
 
        ((equal token-text "and")
-	(wisi-goto-containing (wisi-backward-cache))
 	;; test/ada_mode-opentoken.ads
 	;; Tokens.Statement <= Add_Statement and
 	;; Add_Statement <=
 	;;   ... and
 	;; Add_Statement <=
 	;;
-	;; point is on :=
+	(setq cache (wisi-goto-containing (wisi-backward-cache))) ;; Tokens.Statement
+	(wisi-goto-containing cache);; :=
+
 	(+ (current-indentation) ada-indent-broken))
        ))))
 
 (defconst ada-wisi-opentoken-align
-  "Align rule for OpenToken grammar definitions."
   '(ada-opentoken
     (regexp  . "[^=]\\(\\s-*\\)<=")
     (valid   . (lambda() (not (ada-in-comment-p))))
-    (modes   . '(ada-mode))))
+    (modes   . '(ada-mode)))
+  "Align rule for OpenToken grammar definitions.")
 
 ;;;###autoload
 (define-minor-mode ada-indent-opentoken-mode

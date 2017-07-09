@@ -3,7 +3,7 @@
 ;; gpr-query supports Ada and any gcc language that supports the
 ;; AdaCore -fdump-xref switch (which includes C, C++).
 ;;
-;; Copyright (C) 2013 - 2016  Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2017  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -28,7 +28,7 @@
 ;;
 ;; M-x gpr-query
 
-(require 'ada-mode-compat-24.2)
+(require 'ada-mode-compat) ;; font-lock-ensure
 
 (require 'ada-mode) ;; for ada-prj-*, some other things
 (require 'gnat-core)
@@ -49,18 +49,57 @@
   (process nil) ;; running gpr_query
   (buffer nil)) ;; receives output of gpr_query
 
-(defconst gpr-query-buffer-name-prefix " *gpr_query-")
+;; Starting the buffer name with a space hides it from some lists, and
+;; also disables font-lock. We sometimes use it to display xref
+;; locations in compilation-mode, so we want font-lock enabled.
+;;
+;; IMPROVEME: copy the xref info to a true user buffer, optionally an
+;; *xref* buffer.
+(defconst gpr-query-buffer-name-prefix "*gpr_query-")
+
+(defgroup gpr-query nil
+  "Options for gpr-query."
+  :group 'tools)
+
+(defcustom gpr-query-mingw64-bin nil
+  "Path to mingw64 bin directory.
+On Windows systems, this directory is deleted from exec-path when launching gpr-query.
+See comment in ‘gpr-queyr--start-process’."
+  :group 'gpr-query)
+
+(defcustom gpr-query-mingw32-bin nil
+  "Path to mingw32 bin directory.
+On Windows systems, this directory is added to exec-path when launching gpr-query.
+See comment in ‘gpr-queyr--start-process’."
+  :group 'gpr-query)
 
 (defun gpr-query--start-process (session)
   "Start the session process running gpr_query."
   (unless (buffer-live-p (gpr-query--session-buffer session))
     ;; user may have killed buffer
-    (setf (gpr-query--session-buffer session) (gnat-run-buffer gpr-query-buffer-name-prefix)))
+    (setf (gpr-query--session-buffer session) (gnat-run-buffer gpr-query-buffer-name-prefix))
+    (with-current-buffer (gpr-query--session-buffer session)
+      (compilation-mode)
+      (setq buffer-read-only nil)))
 
   (with-current-buffer (gpr-query--session-buffer session)
-    (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env))) ;; for GPR_PROJECT_PATH
+    (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env)))
+	  ;; for GPR_PROJECT_PATH, other env vars set in ada-mode
+	  ;; project files and used by gpr files.
 
 	  (project-file (file-name-nondirectory (ada-prj-get 'gpr_file))))
+      (when (and (eq system-type 'windows-nt)
+		 gpr-query-mingw64-bin
+		 gpr-query-mingw32-bin)
+	;; gpr_query is a 32 bit application (because Windows GNAT GPL
+	;; only supports 32 bit), and for gnat gpl 2017 requires the
+	;; libiconv mingw32 dll. On the other hand, Emacs is probably
+	;; a 64 bit application, and requires the png mingw64 dll. So
+	;; delete mingw64 from exec-path, and add mingw32.
+	(setq exec-path (delete gpr-query-mingw64-bin exec-path))
+	(push gpr-query-mingw32-bin exec-path)
+	)
+
       (erase-buffer); delete any previous messages, prompt
       (setf (gpr-query--session-process session)
 	    (start-process (concat "gpr_query " (buffer-name))
@@ -87,7 +126,8 @@
   "Create and return a session for the current project file."
   (let ((session
 	 (make-gpr-query--session
-	  :buffer (gnat-run-buffer gpr-query-buffer-name-prefix))))
+	  :buffer nil
+	  :process nil)))
     (gpr-query--start-process session)
     session))
 
@@ -229,7 +269,7 @@ Uses `gpr_query'. Returns new list."
   ;; C:\Projects\GDS\work_dscovr_release\common\1553\gds-mil_std_1553-utf.ads:252:25
   ;; /Projects/GDS/work_dscovr_release/common/1553/gds-mil_std_1553-utf.ads:252:25
   "\\(\\(?:.:\\\\\\|/\\)[^:]*\\):\\([0123456789]+\\):\\([0123456789]+\\)"
-  ;; 1                          2                   3
+  ;; 1                             2                   3
   "Regexp matching <file>:<line>:<column>")
 
 (defconst gpr-query-ident-file-regexp-alist
@@ -242,15 +282,18 @@ Uses `gpr_query'. Returns new list."
 
 (defun gpr-query-compilation (identifier file line col cmd comp-err)
   "Run gpr_query IDENTIFIER:FILE:LINE:COL CMD,
-set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
+with compilation-error-regexp-alist set to COMP-ERR."
   ;; Useful when gpr_query will return a list of references; the user
   ;; can navigate to each result in turn via `next-error'.
   ;; FIXME: implement ada-xref-full-path.
-  (let ((cmd-1 (format "%s %s:%s:%d:%d" cmd identifier file line col))
+  ;;
+  ;; FIXME: implement append
+
+  ;; Emacs column is 0-indexed, gpr_query is 1-indexed.
+  (let ((cmd-1 (format "%s %s:%s:%d:%d" cmd identifier file line (1+ col)))
 	(result-count 0)
 	target-file target-line target-col)
     (with-current-buffer (gpr-query--session-buffer (gpr-query-cached-session))
-      (compilation-mode)
       (setq buffer-read-only nil)
       (set (make-local-variable 'compilation-error-regexp-alist) (list comp-err))
       (gpr-query-session-send cmd-1 t)
@@ -258,17 +301,8 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
       ;; point is at EOB. gpr_query returns one line per result plus prompt, warnings
       (setq result-count (- (line-number-at-pos) 1))
 
-      (font-lock-ensure)
-      ;; pre Emacs 25, font-lock-ensure applies compilation-message
-      ;; text properties
-      ;;
-      ;; post Emacs 25, compilation-next-error applies
-      ;; compilation-message text properties on the fly via
-      ;; compilation--ensure-parse. But that doesn't apply face text
-      ;; properties.
-      ;;
-      ;; IMPROVEME: next-error works, but the font colors are not
-      ;; right (bad regexp?)
+      (compilation--flush-parse (point-min) (point-max))
+      (compilation--ensure-parse (point-max))
 
       (goto-char (point-min))
       (cond
@@ -287,7 +321,6 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
 	 ;; fetch the compilation-message while in the
 	 ;; session-buffer. and call ada-goot-source outside the
 	 ;; with-current-buffer above.
-	 (compilation--ensure-parse (point-max))
 	 (let* ((msg (compilation-next-error 0))
                 ;; IMPROVEME: '--' indicates internal-only. But we can't
                 ;; use compile-goto-error, because that displays the
@@ -335,7 +368,7 @@ set compilation-mode with compilation-error-regexp-alist set to COMP-ERR."
    (thing-at-point 'symbol)
    (file-name-nondirectory (buffer-file-name))
    (line-number-at-pos)
-   (1+ (current-column)))
+   (current-column))
   )
 
 (defun gpr-query-overridden (other-window)
@@ -351,7 +384,7 @@ buffer in another window."
 	  (line-number-at-pos)
 	  (save-excursion
 	    (goto-char (car (bounds-of-thing-at-point 'symbol)))
-	    (1+ (current-column)))
+	    (current-column))
 	  )))
 
     (ada-goto-source (nth 0 target)
@@ -376,7 +409,7 @@ buffer in another window."
 	  (line-number-at-pos)
 	  (save-excursion
 	    (goto-char (car (bounds-of-thing-at-point 'symbol)))
-	    (1+ (current-column)))
+	    (current-column))
 	  )))
 
     (ada-goto-source (nth 0 target)
@@ -438,23 +471,25 @@ Enable mode if ARG is positive."
     (gpr-query--start-process session)))
 
 (defun gpr-query-other (identifier file line col)
-  "For `ada-xref-other-function', using gpr_query."
+  "For `ada-xref-other-function', using gpr_query.
+FILE must be non-nil; line, col can be nil."
   (when (eq ?\" (aref identifier 0))
     ;; gpr_query wants the quotes stripped
     (setq col (+ 1 col))
     (setq identifier (substring identifier 1 (1- (length identifier))))
     )
 
-  (when (eq system-type 'windows-nt)
-    ;; Since Windows file system is case insensitive, GNAT and Emacs
-    ;; can disagree on the case, so convert all to lowercase.
-    (setq file (downcase file)))
+  (setq file (gpr-query--normalize-filename file))
 
-  (let ((cmd (format "refs %s:%s:%d:%d" identifier (file-name-nondirectory file) line col))
+  (let ((cmd (format "refs %s:%s:%s:%s"
+		     identifier
+		     (file-name-nondirectory file)
+		     (or line "")
+		     (if col (1+ col) "")))
 	(decl-loc nil)
 	(body-loc nil)
 	(search-type nil)
-	(min-distance (1- (expt 2 29)))
+	(min-distance most-positive-fixnum)
 	(result nil))
 
     (with-current-buffer (gpr-query-session-send cmd t)
@@ -492,29 +527,30 @@ Enable mode if ARG is positive."
 		 (found-line (string-to-number (match-string 2)))
 		 (found-col  (string-to-number (match-string 3)))
 		 (found-type (match-string 4))
-		 (dist       (gpr-query-dist found-line line found-col col))
+		 (dist       (if (and line col)
+				 (gpr-query-dist found-line line found-col col)
+			       most-positive-fixnum))
 		 )
 
-	    (when (eq system-type 'windows-nt)
-	      ;; 'expand-file-name' converts Windows directory
-	      ;; separators to normal Emacs.  Since Windows file
-	      ;; system is case insensitive, GNAT and Emacs can
-	      ;; disagree on the case, so convert all to lowercase.
-	      (setq found-file (downcase (expand-file-name found-file))))
+            (setq found-file (gpr-query--normalize-filename found-file))
 
-	    (when (string-equal found-type "declaration")
+	    (cond
+	     ((string-equal found-type "declaration")
 	      (setq decl-loc (list found-file found-line (1- found-col))))
 
-	    (when (or
-		   (string-equal found-type "body")
-		   (string-equal found-type "full declaration"))
+	     ((or
+	       (string-equal found-type "body")
+	       (string-equal found-type "full declaration"))
 	      (setq body-loc (list found-file found-line (1- found-col))))
+	     )
 
-	    (when
-		;; The source may have changed since the xref database
-		;; was computed, so allow for fuzzy matches.
-		(and (equal found-file file)
-		     (< dist min-distance))
+	    (when (and (equal found-file file)
+		       (or
+			(string-equal found-type "body")
+			(string-equal found-type "declaration"))
+		       (<= dist min-distance))
+	      ;; The source may have changed since the xref database
+	      ;; was computed, so allow for fuzzy matches.
 	      (setq min-distance dist)
 	      (setq search-type found-type))
 	    ))
@@ -537,12 +573,26 @@ Enable mode if ARG is positive."
 	)
 
       (cond
-       ((null search-type)
-	nil)
-
        ((and
+	 line
 	 (string-equal search-type "declaration")
 	 body-loc)
+	;; We started the search on the declaration; find the body
+	(setq result body-loc))
+
+       ((and
+	 (not line)
+	 (string-equal search-type "declaration"))
+	;; We started in the spec file; find the declaration
+	;;
+	;; If the file has both declaration and body, this will go to
+	;; declaration. Then a search with line, col can go to body.
+	(setq result decl-loc))
+
+       ((and
+	 (not line)
+	 (string-equal search-type "body"))
+	;; We started in the body file; find the body
 	(setq result body-loc))
 
        (decl-loc
@@ -555,9 +605,9 @@ Enable mode if ARG is positive."
       (message "parsing result ... done")
       result)))
 
-(defun gpr-query-all (identifier file line col _local-only)
+(defun gpr-query-all (identifier file line col &optional _local-only _append)
   "For `ada-xref-all-function', using gpr_query."
-  ;; FIXME: implement local-only
+  ;; FIXME: implement local-only, append
   (gpr-query-compilation identifier file line col "refs" 'gpr-query-ident-file))
 
 (defun gpr-query-parents (identifier file line col)
@@ -576,7 +626,7 @@ Enable mode if ARG is positive."
     (setq identifier (substring identifier 1 (1- (length identifier))))
     )
 
-  (let ((cmd (format "overridden %s:%s:%d:%d" identifier (file-name-nondirectory file) line col))
+  (let ((cmd (format "overridden %s:%s:%d:%d" identifier (file-name-nondirectory file) line (1+ col)))
 	result)
     (with-current-buffer (gpr-query-session-send cmd t)
 
@@ -593,6 +643,20 @@ Enable mode if ARG is positive."
 
       (message "parsing result ... done")
       result)))
+
+(defun gpr-query--normalize-filename (file)
+  "Takes account of filesystem differences."
+  (when (eq system-type 'windows-nt)
+    ;; 'expand-file-name' converts Windows directory
+    ;; separators to normal Emacs.  Since Windows file
+    ;; system is case insensitive, GNAT and Emacs can
+    ;; disagree on the case, so convert all to lowercase.
+    (setq file (downcase (expand-file-name file))))
+  (when (eq system-type 'darwin)
+    ;; case-insensitive case-preserving; so just downcase
+    (setq file (downcase file)))
+  file
+  )
 
 (defun ada-gpr-query-select-prj ()
   (setq ada-file-name-from-ada-name 'ada-gnat-file-name-from-ada-name)

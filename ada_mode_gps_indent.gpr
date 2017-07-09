@@ -1,6 +1,6 @@
 --  Abstract :
 --
---  build gpr_query
+--  build ada_mode_gps_indent
 --
 --  Copyright (C) 2014 Stephen Leake All Rights Reserved.
 --
@@ -16,20 +16,33 @@
 --  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston,
 --  MA 02110-1335, USA.
 
-with "gnatcoll";
-with "gnatcoll_sqlite";
 with "gnat_util";
-project Gpr_query is
-   for Main use ("gpr_query.adb");
+with "gnatcoll_sqlite";
+with "gnatcoll_iconv";
+project Ada_Mode_GPS_Indent is
+   for Main use ("ada_mode_gps_indent.adb");
 
-   for Source_Dirs use (".");
+   type GPS_Source_Type is ("ada-mode", "GPS");
+   GPS_Source : GPS_Source_Type := External ("Ada_Mode_GPS_Source", "ada-mode");
+
+   case GPS_Source is
+   when "ada-mode" =>
+      for Source_Dirs use (".", "gps_source");
+   when "GPS" =>
+      for Source_Dirs use
+        (".",
+         External ("GPS_ROOT") & "/common/core/src",
+         External ("GPS_ROOT") & "/syntax/src",
+         External ("GPS_ROOT") & "/language/src/"
+        );
+   end case;
 
    for Object_Dir use "obj";
 
    for Exec_Dir use ".";
 
    type Build_Type is ("Debug", "Normal");
-   Build : Build_Type := External ("Gpr_Query_Build", "Normal");
+   Build : Build_Type := External ("Ada_Mode_GPS_Indent_Build", "Normal");
 
    for Languages use ("Ada");
 
@@ -40,7 +53,7 @@ project Gpr_query is
          "-gnata",  -- assertions
          "-gnatfoqQ",
          "-gnatVa", -- validity checks
-         "-gnaty3abcefhiklM120nOprtx",
+         "-gnaty3abcefhiklM120nprtx", -- no 'O'; gnatcoll-traces missing "overriding"
          "-gnateE", -- extra info in exceptions
          "-gnatwaBCeJL",
          "-fstack-check",
@@ -48,10 +61,9 @@ project Gpr_query is
 
       case Build is
          when "Debug" =>
-            for Default_Switches ("Ada") use Common_Switches & ("-O0");
+            for Switches ("Ada") use Common_Switches & ("-O0");
          when "Normal" =>
-            -- WORKAROUND (GNAT 7.2.1): adding -gnatn here gives errors about missing sources in installed gnatcoll.
-            for Default_Switches ("Ada") use Common_Switches & ("-O2");
+            for Switches ("Ada") use Common_Switches & ("-O2", "-gnatn");
       end case;
    end Compiler;
 
@@ -63,8 +75,4 @@ project Gpr_query is
       for default_switches ("Ada") use ("-E"); -- symbolic traceback
    end Binder;
 
-   package Install is
-      for Mode use "usage";
-   end Install;
-
-end Gpr_query;
+end Ada_Mode_GPS_Indent;
