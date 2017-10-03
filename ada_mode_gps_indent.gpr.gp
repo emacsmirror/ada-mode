@@ -17,8 +17,11 @@
 --  MA 02110-1335, USA.
 
 with "gnat_util";
-with "gnatcoll_sqlite";
 with "gnatcoll_iconv";
+with "gnatcoll_sqlite";
+#if HAVE_GNATCOLL_XREF="yes"
+with "gnatcoll_xref";
+#end if;
 project Ada_Mode_GPS_Indent is
    for Main use ("ada_mode_gps_indent.adb");
 

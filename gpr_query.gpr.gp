@@ -18,7 +18,7 @@
 
 with "gnatcoll";
 with "gnatcoll_sqlite";
-#if GNAT_VERSION="GPL_2017"
+#if HAVE_GNATCOLL_XREF="yes"
 with "gnatcoll_xref";
 #end if;
 with "gnat_util";

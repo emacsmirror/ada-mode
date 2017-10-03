@@ -194,6 +194,7 @@ elements of the result may be nil."
                                          " "))
 	    ;; gnat find uses standard gnu format for output, so don't
 	    ;; need to set compilation-error-regexp-alist
+	    prev-pos
 	    prev-content)
 	;; compilation-environment is buffer-local; don't set in 'let'
 	(setq compilation-environment (ada-prj-get 'proc_env))
@@ -201,6 +202,7 @@ elements of the result may be nil."
 	;; WORKAROUND: the 'compilation' API doesn't let us specify "append", so we use this.
 	(with-current-buffer (get-buffer-create compilation-buffer-name)
 	  (when append
+	    (setq prev-pos (point))
 	    (setq prev-content (buffer-substring (point-min) (point-max))))
 
           (unless ada-gnat-debug-run
@@ -214,9 +216,9 @@ elements of the result may be nil."
 			     (lambda (_name) compilation-buffer-name))
 	  (when append
 	    (let ((inhibit-read-only t))
-	      (save-excursion
 		(goto-char (point-min))
-		(insert prev-content)))))
+		(insert prev-content)
+		(goto-char prev-pos))))
 	))))
 
 ;;;;; setup

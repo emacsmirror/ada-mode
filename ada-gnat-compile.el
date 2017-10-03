@@ -306,20 +306,6 @@ Prompt user if more than one."
 	   t)
 
 ;;;; strings
-	  ((looking-at "package \"Ada\" is hidden")
-	   (pop-to-buffer source-buffer)
-	   (forward-word -1)
-	   (insert "Standard.")
-	   t)
-
-	  ((looking-at (concat "\\(?:possible \\)?misspelling of " ada-gnat-quoted-name-regexp))
-	   (let ((expected-name (match-string 1)))
-	     (pop-to-buffer source-buffer)
-	     (looking-at ada-name-regexp)
-	     (delete-region (match-beginning 1) (match-end 1))
-	     (insert expected-name))
-	   t)
-
 	  ((looking-at (concat "\"end " ada-name-regexp ";\" expected"))
 	   (let ((expected-name (match-string 1)))
 	     (pop-to-buffer source-buffer)
@@ -358,6 +344,11 @@ Prompt user if more than one."
 	   (forward-line 1)
 	   (move-to-column message-column)
 	   (cond
+	    ((looking-at "found procedure name")
+	     (pop-to-buffer source-buffer)
+	     (forward-word 1)
+	     (insert "'Access")
+	     t)
 	    ((looking-at "found type access")
 	     (pop-to-buffer source-buffer)
 	     (if (looking-at "'Access")
@@ -401,6 +392,14 @@ Prompt user if more than one."
 	     (insert (concat stuff)));; if missing ")", don't need space; otherwise do?
 	   t)
 
+	  ((looking-at (concat "\\(?:possible \\)?misspelling of " ada-gnat-quoted-name-regexp))
+	   (let ((expected-name (match-string 1)))
+	     (pop-to-buffer source-buffer)
+	     (looking-at ada-name-regexp)
+	     (delete-region (match-beginning 1) (match-end 1))
+	     (insert expected-name))
+	   t)
+
 	  ((looking-at "No legal interpretation for operator")
 	   (forward-line 1)
 	   (move-to-column message-column)
@@ -426,6 +425,12 @@ Prompt user if more than one."
 	     (pop-to-buffer source-buffer)
 	     (ada-fix-add-use-type type)
 	   t))
+
+	  ((looking-at "package \"Ada\" is hidden")
+	   (pop-to-buffer source-buffer)
+	   (forward-word -1)
+	   (insert "Standard.")
+	   t)
 
 	  ((looking-at "parentheses required for unary minus")
 	   (set-buffer source-buffer)
@@ -608,10 +613,19 @@ Prompt user if more than one."
   ;;
   ;; find error locations in .gpr files
   (setq compilation-search-path (append compilation-search-path (ada-prj-get 'prj_dir)))
-  (setq compilation-environment
-	(list
-	 (let ((process-environment (cl-copy-list (ada-prj-get 'proc_env))))
-	   (concat "GPR_PROJECT_PATH=" (getenv "GPR_PROJECT_PATH")))))
+
+  ;; ‘compilation-environment’ is buffer-local, but the user might
+  ;; delete that buffer. So set both global and local.
+  (let* ((process-environment (ada-prj-get 'proc_env))
+	 (gpr-path (getenv "GPR_PROJECT_PATH"))
+	 (comp-env (list (concat "GPR_PROJECT_PATH=" gpr-path)))
+	 (comp-buf (get-buffer "*compilation*")))
+    (when (buffer-live-p comp-buf)
+      (with-current-buffer comp-buf
+	(setenv "GPR_PROJECT_PATH" gpr-path)
+	(setq compilation-environment comp-env)))
+    (set-default 'compilation-environment comp-env)
+    )
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.

@@ -26,6 +26,9 @@
 (require 'cl-lib)
 (require 'ada-mode) ;; for ada-prj-* etc; will be refactored sometime
 
+(defvar gpr-query--sessions nil) ;; gpr-query.el
+(declare-function gpr-query-kill-session "gpr-query.el" (session) )
+
 ;;;;; code
 
 (defcustom ada-gnat-debug-run nil
@@ -109,8 +112,17 @@ See also `gnat-parse-emacs-final'."
 
 (defun gnat-prj-parse-emacs-final (project)
   "Final processing of gnat-specific Emacs Ada project file settings."
-  (when (buffer-live-p (get-buffer (gnat-run-buffer-name)))
-    (kill-buffer (gnat-run-buffer-name))); things may have changed, force re-create
+  ;; things may have changed, force re-create gnat or gpr-query sessions.
+  (cl-ecase (ada-prj-get 'xref_tool project)
+    (gnat
+     (when (buffer-live-p (get-buffer (gnat-run-buffer-name)))
+       (kill-buffer (gnat-run-buffer-name))))
+
+    (gpr_query
+     (let ((session (cdr (assoc ada-prj-current-file gpr-query--sessions))))
+       (when session
+	 (gpr-query-kill-session session))))
+     )
 
   (if (ada-prj-get 'gpr_file project)
       (setq project (gnat-parse-gpr (ada-prj-get 'gpr_file project) project))

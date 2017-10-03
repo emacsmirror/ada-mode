@@ -209,7 +209,7 @@ Each user will probably want to override this."
 (define-skeleton ada-skel-loop
   "Insert a loop statement with an optional name (from `str')."
   ()
-  str & ":\n"
+  str & " :\n"
   "loop\n"
   "exit " str | -1 " when " _ ";\n"
   "end loop " str | -1 ";")

@@ -2,12 +2,12 @@
 ;;
 ;; Copyright (C) 1994, 1995, 1997 - 2017  Free Software Foundation, Inc.
 ;;
-;; Author: Stephen Leake <stephen_leake@member.fsf.org>
-;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
+;; Author: Stephen Leake <stephen_leake@stephe-leake.org>
+;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.2.2
-;; package-requires: ((wisi "1.1.5") (cl-lib "0.4") (emacs "24.3"))
+;; Version: 5.3.1
+;; package-requires: ((wisi "1.1.6") (cl-lib "0.4") (emacs "24.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -168,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.2.2"))
+  (let ((version-string "5.3.1"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -274,12 +274,18 @@ indentation parser accepts."
 (defcustom ada-fill-comment-prefix "-- "
   "Comment fill prefix."
   :type 'string)
-(make-variable-buffer-local 'ada-language-version)
+(make-variable-buffer-local 'ada-fill-comment-prefix)
 
 (defcustom ada-fill-comment-postfix " --"
   "Comment fill postfix."
   :type 'string)
-(make-variable-buffer-local 'ada-language-version)
+(make-variable-buffer-local 'ada-fill-comment-postfix)
+
+(defcustom ada-fill-comment-adaptive nil
+  "If non-nil, comments are filled to the same width (not including indentation),
+rather than to the same column."
+  :type 'boolean
+  :safe #'booleanp)
 
 (defcustom ada-prj-file-extensions '("adp" "prj")
   "List of Emacs Ada mode project file extensions.
@@ -404,6 +410,7 @@ Values defined by cross reference packages.")
      ["Show project"                  ada-prj-show                     t]
      ["Show project file search path" ada-prj-show-prj-path            t]
      ["Show source file search path"  ada-prj-show-src-path            t]
+     ["Delete project ..."            ada-prj-delete                   t]
     )
     ("Build"
      ["Next compilation error"     next-error                t]
@@ -461,6 +468,37 @@ Values defined by cross reference packages.")
      ["Refresh cross reference cache" ada-xref-refresh             t]
      ["Reset parser"                  ada-reset-parser             t]
      )))
+
+(defun ada-project-menu-compute ()
+  "Return an easy-menu menu for `ada-project-menu-install'.
+Menu displays currently parsed Ada mode projects."
+  (let (menu)
+    (dolist (item ada-prj-alist)
+      (push
+       (vector
+	(if (equal (car item) ada-prj-current-file)
+	    ;; current project
+	    (concat (car item) "  *")
+	  (car item))
+	`(lambda () (interactive) (ada-select-prj-file ,(car item)))
+	t)
+       menu)
+      )
+    (nreverse menu)))
+
+(defun ada-project-menu-install ()
+  "Install the Ada project menu as a submenu."
+  (define-key-after
+    (lookup-key ada-mode-map [menu-bar Ada]);; map to put menu in
+    [ada-prj-select]          ;; key (a menu entry)
+    (easy-menu-binding        ;; binding
+     (easy-menu-create-menu
+      "Select Project"
+      (ada-project-menu-compute)))
+
+    ;; FIXME: this doesn’t work; "Select Project" is at end
+    (lookup-key ada-mode-map [menu-bar Ada Project\ files]) ;; after
+    ))
 
 (easy-menu-define ada-context-menu nil
   "Context menu keymap for Ada mode"
@@ -1251,13 +1289,15 @@ and treat `ada-case-strict' as t in code.."
       )))
 
 (defun ada-case-adjust-at-point (&optional in-comment)
-  "Adjust case of word at point, move to end of word.
+  "If ’ada-auto-case’ is non-nil, adjust case of word at point, move to end of word.
 With prefix arg, adjust case as code even if in comment;
-otherwise, capitalize words in comments."
+otherwise, capitalize words in comments.
+If ’ada-auto-case’ is nil, capitalize current word."
   (interactive "P")
   (cond
-   ((and (not in-comment)
-	 (ada-in-string-or-comment-p))
+   ((or (not ada-auto-case)
+	(and (not in-comment)
+	     (ada-in-string-or-comment-p)))
     (skip-syntax-backward "w_")
     (capitalize-word 1))
 
@@ -1723,6 +1763,14 @@ Indexed by project variable xref_tool.")
   (ada-select-prj-file (completing-read "project: " ada-prj-alist nil t))
   )
 
+(defun ada-prj-delete ()
+  "Delete a project file from the list of currently available project files."
+  (interactive)
+  (let* ((prj-file (completing-read "project: " ada-prj-alist nil t))
+	 (prj-entry (assoc prj-file ada-prj-alist)))
+    (setq ada-prj-alist (delete prj-entry ada-prj-alist))
+    ))
+
 (defun ada-prj-show ()
   "Show current Emacs Ada mode project file."
   (interactive)
@@ -1986,18 +2034,23 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
   ;;
   ;; This is run from ff-pre-load-hook, so ff-function-name may have
   ;; been set by ff-treat-special; don't reset it.
-  "Function called with no parameters; it should return the name
-of the package, protected type, subprogram, or task type whose
-definition/declaration point is in, or for declarations that
-don't have declarative regions, just after; or nil.  In addition,
-if `ff-function-name' is non-nil, store in `ff-function-name' a
-regexp that will find the function in the other file.")
+  "Function called with one parameter (INCLUDE-TYPE); it should
+return the name of the package, protected type, subprogram, or
+task type whose definition/declaration point is in, or for
+declarations that don't have declarative regions, just after; or
+nil.
 
-(defun ada-which-function ()
+If INCLUDE-TYPE is non-nil, include type names.
+
+In addition, if `ff-function-name' is non-nil, store in
+`ff-function-name' a regexp that will find the function in the
+other file.")
+
+(defun ada-which-function (&optional include-type)
   "See `ada-which-function' variable."
-  (interactive)
+  (interactive "P")
   (when ada-which-function
-    (funcall ada-which-function)))
+    (funcall ada-which-function include-type)))
 
 (defvar ada-on-context-clause nil
   ;; supplied by indentation engine
@@ -2042,7 +2095,7 @@ regexp that will find the function in the other file.")
   ;; first, then call `ada-which-function'
   (save-excursion
     (end-of-line 1)
-    (ada-which-function)))
+    (ada-which-function t)))
 
 (defun ada-set-point-accordingly ()
   "Move to the string specified in `ff-function-name', which may be a regexp,
@@ -2675,9 +2728,11 @@ The paragraph is indented on the first line."
 	 ;; setting it in ada-mode causes indent-region to use it for
 	 ;; all indentation.
 	 (fill-prefix ada-fill-comment-prefix)
-	 (fill-column (current-fill-column)))
-
-    ;; We should run before-change-functions here, but we don't know from/to yet.
+	 (fill-column (if ada-fill-comment-adaptive
+			  (save-excursion
+			    (back-to-indentation)
+			    (+ (current-column) fill-column))
+			(current-fill-column))))
 
     ;;  Find end of comment paragraph
     (back-to-indentation)
@@ -2794,6 +2849,8 @@ The paragraph is indented on the first line."
   (setq major-mode 'ada-mode)
   (setq mode-name "Ada")
   (use-local-map ada-mode-map)
+  (add-hook 'menu-bar-update-hook #'ada-project-menu-install)
+
   (set-syntax-table ada-mode-syntax-table)
   (define-abbrev-table 'ada-mode-abbrev-table ())
   (setq local-abbrev-table ada-mode-abbrev-table)
@@ -2894,7 +2951,7 @@ The paragraph is indented on the first line."
   ;; fill-region-as-paragraph in ada-fill-comment-paragraph does not
   ;; call syntax-propertize, so set comment syntax on
   ;; ada-fill-comment-prefix. In post-local because user may want to
-  ;; set it per-file.
+  ;; set it per-file. FIXME: only in emacs < 25?
   (put-text-property 0 2 'syntax-table '(11 . nil) ada-fill-comment-prefix)
 
   (cl-case ada-language-version

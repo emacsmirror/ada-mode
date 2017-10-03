@@ -20,7 +20,7 @@ is
 begin
    Parse_All_LI_Files
      (Self                => Xref,
-#if GNAT_VERSION="GPL_2016"
+#if HAVE_GNATCOLL_XREF="no"
       Tree                => Tree,
 #end if;
       Project             => Tree.Root_Project,
