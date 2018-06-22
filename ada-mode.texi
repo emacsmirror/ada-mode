@@ -2254,15 +2254,18 @@ Gnu ELPA via git:
 
 @example
 cd /Projects
-git clone git://git.savannah.gnu.org/emacs/elpa.git
+git -c fetch.fsckObjects=false clone git://git.savannah.gnu.org/emacs/elpa.git
 @end example
 
 If you have an Emacs Savannah developer account, you can use:
 
 @example
 cd /Projects
-git clone <login>@@git.savannah.gnu.org/emacs/elpa.git
+git -c fetch.fsckObjects=false clone <login>@@git.savannah.gnu.org/emacs/elpa.git
 @end example
+
+The @samp{fetch.fsckObjects} setting works around a
+@url{https://debbugs.gnu.org/22690, glitch in the ELPA repository}.
 
 @file{build/Makefile} contains targets for copying Ada mode source to
 the elpa workspace, and for building the elpa archive there.
