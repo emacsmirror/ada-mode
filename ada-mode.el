@@ -1,12 +1,12 @@
 ;;; ada-mode.el --- major-mode for editing Ada sources  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2017  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2018  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.3.1
+;; Version: 5.3.2
 ;; package-requires: ((wisi "1.1.6") (cl-lib "0.4") (emacs "24.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
@@ -2933,7 +2933,11 @@ The paragraph is indented on the first line."
 
   (when (< emacs-major-version 25) (syntax-propertize (point-max)))
 
-  (add-hook 'hack-local-variables-hook 'ada-mode-post-local-vars nil t)
+  (if (<= emacs-major-version 25)
+      ;; run-mode-hooks does _not_ call hack-local-variables
+      (add-hook 'hack-local-variables-hook 'ada-mode-post-local-vars nil t)
+    ;; >= 26; run-mode-hooks _does_ call hack-local-variables
+    (ada-mode-post-local-vars))
   )
 
 (defun ada-mode-post-local-vars ()
