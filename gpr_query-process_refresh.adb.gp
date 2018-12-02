@@ -1,8 +1,8 @@
 --  Abstract :
 --
---  body compatible with either GNAT GPL 2016 or GNAT GPL 2017
+--  body compatible with GNAT GPL 2016 or later via gnatprep
 --
---  Copyright (C) 2017 Stephen Leake All Rights Reserved.
+--  Copyright (C) 2017, 2018 Stephen Leake All Rights Reserved.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -15,7 +15,6 @@ pragma License (GPL);
 separate (Gpr_Query)
 procedure Process_Refresh (Args : GNATCOLL.Arg_Lists.Arg_List)
 is
-   use type GNATCOLL.Projects.Project_Environment_Access;
    pragma Unreferenced (Args);
 begin
    Parse_All_LI_Files
@@ -24,7 +23,7 @@ begin
       Tree                => Tree,
 #end if;
       Project             => Tree.Root_Project,
-      Parse_Runtime_Files => False, --  True encounters bug in gnatcoll.projects; null pointer
+      Parse_Runtime_Files => False,
       Show_Progress       => Progress_Reporter,
       ALI_Encoding        => ALI_Encoding.all,
       From_DB_Name        => Nightly_DB_Name.all,

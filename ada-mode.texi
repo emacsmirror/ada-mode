@@ -3,7 +3,7 @@
 @settitle Ada Mode
 
 @copying
-Copyright @copyright{} 1999 - 2017  Free Software Foundation, Inc.
+Copyright @copyright{} 1999 - 2018  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 5.3.1
+@title Ada Mode Version 6.0.0
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -36,7 +36,7 @@ developing GNU and promoting software freedom.''
 
 @node Top, Overview, (dir), (dir)
 
-Ada Mode Version 5.3.1
+Ada Mode Version 6.0.0
 
 @ifnottex
 @insertcopying
@@ -63,15 +63,21 @@ Ada Mode Version 5.3.1
 @detailmenu
  --- The Detailed Node Listing ---
 
+Overview
+
+* Why not LSP?::
+
 Installation
 
 * Ada Reference Manual::
 * gpr_query::
+* process parser::
 * ada_mode_gps_indent::
 
 gpr_query
 
-* Building GNATCOLL::
+* Building GNATCOLL 2017::
+* Building GNATCOLL 2018::
 * Building @file{gpr_query}::
 
 ada_mode_gps_indent
@@ -157,16 +163,27 @@ tools.
 @xref{Debuggers,,Debuggers,emacs,Emacs User Guide}, for general
 information on debugging.
 
+@menu
+* Why not LSP?::
+@end menu
+
+@node Why not LSP?
+@section Why not LSP?
+The Language Server Protocol (LSP, @url{https://langserver.org})
+supports an external language parser, as Ada mode does, and it is
+supported by the GNU ELPA package eglot. We do not use LSP, because it
+does not support indentation and fontification.
+
 @node Installation, Customization, Overview, Top
 @chapter Installation
 
-Ada mode requires Emacs 24.3 or greater.
+Ada mode requires Emacs 25.0 or greater.
 
 Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via @code{M-x list-packages} (@pxref{Packages,,,emacs,Emacs
-User Guide}). You must first enable packages in your @file{~/.emacs},
-@emph{after} customizing @code{Info-default-directory-list} (if you do
-that):
+User Guide}). In Emacs < 27 you must first enable packages in your
+@file{~/.emacs}, @emph{after} customizing
+@code{Info-default-directory-list} (if you do that):
 
 @example
 (package-initialize)
@@ -187,6 +204,7 @@ You may also want to install additional utilities:
 @menu
 * Ada Reference Manual::
 * gpr_query::
+* process parser::
 * ada_mode_gps_indent::
 @end menu
 
@@ -207,16 +225,16 @@ switch @code{-fdump-xref}. @code{-fdump-xref} is an AdaCore extension,
 not available in FSF GCC.
 
 @file{gpr_query} is an Ada program, which is distributed as source and
-must be built. Its source code is in the Gnu ELPA package.
+must be built. Its source code is in the @code{ada-mode} Gnu ELPA package.
 
 @file{gpr_query} requires the @code{GNATCOLL} library provided by
-AdaCore, distributed with GNAT GPL 2016 or 2017, and also available at
+AdaCore, distributed with GNAT GPL 2016 or later, and also available at
 Github (@url{https://github.com/AdaCore/gnatcoll}). (The
 @code{GNATCOLL} distributed with GNAT GPL 2015 does not compile
 cleanly). The notes below assume that the compiler is installed at
 @file{$prefix}, e.g. @file{/usr/local/gnat-2017}, and that
 @file{$prefix/bin} is first on the @code{PATH}. If you are running
-Windows, use Cygwin @code{bash} to run these commands.
+Windows, use Cygwin or mingw64 @code{bash} to run these commands.
 
 In general, @file{gpr_query} should be compiled with the compiler
 version that is used to generate the user project @file{.ali} files;
@@ -225,21 +243,25 @@ version. @file{gpr_query} creates a database of cross reference
 information; that database must be deleted if the compiler version
 changes, to force a complete rebuild.
 
+The default binary gnatcoll distributed with GNAT GPL 2017 and 2018
+does not include the xref package, which is required by
+@file{gpr_query}. So we must build gnatcoll from sources. The process
+for doing that changed significantly between GPL 2017 and GPL 2018.
+
 @menu
-* Building GNATCOLL::
+* Building GNATCOLL 2017::
+* Building GNATCOLL 2018::
 * Building @file{gpr_query}::
 @end menu
 
-@node Building GNATCOLL
-@subsection Building GNATCOLL
+@node Building GNATCOLL 2017
+@subsection Building GNATCOLL 2017
 
-@code{GNATCOLL} may already be installed on your system: if it is,
-@file{$prefix/lib/gnat} will contain @file{gnatcoll} GPR files. If
-not, and you are using GNAT GPL 2017, first install the
-@code{libiconv} library.
+First install the @code{libiconv} library, as follows.
 
-On Linux, use the package manager to install the development version
-of @code{libiconv} (usually named @code{libiconv-dev}).
+On many Linux distributions, use the package manager to install the
+development version of @code{libiconv} (usually named
+@code{libiconv-dev}).
 
 On Windows, one way to get the library is to install MingW32 from the
 MSYS2 project (@url{http://www.msys2.org/}), use its package manger
@@ -251,7 +273,7 @@ cp d:/msys64/mingw32/include/iconv.h d:/Apps/GNAT-gpl_2017/include/
 cp d:/msys64/mingw32/lib/libiconv.a  d:/Apps/GNAT-gpl_2017/lib/gcc/i686-pc-mingw32/6.3.1/
 @end example
 
-Then configure (assuming the GPL 2017 version) by:
+Then configure by:
 
 @example
 tar zxf ~/Downloads/gnatcoll-gpl-2017-src.tar.gz
@@ -288,14 +310,83 @@ cd gnatcoll-gpl-2017-src/src/sqlite/amalgamation/
 gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
 @end example
 
+@node Building GNATCOLL 2018
+@subsection Building GNATCOLL 2018
+
+The default gnatcoll distributed with GNAT GPL 2018 does not include
+the xref package, which is required by @file{gpr_query}. So we must
+build gnatcoll from sources. Here we assume you are using the 64 bit
+GNAT.
+
+Download three gnatcoll source files from
+@url{https://libre.adacore.com/}; click on ``More packages, platforms,
+versions and sources'' below the main components list. Select your
+target, click on ``Sources'' under the GNAT Community
+component. Search for 'gnatcoll'; the three files are:
+
+@example
+gnatcoll-bindings-gpl-2018-20180523-src.tar.gz
+gnatcoll-core-gpl-2018-20180523-src.tar.gz
+gnatcoll-db-gpl-2018-20180523-src.tar.gz
+@end example
+
+Install the @code{libiconv} library, as follows:
+
+On many Linux distributions, use the package manager to install the
+development version of @code{libiconv}. On Debian, @code{iconv} is
+provided by the @code{libc} package. On Suse, it is proviced by
+@code{glibc-devel}. On other Linux distributions, it
+may be a separate package named @code{libiconv-dev}.
+
+On Windows, one way to get the library is to install MingW64 from the
+MSYS2 project (@url{http://www.msys2.org/}), use its package manger
+@code{pacman} to install @code{libiconv}, then copy the
+@code{libiconv} files to the GNAT installation:
+
+@example
+cp d:/msys64/mingw64/include/iconv.h d:/Apps/GNAT-gpl_2018/include/
+cp d:/msys64/mingw64/lib/libiconv.a  d:/Apps/GNAT-gpl_2018/lib/gcc/x86_64-pc-mingw32/7.3.1/
+@end example
+
+Then unpack, build, and install the required components. On Debian, we
+need to tell the linker where to find @code{iconv} via
+@code{GNATCOLL_ICONV_OPT}, which sets a the variable @var{Iconv_Opt}
+in the gpr file. On Suse, @var{Iconv_Opt} must be empty, which can
+only be achieved by editing the gpr file.
+
+@example
+tar xf ~/Downloads/gnatcoll-core-gpl-2018-20180524-src.tar.gz
+cd gnatcoll-core-gpl-2018-src
+make
+make install
+cd ..
+
+tar xf ~/Downloads/gnatcoll-bindings-gpl-2018-20180524-src.tar.gz
+cd gnatcoll-bindings-gpl-2018-src
+cd iconv
+export GNATCOLL_ICONV_OPT="-lc"
+./setup.py build
+./setup.py install
+cd ../..
+
+tar xf ~/Downloads/gnatcoll-db-gpl-2018-20180524-src.tar.gz
+cd gnatcoll-db-gpl-2018-src
+make -C sql
+make -C sql install
+make -C sqlite
+make -C sqlite install
+make -C xref
+make -C xref install
+@end example
+
 @node Building @file{gpr_query}
 @subsection Building @file{gpr_query}
 
 To build and install @file{gpr_query}, assuming the
-@code{ada-mode-5.3.xx} GNU ELPA package is installed:
+@code{ada-mode-6.0.xx} GNU ELPA package is installed:
 
 @example
-cd ~/.emacs.d/elpa/ada-mode-5.3.xx
+cd ~/.emacs.d/elpa/ada-mode-6.0.xx
 ./build.sh
 @end example
 
@@ -303,6 +394,15 @@ This also builds @ref{ada_mode_gps_indent}.
 
 @code{ada-mode} will use @file{gpr_query} for cross reference
 functions if @file{gpr_query} is found in @code{PATH}.
+
+@node process parser, , ,
+@section process parser
+The process parser is built and installed by the same @code{build.sh}
+script as @xref{gpr_query}. ada-mode will automatically use it if it
+is available.
+
+To override the automatic choice of parser, set @var{ada-parser} to
+either @code{'elisp} or @code{'parser}.
 
 @node ada_mode_gps_indent, , gpr_query, Installation
 @section ada_mode_gps_indent
@@ -329,15 +429,15 @@ consistent with the ada-wisi indentation engine.
 @node ada_mode_gps_indent install
 @subsection Install
 To install @code{ada_mode_gps_indent}, assuming the
-@code{ada-mode-5.3.xx} GNU ELPA package is installed:
+@code{ada-mode-6.0.xx} GNU ELPA package is installed:
 @itemize
 @item
-Install @file{gnatcoll} (@ref{Building GNATCOLL}).
+Install @file{gnatcoll} (@ref{Building GNATCOLL 2018}).
 
 @item
 Compile and install @file{ada_mode_gps_indent}:
 @example
-cd ~/.emacs.d/elpa/ada-mode-5.3.xx/
+cd ~/.emacs.d/elpa/ada-mode-6.0.xx/
 ./build.sh
 @end example
 
@@ -486,6 +586,10 @@ By default, the context menu is bound to @key{C-down-mouse-3},
 i.e. control-right-click. @key{down-mouse-3} is already bound in the
 global map; you can override that global binding in the
 @code{ada-mode-hook} (see below for code).
+@item other-frame-window-mode
+Ada mode does not provide any @code{other-frame} or
+@code{other-window} variants of user operations. Instead, it is
+recommended to use the Gnu ELPA package @code{other-frame-window}.
 @item delete-trailing-whitespace
 Deletes space, tab at end of line and blank lines at end of buffer.
 @item untabify
@@ -2254,18 +2358,15 @@ Gnu ELPA via git:
 
 @example
 cd /Projects
-git -c fetch.fsckObjects=false clone git://git.savannah.gnu.org/emacs/elpa.git
+git clone git://git.savannah.gnu.org/emacs/elpa.git
 @end example
 
 If you have an Emacs Savannah developer account, you can use:
 
 @example
 cd /Projects
-git -c fetch.fsckObjects=false clone <login>@@git.savannah.gnu.org/emacs/elpa.git
+git clone <login>@@git.savannah.gnu.org/emacs/elpa.git
 @end example
-
-The @samp{fetch.fsckObjects} setting works around a
-@url{https://debbugs.gnu.org/22690, glitch in the ELPA repository}.
 
 @file{build/Makefile} contains targets for copying Ada mode source to
 the elpa workspace, and for building the elpa archive there.

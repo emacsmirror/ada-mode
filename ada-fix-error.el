@@ -1,7 +1,7 @@
 ;;; ada-fix-error.el --- utilities for automatically fixing  -*- lexical-binding:t -*-
 ;; errors reported by the compiler.
 
-;; Copyright (C) 1999-2009, 2012-2015, 2017 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2009, 2012-2015, 2017, 2018 Free Software Foundation, Inc.
 
 ;; Author     : Stephen Leake      <Stephen_Leake@stephe-leake.org>
 ;; Maintainer : Stephen Leake      <Stephen_Leake@stephe-leake.org>
@@ -160,9 +160,18 @@ extend a with_clause to include CHILD-NAME  .	"
   (newline-and-indent)
   (cl-ecase ada-language-version
     (ada2012
-     (insert "use all type " type ";"))
+     (insert "use all type "))
     ((ada83 ada95 ada2005)
-     (insert "use type " type ";"))))
+     (insert "use type ")))
+  (let ((begin (point))
+	end)
+    (insert type ";")
+    (setq end (point))
+    (goto-char begin)
+    (while (< (point) end)
+      (ada-case-adjust-at-point)
+      (forward-char 1))
+    ))
 
 (defun ada-fix-add-use (package)
   "Insert `use' clause for PACKAGE at start of declarative part for current construct."
@@ -210,7 +219,7 @@ point and return nil.")
       (let ((comp-buf-pt (point))
 	    (success
 	     (run-hook-with-args-until-success
-	      ada-fix-error-hook
+	      'ada-fix-error-hook
 	      (compilation-next-error 0)
 	      source-buffer
 	      source-window)))

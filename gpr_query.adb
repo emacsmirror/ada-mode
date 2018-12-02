@@ -5,7 +5,7 @@
 --
 --  requires gnatcoll 1.7w 20140330, gnat 7.2.1
 --
---  Copyright (C) 2014-2017 Free Software Foundation All Rights Reserved.
+--  Copyright (C) 2014-2018 Free Software Foundation All Rights Reserved.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -26,6 +26,7 @@ with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Environment_Variables;
 with Ada.Exceptions.Traceback;
+with Ada.IO_Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
@@ -38,7 +39,7 @@ with GNATCOLL.Arg_Lists;
 with GNATCOLL.Paragraph_Filling;
 with GNATCOLL.Projects;
 with GNATCOLL.SQL.Sqlite;
-with GNATCOLL.Traces; use GNATCOLL.Traces;
+with GNATCOLL.Traces;
 with GNATCOLL.Utils;
 with GNATCOLL.VFS;
 with GNATCOLL.VFS_Utils;
@@ -76,7 +77,7 @@ procedure Gpr_Query is
    Xref              : aliased My_Xref_Database;
    Env               : GNATCOLL.Projects.Project_Environment_Access;
    Tree              : aliased GNATCOLL.Projects.Project_Tree;
-   Previous_Progress : Natural                          := 0;
+   Previous_Progress : Natural := 0;
    Progress_Reporter : access procedure (Current, Total : Integer) := null;
 
    --  Subprogram specs for subprograms used before bodies
@@ -158,6 +159,7 @@ procedure Gpr_Query is
    --  Infrastructure commands
    procedure Process_Help (Args : GNATCOLL.Arg_Lists.Arg_List);
    procedure Process_Refresh (Args : GNATCOLL.Arg_Lists.Arg_List);
+   procedure Process_DB_Name (Args : GNATCOLL.Arg_Lists.Arg_List);
 
    --  Queries; alphabetical
    procedure Process_Overridden is new Process_Command_Single (GNATCOLL.Xref.Overrides);
@@ -171,7 +173,7 @@ procedure Gpr_Query is
       Name    : GNAT.Strings.String_Access;
       Args    : GNAT.Strings.String_Access;
       Help    : GNAT.Strings.String_Access;
-      Handler : access procedure (Args : GNATCOLL.Arg_Lists.Arg_List);
+      Handler : not null access procedure (Args : GNATCOLL.Arg_Lists.Arg_List);
    end record;
 
    Commands : constant array (Natural range <>) of Command_Descr :=
@@ -184,6 +186,11 @@ procedure Gpr_Query is
        null,
        new String'("Refresh the contents of the xref database."),
        Process_Refresh'Access),
+
+      (new String'("db_name"),
+       null,
+       new String'("Report the root name of the database files."),
+       Process_DB_Name'Access),
 
       --  queries
 
@@ -232,6 +239,16 @@ procedure Gpr_Query is
    ----------
    --  Procedure bodies, alphabetical
 
+   procedure Check_Arg_Count (Args : in GNATCOLL.Arg_Lists.Arg_List; Expected : in Integer)
+   is
+      Count : constant Integer := GNATCOLL.Arg_Lists.Args_Length (Args);
+   begin
+      if Count /= Expected then
+         raise Invalid_Command with "Invalid number of arguments" & Integer'Image (Count) &
+           "; expecting" & Integer'Image (Expected);
+      end if;
+   end Check_Arg_Count;
+
    procedure Display_Progress (Current, Total : Integer) is
       Now : constant Integer := Integer (Float'Floor
         (Float (Current) / Float (Total) * 100.0));
@@ -274,8 +291,8 @@ procedure Gpr_Query is
       use GNAT.Directory_Operations;
       use GNATCOLL.Xref;
 
-      Words  : GNAT.Strings.String_List_Access := GNATCOLL.Utils.Split (Arg, On => ':');
-      Ref    : GNATCOLL.Xref.Entity_Reference;
+      Words : GNAT.Strings.String_List_Access := GNATCOLL.Utils.Split (Arg, On => ':');
+      Ref   : GNATCOLL.Xref.Entity_Reference;
    begin
       case Words'Length is
       when 4         =>
@@ -350,15 +367,12 @@ procedure Gpr_Query is
       end if;
    end Image;
 
-   procedure Check_Arg_Count (Args : in GNATCOLL.Arg_Lists.Arg_List; Expected : in Integer)
+   procedure Process_DB_Name (Args : GNATCOLL.Arg_Lists.Arg_List)
    is
-      Count : constant Integer := GNATCOLL.Arg_Lists.Args_Length (Args);
+      pragma Unreferenced (Args);
    begin
-      if Count /= Expected then
-         raise Invalid_Command with "Invalid number of arguments" & Integer'Image (Count) &
-           "; expecting" & Integer'Image (Expected);
-      end if;
-   end Check_Arg_Count;
+      Ada.Text_IO.Put_Line (DB_Name.all);
+   end Process_DB_Name;
 
    procedure Process_Help (Args : GNATCOLL.Arg_Lists.Arg_List)
    is
@@ -448,8 +462,8 @@ procedure Gpr_Query is
 
       declare
          use GNATCOLL.Xref;
-         Entity  : constant Entity_Information := Get_Entity (Nth_Arg (Args, 1));
-         Refs    : References_Cursor;
+         Entity : constant Entity_Information := Get_Entity (Nth_Arg (Args, 1));
+         Refs   : References_Cursor;
       begin
          Xref.References (Entity, Cursor => Refs);
          Dump (Refs);
@@ -552,7 +566,7 @@ begin
       GNATCOLL.Traces.Parse_Config_File
         (Filename         => Traces_Config_File.all,
          Force_Activation => False);
-      Trace (Me, "trace enabled");
+      GNATCOLL.Traces.Trace (Me, "trace enabled");
    end if;
 
    GNATCOLL.Projects.Initialize (Env); -- for register_default_language
@@ -561,7 +575,7 @@ begin
       Env.Set_Config_File
         (GNATCOLL.VFS.Create_From_UTF8
            (GNAT.OS_Lib.Normalize_Pathname
-              (Name => Gpr_Config_File.all,
+              (Name      => Gpr_Config_File.all,
                Directory => GNAT.Directory_Operations.Get_Current_Dir)));
    else
       --  Apparently Ada language extensions are already registered (sigh)
@@ -583,8 +597,6 @@ begin
       use Ada.Text_IO;
       use GNATCOLL.VFS;
       use GNATCOLL.VFS_Utils;
-      use GNAT.Directory_Operations;
-      use type GNAT.Strings.String_Access;
 
       Gpr_Project_Path : constant String :=
         (if Exists ("GPR_PROJECT_PATH") then Ada.Directories.Current_Directory &
@@ -604,7 +616,7 @@ begin
          return;
       end if;
 
-      Trace (Me, "using project file " & (+Path.Full_Name));
+      GNATCOLL.Traces.Trace (Me, "using project file " & (+Path.Full_Name));
 
       if Show_Progress then
          Progress_Reporter := Display_Progress'Unrestricted_Access;
@@ -657,7 +669,7 @@ begin
       use type GNAT.Strings.String_Access;
       Error : GNAT.Strings.String_Access;
    begin
-      Trace (Me, "using database " & DB_Name.all);
+      GNATCOLL.Traces.Trace (Me, "using database " & DB_Name.all);
 
       Setup_DB
         (Self  => Xref,
@@ -693,6 +705,8 @@ begin
    end loop;
 
 exception
+when Ada.IO_Exceptions.End_Error =>
+   null;
 when E : GNATCOLL.Projects.Invalid_Project =>
    Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
    Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);

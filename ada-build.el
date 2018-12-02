@@ -69,9 +69,6 @@ Overridden by project variable `check_cmd'."
 Overridden by project variable `make_cmd'."
   :type 'string)
 
-;; FIXME: make this more intelligent to work on Windows cmd shell?
-;; either detect Windows and drop "./", or expand to full path at
-;; runtime.
 (defcustom ada-build-run-cmd "./${main}"
   "Default command to run the application, in a spawned shell.
 Overridden by project variable `run_cmd'."

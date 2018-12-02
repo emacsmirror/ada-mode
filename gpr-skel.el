@@ -1,6 +1,6 @@
 ;; gpr-skel.el --- Extension to gpr-mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2013-2015 Free Software Foundation, Inc.
+;; Copyright (C) 2013-2015, 2018 Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -159,7 +159,7 @@ it is a name, and use the word before that as the token."
   ;; Standard comment end included for languages where that is newline.
   (skip-syntax-backward " !>")
 
-  ;; include punctuation here, in case is is an identifier, to allow Gpr.Text_IO
+  ;; include punctuation here, in case this is an identifier, to allow Gpr.Text_IO
   (let* ((end (prog1 (point) (skip-syntax-backward "w_.")))
 	 (token (downcase (buffer-substring-no-properties (point) end)))
 	 (skel (assoc-string token (symbol-value skeleton-token-alist)))

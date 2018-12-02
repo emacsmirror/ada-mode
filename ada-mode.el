@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 5.3.2
-;; package-requires: ((wisi "1.1.6") (cl-lib "0.4") (emacs "24.3"))
+;; Version: 6.0.0
+;; package-requires: ((wisi "2.0") (cl-lib "1.0") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -168,7 +168,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "5.3.1"))
+  (let ((version-string "6.0.0"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -312,9 +312,23 @@ nil, only the file name."
   :type 'boolean
   :safe #'booleanp)
 
-(defcustom ada-gps-indent-exec "ada_mode_gps_indent"
+(defcustom ada-gps-indent-exec "ada_mode_gps_indent.exe"
   ;; declared here, not in ada-gps.el, for auto-detection of indent engine below
   "Name of executable to use for ada_mode_gps_indent,"
+  :type 'string
+  :group 'ada-indentation)
+
+(defcustom ada-process-parse-exec "ada_mode_wisi_lr1_parse.exe"
+  ;; We use .exe even on Linux to simplify the Makefile
+  "Name of executable to use for external process Ada parser.
+There are two standard choices; ada_mode_wisi_lalr_parse.exe and
+ada_mode_wisi_lr1_parse.exe. The LR1 version (the default) is
+slower to load on first use, but gives better error recovery."
+  :type 'string
+  :group 'ada-indentation)
+
+(defcustom ada-process-parse-exec-opts nil
+  "List of process start options for ’ada-process-parse-exec’."
   :type 'string
   :group 'ada-indentation)
 
@@ -488,16 +502,17 @@ Menu displays currently parsed Ada mode projects."
 
 (defun ada-project-menu-install ()
   "Install the Ada project menu as a submenu."
-  (define-key-after
-    (lookup-key ada-mode-map [menu-bar Ada]);; map to put menu in
-    [ada-prj-select]          ;; key (a menu entry)
-    (easy-menu-binding        ;; binding
+  (when (eq major-mode 'ada-mode)
+    (lookup-key ada-mode-map [menu-bar Ada]) ;; map to put menu in
+    [ada-prj-select]          ;; key to insert (a menu entry)
+    (easy-menu-binding
      (easy-menu-create-menu
       "Select Project"
-      (ada-project-menu-compute)))
+      (ada-project-menu-compute)));; binding
+    nil;; after
 
-    ;; FIXME: this doesn’t work; "Select Project" is at end
-    (lookup-key ada-mode-map [menu-bar Ada Project\ files]) ;; after
+    ;; IMPROVEME: this doesn’t work for ’after’; "Select Project" is at end
+    ;; (lookup-key ada-mode-map [menu-bar Ada Build])
     ))
 
 (easy-menu-define ada-context-menu nil
@@ -701,9 +716,32 @@ Function is called with one optional argument; syntax-ppss result.")
      (user-error "Not in parameter list")))
   (funcall indent-line-function); so new list is indented properly
 
+  ;; indent-line-function may have found errors to correct. Repairing
+  ;; all errors from here to end of buffer is annoying to the
+  ;; user. But we have to handle a missing param list closing
+  ;; paren. See test/format_paramlist.adb Check_One.
+  ;;
+  ;; FIXME: either make this indirect, or make all other wisi- indirects direct.
+  (save-excursion
+    (let ((beg (point))
+	  end)
+      (condition-case-unless-debug nil
+	  (setq end (progn (forward-sexp) (point)))
+	(error
+	 ;; Right paren missing. ada-wisi-goto-open paren ensures parse
+	 ;; succeeded.
+	 (let* ((cache (wisi-get-cache (point)))
+		(subr-cache (wisi-goto-containing cache)))
+	   (setq end (wisi-cache-next subr-cache)))))
+
+      (wisi-repair-errors beg end)))
+
+  ;; Recompute ’end’ after repair errors; closing paren is now there.
+
   (let* ((begin (point))
-	 (delend (progn (forward-sexp) (point))); just after matching closing paren
-	 (end (progn (backward-char) (forward-comment (- (point))) (point))); end of last parameter-declaration
+	 (delend (copy-marker (progn (forward-sexp) (point)))); just after matching closing paren
+	 (end (copy-marker
+	       (progn (backward-char) (forward-comment (- (point))) (point)))); end of last parameter-declaration
 	 (multi-line (> end (save-excursion (goto-char begin) (line-end-position))))
 	 (paramlist (ada-scan-paramlist (1+ begin) end)))
 
@@ -943,6 +981,7 @@ Each parameter declaration is represented by a list
   )
 
 (defun ada-reset-parser ()
+  "See variable ’ada-reset-parser’."
   (interactive)
   (when ada-reset-parser
     (funcall ada-reset-parser)))
@@ -1290,8 +1329,8 @@ and treat `ada-case-strict' as t in code.."
 
 (defun ada-case-adjust-at-point (&optional in-comment)
   "If ’ada-auto-case’ is non-nil, adjust case of word at point, move to end of word.
-With prefix arg, adjust case as code even if in comment;
-otherwise, capitalize words in comments.
+With prefix arg, adjust case as code even if in comment or string;
+otherwise, capitalize words in comments and strings.
 If ’ada-auto-case’ is nil, capitalize current word."
   (interactive "P")
   (cond
@@ -1477,7 +1516,7 @@ Include properties set via `ada-prj-default-compiler-alist',
 
 (defvar ada-prj-parser-alist
   (mapcar
-   (lambda (ext) (cons ext 'ada-prj-parse-file-1))
+   (lambda (ext) (cons ext #'ada-prj-parse-file-1))
    ada-prj-file-extensions)
   ;; project file parse
   "Alist of parsers for project files, indexed by file extension.
@@ -1492,7 +1531,6 @@ list. Parser must modify or add to the property list and return it.")
 (defun ada-parse-prj-file (prj-file)
   "Read Emacs Ada or compiler-specific project file PRJ-FILE, set project properties in `ada-prj-alist'."
   ;; Not called ada-prj-parse-file for Ada mode 4.01 compatibility
-  ;; FIXME: need to kill gpr-query session if .gpr file has changed (like from non-agg to agg!)
   (setq prj-file (expand-file-name prj-file))
 
   (unless (file-readable-p prj-file)
@@ -1647,7 +1685,7 @@ Return new value of PROJECT."
 		(setq project tmp-prj)
 
 	      ;; Any other field in the file is set as an environment
-	      ;; variable or a project file.
+	      ;; variable or a project file variable.
 	      (if (= ?$ (elt (match-string 1) 0))
 		  ;; process env var. We don't do expand-file-name
 		  ;; here because the application may be expecting a
@@ -1703,46 +1741,78 @@ Indexed by project variable xref_tool.")
   "Alist of functions to call for xref-tool specific project file deselection.
 Indexed by project variable xref_tool.")
 
-(defun ada-select-prj-file (prj-file)
-  "Select PRJ-FILE as the current project file."
+(defun ada-refresh-prj-file ()
+  "Reparse, reselect current project file.
+Useful when project has been edited."
+  (interactive)
+  (let* ((prj-file ada-prj-current-file)
+   	 (parsed (assoc prj-file ada-prj-alist)))
+    (setq ada-prj-current-file nil)
+    (setq ada-prj-current-project nil)
+    (when parsed
+      (setq ada-prj-alist (delq parsed ada-prj-alist)))
+    (ada-select-prj-file prj-file nil)))
+
+(defun ada-select-prj-file (prj-file &optional no-force)
+  "Select PRJ-FILE as the current project file, parsing it if necessary.
+Deselects the current project first."
   (interactive)
   (setq prj-file (expand-file-name prj-file))
 
-  (setq ada-prj-current-project (cdr (assoc prj-file ada-prj-alist)))
+  (when (or (not no-force)
+	    (not (string-equal prj-file ada-prj-current-project)))
+    (setq ada-prj-current-project (cdr (assoc prj-file ada-prj-alist)))
 
-  (when (null ada-prj-current-project)
-    (setq ada-prj-current-file nil)
-    (error "Project file '%s' was not previously parsed." prj-file))
+    (when (null ada-prj-current-project)
+      (setq ada-prj-current-file nil)
+      (ada-parse-prj-file prj-file)
+      (setq ada-prj-current-project (cdr (assoc prj-file ada-prj-alist)))
+      (when (null ada-prj-current-project)
+	(error "Project file '%s' parse failed." prj-file)))
 
-  (let ((func (cdr (assq (ada-prj-get 'ada_compiler) ada-deselect-prj-compiler))))
-    (when func (funcall func)))
+    (let ((func (cdr (assq (ada-prj-get 'ada_compiler) ada-deselect-prj-compiler))))
+      (when func (funcall func)))
 
-  (let ((func (cdr (assq (ada-prj-get 'xref_tool) ada-deselect-prj-xref-tool))))
-    (when func (funcall func)))
+    (let ((func (cdr (assq (ada-prj-get 'xref_tool) ada-deselect-prj-xref-tool))))
+      (when func (funcall func)))
 
-  (setq ada-prj-current-file prj-file)
+    (setq ada-prj-current-file prj-file)
 
-  ;; Project file should fully specify what compilers are used,
-  ;; including what compilation filters they need. There may be more
-  ;; than just an Ada compiler.
-  (setq compilation-error-regexp-alist nil)
-  (setq compilation-filter-hook nil)
+    ;; Project file should fully specify what compilers are used,
+    ;; including what compilation filters they need. There may be more
+    ;; than just an Ada compiler.
+    (setq compilation-error-regexp-alist nil)
+    (setq compilation-filter-hook nil)
 
-  (when (ada-prj-get 'el_file)
-    (load-file (ada-prj-get 'el_file)))
+    (when (ada-prj-get 'el_file)
+      (load-file (ada-prj-get 'el_file)))
 
-  (ada-case-read-all-exceptions)
+    (ada-case-read-all-exceptions)
 
-  (setq compilation-search-path (ada-prj-get 'src_dir))
+    (setq compilation-search-path (ada-prj-get 'src_dir))
 
-  (let ((func (cdr (assq (ada-prj-get 'ada_compiler) ada-select-prj-compiler))))
-    (when func (funcall func)))
+    (let ((func (cdr (assq (ada-prj-get 'ada_compiler) ada-select-prj-compiler))))
+      (when func (funcall func)))
 
-  (let ((func (cdr (assq (ada-prj-get 'xref_tool) ada-select-prj-xref-tool))))
-    (when func (funcall func)))
+    (let ((func (cdr (assq (ada-prj-get 'xref_tool) ada-select-prj-xref-tool))))
+      (when func (funcall func)))
 
-  ;; return 't', for decent display in message buffer when called interactively
-  t)
+    ;; return 't', for decent display in message buffer when called interactively
+    t))
+
+(defun ada-deselect-prj (prj)
+  "Deselect the project file PRJ, if current."
+  ;; For use as ’project-deselect’ (experimental). Duplicates part of
+  ;; ’ada-select-prj-file’; should delete that, use this.
+  (when (string-equal prj ada-prj-current-file)
+    (let ((func (cdr (assq (ada-prj-get 'ada_compiler) ada-deselect-prj-compiler))))
+      (when func (funcall func)))
+
+    (let ((func (cdr (assq (ada-prj-get 'xref_tool) ada-deselect-prj-xref-tool))))
+      (when func (funcall func)))
+
+    (setq ada-prj-current-project nil)
+    ))
 
 (defun ada-create-select-default-prj (&optional directory)
   "Create a default project with src_dir set to DIRECTORY (default current directory), select it."
@@ -1828,7 +1898,7 @@ Indexed by project variable xref_tool.")
     (modify-syntax-entry ?&  "." table)
     (modify-syntax-entry ?*  "." table)
     (modify-syntax-entry ?+  "." table)
-    (modify-syntax-entry ?-  ". 12" table); operator; see ada-syntax-propertize for double hyphen as comment
+    (modify-syntax-entry ?-  "." table); operator; see ada-syntax-propertize for double hyphen as comment
     (modify-syntax-entry ?. "." table)
     (modify-syntax-entry ?/  "." table)
     (modify-syntax-entry ?:  "." table)
@@ -1840,9 +1910,11 @@ Indexed by project variable xref_tool.")
     (modify-syntax-entry ?\\ "." table); default is escape; not correct for Ada strings
     (modify-syntax-entry ?\|  "." table)
 
-    ;; and \f and \n end a comment
-    (modify-syntax-entry ?\f  ">" table)
-    (modify-syntax-entry ?\n  ">" table)
+    ;; \f and \n end a comment.
+    ;; comment start set in ada-syntax-propertize.
+    ;; flag ’s’ experimental; end unterminated string at newline.
+    (modify-syntax-entry ?\f  "> s" table)
+    (modify-syntax-entry ?\n  "> s" table)
 
     (modify-syntax-entry ?_ "_" table); symbol constituents, not word.
 
@@ -2035,10 +2107,10 @@ unit name; it should return the Ada name that should be found in FILE-NAME.")
   ;; This is run from ff-pre-load-hook, so ff-function-name may have
   ;; been set by ff-treat-special; don't reset it.
   "Function called with one parameter (INCLUDE-TYPE); it should
-return the name of the package, protected type, subprogram, or
-task type whose definition/declaration point is in, or for
-declarations that don't have declarative regions, just after; or
-nil.
+return the name of the package, protected type, subprogram,
+entry, or task type whose definition/declaration point is in, or
+for declarations that don't have declarative regions, just after;
+or nil.
 
 If INCLUDE-TYPE is non-nil, include type names.
 
@@ -2146,7 +2218,7 @@ set."
         (error "%s (opened) and %s (found in project) are two different files"
                file-name found-file)))))
 
-(defun ada-find-other-file (other-window)
+(defun ada-find-other-file ()
   "Move to the corresponding declaration in another file.
 
 - If region is active, assume it contains a package name;
@@ -2178,7 +2250,7 @@ buffer in another window."
   ;;                       uses compiler-generated cross reference
   ;;                       information
 
-  (interactive "P")
+  (interactive)
   (ada-check-current-project (buffer-file-name))
 
   ;; clear ff-function-name, so it either ff-special-constructs or
@@ -2192,21 +2264,20 @@ buffer in another window."
      compilation-search-path
      (ada-file-name-from-ada-name ff-function-name)
      ada-spec-suffixes
-     other-window)
+     nil);; other-window
     (deactivate-mark))
 
    ((and (not (ada-on-context-clause))
 	 (ada-goto-subunit-name))
-    (ada-goto-declaration other-window))
+    (ada-goto-declaration))
 
    (t
-    (ff-find-other-file other-window)))
+    (ff-find-other-file)))
   )
 
 (defun ada-find-file (filename)
   ;; we assume compliation-search-path is set, either by an
   ;; ada-mode project, or by some other means.
-  ;; FIXME: option to filter with ada-*-suffixes?
   (interactive (list (completing-read "File: "
 				      (apply-partially
 				       'locate-file-completion-table
@@ -2267,7 +2338,7 @@ identifier.  May be an Ada identifier or operator."
     (error "No identifier around"))
    ))
 
-;; FIXME (for emacs 25): use find-tag-marker-ring, ring-insert, pop-tag-mark (see xref.el)
+;; IMPROVEME (for emacs >= 25): use find-tag-marker-ring, ring-insert, pop-tag-mark (see xref.el)
 (defvar ada-goto-pos-ring '()
   "List of positions selected by navigation functions. Used
 to go back to these positions.")
@@ -2289,12 +2360,10 @@ to go back to these positions.")
       (find-file (cadr pos))
       (goto-char (car pos)))))
 
-(defun ada-goto-source (file line column other-window)
+(defun ada-goto-source (file line column)
   "Find and select FILE, at LINE and COLUMN.
 FILE may be absolute, or on `compilation-search-path'.
-LINE, COLUMN are Emacs origin.
-
-If OTHER-WINDOW is non-nil, show the buffer in another window."
+LINE, COLUMN are Emacs origin."
   (let ((file-1
 	 (if (file-name-absolute-p file) file
 	   (ff-get-file-name compilation-search-path file))))
@@ -2308,25 +2377,14 @@ If OTHER-WINDOW is non-nil, show the buffer in another window."
   (let ((buffer (get-file-buffer file)))
     (cond
      ((bufferp buffer)
-      (cond
-       ((null other-window)
-	(switch-to-buffer buffer))
-
-       (t (switch-to-buffer-other-window buffer))
-       ))
+      ;; use pop-to-buffer, so package other-frame-window works.
+      (pop-to-buffer buffer (list #'display-buffer-same-window) nil))
 
      ((file-exists-p file)
-      (cond
-       ((null other-window)
-	(find-file file))
-
-       (t
-	(find-file-other-window file))
-       ))
+      (find-file file))
 
      (t
       (error "'%s' not found" file))))
-
 
   ;; move the cursor to the correct position
   (push-mark nil t)
@@ -2339,14 +2397,17 @@ If OTHER-WINDOW is non-nil, show the buffer in another window."
   ;; determined by xref_tool, set by *-select-prj-xref
   "Function that refreshes cross reference information cache.")
 
-(defun ada-xref-refresh ()
-  "Refresh cross reference information cache, if any."
-  (interactive)
+(defun ada-xref-refresh (delete-files)
+  "Refresh cross reference information cache, if any.
+With non-nil prefix arg, delete cross reference files, which may
+be needed when a compiler is upgraded, or some configuration is
+changed."
+  (interactive "P")
 
   (when (null ada-xref-refresh-function)
     (error "no cross reference information available"))
 
-  (funcall ada-xref-refresh-function)
+  (funcall ada-xref-refresh-function delete-files)
   )
 
 (defvar ada-xref-other-function nil
@@ -2363,13 +2424,10 @@ FILE may be absolute, or on `compilation-search-path'.  If point is
 at the specification, the corresponding location is the body, and vice
 versa.")
 
-(defun ada-goto-declaration (other-window)
+(defun ada-goto-declaration ()
   "Move to the declaration or body of the identifier around point.
-If at the declaration, go to the body, and vice versa.
-
-If OTHER-WINDOW (set by interactive prefix) is non-nil, show the
-buffer in another window."
-  (interactive "P")
+If at the declaration, go to the body, and vice versa."
+  (interactive)
   (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-other-function)
@@ -2385,8 +2443,7 @@ buffer in another window."
 
     (ada-goto-source (nth 0 target)
 		     (nth 1 target)
-		     (nth 2 target)
-		     other-window)
+		     (nth 2 target))
     ))
 
 (defvar ada-xref-parent-function nil
@@ -2499,9 +2556,9 @@ Called with four arguments:
 Returns a list (FILE LINE COLUMN) giving the corresponding location.
 FILE may be absolute, or on `compilation-search-path'.")
 
-(defun ada-show-overridden (other-window)
+(defun ada-show-overridden ()
   "Show the overridden declaration of identifier at point."
-  (interactive "P")
+  (interactive)
   (ada-check-current-project (buffer-file-name))
 
   (when (null ada-xref-overridden-function)
@@ -2516,9 +2573,7 @@ FILE may be absolute, or on `compilation-search-path'.")
 
     (ada-goto-source (nth 0 target)
 		     (nth 1 target)
-		     (nth 2 target)
-		     other-window)
-
+		     (nth 2 target))
   ))
 
 ;; This is autoloaded because it may be used in ~/.emacs
@@ -2552,23 +2607,20 @@ the file name."
     (speedbar-add-supported-extension body))
   )
 
-(defun ada-show-secondary-error (other-window)
+(defun ada-show-secondary-error ()
   "Show the next secondary file reference in the compilation buffer.
 A secondary file reference is defined by text having text
 property `ada-secondary-error'.  These can be set by
-compiler-specific compilation filters.
-
-If OTHER-WINDOW (set by interactive prefix) is non-nil, show the
-buffer in another window."
-  (interactive "P")
+compiler-specific compilation filters."
+  (interactive)
 
   ;; preserving the current window works only if the frame
   ;; doesn't change, at least on Windows.
   (let ((start-buffer (current-buffer))
-	(start-window (selected-window))
 	pos item file)
     ;; We use `pop-to-buffer', not `set-buffer', so `forward-line'
-    ;; works. But that might eat an `other-frame-window-mode' prefix;
+    ;; works. But that might eat an `other-frame-window-mode' prefix,
+    ;; which the user means to apply to ’ada-goto-source’ below;
     ;; disable that temporarily.
     (let ((display-buffer-overriding-action nil))
       (pop-to-buffer compilation-last-buffer nil t)
@@ -2592,9 +2644,7 @@ buffer in another window."
        file
        (nth 1 item); line
        (nth 2 item); column
-       other-window)
-      (select-window start-window)
-      )
+       ))
     ))
 
 (defvar ada-goto-declaration-start nil
@@ -2700,6 +2750,8 @@ package body file, containing skeleton code that will compile.")
 
 ;;;; fill-comment
 
+(defvar wisi-inhibit-parse nil);; in wisi.el; so far that's the only parser we use.
+
 (defun ada-fill-comment-paragraph (&optional justify postfix)
   "Fill the current comment paragraph.
 If JUSTIFY is non-nil, each line is justified as well.
@@ -2714,14 +2766,8 @@ The paragraph is indented on the first line."
   ;; fill-region-as-paragraph leaves comment text exposed (without
   ;; comment prefix) when inserting a newline; don't trigger a parse
   ;; because of that (in particular, jit-lock requires a parse; other
-  ;; hooks may as well). In general, we don't need to trigger a parse
-  ;; for comment changes.
-  ;;
-  ;; FIXME: add ada-inibit-parse instead; let other change hooks run.
-  ;; FIXME: wisi-after-change still needs to adjust wisi-cache-max
-  ;; FIXME: even better, consider patch suggested by Stefan Monnier to
-  ;; move almost all code out of the change hooks (see email).
-  (let* ((inhibit-modification-hooks t)
+  ;; hooks may as well).
+  (let* ((wisi-inhibit-parse t)
 	 indent from to
 	 (opos (point-marker))
 	 ;; we bind `fill-prefix' here rather than in ada-mode because
@@ -2792,12 +2838,7 @@ The paragraph is indented on the first line."
 	    (forward-line))
 	  ))
 
-    (goto-char opos)
-
-    ;; we disabled modification hooks, so font-lock will not run to
-    ;; re-fontify the comment prefix; do that here.
-    ;; FIXME: Use actual original size instead of 0!
-    (run-hook-with-args 'after-change-functions from to 0)))
+    (goto-char opos)))
 
 ;;;; support for font-lock.el
 
@@ -2836,7 +2877,7 @@ The paragraph is indented on the first line."
 
 ;; ada-mode does not derive from prog-mode, because we need to call
 ;; ada-mode-post-local-vars, and prog-mode does not provide a way to
-;; do that.
+;; do that (at least before emacs 26).
 ;;
 ;; autoload required by automatic mode setting
 ;;;###autoload
@@ -2849,7 +2890,6 @@ The paragraph is indented on the first line."
   (setq major-mode 'ada-mode)
   (setq mode-name "Ada")
   (use-local-map ada-mode-map)
-  (add-hook 'menu-bar-update-hook #'ada-project-menu-install)
 
   (set-syntax-table ada-mode-syntax-table)
   (define-abbrev-table 'ada-mode-abbrev-table ())
@@ -2881,10 +2921,10 @@ The paragraph is indented on the first line."
 
   (set (make-local-variable 'require-final-newline) t)
 
-  ;; 'font-lock-defaults' is a confusing name; it's buffer local
   (setq font-lock-defaults
-	'(ada-font-lock-keywords
-	  nil t
+	'(ada-font-lock-keywords ;; keywords
+	  nil ;; keywords only; comment, string faces not set by wisi parser
+	  t ;; case-fold
 	  ((?\_ . "w")))); treat underscore as a word component
 
   (set (make-local-variable 'ff-other-file-alist)
@@ -2936,7 +2976,7 @@ The paragraph is indented on the first line."
   (if (<= emacs-major-version 25)
       ;; run-mode-hooks does _not_ call hack-local-variables
       (add-hook 'hack-local-variables-hook 'ada-mode-post-local-vars nil t)
-    ;; >= 26; run-mode-hooks _does_ call hack-local-variables
+    ;; >= 26; run-mode-hooks _does_ call hack-local-variables, after the hook functions
     (ada-mode-post-local-vars))
   )
 
@@ -2955,7 +2995,7 @@ The paragraph is indented on the first line."
   ;; fill-region-as-paragraph in ada-fill-comment-paragraph does not
   ;; call syntax-propertize, so set comment syntax on
   ;; ada-fill-comment-prefix. In post-local because user may want to
-  ;; set it per-file. FIXME: only in emacs < 25?
+  ;; set it per-file. IMPROVEME: only in emacs < 25?
   (put-text-property 0 2 'syntax-table '(11 . nil) ada-fill-comment-prefix)
 
   (cl-case ada-language-version
@@ -2993,15 +3033,47 @@ The paragraph is indented on the first line."
 
 (put 'ada-mode 'custom-mode-group 'ada)
 
+(defvar ada-parser nil
+  "Indicate parser and lexer to use for Ada buffers:
+
+elisp : wisi parser and lexer implemented in elisp.
+
+process : wisi elisp lexer, external process parser specified
+  by ‘ada-process-parse-exec ’.
+")
+
+(defvar ada-fallback nil
+  "Indicate fallback indentation engine for Ada buffers.
+
+simple: indent to previous line.
+
+gps: gps external parser.")
+
 (provide 'ada-mode)
 
 ;;;;; Global initializations
 
+(add-hook 'menu-bar-update-hook #'ada-project-menu-install)
+
 (require 'ada-build)
 
-(if (locate-file ada-gps-indent-exec exec-path '("" ".exe"))
-    (require 'ada-gps)
-  (require 'ada-wisi))
+(cl-case ada-fallback
+  (simple
+   (require 'ada-wisi))
+  (t
+   (if (locate-file ada-gps-indent-exec exec-path '("" ".exe"))
+       (require 'ada-gps)
+     (require 'ada-wisi)))
+  )
+
+(cl-case ada-parser
+  (elisp nil)
+  (process nil)
+  (t
+   (if (locate-file ada-process-parse-exec exec-path '("" ".exe"))
+       (setq ada-parser 'process)
+     (setq ada-parser 'elisp)))
+  )
 
 (cl-case ada-xref-tool
   (gnat (require 'ada-gnat-xref))

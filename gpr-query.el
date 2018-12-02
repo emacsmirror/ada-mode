@@ -3,7 +3,7 @@
 ;; gpr-query supports Ada and any gcc language that supports the
 ;; AdaCore -fdump-xref switch (which includes C, C++).
 ;;
-;; Copyright (C) 2013 - 2017  Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2018  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -35,6 +35,10 @@
 (require 'cl-lib)
 (require 'compile)
 
+(eval-and-compile
+  (when (> emacs-major-version 24)
+    (require 'xref)))
+
 ;;;;; sessions
 
 ;; gpr_query reads the project files and the database at startup,
@@ -47,7 +51,7 @@
 
 (cl-defstruct (gpr-query--session)
   (process nil) ;; running gpr_query
-  (buffer nil)) ;; receives output of gpr_query
+  (buffer nil)) ;; receives output of gpr_query; default-directory gives location of db
 
 ;; Starting the buffer name with a space hides it from some lists, and
 ;; also disables font-lock. We sometimes use it to display xref
@@ -56,22 +60,6 @@
 ;; IMPROVEME: copy the xref info to a true user buffer, optionally an
 ;; *xref* buffer.
 (defconst gpr-query-buffer-name-prefix "*gpr_query-")
-
-(defgroup gpr-query nil
-  "Options for gpr-query."
-  :group 'tools)
-
-(defcustom gpr-query-mingw64-bin nil
-  "Path to mingw64 bin directory.
-On Windows systems, this directory is deleted from exec-path when launching gpr-query.
-See comment in ‘gpr-queyr--start-process’."
-  :group 'gpr-query)
-
-(defcustom gpr-query-mingw32-bin nil
-  "Path to mingw32 bin directory.
-On Windows systems, this directory is added to exec-path when launching gpr-query.
-See comment in ‘gpr-queyr--start-process’."
-  :group 'gpr-query)
 
 (defun gpr-query--start-process (session)
   "Start the session process running gpr_query."
@@ -88,17 +76,6 @@ See comment in ‘gpr-queyr--start-process’."
 	  ;; project files and used by gpr files.
 
 	  (project-file (file-name-nondirectory (ada-prj-get 'gpr_file))))
-      (when (and (eq system-type 'windows-nt)
-		 gpr-query-mingw64-bin
-		 gpr-query-mingw32-bin)
-	;; gpr_query is a 32 bit application (because Windows GNAT GPL
-	;; only supports 32 bit), and for gnat gpl 2017 requires the
-	;; libiconv mingw32 dll. On the other hand, Emacs is probably
-	;; a 64 bit application, and requires the png mingw64 dll. So
-	;; delete mingw64 from exec-path, and add mingw32.
-	(setq exec-path (delete gpr-query-mingw64-bin exec-path))
-	(push gpr-query-mingw32-bin exec-path)
-	)
 
       (erase-buffer); delete any previous messages, prompt
       (setf (gpr-query--session-process session)
@@ -116,8 +93,10 @@ See comment in ‘gpr-queyr--start-process’."
 	  (progn
 	    (goto-char (point-min))
 	    (when (search-forward "warning:" nil t)
-	      (beep)
-	      (message "gpr_query warnings")))
+	      (if debug-on-error
+		  (error "gpr_query warnings")
+		(beep)
+		(message "gpr_query warnings"))))
 
 	(error "gpr-query process failed to start"))
       )))
@@ -136,7 +115,7 @@ See comment in ‘gpr-queyr--start-process’."
 
 (defun gpr-query-cached-session ()
   "Return a session for the current project file, creating it if necessary."
-  (let* ((session (cdr (assoc ada-prj-current-file gpr-query--sessions))))
+  (let ((session (cdr (assoc ada-prj-current-file gpr-query--sessions))))
     (if session
 	(progn
 	  (unless (process-live-p (gpr-query--session-process session))
@@ -239,9 +218,11 @@ Uses `gpr_query'. Returns new list."
     (gpr-query-session-send "source_dirs" t)
     (goto-char (point-min))
     (while (not (looking-at gpr-query-prompt))
-      (cl-pushnew (directory-file-name
-		    (buffer-substring-no-properties (point) (point-at-eol)))
-                  src-dirs :test #'equal)
+      (cl-pushnew
+       (expand-file-name ; Canonicalize path part.
+	(directory-file-name
+	 (buffer-substring-no-properties (point) (point-at-eol))))
+	src-dirs :test #'equal)
       (forward-line 1))
     )
   src-dirs)
@@ -258,7 +239,7 @@ Uses `gpr_query'. Returns new list."
        (let ((dir (buffer-substring-no-properties (point) (point-at-eol))))
 	 (if (string= dir ".")
 	     (directory-file-name default-directory)
-	     dir))
+	   (expand-file-name dir))) ; Canonicalize path part.
        prj-dirs
        :test #'equal)
       (forward-line 1))
@@ -339,17 +320,17 @@ with compilation-error-regexp-alist set to COMP-ERR."
 	));; case, with-currrent-buffer
 
     (if (= result-count 1)
-	(ada-goto-source target-file target-line target-col nil)
+	(ada-goto-source target-file target-line target-col)
 
       ;; more than one result; display session buffer, goto first ref
       ;;
       ;; compilation-next-error-function assumes there is not an error
       ;; at point-min; work around that by moving forward 0 errors for
       ;; the first one. Unless the first line contains "warning: ".
-      (set-buffer next-error-last-buffer)
+      (pop-to-buffer next-error-last-buffer)
       (goto-char (point-min))
       (if (looking-at "^warning: ")
-	  (next-error)
+	  (next-error 1 t)
 	(next-error 0 t))
       )
     ))
@@ -371,7 +352,7 @@ with compilation-error-regexp-alist set to COMP-ERR."
    (current-column))
   )
 
-(defun gpr-query-overridden (other-window)
+(defun gpr-query-overridden ()
   "Move to the overridden declaration of the identifier around point.
 If OTHER-WINDOW (set by interactive prefix) is non-nil, show the
 buffer in another window."
@@ -389,11 +370,10 @@ buffer in another window."
 
     (ada-goto-source (nth 0 target)
 		     (nth 1 target)
-		     (nth 2 target)
-		     other-window)
+		     (nth 2 target))
     ))
 
-(defun gpr-query-goto-declaration (other-window)
+(defun gpr-query-goto-declaration ()
   "Move to the declaration or body of the identifier around point.
 If at the declaration, go to the body, and vice versa. If at a
 reference, goto the declaration.
@@ -414,8 +394,7 @@ buffer in another window."
 
     (ada-goto-source (nth 0 target)
 		     (nth 1 target)
-		     (nth 2 target)
-		     other-window)
+		     (nth 2 target))
     ))
 
 (defvar gpr-query-map
@@ -459,15 +438,25 @@ Enable mode if ARG is positive."
 
 ;;;;; support for Ada mode
 
-(defun gpr-query-refresh ()
+(defun gpr-query-refresh (delete-files)
   "For `ada-xref-refresh-function', using gpr_query."
   (interactive)
-  ;; need to kill session to get changed env vars etc
+  ;; Kill the current session and delete the database, to get changed
+  ;; env vars etc when it restarts.
   ;;
-  ;; sometimes need to delete database, if the compiler version
-  ;; changed; that's beyond the scope of this package.
-  (let ((session (gpr-query-cached-session)))
+  ;; We need to delete the database files if the compiler version
+  ;; changed, or the database was built with an incorrect environment
+  ;; variable, or something else screwed up. However, rebuilding after
+  ;; that is a lot slower, so we only do that on request.
+  (let* ((session (gpr-query-cached-session))
+	 (db-filename
+	  (with-current-buffer (gpr-query-session-send "db_name" t)
+	    (goto-char (point-min))
+	    (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+
     (gpr-query-kill-session session)
+    (when delete-files
+      (delete-file db-filename))
     (gpr-query--start-process session)))
 
 (defun gpr-query-other (identifier file line col)
@@ -659,6 +648,7 @@ FILE must be non-nil; line, col can be nil."
   )
 
 (defun ada-gpr-query-select-prj ()
+  ;; We wait until the session is actually required to create it.
   (setq ada-file-name-from-ada-name 'ada-gnat-file-name-from-ada-name)
   (setq ada-ada-name-from-file-name 'ada-gnat-ada-name-from-file-name)
   (setq ada-make-package-body       'ada-gnat-make-package-body)
@@ -672,10 +662,15 @@ FILE must be non-nil; line, col can be nil."
   (setq ada-xref-overridden-function 'gpr-query-overridden-1)
   (setq ada-show-xref-tool-buffer    'gpr-query-show-buffer)
 
+  (when (fboundp 'xref-ada-mode)
+    (xref-ada-mode 1))
+
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files, used for cross reference
   )
 
 (defun ada-gpr-query-deselect-prj ()
+  ;; We don’t kill the session here; user may switch back to this
+  ;; project.
   (setq ada-file-name-from-ada-name nil)
   (setq ada-ada-name-from-file-name nil)
   (setq ada-make-package-body       nil)
@@ -686,6 +681,9 @@ FILE must be non-nil; line, col can be nil."
   (setq ada-xref-overriding-function nil)
   (setq ada-xref-overridden-function nil)
   (setq ada-show-xref-tool-buffer    nil)
+
+  (when (fboundp 'xref-ada-mode)
+    (xref-ada-mode 0))
 
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   )

@@ -74,6 +74,10 @@ procedure Ada_Mode_GPS_Indent is
       Put_Line ("NNcompute_region_indent <start line> <end line> <text_byte_count><text>");
       Put_Line ("  outputs for each line: <line number> <indent><newline>");
       New_Line;
+      Put_Line ("NNnoop <text_byte_count><text>");
+      Put_Line ("  Receive text as in 'compute_indent', otherwise no operation.");
+      Put_Line ("  Used to time sending buffer text.");
+      New_Line;
       Put_Line ("04exit");
    end Usage;
 
@@ -206,6 +210,15 @@ procedure Ada_Mode_GPS_Indent is
          Put_Line (Symbolic_Traceback (E));
       end;
    end Compute_Indent;
+
+   procedure Receive_Text (Byte_Count : in Integer)
+   is
+      use Ada.Strings.Unbounded;
+      Buffer : aliased String_Access := new String (1 .. Byte_Count);
+   begin
+      Read_Input (Buffer.all'Address, Byte_Count);
+      Free (Buffer);
+   end Receive_Text;
 begin
 
    Commands :
@@ -267,6 +280,13 @@ begin
                Byte_Count : constant Integer := Get_Integer (Command_Line, Last);
             begin
                Compute_Indent (Start_Line, End_Line, Byte_Count);
+            end;
+
+         elsif Command_Line (1 .. Last) = "noop" then
+            declare
+               Byte_Count : constant Integer := Get_Integer (Command_Line, Last);
+            begin
+               Receive_Text (Byte_Count);
             end;
 
          else

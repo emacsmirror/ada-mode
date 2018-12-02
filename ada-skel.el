@@ -1,6 +1,6 @@
 ;;; ada-skel.el --- Extension to Ada mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 1987, 1993, 1994, 1996-2017  Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1993, 1994, 1996-2018  Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -270,8 +270,7 @@ See `ada-find-other-file' to create library level package body from spec."
 (define-skeleton ada-skel-return
   "Insert an extended return statement."
   ()
-  "return" _ "\n"
-  "do\n"
+  "return " _ " do\n"
   "end return;")
 
 (define-skeleton ada-skel-select
@@ -294,7 +293,7 @@ See `ada-find-other-file' to create library level package body from spec."
 (define-skeleton ada-skel-task-spec
   "Insert a task specification with name from `str'."
   ()
-  "task " str " is\n"
+  "task type " str " is\n"
   _
   "end " str ";")
 

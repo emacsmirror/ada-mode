@@ -781,7 +781,6 @@ package body Language is
       Name     : GNATCOLL.Symbols.Symbol := GNATCOLL.Symbols.No_Symbol)
       return String
    is
-      use type Strings.String_Access;
    begin
       if Name /= No_Symbol then
          return Get (Name).all;

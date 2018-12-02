@@ -1,6 +1,6 @@
 ;; user options shared by Ada mode indentation engines  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2012, 2013, 2015, 2017  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015, 2017, 2018  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Contributors: Simon Wright <simon.j.wright@mac.com>
@@ -77,7 +77,6 @@ That is, one of:
 
 Otherwise, they are indented as a with previous comments or code."
   :type  'boolean
-  :group 'ada-indentation
   :safe  #'booleanp)
 (make-variable-buffer-local 'ada-indent-comment-gnat)
 
@@ -110,7 +109,7 @@ Example :
 (make-variable-buffer-local 'ada-indent-label)
 
 (defcustom ada-indent-record-rel-type 3
-  "Indentation for `record' relative to `type' or `use'.
+  "Indentation for line containing `record' relative to `type' or `for'.
 
 An example is:
    type A is
@@ -120,20 +119,19 @@ An example is:
 (make-variable-buffer-local 'ada-indent-record-rel-type)
 
 (defcustom ada-indent-renames 2
-  "Indentation for `renames' relative to the matching subprogram keyword.
+  "Indentation for `renames' relative to the subprogram keyword.
 
 For `renames' of non-subprograms the indentation is
-`ada-indent-broken' relative to the line containing the matching
-keyword.
+`ada-indent-broken' relative to the start of the statement.
 
 If the subprogram has parameters then if `ada-indent-renames' is
 zero or less the indentation is abs `ada-indent-renames' relative
 to the open parenthesis; if `ada-indent-renames' is one or more
-the indentation is relative to the line containing the keyword.
+the indentation is relative to the line containing the subprogram
+keyword ('function' or 'procedure').
 
 If the subprogram has no parameters then the indentation is
-`ada-indent-broken' relative to the indentation of the line
-containing the keyword.
+`ada-indent-broken' relative to the line containing the keyword.
 
 Examples:
    ada-indent-renames = 2
@@ -152,7 +150,7 @@ Examples:
   "Indentation for `return' relative to the matching `function' keyword.
 
 If the function has parameters, then if `ada-indent-return' is
-zero or less the indentation is abs `ada-indent-return' relative
+zero or less, the indentation is abs `ada-indent-return' relative
 to the open parenthesis; if `ada-indent-return' is one or more,
 indentation is relative to line containing `function'.
 
@@ -230,8 +228,17 @@ An example is:
 (make-variable-buffer-local 'ada-indent-with)
 
 (defcustom ada-indent-hanging-rel-exp nil
-  "If non-nil, indent hanging lines relative to start of expression.
-Otherwise, indent relative to previous line."
+  "If nil, indent hanging lines in an expression relative to the first line.
+Otherwise, indent by `ada-indent-broken' relative to the start of the expression."
+  :type 'boolean
+  :safe #'booleanp)
+(make-variable-buffer-local 'ada-indent-hanging-rel-exp)
+
+(defcustom ada-end-name-optional nil
+  "If t, names at ends of blocks/subprograms are optional (as in
+standard Ada). If nil, they are required; this helps in error
+recovery, and matches the gnat style option -gnatye.
+Default is nil because it significantly improves error recovery."
   :type 'boolean
   :safe #'booleanp)
 (make-variable-buffer-local 'ada-indent-hanging-rel-exp)

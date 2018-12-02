@@ -1,7 +1,7 @@
-This is ada-mode.info, produced by makeinfo version 6.4 from
+This is ada-mode.info, produced by makeinfo version 6.3 from
 ada-mode.texi.
 
-Copyright (C) 1999 - 2017 Free Software Foundation, Inc.
+Copyright (C) 1999 - 2018 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -22,9 +22,9 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Ada Mode Version 5.3.1
+Ada Mode Version 6.0.0
 
-   Copyright (C) 1999 - 2017 Free Software Foundation, Inc.
+   Copyright (C) 1999 - 2018 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -59,15 +59,21 @@ Ada Mode Version 5.3.1
 
  -- The Detailed Node Listing --
 
+Overview
+
+* Why not LSP?::
+
 Installation
 
 * Ada Reference Manual::
 * gpr_query::
+* process parser::
 * ada_mode_gps_indent::
 
 gpr_query
 
-* Building GNATCOLL::
+* Building GNATCOLL 2017::
+* Building GNATCOLL 2018::
 * Building gpr_query::
 
 ada_mode_gps_indent
@@ -152,18 +158,33 @@ these are different from the GNAT project files used by the GNAT tools.
    *Note Debuggers: (emacs)Debuggers, for general information on
 debugging.
 
+* Menu:
+
+* Why not LSP?::
+
+
+File: ada-mode.info,  Node: Why not LSP?,  Up: Overview
+
+1.1 Why not LSP?
+================
+
+The Language Server Protocol (LSP, <https://langserver.org>) supports an
+external language parser, as Ada mode does, and it is supported by the
+GNU ELPA package eglot.  We do not use LSP, because it does not support
+indentation and fontification.
+
 
 File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,  Up: Top
 
 2 Installation
 **************
 
-Ada mode requires Emacs 24.3 or greater.
+Ada mode requires Emacs 25.0 or greater.
 
    Ada mode is distributed in the Gnu ELPA package archive; it can be
-installed via 'M-x list-packages' (*note (emacs)Packages::).  You must
-first enable packages in your '~/.emacs', _after_ customizing
-'Info-default-directory-list' (if you do that):
+installed via 'M-x list-packages' (*note (emacs)Packages::).  In Emacs <
+27 you must first enable packages in your '~/.emacs', _after_
+customizing 'Info-default-directory-list' (if you do that):
 
      (package-initialize)
 
@@ -183,6 +204,7 @@ ada-mode-version'.
 
 * Ada Reference Manual::
 * gpr_query::
+* process parser::
 * ada_mode_gps_indent::
 
 
@@ -208,15 +230,16 @@ can be generated using the compiler switch '-fdump-xref'.  '-fdump-xref'
 is an AdaCore extension, not available in FSF GCC.
 
    'gpr_query' is an Ada program, which is distributed as source and
-must be built.  Its source code is in the Gnu ELPA package.
+must be built.  Its source code is in the 'ada-mode' Gnu ELPA package.
 
    'gpr_query' requires the 'GNATCOLL' library provided by AdaCore,
-distributed with GNAT GPL 2016 or 2017, and also available at Github
+distributed with GNAT GPL 2016 or later, and also available at Github
 (<https://github.com/AdaCore/gnatcoll>).  (The 'GNATCOLL' distributed
 with GNAT GPL 2015 does not compile cleanly).  The notes below assume
 that the compiler is installed at '$prefix', e.g.
 '/usr/local/gnat-2017', and that '$prefix/bin' is first on the 'PATH'.
-If you are running Windows, use Cygwin 'bash' to run these commands.
+If you are running Windows, use Cygwin or mingw64 'bash' to run these
+commands.
 
    In general, 'gpr_query' should be compiled with the compiler version
 that is used to generate the user project '.ali' files; the 'ali' file
@@ -224,23 +247,27 @@ format can change with each compiler version.  'gpr_query' creates a
 database of cross reference information; that database must be deleted
 if the compiler version changes, to force a complete rebuild.
 
+   The default binary gnatcoll distributed with GNAT GPL 2017 and 2018
+does not include the xref package, which is required by 'gpr_query'.  So
+we must build gnatcoll from sources.  The process for doing that changed
+significantly between GPL 2017 and GPL 2018.
+
 * Menu:
 
-* Building GNATCOLL::
+* Building GNATCOLL 2017::
+* Building GNATCOLL 2018::
 * Building gpr_query::
 
 
-File: ada-mode.info,  Node: Building GNATCOLL,  Next: Building gpr_query,  Up: gpr_query
+File: ada-mode.info,  Node: Building GNATCOLL 2017,  Next: Building GNATCOLL 2018,  Up: gpr_query
 
-2.2.1 Building GNATCOLL
------------------------
+2.2.1 Building GNATCOLL 2017
+----------------------------
 
-'GNATCOLL' may already be installed on your system: if it is,
-'$prefix/lib/gnat' will contain 'gnatcoll' GPR files.  If not, and you
-are using GNAT GPL 2017, first install the 'libiconv' library.
+First install the 'libiconv' library, as follows.
 
-   On Linux, use the package manager to install the development version
-of 'libiconv' (usually named 'libiconv-dev').
+   On many Linux distributions, use the package manager to install the
+development version of 'libiconv' (usually named 'libiconv-dev').
 
    On Windows, one way to get the library is to install MingW32 from the
 MSYS2 project (<http://www.msys2.org/>), use its package manger 'pacman'
@@ -250,7 +277,7 @@ installation:
      cp d:/msys64/mingw32/include/iconv.h d:/Apps/GNAT-gpl_2017/include/
      cp d:/msys64/mingw32/lib/libiconv.a  d:/Apps/GNAT-gpl_2017/lib/gcc/i686-pc-mingw32/6.3.1/
 
-   Then configure (assuming the GPL 2017 version) by:
+   Then configure by:
 
      tar zxf ~/Downloads/gnatcoll-gpl-2017-src.tar.gz
      cd gnatcoll-gpl-2017-src
@@ -280,15 +307,79 @@ executable that is compatible with the database it creates:
      gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
 
 
-File: ada-mode.info,  Node: Building gpr_query,  Prev: Building GNATCOLL,  Up: gpr_query
+File: ada-mode.info,  Node: Building GNATCOLL 2018,  Next: Building gpr_query,  Prev: Building GNATCOLL 2017,  Up: gpr_query
 
-2.2.2 Building 'gpr_query'
+2.2.2 Building GNATCOLL 2018
+----------------------------
+
+The default gnatcoll distributed with GNAT GPL 2018 does not include the
+xref package, which is required by 'gpr_query'.  So we must build
+gnatcoll from sources.  Here we assume you are using the 64 bit GNAT.
+
+   Download three gnatcoll source files from
+<https://libre.adacore.com/>; click on "More packages, platforms,
+versions and sources" below the main components list.  Select your
+target, click on "Sources" under the GNAT Community component.  Search
+for 'gnatcoll'; the three files are:
+
+     gnatcoll-bindings-gpl-2018-20180523-src.tar.gz
+     gnatcoll-core-gpl-2018-20180523-src.tar.gz
+     gnatcoll-db-gpl-2018-20180523-src.tar.gz
+
+   Install the 'libiconv' library, as follows:
+
+   On many Linux distributions, use the package manager to install the
+development version of 'libiconv'.  On Debian, 'iconv' is provided by
+the 'libc' package.  On Suse, it is proviced by 'glibc-devel'.  On other
+Linux distributions, it may be a separate package named 'libiconv-dev'.
+
+   On Windows, one way to get the library is to install MingW64 from the
+MSYS2 project (<http://www.msys2.org/>), use its package manger 'pacman'
+to install 'libiconv', then copy the 'libiconv' files to the GNAT
+installation:
+
+     cp d:/msys64/mingw64/include/iconv.h d:/Apps/GNAT-gpl_2018/include/
+     cp d:/msys64/mingw64/lib/libiconv.a  d:/Apps/GNAT-gpl_2018/lib/gcc/x86_64-pc-mingw32/7.3.1/
+
+   Then unpack, build, and install the required components.  On Debian,
+we need to tell the linker where to find 'iconv' via
+'GNATCOLL_ICONV_OPT', which sets a the variable ICONV_OPT in the gpr
+file.  On Suse, ICONV_OPT must be empty, which can only be achieved by
+editing the gpr file.
+
+     tar xf ~/Downloads/gnatcoll-core-gpl-2018-20180524-src.tar.gz
+     cd gnatcoll-core-gpl-2018-src
+     make
+     make install
+     cd ..
+
+     tar xf ~/Downloads/gnatcoll-bindings-gpl-2018-20180524-src.tar.gz
+     cd gnatcoll-bindings-gpl-2018-src
+     cd iconv
+     export GNATCOLL_ICONV_OPT="-lc"
+     ./setup.py build
+     ./setup.py install
+     cd ../..
+
+     tar xf ~/Downloads/gnatcoll-db-gpl-2018-20180524-src.tar.gz
+     cd gnatcoll-db-gpl-2018-src
+     make -C sql
+     make -C sql install
+     make -C sqlite
+     make -C sqlite install
+     make -C xref
+     make -C xref install
+
+
+File: ada-mode.info,  Node: Building gpr_query,  Prev: Building GNATCOLL 2018,  Up: gpr_query
+
+2.2.3 Building 'gpr_query'
 --------------------------
 
-To build and install 'gpr_query', assuming the 'ada-mode-5.3.xx' GNU
+To build and install 'gpr_query', assuming the 'ada-mode-6.0.xx' GNU
 ELPA package is installed:
 
-     cd ~/.emacs.d/elpa/ada-mode-5.3.xx
+     cd ~/.emacs.d/elpa/ada-mode-6.0.xx
      ./build.sh
 
    This also builds *note ada_mode_gps_indent::.
@@ -297,9 +388,22 @@ ELPA package is installed:
 'gpr_query' is found in 'PATH'.
 
 
+File: ada-mode.info,  Node: process parser
+
+2.3 process parser
+==================
+
+The process parser is built and installed by the same 'build.sh' script
+as *Note gpr_query::.  ada-mode will automatically use it if it is
+available.
+
+   To override the automatic choice of parser, set ADA-PARSER to either
+''elisp' or ''parser'.
+
+
 File: ada-mode.info,  Node: ada_mode_gps_indent,  Prev: gpr_query,  Up: Installation
 
-2.3 ada_mode_gps_indent
+2.4 ada_mode_gps_indent
 =======================
 
 'ada_mode_gps_indent' is an alternate indentation engine, using the
@@ -325,15 +429,15 @@ consistent with the ada-wisi indentation engine.
 
 File: ada-mode.info,  Node: ada_mode_gps_indent install,  Next: ada_mode_gps_indent configure,  Up: ada_mode_gps_indent
 
-2.3.1 Install
+2.4.1 Install
 -------------
 
-To install 'ada_mode_gps_indent', assuming the 'ada-mode-5.3.xx' GNU
+To install 'ada_mode_gps_indent', assuming the 'ada-mode-6.0.xx' GNU
 ELPA package is installed:
-   * Install 'gnatcoll' (*note Building GNATCOLL::).
+   * Install 'gnatcoll' (*note Building GNATCOLL 2018::).
 
    * Compile and install 'ada_mode_gps_indent':
-          cd ~/.emacs.d/elpa/ada-mode-5.3.xx/
+          cd ~/.emacs.d/elpa/ada-mode-6.0.xx/
           ./build.sh
 
      This also builds *note gpr_query::.
@@ -341,7 +445,7 @@ ELPA package is installed:
 
 File: ada-mode.info,  Node: ada_mode_gps_indent configure,  Prev: ada_mode_gps_indent install,  Up: ada_mode_gps_indent
 
-2.3.2 Configure
+2.4.2 Configure
 ---------------
 
 By default, 'ada-mode' will use 'ada_mode_gps_indent' as a fallback
@@ -488,6 +592,10 @@ the syntax to set a variable is the following:
      control-right-click.  <down-mouse-3> is already bound in the global
      map; you can override that global binding in the 'ada-mode-hook'
      (see below for code).
+'other-frame-window-mode'
+     Ada mode does not provide any 'other-frame' or 'other-window'
+     variants of user operations.  Instead, it is recommended to use the
+     Gnu ELPA package 'other-frame-window'.
 'delete-trailing-whitespace'
      Deletes space, tab at end of line and blank lines at end of buffer.
 'untabify'
@@ -2701,53 +2809,56 @@ Index
 
 Tag Table:
 Node: Top945
-Node: Overview3599
-Node: Installation4809
-Node: Ada Reference Manual5711
-Node: gpr_query5987
-Node: Building GNATCOLL7505
-Node: Building gpr_query9277
-Node: ada_mode_gps_indent9729
-Node: ada_mode_gps_indent install10643
-Node: ada_mode_gps_indent configure11103
-Node: Customization11926
-Node: Non-standard file names12408
-Node: Other compiler14249
-Node: Other cross-reference14828
-Node: Other customization15570
-Node: Compiling Executing18915
-Node: Compile commands19650
-Node: Compiling Examples22301
-Node: No project files23133
-Node: Set compiler options28499
-Node: Set source search path30461
-Node: Use GNAT project file32914
-Node: Use multiple GNAT project files35688
-Node: Use a Makefile38408
-Node: Compiler errors39723
-Node: Project files40540
-Node: Project file overview41567
-Node: Project file variables43111
-Node: Moving Through Ada Code47986
-Node: Identifier completion50685
-Node: Indentation51647
-Node: Statement skeletons55995
-Node: Aligning code57780
-Node: Automatic casing58725
-Node: Comment Handling61429
-Node: Key summary61948
-Node: Developer overview64575
-Node: Directory structure64943
-Node: Package organization68914
-Node: Ada mode69149
-Node: gpr mode71345
-Node: GNAT core71628
-Node: Wisi72462
-Node: OpenToken73362
-Node: ELPA73964
-Node: Savannah74574
-Node: ada-france74912
-Node: GNU Free Documentation License75152
-Node: Index100313
+Node: Overview3678
+Node: Why not LSP?4915
+Node: Installation5257
+Node: Ada Reference Manual6192
+Node: gpr_query6468
+Node: Building GNATCOLL 20178304
+Node: Building GNATCOLL 20189936
+Node: Building gpr_query12385
+Node: process parser12842
+Node: ada_mode_gps_indent13174
+Node: ada_mode_gps_indent install14088
+Node: ada_mode_gps_indent configure14553
+Node: Customization15376
+Node: Non-standard file names15858
+Node: Other compiler17699
+Node: Other cross-reference18278
+Node: Other customization19020
+Node: Compiling Executing22575
+Node: Compile commands23310
+Node: Compiling Examples25961
+Node: No project files26793
+Node: Set compiler options32159
+Node: Set source search path34121
+Node: Use GNAT project file36574
+Node: Use multiple GNAT project files39348
+Node: Use a Makefile42068
+Node: Compiler errors43383
+Node: Project files44200
+Node: Project file overview45227
+Node: Project file variables46771
+Node: Moving Through Ada Code51646
+Node: Identifier completion54345
+Node: Indentation55307
+Node: Statement skeletons59655
+Node: Aligning code61440
+Node: Automatic casing62385
+Node: Comment Handling65089
+Node: Key summary65608
+Node: Developer overview68235
+Node: Directory structure68603
+Node: Package organization72574
+Node: Ada mode72809
+Node: gpr mode75005
+Node: GNAT core75288
+Node: Wisi76122
+Node: OpenToken77022
+Node: ELPA77624
+Node: Savannah78234
+Node: ada-france78572
+Node: GNU Free Documentation License78812
+Node: Index103973
 
 End Tag Table

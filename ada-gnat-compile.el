@@ -6,7 +6,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2017  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2018  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -80,20 +80,24 @@ For `compilation-filter-hook'."
 
 	(skip-syntax-forward "^-"); space following primary reference
 
-	(while (search-forward-regexp "\\s-\\(\\([^[:blank:]]+\\.[[:alpha:]]+\\):\\([0-9]+\\)\\)"
+	(while (search-forward-regexp "\\s-\\(\\([^[:blank:]]+\\.[[:alpha:]]+\\):\\([0-9]+\\):?\\([0-9]+\\)?\\)"
 				      (line-end-position) t)
 
 	  (goto-char (match-end 0))
 	  (with-silent-modifications
 	    (compilation--put-prop 2 'font-lock-face compilation-info-face); file
 	    (compilation--put-prop 3 'font-lock-face compilation-line-face); line
+	    (compilation--put-prop 4 'font-lock-face compilation-line-face); col
 	    (put-text-property
 	     (match-beginning 0) (match-end 0)
 	     'ada-secondary-error
 	     (list
 	      (match-string-no-properties 2); file
 	      (string-to-number (match-string-no-properties 3)); line
-	      0)); Emacs column; zero indexed
+	      (if (match-string 4)
+		  (1- (string-to-number (match-string-no-properties 4)))
+		0); column
+	      ))
 	    ))
 
 	(when (search-forward-regexp "\\(at line \\)\\([0-9]+\\)" (line-end-position) t)
@@ -120,6 +124,10 @@ For `compilation-filter-hook'."
     (ada-gnat-compilation-filter)))
 
 ;;;;; auto fix compilation errors
+
+(defconst ada-gnat-file-name-regexp
+  "\\([a-z-_.]+\\)"
+  "regexp to extract a file name")
 
 (defconst ada-gnat-quoted-name-regexp
   "\"\\([a-zA-Z0-9_.']+\\)\""
@@ -386,7 +394,9 @@ Prompt user if more than one."
 	   t)
 
 	  ;; must be after above
-	  ((looking-at "missing \"\\(.+\\)\"")
+	  ;;
+	  ;; missing "end;" for "begin" at line 234
+	  ((looking-at "missing \"\\([^ ]+\\)\"")
 	   (let ((stuff (match-string-no-properties 1)))
 	     (set-buffer source-buffer)
 	     (insert (concat stuff)));; if missing ")", don't need space; otherwise do?
@@ -420,8 +430,12 @@ Prompt user if more than one."
 		 (replace-match correct-spelling)
 		 t))))
 
-	  ((looking-at (concat "operator for \\(private \\)?type " ada-gnat-quoted-name-regexp))
-	   (let ((type (match-string 2)))
+	  ((looking-at (concat "operator for \\(private \\)?type " ada-gnat-quoted-name-regexp
+			       "\\( defined at " ada-gnat-file-name-regexp "\\)?"))
+	   (let ((type (match-string 2))
+		 (package-file (match-string 4)))
+	     (when package-file
+	       (setq type (concat (ada-gnat-ada-name-from-file-name package-file) "." type)))
 	     (pop-to-buffer source-buffer)
 	     (ada-fix-add-use-type type)
 	   t))
@@ -496,9 +510,18 @@ Prompt user if more than one."
 	     )
 	   t)
 
+	  ((looking-at (concat "warning: variable " ada-gnat-quoted-name-regexp " is not referenced"))
+	   (let ((param (match-string 1)))
+	     (pop-to-buffer source-buffer)
+	     (forward-sexp);; end of declaration
+	     (forward-char);; skip semicolon
+	     (newline-and-indent)
+	     (insert "pragma Unreferenced (" param ");"))
+	   t)
+
 	  ((or
-	    (looking-at (concat "warning: no entities of " ada-gnat-quoted-name-regexp " are referenced$"))
-	    (looking-at (concat "warning: unit " ada-gnat-quoted-name-regexp " is never instantiated$"))
+	    (looking-at (concat "warning: no entities of " ada-gnat-quoted-name-regexp " are referenced"))
+	    (looking-at (concat "warning: unit " ada-gnat-quoted-name-regexp " is never instantiated"))
 	    (looking-at "warning: redundant with clause"))
 	   ;; just delete the 'with'; assume it's on a line by itself.
 	   (pop-to-buffer source-buffer)
@@ -515,8 +538,15 @@ Prompt user if more than one."
 	     (insert "pragma Unreferenced (" param ");"))
 	   t)
 
-	  ((looking-at (concat "warning: unit " ada-gnat-quoted-name-regexp " is not referenced$"))
+	  ((looking-at (concat "warning: unit " ada-gnat-quoted-name-regexp " is not referenced"))
 	   ;; just delete the 'with'; assume it's on a line by itself.
+	   (pop-to-buffer source-buffer)
+	   (beginning-of-line)
+	   (delete-region (point) (progn (forward-line 1) (point)))
+	   t)
+
+	  ((looking-at (concat "warning: use clause for \\(package\\|type\\|private type\\) " ada-gnat-quoted-name-regexp " \\(defined at\\|from instance at\\|has no effect\\)"))
+	   ;; delete the 'use'; assume it's on a line by itself.
 	   (pop-to-buffer source-buffer)
 	   (beginning-of-line)
 	   (delete-region (point) (progn (forward-line 1) (point)))
@@ -602,7 +632,7 @@ Prompt user if more than one."
 ;;;;; setup
 
 (defun ada-gnat-compile-select-prj ()
-  (setq ada-fix-error-hook 'ada-gnat-fix-error-hook)
+  (add-to-list 'ada-fix-error-hook #'ada-gnat-fix-error)
   (setq ada-prj-show-prj-path 'gnat-prj-show-prj-path)
   (add-to-list 'completion-ignored-extensions ".ali") ;; gnat library files
   (add-hook 'ada-syntax-propertize-hook 'ada-gnat-syntax-propertize)
@@ -622,10 +652,20 @@ Prompt user if more than one."
 	 (comp-buf (get-buffer "*compilation*")))
     (when (buffer-live-p comp-buf)
       (with-current-buffer comp-buf
-	(setenv "GPR_PROJECT_PATH" gpr-path)
 	(setq compilation-environment comp-env)))
     (set-default 'compilation-environment comp-env)
     )
+
+  (when (getenv "GPR_PROJECT_PATH")
+    ;; We get here when this is called from
+    ;; ‘compilation-process-setup-function’; ‘process-environment’ is
+    ;; already bound to ‘compilation-environment’. Or when the user
+    ;; has set GPR_PROJECT_PATH in top level ‘process-environment’,
+    ;; which is a mistake on their part.
+    (setenv "GPR_PROJECT_PATH"
+	    (mapconcat 'identity
+		       (ada-prj-get 'prj_dir)
+		       (ada-prj-get 'path_sep))))
 
   ;; must be after indentation engine setup, because that resets the
   ;; indent function list.
@@ -639,13 +679,14 @@ Prompt user if more than one."
   )
 
 (defun ada-gnat-compile-deselect-prj ()
-  (setq ada-fix-error-hook nil)
+  (setq ada-fix-error-hook (delete #'ada-gnat-fix-error ada-fix-error-hook))
   (setq completion-ignored-extensions (delete ".ali" completion-ignored-extensions))
   (setq ada-syntax-propertize-hook (delq 'gnatprep-syntax-propertize ada-syntax-propertize-hook))
   (setq ada-syntax-propertize-hook (delq 'ada-gnat-syntax-propertize ada-syntax-propertize-hook))
   (syntax-ppss-flush-cache (point-min));; force re-evaluate with hook.
 
-  ;; don't need to delete from compilation-search-path; completely rewritten in ada-select-prj-file
+  ;; Don't need to delete from compilation-search-path; completely
+  ;; rewritten in ada-gnat-compile-select-prj.
   (setq compilation-environment nil)
 
   (setq ada-mode-hook (delq 'gnatprep-setup ada-mode-hook))
@@ -666,9 +707,7 @@ Prompt user if more than one."
 
   (font-lock-add-keywords 'ada-mode
    ;; gnatprep preprocessor line
-   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t))))
-
-  (add-hook 'ada-gnat-fix-error-hook 'ada-gnat-fix-error))
+   (list (list "^[ \t]*\\(#.*\n\\)"  '(1 font-lock-preprocessor-face t)))))
 
 (provide 'ada-gnat-compile)
 (provide 'ada-compiler)
@@ -687,6 +726,8 @@ Prompt user if more than one."
    ;; gnu cc1: (gnatmake can invoke the C compiler)
    ;;   foo.c:2: `TRUE' undeclared here (not in a function)
    ;;   foo.c:2 : `TRUE' undeclared here (not in a function)
+   ;;
+   ;; we can't handle secondary errors here, because a regexp can't distinquish "message" from "filename"
    "^\\(\\(.:\\)?[^ :\n]+\\):\\([0-9]+\\)\\s-?:?\\([0-9]+\\)?" 1 3 4))
 
 (unless (default-value 'ada-compiler)

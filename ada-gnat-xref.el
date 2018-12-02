@@ -5,7 +5,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2017  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2018  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -86,9 +86,9 @@ elements of the result may be nil."
 	;; src_dir contains Source_Dirs from gpr_file, Similarly for
 	;; obj_dir. So we don't need to pass the gpr file.
         (when (ada-prj-get 'src_dir)
-          (concat "-aI" (mapconcat 'identity (ada-prj-get 'src_dir) ":")))
+          (concat "-aI" (mapconcat 'identity (ada-prj-get 'src_dir) (if (eq system-type 'windows-nt) ";" ":"))))
         (when (ada-prj-get 'obj_dir)
-          (concat "-aO" (mapconcat 'identity (ada-prj-get 'obj_dir) ":")))
+          (concat "-aO" (mapconcat 'identity (ada-prj-get 'obj_dir) (if (eq system-type 'windows-nt) ";" ":"))))
         (format "%s:%s:%d:%d"
                 identifier
                 (file-name-nondirectory file)
@@ -171,9 +171,7 @@ elements of the result may be nil."
 
     (ada-goto-source (nth 0 result)
 		     (nth 1 result)
-		     (nth 2 result)
-		     nil ;; other-window
-		     )
+		     (nth 2 result))
     ))
 
 (defun ada-gnat-xref-all (identifier file line col local-only append)
