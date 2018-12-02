@@ -1,10 +1,25 @@
 ;; xref-ada.el --- ada-mode backend for xref.el -*-lexical-binding:t-*-
 ;;
-;; requires emacs 25
+;; Copyright (C) 2018  Free Software Foundation, Inc.
 
-(eval-and-compile
-  (when (> emacs-major-version 24)
-    (require 'xref)))
+;; This file is part of GNU Emacs.
+;;
+;; GNU Emacs is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;;
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
+
+(require 'xref)
 
 (defun xref-ada-find-backend ()
   'xref-ada)
@@ -132,9 +147,9 @@
   ;; The macro code sets the mode variable to the new value before we get here.
   (if xref-ada-mode
       (add-hook 'xref-backend-functions #'xref-ada-find-backend nil t)
+    (remove-hook 'xref-backend-functions #'xref-ada-find-backend t)))
 
-    (setq xref-backend-functions (remq #'xref-ada-find-backend xref-backend-functions))))
-
-(add-hook 'ada-mode-hook 'xref-ada-mode)
+(add-hook 'ada-mode-hook #'xref-ada-mode)
 
 (provide 'xref-ada)
+;;; end of file
