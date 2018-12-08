@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 6.0.0
+@title Ada Mode Version 6.0.1
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -36,7 +36,7 @@ developing GNU and promoting software freedom.''
 
 @node Top, Overview, (dir), (dir)
 
-Ada Mode Version 6.0.0
+Ada Mode Version 6.0.1
 
 @ifnottex
 @insertcopying
@@ -177,7 +177,9 @@ does not support indentation and fontification.
 @node Installation, Customization, Overview, Top
 @chapter Installation
 
-Ada mode requires Emacs 25.0 or greater.
+Ada mode requires Emacs 25.0 or greater. Compiling the Ada code for
+the external process parser requires GNAT GPL 2017 or later; tested
+with GNAT Community Edition 2018 and GNAT Pro 19.
 
 Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via @code{M-x list-packages} (@pxref{Packages,,,emacs,Emacs

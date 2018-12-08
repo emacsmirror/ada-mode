@@ -7,7 +7,7 @@
 --
 --  References : see gen_emacs_wisi_lr_parse.ads
 --
---  Copyright (C) 2017, 2018 Stephen Leake All Rights Reserved.
+--  Copyright (C) 2017, 2018 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as

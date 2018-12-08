@@ -2,7 +2,7 @@
 --
 --  body compatible with GNAT GPL 2016 or later via gnatprep
 --
---  Copyright (C) 2017, 2018 Stephen Leake All Rights Reserved.
+--  Copyright (C) 2017, 2018 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free

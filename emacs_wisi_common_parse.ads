@@ -2,7 +2,7 @@
 --
 --  Common utilities for Gen_Emacs_Wisi_*_Parse
 --
---  Copyright (C) 2018 Stephen Leake All Rights Reserved.
+--  Copyright (C) 2018 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as

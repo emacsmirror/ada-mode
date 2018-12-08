@@ -2,7 +2,7 @@
 --
 --  build ada_mode_gps_indent
 --
---  Copyright (C) 2014 Stephen Leake All Rights Reserved.
+--  Copyright (C) 2014 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as

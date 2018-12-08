@@ -3,7 +3,7 @@
 --  Back end for Emacs Ada mode indentation engine, using GPS
 --  indentation code.
 --
---  Copyright (C) 2014, 2017  All Rights Reserved.
+--  Copyright (C) 2014, 2017 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as

@@ -17,7 +17,7 @@ gnatprep -DHAVE_GNATCOLL_XREF=$HAVE_GNATCOLL_XREF gpr_query.gpr.gp gpr_query.gpr
 # support for libadalang is still experimental
 gnatprep -DHAVE_LIBADALANG="no" ada_mode_wisi_parse.gpr.gp ada_mode_wisi_parse.gpr
 
-export GPR_PROJECT_PATH="../wisi-2.0.0"
+export GPR_PROJECT_PATH="../wisi-2.0.1"
 
 gprbuild -p -P gpr_query.gpr
 gprinstall -f -p -P gpr_query.gpr --install-name=gpr_query
@@ -27,6 +27,7 @@ gprbuild -p -P ada_mode_gps_indent.gpr
 gprinstall -f -p -P ada_mode_gps_indent.gpr --install-name=ada_mode_gps_indent
 
 gprbuild -p -P ada_mode_wisi_parse.gpr
+gzip -d -q ada_lr1_parse_table.txt.gz
 gprinstall -f -p -P ada_mode_wisi_parse.gpr --install-name=ada_mode_wisi_parse
 
 # end of file

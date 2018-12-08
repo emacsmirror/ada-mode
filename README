@@ -1,4 +1,4 @@
-Emacs Ada mode version 6.0.0
+Emacs Ada mode version 6.0.1
 
 Ada mode provides auto-casing, fontification, navigation, and
 indentation for Ada source code files.
@@ -18,7 +18,7 @@ Ada mode uses project files to define large (multi-directory)
 projects, and to define casing exceptions.
 
 Ada mode uses a parser to provide fontification, navigation, and
-indentation. There are twp parsers provided:
+indentation. There are two parsers provided:
 
 - elisp, which can be slow on large files, and does not recover from
   syntax errors.

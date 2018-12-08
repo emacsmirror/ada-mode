@@ -22,7 +22,7 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Ada Mode Version 6.0.0
+Ada Mode Version 6.0.1
 
    Copyright (C) 1999 - 2018 Free Software Foundation, Inc.
 
@@ -179,7 +179,9 @@ File: ada-mode.info,  Node: Installation,  Next: Customization,  Prev: Overview,
 2 Installation
 **************
 
-Ada mode requires Emacs 25.0 or greater.
+Ada mode requires Emacs 25.0 or greater.  Compiling the Ada code for the
+external process parser requires GNAT GPL 2017 or later; tested with
+GNAT Community Edition 2018 and GNAT Pro 19.
 
    Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via 'M-x list-packages' (*note (emacs)Packages::).  In Emacs <
@@ -2812,53 +2814,53 @@ Node: Top945
 Node: Overview3678
 Node: Why not LSP?4915
 Node: Installation5257
-Node: Ada Reference Manual6192
-Node: gpr_query6468
-Node: Building GNATCOLL 20178304
-Node: Building GNATCOLL 20189936
-Node: Building gpr_query12385
-Node: process parser12842
-Node: ada_mode_gps_indent13174
-Node: ada_mode_gps_indent install14088
-Node: ada_mode_gps_indent configure14553
-Node: Customization15376
-Node: Non-standard file names15858
-Node: Other compiler17699
-Node: Other cross-reference18278
-Node: Other customization19020
-Node: Compiling Executing22575
-Node: Compile commands23310
-Node: Compiling Examples25961
-Node: No project files26793
-Node: Set compiler options32159
-Node: Set source search path34121
-Node: Use GNAT project file36574
-Node: Use multiple GNAT project files39348
-Node: Use a Makefile42068
-Node: Compiler errors43383
-Node: Project files44200
-Node: Project file overview45227
-Node: Project file variables46771
-Node: Moving Through Ada Code51646
-Node: Identifier completion54345
-Node: Indentation55307
-Node: Statement skeletons59655
-Node: Aligning code61440
-Node: Automatic casing62385
-Node: Comment Handling65089
-Node: Key summary65608
-Node: Developer overview68235
-Node: Directory structure68603
-Node: Package organization72574
-Node: Ada mode72809
-Node: gpr mode75005
-Node: GNAT core75288
-Node: Wisi76122
-Node: OpenToken77022
-Node: ELPA77624
-Node: Savannah78234
-Node: ada-france78572
-Node: GNU Free Documentation License78812
-Node: Index103973
+Node: Ada Reference Manual6338
+Node: gpr_query6614
+Node: Building GNATCOLL 20178450
+Node: Building GNATCOLL 201810082
+Node: Building gpr_query12531
+Node: process parser12988
+Node: ada_mode_gps_indent13320
+Node: ada_mode_gps_indent install14234
+Node: ada_mode_gps_indent configure14699
+Node: Customization15522
+Node: Non-standard file names16004
+Node: Other compiler17845
+Node: Other cross-reference18424
+Node: Other customization19166
+Node: Compiling Executing22721
+Node: Compile commands23456
+Node: Compiling Examples26107
+Node: No project files26939
+Node: Set compiler options32305
+Node: Set source search path34267
+Node: Use GNAT project file36720
+Node: Use multiple GNAT project files39494
+Node: Use a Makefile42214
+Node: Compiler errors43529
+Node: Project files44346
+Node: Project file overview45373
+Node: Project file variables46917
+Node: Moving Through Ada Code51792
+Node: Identifier completion54491
+Node: Indentation55453
+Node: Statement skeletons59801
+Node: Aligning code61586
+Node: Automatic casing62531
+Node: Comment Handling65235
+Node: Key summary65754
+Node: Developer overview68381
+Node: Directory structure68749
+Node: Package organization72720
+Node: Ada mode72955
+Node: gpr mode75151
+Node: GNAT core75434
+Node: Wisi76268
+Node: OpenToken77168
+Node: ELPA77770
+Node: Savannah78380
+Node: ada-france78718
+Node: GNU Free Documentation License78958
+Node: Index104119
 
 End Tag Table

@@ -152,4 +152,3 @@
 (add-hook 'ada-mode-hook #'xref-ada-mode)
 
 (provide 'xref-ada)
-;;; end of file
