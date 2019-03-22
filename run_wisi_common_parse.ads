@@ -2,7 +2,7 @@
 --
 --  Common utilities for Gen_Run_Wisi_*_Parse
 --
---  Copyright (C) 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2018 - 2019 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -31,7 +31,14 @@ package Run_Wisi_Common_Parse is
    type Command_Line_Params is record
       Post_Parse_Action : Wisi.Post_Parse_Action_Type;
       Source_File_Name  : Ada.Strings.Unbounded.Unbounded_String;
-      Repeat_Count      : Integer := 1;
+      Begin_Byte_Pos    : WisiToken.Buffer_Pos       := WisiToken.Invalid_Buffer_Pos;
+      End_Byte_Pos      : WisiToken.Buffer_Pos       := WisiToken.Invalid_Buffer_Pos;
+      Goal_Byte_Pos     : WisiToken.Buffer_Pos       := WisiToken.Invalid_Buffer_Pos;
+      Begin_Char_Pos    : WisiToken.Buffer_Pos       := WisiToken.Buffer_Pos'First;
+      Begin_Line        : WisiToken.Line_Number_Type := WisiToken.Line_Number_Type'First;
+      End_Line          : WisiToken.Line_Number_Type := WisiToken.Invalid_Line_Number;
+      Begin_Indent      : Integer                    := 0;
+      Repeat_Count      : Integer                    := 1;
       Lang_Params       : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
@@ -39,5 +46,10 @@ package Run_Wisi_Common_Parse is
    --  For any errors, calls Usage, raises SAL.Parameter_Error.
    --
    --  Handles --help by outputing help, raising Finish.
+
+   procedure Parse_File
+     (Parser     : in out WisiToken.Parse.LR.Parser.Parser;
+      Parse_Data : in out Wisi.Parse_Data_Type'Class;
+      Descriptor : in     WisiToken.Descriptor);
 
 end Run_Wisi_Common_Parse;

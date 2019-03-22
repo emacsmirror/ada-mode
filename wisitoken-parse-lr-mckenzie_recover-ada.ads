@@ -2,7 +2,7 @@
 --
 --  Ada language specific algorithms for McKenzie_Recover
 --
---  Copyright (C) 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2018, 2019 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -28,20 +28,22 @@ package WisiToken.Parse.LR.McKenzie_Recover.Ada is
       Tree              : in     Syntax_Trees.Tree;
       Local_Config_Heap : in out Config_Heaps.Heap_Type;
       Config            : in     Configuration);
-   --  See wisitoken-lr-parser.ads Language_Fixes_Access for description.
+   --  See wisitoken-parse-lr-parser.ads Language_Fixes_Access for description.
 
-   function Use_Minimal_Complete_Actions
-     (Next_Token : in Token_ID;
-      Config     : in Configuration)
-     return Boolean;
-   --  See wisitoken-lr-parser.ads Language_Use_Minimal_Complete_Actions_Access
+   procedure Use_Minimal_Complete_Actions
+     (Current_Token        : in     Token_ID;
+      Next_Token           : in     Token_ID;
+      Config               : in     Configuration;
+      Use_Complete         :    out Boolean;
+      Matching_Begin_Token :    out Token_ID);
+   --  See wisitoken-parse-lr-parser.ads Language_Use_Minimal_Complete_Actions_Access
    --  for description.
 
    function String_ID_Set
      (Descriptor        : in WisiToken.Descriptor;
       String_Literal_ID : in Token_ID)
      return Token_ID_Set;
-   --  See wisitoken-lr-parser.ads Language_String_ID_Set_Access for
+   --  See wisitoken-parse-lr-parser.ads Language_String_ID_Set_Access for
    --  description.
 
 end WisiToken.Parse.LR.McKenzie_Recover.Ada;

@@ -1,7 +1,7 @@
 This is ada-mode.info, produced by makeinfo version 6.3 from
 ada-mode.texi.
 
-Copyright (C) 1999 - 2018 Free Software Foundation, Inc.
+Copyright (C) 1999 - 2019 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -22,9 +22,9 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Ada Mode Version 6.0.1
+Ada Mode Version 6.1.0
 
-   Copyright (C) 1999 - 2018 Free Software Foundation, Inc.
+   Copyright (C) 1999 - 2019 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -68,7 +68,6 @@ Installation
 * Ada Reference Manual::
 * gpr_query::
 * process parser::
-* ada_mode_gps_indent::
 
 gpr_query
 
@@ -76,13 +75,9 @@ gpr_query
 * Building GNATCOLL 2018::
 * Building gpr_query::
 
-ada_mode_gps_indent
-
-* ada_mode_gps_indent install::
-* ada_mode_gps_indent configure::
-
 Customizing Ada mode
 
+* Slow response::
 * Non-standard file names::
 * Other compiler::
 * Other cross-reference::
@@ -207,7 +202,6 @@ ada-mode-version'.
 * Ada Reference Manual::
 * gpr_query::
 * process parser::
-* ada_mode_gps_indent::
 
 
 File: ada-mode.info,  Node: Ada Reference Manual,  Next: gpr_query,  Prev: Installation,  Up: Installation
@@ -384,8 +378,6 @@ ELPA package is installed:
      cd ~/.emacs.d/elpa/ada-mode-6.0.xx
      ./build.sh
 
-   This also builds *note ada_mode_gps_indent::.
-
    'ada-mode' will use 'gpr_query' for cross reference functions if
 'gpr_query' is found in 'PATH'.
 
@@ -403,72 +395,6 @@ available.
 ''elisp' or ''parser'.
 
 
-File: ada-mode.info,  Node: ada_mode_gps_indent,  Prev: gpr_query,  Up: Installation
-
-2.4 ada_mode_gps_indent
-=======================
-
-'ada_mode_gps_indent' is an alternate indentation engine, using the
-indentation engine from AdaCore's GPS. It is fast for indenting in very
-large files; the default ada-wisi is slow in that case.  It also
-tolerates most syntax errors, producing reasonable indentation.
-
-   It can be used either as the primary indentation engine, or as a
-fallback when ada-wisi fails due to syntax errors or in large files.
-
-   In either case, the ada-wisi parser is still used for syntax
-highlighting (font-lock) and navigation.
-
-   The ada-mode Gnu ELPA package includes a copy of the source code for
-the GPS indentation engine from GPS GPS 2016, patched to be more
-consistent with the ada-wisi indentation engine.
-
-* Menu:
-
-* ada_mode_gps_indent install::
-* ada_mode_gps_indent configure::
-
-
-File: ada-mode.info,  Node: ada_mode_gps_indent install,  Next: ada_mode_gps_indent configure,  Up: ada_mode_gps_indent
-
-2.4.1 Install
--------------
-
-To install 'ada_mode_gps_indent', assuming the 'ada-mode-6.0.xx' GNU
-ELPA package is installed:
-   * Install 'gnatcoll' (*note Building GNATCOLL 2018::).
-
-   * Compile and install 'ada_mode_gps_indent':
-          cd ~/.emacs.d/elpa/ada-mode-6.0.xx/
-          ./build.sh
-
-     This also builds *note gpr_query::.
-
-
-File: ada-mode.info,  Node: ada_mode_gps_indent configure,  Prev: ada_mode_gps_indent install,  Up: ada_mode_gps_indent
-
-2.4.2 Configure
----------------
-
-By default, 'ada-mode' will use 'ada_mode_gps_indent' as a fallback
-indentation engine if 'ada_mode_gps_indent' is found on 'PATH'.
-
-   Large files (determined by 'ada-gps-size-threshold') will use
-'ada_mode_gps_indent' as the primary indentation engine.
-
-   To force the use of 'ada_mode_gps_indent', set
-'ada-gps-size-threshold' to 0, either globally, or in a file-local
-variable:
-
-     --  Local Variables:
-     --  ada-gps-size-threshold : 0
-     --  End:
-
-   In addition, files larger than 'wisi-size-threshold' will not run the
-wisi parser for font-lock; some syntax highlighting will be lost.  This
-provides better response in files where the parser is slow.
-
-
 File: ada-mode.info,  Node: Customization,  Next: Compiling Executing,  Prev: Installation,  Up: Top
 
 3 Customizing Ada mode
@@ -481,15 +407,65 @@ introduction to customize, elisp, and Emacs in general, see the tutorial
 
 * Menu:
 
+* Slow response::
 * Non-standard file names::
 * Other compiler::
 * Other cross-reference::
 * Other customization::
 
 
+File: ada-mode.info,  Node: Slow response,  Next: Non-standard file names,  Up: Customization
+
+3.1 Slow response
+=================
+
+In large files, parsing is slow, so it gets in the way of interactive
+typing due to immediate fontification triggering a parse.
+
+   There are three ways to deal with this:
+
+  1. Install the process parser (*Note process parser::), and set
+     'wisi-partial-parse-threshold' appropriately in your '~./emacs':
+
+          (setq wisi-partial-parse-threshold 100001)
+
+     The default value (100001) may already be appropriate; it depends
+     on how fast your machine is, and what your tolerance for slow
+     response is.
+
+     Files larger than 'wisi-partial-parse-threshold' will be parsed
+     partially; only the part of the buffer needed for the current task
+     will be parsed.  For fontification, that is the visible part.  For
+     indent, it is approximately the current subprogram or package.  For
+     navigation, it is always the entire file, which will still be slow;
+     that is the only way to ensure useful results.
+
+     With this setting, indentation may not be correct; the Ada menu
+     entry "Edit | Indent lines in file" (or "Edit | Indent current
+     statement", if point is on a keyword of a large enough enclosing
+     statement) will parse the entire file and indent correctly.
+
+  2. Delay fontification by setting 'jit-lock-defer-time' in your
+     '~./emacs':
+
+          (setq jit-lock-defer-time 1.5)
+
+     This is a global setting; it affects all buffers.  Fontification
+     will only be performed after you have stopped typing for the
+     indicated number of seconds.
+
+  3. Turn off parsing for fontification by setting 'wisi-disable-face'
+     in your '~./emacs'
+
+          (setq wisi-disable-face t)
+
+     This turns of fontification for type, package, and function names;
+     only Ada reserved words are fontified.
+
+
 File: ada-mode.info,  Node: Non-standard file names,  Next: Other compiler,  Prev: Customization,  Up: Customization
 
-3.1 Non-standard file names
+3.2 Non-standard file names
 ===========================
 
 By default, Ada mode is configured to use the GNAT file naming
@@ -536,7 +512,7 @@ scope of this manual; see the current definitions in 'ada-mode.el' and
 
 File: ada-mode.info,  Node: Other compiler,  Next: Other cross-reference,  Prev: Non-standard file names,  Up: Customization
 
-3.2 Other compiler
+3.3 Other compiler
 ==================
 
 The project variable 'ada_compiler' (default elisp variable
@@ -552,7 +528,7 @@ the indirection variables.
 
 File: ada-mode.info,  Node: Other cross-reference,  Next: Other customization,  Prev: Other compiler,  Up: Customization
 
-3.3 Other cross-reference
+3.4 Other cross-reference
 =========================
 
 The project variable 'ada_xref' (default elisp variable 'ada-xref-tool')
@@ -572,7 +548,7 @@ Emacs lisp code that provides the interface to the tool, and set
 
 File: ada-mode.info,  Node: Other customization,  Prev: Other cross-reference,  Up: Customization
 
-3.4 Other customization
+3.5 Other customization
 =======================
 
 All user-settable Ada mode variables can be set via the menu 'Ada |
@@ -623,15 +599,6 @@ the syntax to set a variable is the following:
      dedicated window.
 'which-func'
      Display the current subprogram name in the mode bar.
-'jit-lock-defer-time'
-     In large files, parsing is slow, so it gets in the way of
-     interactive typing due to immediate font-lock triggering a parse.
-     Delay the font-lock by setting an Emacs file-local variable in an
-     Ada comment:
-
-          --  Local Variables:
-          --  jit-lock-defer-time: 1.5
-          --  End:
 
    The above can all be set by the following code in your '~/.emacs'.
 Note that some are functions are added to 'before-save-hook'; they run
@@ -1584,6 +1551,11 @@ can also configure the indentation, via the following variables:
 
 'ada-indent' (default value: 3)
      Number of columns for default indentation.
+
+'ada-indent-after-trailing-comment' (default value t)
+     If t, align comment lines imediately following a comment on the
+     same line as code with the preceding comment.  Otherwise, ignore
+     the preceding comment.
 
 'ada-indent-broken' (default value: 2)
      Number of columns to indent the continuation of a broken line.
@@ -2811,56 +2783,54 @@ Index
 
 Tag Table:
 Node: Top945
-Node: Overview3678
-Node: Why not LSP?4915
-Node: Installation5257
-Node: Ada Reference Manual6338
-Node: gpr_query6614
-Node: Building GNATCOLL 20178450
-Node: Building GNATCOLL 201810082
-Node: Building gpr_query12531
-Node: process parser12988
-Node: ada_mode_gps_indent13320
-Node: ada_mode_gps_indent install14234
-Node: ada_mode_gps_indent configure14699
-Node: Customization15522
-Node: Non-standard file names16004
-Node: Other compiler17845
-Node: Other cross-reference18424
-Node: Other customization19166
-Node: Compiling Executing22721
-Node: Compile commands23456
-Node: Compiling Examples26107
-Node: No project files26939
-Node: Set compiler options32305
-Node: Set source search path34267
-Node: Use GNAT project file36720
-Node: Use multiple GNAT project files39494
-Node: Use a Makefile42214
-Node: Compiler errors43529
-Node: Project files44346
-Node: Project file overview45373
-Node: Project file variables46917
-Node: Moving Through Ada Code51792
-Node: Identifier completion54491
-Node: Indentation55453
-Node: Statement skeletons59801
-Node: Aligning code61586
-Node: Automatic casing62531
-Node: Comment Handling65235
-Node: Key summary65754
-Node: Developer overview68381
-Node: Directory structure68749
-Node: Package organization72720
-Node: Ada mode72955
-Node: gpr mode75151
-Node: GNAT core75434
-Node: Wisi76268
-Node: OpenToken77168
-Node: ELPA77770
-Node: Savannah78380
-Node: ada-france78718
-Node: GNU Free Documentation License78958
-Node: Index104119
+Node: Overview3584
+Node: Why not LSP?4821
+Node: Installation5163
+Node: Ada Reference Manual6220
+Node: gpr_query6496
+Node: Building GNATCOLL 20178332
+Node: Building GNATCOLL 20189964
+Node: Building gpr_query12413
+Node: process parser12820
+Node: Customization13152
+Node: Slow response13652
+Node: Non-standard file names15540
+Node: Other compiler17381
+Node: Other cross-reference17960
+Node: Other customization18702
+Node: Compiling Executing21922
+Node: Compile commands22657
+Node: Compiling Examples25308
+Node: No project files26140
+Node: Set compiler options31506
+Node: Set source search path33468
+Node: Use GNAT project file35921
+Node: Use multiple GNAT project files38695
+Node: Use a Makefile41415
+Node: Compiler errors42730
+Node: Project files43547
+Node: Project file overview44574
+Node: Project file variables46118
+Node: Moving Through Ada Code50993
+Node: Identifier completion53692
+Node: Indentation54654
+Node: Statement skeletons59224
+Node: Aligning code61009
+Node: Automatic casing61954
+Node: Comment Handling64658
+Node: Key summary65177
+Node: Developer overview67804
+Node: Directory structure68172
+Node: Package organization72143
+Node: Ada mode72378
+Node: gpr mode74574
+Node: GNAT core74857
+Node: Wisi75691
+Node: OpenToken76591
+Node: ELPA77193
+Node: Savannah77803
+Node: ada-france78141
+Node: GNU Free Documentation License78381
+Node: Index103542
 
 End Tag Table

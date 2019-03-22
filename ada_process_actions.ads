@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada.wy
 --
 
---  Copyright (C) 2013 - 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -27,7 +27,7 @@ package Ada_Process_Actions is
       Last_Terminal                 => 107,
       First_Nonterminal             => 108,
       Last_Nonterminal              => 332,
-      EOF_ID                        => 107,
+      EOI_ID                        => 107,
       Accept_ID                     => 108,
       Case_Insensitive              => True,
       New_Line_ID                   => 1,
@@ -869,6 +869,21 @@ package Ada_Process_Actions is
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
      Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
    procedure case_statement_alternative_0
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
+   procedure compilation_unit_2
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
+   procedure compilation_unit_list_0
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
+   procedure compilation_unit_list_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
@@ -1829,183 +1844,228 @@ package Ada_Process_Actions is
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
      Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
    function accept_statement_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function block_label_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function block_label_opt_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function block_statement_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function block_statement_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
+    return WisiToken.Semantic_Checks.Check_Status;
+   function compilation_unit_list_1_check
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function entry_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function function_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function identifier_opt_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function loop_statement_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function loop_statement_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function name_2_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function name_5_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function name_7_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function name_opt_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function package_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function package_body_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function package_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function package_specification_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function procedure_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function protected_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function protected_definition_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function protected_definition_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function protected_type_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function protected_type_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function selected_component_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function selected_component_2_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function single_protected_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function single_protected_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function single_task_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function single_task_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function subprogram_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function subprogram_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function subprogram_specification_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function task_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function task_type_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
    function task_type_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
+
+   Partial_Parse_Active    : Boolean := False;
+   Partial_Parse_Byte_Goal : WisiToken.Buffer_Pos := WisiToken.Buffer_Pos'Last;
 end Ada_Process_Actions;

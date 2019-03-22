@@ -2,7 +2,7 @@
 --
 --  see spec.
 --
---  Copyright (C) 2017, 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -93,7 +93,9 @@ package body Wisi.Ada is
       Descriptor        : access constant WisiToken.Descriptor;
       Source_File_Name  : in     String;
       Post_Parse_Action : in     Post_Parse_Action_Type;
-      Line_Count        : in     Line_Number_Type;
+      Begin_Line        : in     WisiToken.Line_Number_Type;
+      End_Line          : in     WisiToken.Line_Number_Type;
+      Begin_Indent      : in     Integer;
       Params            : in     String)
    is
       use Standard.Ada.Strings.Fixed;
@@ -101,7 +103,8 @@ package body Wisi.Ada is
       Last  : Integer := Index (Params, " ");
    begin
       Wisi.Initialize
-        (Wisi.Parse_Data_Type (Data), Descriptor, Source_File_Name, Post_Parse_Action, Line_Count, "");
+        (Wisi.Parse_Data_Type (Data), Descriptor, Source_File_Name, Post_Parse_Action, Begin_Line, End_Line,
+         Begin_Indent, "");
 
       if Params /= "" then
          Ada_Indent := Integer'Value (Params (First .. Last - 1));
@@ -244,13 +247,10 @@ package body Wisi.Ada is
          declare
             First_Terminal : Augmented_Token renames
               Data.Terminals (Indenting_Token.First_Terminals_Index);
-
-            First_Terminal_First_On_Line : constant Boolean := First_Terminal.First and
-              First_Terminal.First_Indent_Line /= Invalid_Line_Number;
          begin
             if Option then
                --  Test cases with "Item => ..."
-               if First_Terminal_First_On_Line then
+               if First_Terminal.First then
                   if Indenting_Token.First_Indent_Line = Indenting_Token.Last_Indent_Line then
                      return Comment_Result (Delta_1);
                   else
@@ -265,7 +265,7 @@ package body Wisi.Ada is
                end if;
 
             else
-               if First_Terminal_First_On_Line then
+               if First_Terminal.First then
                   if Indenting_Token.First_Indent_Line = Indenting_Token.Last_Indent_Line then
                      return Comment_Result (Delta_1);
                   else

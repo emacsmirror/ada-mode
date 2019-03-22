@@ -1,13 +1,13 @@
 ;;; ada-mode.el --- major-mode for editing Ada sources  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2018  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 6.0.1
-;; package-requires: ((wisi "2.0.1") (cl-lib "1.0") (emacs "25.0"))
+;; Version: 6.1.0
+;; package-requires: ((wisi "2.1.0") (cl-lib "1.0") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -164,11 +164,12 @@
 (require 'cl-lib)
 (require 'compile)
 (require 'find-file)
+(require 'wisi) ;; FIXME: rewrite to assume wisi
 
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "6.0.1"))
+  (let ((version-string "6.1.0"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -311,12 +312,6 @@ Useful for setting `ada-xref-tool' and similar vars."
 nil, only the file name."
   :type 'boolean
   :safe #'booleanp)
-
-(defcustom ada-gps-indent-exec "ada_mode_gps_indent.exe"
-  ;; declared here, not in ada-gps.el, for auto-detection of indent engine below
-  "Name of executable to use for ada_mode_gps_indent,"
-  :type 'string
-  :group 'ada-indentation)
 
 (defcustom ada-process-parse-exec "ada_mode_wisi_lr1_parse.exe"
   ;; We use .exe even on Linux to simplify the Makefile
@@ -562,8 +557,14 @@ button was clicked."
   ;; point may be in the middle of a word, so insert newline first,
   ;; then go back and indent.
   (insert "\n")
-  (forward-char -1)
-  (funcall indent-line-function)
+  (unless (and (wisi-partial-parse-p (line-beginning-position) (line-end-position))
+	       (save-excursion (progn (forward-char -1)(looking-back "begin\\|else" (line-beginning-position)))))
+    ;; Partial parse may think 'begin' is just the start of a
+    ;; statement, when it's actually part of a larger declaration. So
+    ;; don't indent 'begin'. Similarly for 'else'; error recovery will
+    ;; probaly insert 'if then' immediately before it
+    (forward-char -1)
+    (funcall indent-line-function))
   (forward-char 1)
   (funcall indent-line-function))
 
@@ -1753,6 +1754,9 @@ Useful when project has been edited."
       (setq ada-prj-alist (delq parsed ada-prj-alist)))
     (ada-select-prj-file prj-file nil)))
 
+;; This is autoloaded because it is often used in Makefiles, and thus
+;; will be the first ada-mode function executed.
+;;;###autoload
 (defun ada-select-prj-file (prj-file &optional no-force)
   "Select PRJ-FILE as the current project file, parsing it if necessary.
 Deselects the current project first."
@@ -2982,10 +2986,8 @@ The paragraph is indented on the first line."
 
 (defun ada-mode-post-local-vars ()
   ;; These are run after ada-mode-hook and file local variables
-  ;; because users or other ada-* files might set the relevant
-  ;; variable inside the hook or file local variables (file local
-  ;; variables are processed after the mode is set, and thus after
-  ;; ada-mode is run).
+  ;; because users or *.ad? files might set the relevant
+  ;; variable inside the hook or file local variables.
 
   ;; This means to fully set ada-mode interactively, user must
   ;; do M-x ada-mode M-; (hack-local-variables)
@@ -3042,12 +3044,10 @@ process : wisi elisp lexer, external process parser specified
   by ‘ada-process-parse-exec ’.
 ")
 
-(defvar ada-fallback nil
+(defvar ada-fallback 'simple
   "Indicate fallback indentation engine for Ada buffers.
 
-simple: indent to previous line.
-
-gps: gps external parser.")
+simple: indent to previous line.")
 
 (provide 'ada-mode)
 
@@ -3060,10 +3060,6 @@ gps: gps external parser.")
 (cl-case ada-fallback
   (simple
    (require 'ada-wisi))
-  (t
-   (if (locate-file ada-gps-indent-exec exec-path '("" ".exe"))
-       (require 'ada-gps)
-     (require 'ada-wisi)))
   )
 
 (cl-case ada-parser

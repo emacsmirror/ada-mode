@@ -3,7 +3,7 @@
 @settitle Ada Mode
 
 @copying
-Copyright @copyright{} 1999 - 2018  Free Software Foundation, Inc.
+Copyright @copyright{} 1999 - 2019  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 6.0.1
+@title Ada Mode Version 6.1.0
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -36,7 +36,7 @@ developing GNU and promoting software freedom.''
 
 @node Top, Overview, (dir), (dir)
 
-Ada Mode Version 6.0.1
+Ada Mode Version 6.1.0
 
 @ifnottex
 @insertcopying
@@ -72,7 +72,6 @@ Installation
 * Ada Reference Manual::
 * gpr_query::
 * process parser::
-* ada_mode_gps_indent::
 
 gpr_query
 
@@ -80,13 +79,9 @@ gpr_query
 * Building GNATCOLL 2018::
 * Building @file{gpr_query}::
 
-ada_mode_gps_indent
-
-* ada_mode_gps_indent install::
-* ada_mode_gps_indent configure::
-
 Customizing Ada mode
 
+* Slow response::
 * Non-standard file names::
 * Other compiler::
 * Other cross-reference::
@@ -207,7 +202,6 @@ You may also want to install additional utilities:
 * Ada Reference Manual::
 * gpr_query::
 * process parser::
-* ada_mode_gps_indent::
 @end menu
 
 @node Ada Reference Manual, gpr_query, Installation, Installation
@@ -392,8 +386,6 @@ cd ~/.emacs.d/elpa/ada-mode-6.0.xx
 ./build.sh
 @end example
 
-This also builds @ref{ada_mode_gps_indent}.
-
 @code{ada-mode} will use @file{gpr_query} for cross reference
 functions if @file{gpr_query} is found in @code{PATH}.
 
@@ -406,70 +398,6 @@ is available.
 To override the automatic choice of parser, set @var{ada-parser} to
 either @code{'elisp} or @code{'parser}.
 
-@node ada_mode_gps_indent, , gpr_query, Installation
-@section ada_mode_gps_indent
-@file{ada_mode_gps_indent} is an alternate indentation engine, using the
-indentation engine from AdaCore's GPS. It is fast for indenting in
-very large files; the default ada-wisi is slow in that case. It also
-tolerates most syntax errors, producing reasonable indentation.
-
-It can be used either as the primary indentation engine, or as a
-fallback when ada-wisi fails due to syntax errors or in large files.
-
-In either case, the ada-wisi parser is still used for syntax
-highlighting (font-lock) and navigation.
-
-The ada-mode Gnu ELPA package includes a copy of the source code for
-the GPS indentation engine from GPS GPS 2016, patched to be more
-consistent with the ada-wisi indentation engine.
-
-@menu
-* ada_mode_gps_indent install::
-* ada_mode_gps_indent configure::
-@end menu
-
-@node ada_mode_gps_indent install
-@subsection Install
-To install @code{ada_mode_gps_indent}, assuming the
-@code{ada-mode-6.0.xx} GNU ELPA package is installed:
-@itemize
-@item
-Install @file{gnatcoll} (@ref{Building GNATCOLL 2018}).
-
-@item
-Compile and install @file{ada_mode_gps_indent}:
-@example
-cd ~/.emacs.d/elpa/ada-mode-6.0.xx/
-./build.sh
-@end example
-
-This also builds @ref{gpr_query}.
-
-@end itemize
-
-@node ada_mode_gps_indent configure
-@subsection Configure
-By default, @code{ada-mode} will use @code{ada_mode_gps_indent} as a
-fallback indentation engine if @code{ada_mode_gps_indent} is found on
-@code{PATH}.
-
-Large files (determined by @code{ada-gps-size-threshold}) will use
-@code{ada_mode_gps_indent} as the primary indentation engine.
-
-To force the use of @code{ada_mode_gps_indent}, set
-@code{ada-gps-size-threshold} to 0, either globally, or in a
-file-local variable:
-
-@example
---  Local Variables:
---  ada-gps-size-threshold : 0
---  End:
-@end example
-
-In addition, files larger than @code{wisi-size-threshold} will not run
-the wisi parser for font-lock; some syntax highlighting will be
-lost. This provides better response in files where the parser is slow.
-
 @node Customization, Compiling Executing, Installation, Top
 @chapter Customizing Ada mode
 
@@ -479,11 +407,67 @@ a basic introduction to customize, elisp, and Emacs in general, see
 the tutorial (@kbd{C-h t}).
 
 @menu
+* Slow response::
 * Non-standard file names::
 * Other compiler::
 * Other cross-reference::
 * Other customization::
 @end menu
+
+@node Slow response
+@section Slow response
+
+In large files, parsing is slow, so it gets in the way of interactive
+typing due to immediate fontification triggering a parse.
+
+There are three ways to deal with this:
+
+@enumerate
+@item Install the process parser (@xref{process parser}), and set
+@code{wisi-partial-parse-threshold} appropriately in your
+@file{~./emacs}:
+
+@example
+(setq wisi-partial-parse-threshold 100001)
+@end example
+
+The default value (100001) may already be appropriate; it depends on
+how fast your machine is, and what your tolerance for slow response
+is.
+
+Files larger than @code{wisi-partial-parse-threshold} will be parsed
+partially; only the part of the buffer needed for the current task
+will be parsed. For fontification, that is the visible part. For indent,
+it is approximately the current subprogram or package. For navigation,
+it is always the entire file, which will still be slow; that is the
+only way to ensure useful results.
+
+With this setting, indentation may not be correct; the Ada menu entry
+``Edit | Indent lines in file'' (or ``Edit | Indent current
+statement'', if point is on a keyword of a large enough enclosing
+statement) will parse the entire file and indent correctly.
+
+@item Delay fontification by setting @code{jit-lock-defer-time} in your
+@file{~./emacs}:
+
+@example
+(setq jit-lock-defer-time 1.5)
+@end example
+
+This is a global setting; it affects all buffers. Fontification will
+only be performed after you have stopped typing for the indicated
+number of seconds.
+
+@item Turn off parsing for fontification by setting
+@code{wisi-disable-face} in your @file{~./emacs}
+
+@example
+(setq wisi-disable-face t)
+@end example
+
+This turns of fontification for type, package, and function names;
+only Ada reserved words are fontified.
+@end enumerate
 
 @node Non-standard file names, Other compiler, Customization, Customization
 @section Non-standard file names
@@ -616,18 +600,6 @@ Navigate to subprograms and types by name, from a minibuffer menu.
 Navigate to subprograms and types by name, from a list in a dedicated window.
 @item which-func
 Display the current subprogram name in the mode bar.
-@item jit-lock-defer-time
-In large files, parsing is slow, so it gets in the way of
-interactive typing due to immediate font-lock triggering a
-parse. Delay the font-lock by setting an Emacs file-local variable
-in an Ada comment:
-
-@example
---  Local Variables:
---  jit-lock-defer-time: 1.5
---  End:
-@end example
-
 @end table
 
 The above can all be set by the following code in your
@@ -1654,6 +1626,11 @@ can also configure the indentation, via the following variables:
 @item @code{ada-indent}                  (default value: 3)
 Number of columns for default indentation.
 
+@item @code{ada-indent-after-trailing-comment} (default value t)
+If t, align comment lines imediately following a comment on the
+same line as code with the preceding comment. Otherwise, ignore
+the preceding comment.
+
 @item @code{ada-indent-broken}           (default value: 2)
 Number of columns to indent the continuation of a broken line.
 
@@ -1674,6 +1651,8 @@ of:
    @end itemize
 
 Otherwise, they are indented with previous comments or code.
+
+@c @item @code{ada-indent-hanging-rel-exp} still experimental
 
 @item @code{ada-indent-label}            (default value: -3)
 Number of columns to indent a label.

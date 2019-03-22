@@ -1,7 +1,7 @@
 ;;; gpr-lalr-elisp.el --- Generated parser support file  -*- lexical-binding:t -*-
 ;;  command line: wisitoken-bnf-generate.exe  --generate LALR elisp elisp gpr.wy
 
-;;  Copyright (C) 2013 - 2018 Free Software Foundation, Inc.
+;;  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
 
 ;;  This program is free software; you can redistribute it and/or
 ;;  modify it under the terms of the GNU General Public License as
@@ -112,7 +112,8 @@
        ((case_item ))
        ((case_items case_item )))
       (compilation_unit
-       ((context_clause_opt project_qualifier_opt project_declaration_opt )))
+       ((context_clause_opt project_qualifier_opt project_declaration_opt )
+        (wisi-indent-action [0 0 [0 0]])))
       (context_clause
        ((with_clause ))
        ((context_clause with_clause )))

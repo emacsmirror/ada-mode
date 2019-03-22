@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada.wy
 --
 
---  Copyright (C) 2013 - 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -72,12 +72,14 @@ package body Ada_Process_Actions is
    end accept_statement_0;
 
    function accept_statement_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 8, End_Names_Optional);
    end accept_statement_0_check;
@@ -516,23 +518,27 @@ package body Ada_Process_Actions is
    end block_label_0;
 
    function block_label_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end block_label_0_check;
 
    function block_label_opt_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end block_label_opt_0_check;
@@ -564,12 +570,14 @@ package body Ada_Process_Actions is
    end block_statement_0;
 
    function block_statement_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 1, 7, End_Names_Optional);
    end block_statement_0_check;
@@ -597,12 +605,14 @@ package body Ada_Process_Actions is
    end block_statement_1;
 
    function block_statement_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 1, 5, End_Names_Optional);
    end block_statement_1_check;
@@ -682,8 +692,9 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent_When))), (False, (Simple, (Int,
-         Ada_Indent_When))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
+         Ada_Indent_Broken))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent_When))), (True, (Simple, (Int,
+         Ada_Indent_When)), (Simple, (Int, Ada_Indent_When))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         0))), (False, (Simple, (Int, 0)))));
       end case;
    end case_statement_0;
 
@@ -706,6 +717,75 @@ package body Ada_Process_Actions is
          (Simple, (Int, Ada_Indent)))));
       end case;
    end case_statement_alternative_0;
+
+   procedure compilation_unit_2
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         0)))));
+      end case;
+   end compilation_unit_2;
+
+   procedure compilation_unit_list_0
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int, 0)),
+         (Simple, (Int, 0)))));
+      end case;
+   end compilation_unit_list_0;
+
+   procedure compilation_unit_list_1
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, (1 => (True, (Simple, (Int, 0)), (Simple, (Int, 0)))));
+      end case;
+   end compilation_unit_list_1;
+
+   function compilation_unit_list_1_check
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
+    return WisiToken.Semantic_Checks.Check_Status
+   is
+      pragma Unreferenced (Lexer);
+      pragma Unreferenced (Tokens);
+   begin
+      return Terminate_Partial_Parse (Partial_Parse_Active, Partial_Parse_Byte_Goal, Recover_Active, Nonterm);
+   end compilation_unit_list_1_check;
 
    procedure component_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
@@ -941,8 +1021,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         Ada_Indent)))));
       end case;
    end elsif_expression_item_0;
 
@@ -960,9 +1041,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int,
-         Ada_Indent)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent)), (Simple, (Int, Ada_Indent)))));
       end case;
    end elsif_statement_item_0;
 
@@ -996,12 +1077,14 @@ package body Ada_Process_Actions is
    end entry_body_0;
 
    function entry_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 11, End_Names_Optional);
    end entry_body_0_check;
@@ -1656,12 +1739,14 @@ package body Ada_Process_Actions is
    end function_specification_0;
 
    function function_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 2);
    end function_specification_0_check;
@@ -1903,7 +1988,8 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((True, (Simple, (Int, 0)), (Simple, (Int, 0))), (False,
-         (Simple, (Int, -Ada_Indent))), (False, (Simple, (Int, Ada_Indent_When - Ada_Indent)))));
+         (Simple, (Int, -Ada_Indent))), (True, (Simple, (Int, Ada_Indent_When - Ada_Indent)), (Simple, (Int,
+         Ada_Indent_When - Ada_Indent)))));
       end case;
    end handled_sequence_of_statements_0;
 
@@ -1927,12 +2013,14 @@ package body Ada_Process_Actions is
    end identifier_list_0;
 
    function identifier_opt_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end identifier_opt_0_check;
@@ -1954,9 +2042,10 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent))), (False, (Simple,
-         (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         Ada_Indent))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         Ada_Indent)))));
       end case;
    end if_expression_0;
 
@@ -1976,9 +2065,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent))), (False, (Simple,
-         (Int, 0))), (False, (Simple, (Int, Ada_Indent)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         Ada_Indent))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent)))));
       end case;
    end if_expression_1;
 
@@ -1998,9 +2087,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent))), (False, (Simple,
-         (Int, 0)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         Ada_Indent))), (False, (Simple, (Int, 0)))));
       end case;
    end if_expression_2;
 
@@ -2020,8 +2109,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Ada_Indent)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int,
+         Ada_Indent)))));
       end case;
    end if_expression_3;
 
@@ -2046,11 +2136,12 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Hanging_1, (Int,
-         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent))),
-         (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Int, 0))), (True, (Simple,
-         (Int, 0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))),
-         (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Hanging_1, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int,
+         0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False,
+         (Simple, (Int, 0))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int,
+         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False,
+         (Simple, (Int, 0)))));
       end case;
    end if_statement_0;
 
@@ -2074,11 +2165,11 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Hanging_1, (Int,
-         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent))),
-         (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, 0)), (Simple, (Int,
-         Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Int, 0))),
-         (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Hanging_1, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int,
+         0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (True,
+         (Simple, (Int, 0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int,
+         Ada_Indent))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
       end case;
    end if_statement_1;
 
@@ -2101,10 +2192,10 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Hanging_1, (Int,
-         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent))),
-         (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Int, 0))), (False,
-         (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Hanging_1, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int,
+         0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False,
+         (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
       end case;
    end if_statement_2;
 
@@ -2125,10 +2216,10 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Hanging_1, (Int,
-         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (True, (Simple, (Int, 0)), (Simple, (Int, Ada_Indent))),
-         (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Int, 0))), (False,
-         (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Hanging_1, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int,
+         0)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False,
+         (Simple, (Int, 0))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, 0)))));
       end case;
    end if_statement_3;
 
@@ -2325,12 +2416,14 @@ package body Ada_Process_Actions is
    end loop_statement_0;
 
    function loop_statement_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 1, 7, End_Names_Optional);
    end loop_statement_0_check;
@@ -2357,12 +2450,14 @@ package body Ada_Process_Actions is
    end loop_statement_1;
 
    function loop_statement_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 1, 6, End_Names_Optional);
    end loop_statement_1_check;
@@ -2409,12 +2504,14 @@ package body Ada_Process_Actions is
    end name_1;
 
    function name_2_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end name_2_check;
@@ -2438,34 +2535,40 @@ package body Ada_Process_Actions is
    end name_5;
 
    function name_5_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end name_5_check;
 
    function name_7_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end name_7_check;
 
    function name_opt_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end name_opt_0_check;
@@ -2825,12 +2928,14 @@ package body Ada_Process_Actions is
    end package_body_0;
 
    function package_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 10, End_Names_Optional);
    end package_body_0_check;
@@ -2860,12 +2965,14 @@ package body Ada_Process_Actions is
    end package_body_1;
 
    function package_body_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 8, End_Names_Optional);
    end package_body_1_check;
@@ -2957,12 +3064,14 @@ package body Ada_Process_Actions is
    end package_specification_0;
 
    function package_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 9, End_Names_Optional);
    end package_specification_0_check;
@@ -2992,12 +3101,14 @@ package body Ada_Process_Actions is
    end package_specification_1;
 
    function package_specification_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 7, End_Names_Optional);
    end package_specification_1_check;
@@ -3378,12 +3489,14 @@ package body Ada_Process_Actions is
    end procedure_specification_0;
 
    function procedure_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 2);
    end procedure_specification_0_check;
@@ -3413,12 +3526,14 @@ package body Ada_Process_Actions is
    end protected_body_0;
 
    function protected_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 8, End_Names_Optional);
    end protected_body_0_check;
@@ -3465,12 +3580,14 @@ package body Ada_Process_Actions is
    end protected_definition_0;
 
    function protected_definition_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 5);
    end protected_definition_0_check;
@@ -3495,12 +3612,14 @@ package body Ada_Process_Actions is
    end protected_definition_1;
 
    function protected_definition_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 3);
    end protected_definition_1_check;
@@ -3532,12 +3651,14 @@ package body Ada_Process_Actions is
    end protected_type_declaration_0;
 
    function protected_type_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 10, End_Names_Optional);
    end protected_type_declaration_0_check;
@@ -3568,12 +3689,14 @@ package body Ada_Process_Actions is
    end protected_type_declaration_1;
 
    function protected_type_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 7, End_Names_Optional);
    end protected_type_declaration_1_check;
@@ -3854,12 +3977,14 @@ package body Ada_Process_Actions is
    end selected_component_0;
 
    function selected_component_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Merge_Names (Nonterm, Tokens, 1, 3);
    end selected_component_0_check;
@@ -3901,12 +4026,14 @@ package body Ada_Process_Actions is
    end selected_component_2;
 
    function selected_component_2_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Merge_Names (Nonterm, Tokens, 1, 3);
    end selected_component_2_check;
@@ -4189,12 +4316,14 @@ package body Ada_Process_Actions is
    end single_protected_declaration_0;
 
    function single_protected_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 8, End_Names_Optional);
    end single_protected_declaration_0_check;
@@ -4224,12 +4353,14 @@ package body Ada_Process_Actions is
    end single_protected_declaration_1;
 
    function single_protected_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 5, End_Names_Optional);
    end single_protected_declaration_1_check;
@@ -4261,12 +4392,14 @@ package body Ada_Process_Actions is
    end single_task_declaration_0;
 
    function single_task_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 10, End_Names_Optional);
    end single_task_declaration_0_check;
@@ -4296,12 +4429,14 @@ package body Ada_Process_Actions is
    end single_task_declaration_1;
 
    function single_task_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 7, End_Names_Optional);
    end single_task_declaration_1_check;
@@ -4354,12 +4489,14 @@ package body Ada_Process_Actions is
    end subprogram_body_0;
 
    function subprogram_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 2, 9, End_Names_Optional);
    end subprogram_body_0_check;
@@ -4444,23 +4581,27 @@ package body Ada_Process_Actions is
    end subprogram_renaming_declaration_0;
 
    function subprogram_specification_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end subprogram_specification_0_check;
 
    function subprogram_specification_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Lexer);
+      pragma Unreferenced (Recover_Active);
    begin
       return Propagate_Name (Nonterm, Tokens, 1);
    end subprogram_specification_1_check;
@@ -4605,12 +4746,14 @@ package body Ada_Process_Actions is
    end task_body_0;
 
    function task_body_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 10, End_Names_Optional);
    end task_body_0_check;
@@ -4702,12 +4845,14 @@ package body Ada_Process_Actions is
    end task_type_declaration_0;
 
    function task_type_declaration_0_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 12, End_Names_Optional);
    end task_type_declaration_0_check;
@@ -4739,12 +4884,14 @@ package body Ada_Process_Actions is
    end task_type_declaration_1;
 
    function task_type_declaration_1_check
-    (Lexer   : access constant WisiToken.Lexer.Instance'Class;
-     Nonterm : in out WisiToken.Recover_Token;
-     Tokens  : in     WisiToken.Recover_Token_Array)
+    (Lexer          : access constant WisiToken.Lexer.Instance'Class;
+     Nonterm        : in out WisiToken.Recover_Token;
+     Tokens         : in     WisiToken.Recover_Token_Array;
+     Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status
    is
       pragma Unreferenced (Nonterm);
+      pragma Unreferenced (Recover_Active);
    begin
       return Match_Names (Lexer, Descriptor, Tokens, 3, 9, End_Names_Optional);
    end task_type_declaration_1_check;

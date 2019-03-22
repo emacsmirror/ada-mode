@@ -1,6 +1,6 @@
 ;; gpr-wisi.el --- Indentation engine for gpr mode, using the wisi parser  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2013 - 2018 Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -33,9 +33,9 @@
 
 (defun gpr-wisi-which-function ()
   "For `gpr-which-function'."
-  (wisi-validate-cache (point) nil 'navigate)
-  ;; no message on parse fail, since this could be called from which-func-mode
-  (when (> (wisi-cache-max 'navigate) (point))
+  (wisi-validate-cache (point-min) (point) nil 'navigate)
+  ;; No message on parse fail, since this could be called from which-function-mode
+  (when (wisi-cache-covers-pos 'navigate (point))
     (let ((cache (wisi-backward-cache))
 	  done
 	  project-pos

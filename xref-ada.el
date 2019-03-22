@@ -1,6 +1,6 @@
 ;; xref-ada.el --- ada-mode backend for xref.el -*-lexical-binding:t-*-
 ;;
-;; Copyright (C) 2018  Free Software Foundation, Inc.
+;; Copyright (C) 2018 - 2019  Free Software Foundation, Inc.
 
 ;; This file is part of GNU Emacs.
 ;;
@@ -31,7 +31,7 @@
 	 ;; (spec/body).
 	 ;;
 	 ;; If t-prop is nil: identifier is from prompt/completion,
-	 ;; the line number is incuded in the identifier
+	 ;; the line number may be included in the identifier
 	 ;; wrapped in <>, and the desired file is the current file.
 	 (ident
 	  (if t-prop
@@ -46,7 +46,8 @@
 	 (line
 	  (if t-prop
 	      (plist-get t-prop ':line)
-	    (string-to-number (match-string 2 identifier))))
+	    (when (match-string 2 identifier)
+	      (string-to-number (match-string 2 identifier)))))
 	 (column
 	  (if t-prop
 	      (plist-get t-prop ':column)
@@ -95,7 +96,7 @@
 	 nil))))
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-ada)))
-  (wisi-validate-cache (point-max) t 'navigate)
+  (wisi-validate-cache (point-min) (point-max) t 'navigate)
   (save-excursion
     (let ((table nil)
 	  cache)

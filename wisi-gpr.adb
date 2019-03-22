@@ -2,7 +2,7 @@
 --
 --  See spec
 --
---  Copyright (C) 2017, 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -26,7 +26,9 @@ package body Wisi.Gpr is
       Descriptor        : access constant WisiToken.Descriptor;
       Source_File_Name  : in     String;
       Post_Parse_Action : in     Post_Parse_Action_Type;
-      Line_Count        : in     WisiToken.Line_Number_Type;
+      Begin_Line        : in     WisiToken.Line_Number_Type;
+      End_Line          : in     WisiToken.Line_Number_Type;
+      Begin_Indent      : in     Integer;
       Params            : in     String)
    is
       use Ada.Strings.Fixed;
@@ -34,7 +36,8 @@ package body Wisi.Gpr is
       Last  : Integer := Index (Params, " ");
    begin
       Wisi.Initialize
-        (Wisi.Parse_Data_Type (Data), Descriptor, Source_File_Name, Post_Parse_Action, Line_Count, "");
+        (Wisi.Parse_Data_Type (Data), Descriptor, Source_File_Name, Post_Parse_Action, Begin_Line, End_Line,
+         Begin_Indent, "");
 
       if Params /= "" then
          --  must match [1] wisi-parse-format-language-options

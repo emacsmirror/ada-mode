@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada.wy
 --
 
---  Copyright (C) 2013 - 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -50,9 +50,9 @@ package body Ada_Process_LR1_Main is
             3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 2, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3,
             3, 2, 1, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3),
          Delete =>
-           (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 2, 3, 1, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 2, 3,
+           (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 2, 3, 1, 3, 3, 3, 3, 1, 3, 2, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 3, 2, 3,
             3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3),
+            3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3),
          Push_Back =>
            (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -199,12 +199,12 @@ package body Ada_Process_LR1_Main is
             Set_Production (Prods (142), 142, 4);
             Set_RHS (Prods (142), 0, (1 => 332), null, null);
             Set_RHS (Prods (142), 1, (1 => 315), null, null);
-            Set_RHS (Prods (142), 2, (49, 157), null, null);
+            Set_RHS (Prods (142), 2, (49, 157), compilation_unit_2'Access, null);
             Set_RHS (Prods (142), 3, (1 => 157), null, null);
             Set_RHS (Prods (142), 4, (1 => 306), null, null);
             Set_Production (Prods (143), 143, 1);
-            Set_RHS (Prods (143), 0, (143, 142), null, null);
-            Set_RHS (Prods (143), 1, (1 => 142), null, null);
+            Set_RHS (Prods (143), 0, (143, 142), compilation_unit_list_0'Access, null);
+            Set_RHS (Prods (143), 1, (1 => 142), compilation_unit_list_1'Access, compilation_unit_list_1_check'Access);
             Set_Production (Prods (144), 144, 0);
             Set_RHS (Prods (144), 0, (104, 12, 301, 53, 301, 85, 301, 96), component_clause_0'Access, null);
             Set_Production (Prods (145), 145, 1);
@@ -928,7 +928,7 @@ package body Ada_Process_LR1_Main is
       WisiToken.Parse.LR.Parser.New_Parser
         (Parser,
          Trace,
-         Lexer.New_Lexer (Trace),
+         Lexer.New_Lexer (Trace.Descriptor),
          Table,
          Language_Fixes,
          Language_Use_Minimal_Complete_Actions,

@@ -3,7 +3,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2018  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -440,6 +440,7 @@ list."
     ("a-chahan" . "Ada.Characters.Handling")
     ("a-comlin" . "Ada.Command_Line")
     ("a-contai" . "Ada.Containers")
+    ("a-direct" . "Ada.Directories")
     ("a-except" . "Ada.Exceptions")
     ("a-ioexce" . "Ada.IO_Exceptions")
     ("a-numeri" . "Ada.Numerics")

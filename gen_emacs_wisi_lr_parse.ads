@@ -14,7 +14,7 @@
 --  [2] On the Ada side, it is defined here, and in
 --  wisitoken-wisi_runtime.adb
 --
---  Copyright (C) 2017, 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -36,11 +36,12 @@ with Wisi;
 generic
    type Parse_Data_Type  is new Wisi.Parse_Data_Type with private;
 
-   Name                         : in String; --  for Usage, error messages.
-   Descriptor                   : in WisiToken.Descriptor;
-   Language_Fixes               : in WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+   Name                                  : in String; --  for Usage, error messages.
+   Descriptor                            : in WisiToken.Descriptor;
+   Partial_Parse_Active                  : in out Boolean;
+   Language_Fixes                        : in WisiToken.Parse.LR.Parser.Language_Fixes_Access;
    Language_Use_Minimal_Complete_Actions : in WisiToken.Parse.LR.Parser.Language_Use_Minimal_Complete_Actions_Access;
-   Language_String_ID_Set       : in WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
+   Language_String_ID_Set                : in WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
 
    with procedure Create_Parser
      (Parser                       :    out          WisiToken.Parse.LR.Parser.Parser;

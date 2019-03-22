@@ -6,7 +6,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2018  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -195,11 +195,22 @@ Prompt user if more than one."
 	  ;;
 	  ;; This list will get long, so let's impose some order.
 	  ;;
-	  ;; First expressions that start with a named regexp, alphabetical by variable name.
+	  ;; First expressions that start with a named regexp,
+	  ;; alphabetical by variable name and following string.
 	  ;;
 	  ;; Then expressions that start with a string, alphabetical by string.
 	  ;;
 	  ;; Then style errors.
+
+	  ((looking-at (concat ada-gnat-quoted-name-regexp " is not a component of "))
+	 	   (save-excursion
+	     (let ((child-name (match-string 1))
+		   (correct-spelling (ada-gnat-misspelling)))
+	       (setq correct-spelling (match-string 1))
+	       (pop-to-buffer source-buffer)
+	       (search-forward child-name)
+	       (replace-match correct-spelling))
+	     t))
 
 	  ((looking-at (concat ada-gnat-quoted-name-regexp " is not visible"))
 	   (let ((done nil)
@@ -220,25 +231,26 @@ Prompt user if more than one."
 	     ;; the lines after that may contain alternate matches;
 	     ;; collect all, let user choose.
 	     (forward-line 1)
-	     (unless (looking-at ".* multiple use clauses cause hiding")
-	       (while (not done)
-		 (let ((limit (1- (line-end-position))))
-		   ;; 1- because next compilation error is at next line beginning
-		   (setq done (not
-			       (and
-				(equal file-line-struct (ada-get-compilation-message))
-				(setq pos (next-single-property-change (point) 'ada-secondary-error nil limit))
-				(< pos limit))))
-		   (when (not done)
-		     (let* ((item (get-text-property pos 'ada-secondary-error))
-			    (unit-file (nth 0 item))
-                            (choice (ada-ada-name-from-file-name unit-file)))
-                       (unless (member choice choices) (push choice choices))
-		       (goto-char (1+ pos))
-		       (goto-char (1+ (next-single-property-change (point) 'ada-secondary-error nil limit)))
-		       (when (eolp) (forward-line 1))
-		       ))
-		   )));; unless while let
+	     (when (looking-at ".* multiple use clauses cause hiding")
+	       (forward-line 1))
+	     (while (not done)
+	       (let ((limit (1- (line-end-position))))
+		 ;; 1- because next compilation error is at next line beginning
+		 (setq done (not
+			     (and
+			      (equal file-line-struct (ada-get-compilation-message))
+			      (setq pos (next-single-property-change (point) 'ada-secondary-error nil limit))
+			      (< pos limit))))
+		 (when (not done)
+		   (let* ((item (get-text-property pos 'ada-secondary-error))
+			  (unit-file (nth 0 item))
+			  (choice (ada-ada-name-from-file-name unit-file)))
+		     (unless (member choice choices) (push choice choices))
+		     (goto-char (1+ pos))
+		     (goto-char (1+ (next-single-property-change (point) 'ada-secondary-error nil limit)))
+		     (when (eolp) (forward-line 1))
+		     ))
+		 ))
 
 	     (setq unit-name
 		   (cond
@@ -553,7 +565,8 @@ Prompt user if more than one."
 	   t)
 
 ;;;; style errors
-	  ((looking-at "(style) \".*\" in wrong column")
+	  ((or (looking-at "(style) \".*\" in wrong column")
+	       (looking-at "(style) this token should be in column"))
 	   (set-buffer source-buffer)
 	   (funcall indent-line-function)
 	   t)

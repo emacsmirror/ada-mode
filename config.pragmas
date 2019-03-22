@@ -1,0 +1,6 @@
+pragma No_Heap_Finalization;
+pragma Restrictions (No_Initialize_Scalars);
+pragma Restrictions (No_Abort_Statements);
+pragma Restrictions (Max_Asynchronous_Select_Nesting => 0);
+pragma Restrictions (No_Asynchronous_Control);
+pragma Restrictions (No_Dynamic_Priorities);

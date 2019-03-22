@@ -1,6 +1,6 @@
 ;;; ada-wisi-elisp-parse.el --- Ada functions for grammar actions called from the elisp parser  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2012 - 2018  Free Software Foundation, Inc.
+;; Copyright (C) 2012 - 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -130,7 +130,7 @@
 	    (and prev-1
 		 (eq 'WITH (wisi-tok-token prev-1))
 		 (or (null prev-3)
-		     ;; FIXME: doc test case
+		     ;; IMPROVEME: doc test case
 		     (not (eq 'LEFT_PAREN (wisi-tok-token prev-3))))) ;; not in extension aggregate
 
 	    ;; test/aspects.ads

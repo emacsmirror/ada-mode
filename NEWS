@@ -1,6 +1,36 @@
 GNU Emacs Ada mode NEWS -- history of user-visible changes.
 
+Copyright (C) 2018 Free Software Foundation, Inc.
+See the end of the file for license conditions.
+
+Please send wisi bug reports to bug-gnu-emacs@gnu.org, with
+'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
+
 
+* Ada mode 6.1.0
+21 Mar 2019
+
+** Add support for partial parsing; useful in very large files. Files
+   larger than wisi-partial-parse-threshold (default 100_001) will be
+   parsed partially. In general, partial parsing may yield incorrect
+   results for indentation; the Ada menu entry
+   "Edit | Indent lines in file" will parse the entire file and indent
+   correctly.
+
+** Better error correction in the Ada process parser; insert minimimal
+  tokens to complete a statement/declaration before or after the error
+  point.
+
+** New indent option: 'ada-indent-after-trailing-comment' If t (the
+ default), align comment lines imediately following a comment on the
+ same line as code with the preceding comment. Otherwise, ignore the
+ preceding comment.
+
+** Delete support for the GPS backend; no need, given partial parsing
+   and error correction.
+
+** Miscellaneous bug fixes.
+
 * Ada mode 6.0.1
 8 Dec 2018
 

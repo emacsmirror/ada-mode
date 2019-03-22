@@ -108,13 +108,15 @@ project Ada_Mode_Wisi_Parse is
    end Compiler;
 
    package Builder is
-      case Standard_Common.Profile is
-      when "On" =>
-         for Default_Switches ("Ada") use Standard_Common.Builder'Default_Switches ("Ada") & ("-pg");
+      --  Specifying some configuration pragmas can reduce parse times
+      --  by 10% or so, on some systems. But doing so only here causes
+      --  recompiling of wisitoken. If we add Global_ or Local_
+      --  Configuration_Pragmas in wisitoken.gpr, we get compilation
+      --  errors there. So we leave it up to users to patch this if
+      --  they want it.
+      --  for Global_Configuration_Pragmas use "config.pragmas";
 
-      when "Off" =>
-         for Default_Switches ("Ada") use Standard_Common.Builder'Default_Switches ("Ada");
-      end case;
+      for Global_Compilation_Switches ("Ada") use Standard_Common.Builder'Global_Compilation_Switches ("Ada");
 
       --  We use ".exe" extension even on non-Windows, to simplify the makefiles.
       for Executable_Suffix use ".exe";
