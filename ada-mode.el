@@ -2651,7 +2651,7 @@ compiler-specific compilation filters."
        ))
     ))
 
-(defvar ada-goto-declaration-start nil
+(defvar ada-goto-declaration-start #'ignore
   ;; Supplied by indentation engine.
   ;;
   ;; This is run from ff-pre-load-hook, so ff-function-name may have
@@ -3092,4 +3092,4 @@ simple: indent to previous line.")
 (when (featurep 'imenu)
   (require 'ada-imenu))
 
-;;; end of file
+;;; ada-mode.el ends here
