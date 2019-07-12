@@ -23,25 +23,22 @@ with WisiToken.Semantic_Checks;
 package Gpr_Process_Actions is
 
    Descriptor : aliased WisiToken.Descriptor :=
-     (First_Terminal                => 3,
-      Last_Terminal                 => 37,
-      First_Nonterminal             => 38,
-      Last_Nonterminal              => 71,
-      EOI_ID                        => 37,
-      Accept_ID                     => 38,
-      Case_Insensitive              => True,
-      New_Line_ID                   => 1,
-      Comment_ID                    => 2,
-      Left_Paren_ID                 => 2147483647,
-      Right_Paren_ID                => 2147483647,
-      String_1_ID                   => 2147483647,
-      String_2_ID                   => 36,
-      Embedded_Quote_Escape_Doubled => False,
-      Image                         =>
+     (First_Terminal    => 3,
+      Last_Terminal     => 39,
+      First_Nonterminal => 40,
+      Last_Nonterminal  => 73,
+      EOI_ID            => 39,
+      Accept_ID         => 40,
+      Case_Insensitive  => True,
+      New_Line_ID       => 1,
+      String_1_ID       => 2147483647,
+      String_2_ID       => 38,
+      Image             =>
         (new String'("WHITESPACE"),
          new String'("NEW_LINE"),
          new String'("COMMENT"),
          new String'("ABSTRACT"),
+         new String'("AT"),
          new String'("AGGREGATE"),
          new String'("CASE"),
          new String'("CONFIGURATION"),
@@ -73,6 +70,7 @@ package Gpr_Process_Actions is
          new String'("QUOTE"),
          new String'("SEMICOLON"),
          new String'("VERTICAL_BAR"),
+         new String'("NUMERIC_LITERAL"),
          new String'("IDENTIFIER"),
          new String'("STRING_LITERAL"),
          new String'("Wisi_EOI"),
@@ -112,13 +110,14 @@ package Gpr_Process_Actions is
          new String'("with_clause")),
       Terminal_Image_Width => 16,
       Image_Width          => 26,
-      Last_Lookahead       => 37);
+      Last_Lookahead       => 39);
 
    type Token_Enum_ID is
      (WHITESPACE_ID,
       NEW_LINE_ID,
       COMMENT_ID,
       ABSTRACT_ID,
+      AT_ID,
       AGGREGATE_ID,
       CASE_ID,
       CONFIGURATION_ID,
@@ -150,6 +149,7 @@ package Gpr_Process_Actions is
       QUOTE_ID,
       SEMICOLON_ID,
       VERTICAL_BAR_ID,
+      NUMERIC_LITERAL_ID,
       IDENTIFIER_ID,
       STRING_LITERAL_ID,
       Wisi_EOI_ID,
@@ -212,6 +212,11 @@ package Gpr_Process_Actions is
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
      Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
    procedure attribute_declaration_2
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
+   procedure attribute_declaration_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;

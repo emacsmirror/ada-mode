@@ -24,11 +24,12 @@ with Gen_Emacs_Wisi_LR_Parse;
 with WisiToken.Parse.LR.McKenzie_Recover.Ada;
 with Wisi.Ada;
 procedure Ada_Mode_Wisi_LALR_Parse is new Gen_Emacs_Wisi_LR_Parse
-  (Parse_Data_Type                       => Wisi.Ada.Parse_Data_Type,
-   Name                                  => "Ada_mode_wisi_lalr_parse",
-   Descriptor                            => Ada_Process_Actions.Descriptor,
-   Partial_Parse_Active                  => Ada_Process_Actions.Partial_Parse_Active,
-   Language_Fixes                        => WisiToken.Parse.LR.McKenzie_Recover.Ada.Language_Fixes'Access,
-   Language_Use_Minimal_Complete_Actions => WisiToken.Parse.LR.McKenzie_Recover.Ada.Use_Minimal_Complete_Actions'Access,
-   Language_String_ID_Set                => WisiToken.Parse.LR.McKenzie_Recover.Ada.String_ID_Set'Access,
-   Create_Parser                         => Ada_Process_LALR_Main.Create_Parser);
+  (Parse_Data_Type                => Wisi.Ada.Parse_Data_Type,
+   Language_Protocol_Version      => Wisi.Ada.Language_Protocol_Version,
+   Name                           => "Ada_mode_wisi_lalr_parse",
+   Descriptor                     => Ada_Process_Actions.Descriptor,
+   Partial_Parse_Active           => Ada_Process_Actions.Partial_Parse_Active,
+   Language_Fixes                 => WisiToken.Parse.LR.McKenzie_Recover.Ada.Language_Fixes'Access,
+   Language_Matching_Begin_Tokens => WisiToken.Parse.LR.McKenzie_Recover.Ada.Matching_Begin_Tokens'Access,
+   Language_String_ID_Set         => WisiToken.Parse.LR.McKenzie_Recover.Ada.String_ID_Set'Access,
+   Create_Parser                  => Ada_Process_LALR_Main.Create_Parser);

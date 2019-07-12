@@ -22,6 +22,15 @@ pragma License (Modified_GPL);
 
 package Wisi.Ada is
 
+   Language_Protocol_Version : constant String := "1";
+   --  Defines the data passed to Initialize in Params.
+   --
+   --  This value must match ada-wisi.el
+   --  ada-wisi-language-protocol-version.
+   --
+   --  Only changes once per ada-mode release. Increment as soon as
+   --  required, record new version in NEWS-ada-mode.text.
+
    --  Indent parameters from [2]
    Ada_Indent                 : Integer := 3;
    Ada_Indent_Broken          : Integer := 2;

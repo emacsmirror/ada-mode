@@ -22,6 +22,12 @@ pragma License (Modified_GPL);
 
 package Wisi.Gpr is
 
+   Language_Protocol_Version : constant String := "1";
+   --  Defines the data passed to Initialize in Params.
+   --
+   --  This value must match gpr-wisi.el
+   --  gpr-wisi-language-protocol-version.
+
    --  Indent parameters from [2]
    Gpr_Indent        : Integer := 3;
    Gpr_Indent_Broken : Integer := 2;

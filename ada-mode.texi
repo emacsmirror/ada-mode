@@ -26,7 +26,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 6.1.0
+@title Ada Mode Version 6.1.1
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -36,7 +36,7 @@ developing GNU and promoting software freedom.''
 
 @node Top, Overview, (dir), (dir)
 
-Ada Mode Version 6.1.0
+Ada Mode Version 6.1.1
 
 @ifnottex
 @insertcopying
@@ -75,8 +75,7 @@ Installation
 
 gpr_query
 
-* Building GNATCOLL 2017::
-* Building GNATCOLL 2018::
+* Building GNATCOLL 2019::
 * Building @file{gpr_query}::
 
 Customizing Ada mode
@@ -224,13 +223,12 @@ not available in FSF GCC.
 must be built. Its source code is in the @code{ada-mode} Gnu ELPA package.
 
 @file{gpr_query} requires the @code{GNATCOLL} library provided by
-AdaCore, distributed with GNAT GPL 2016 or later, and also available at
-Github (@url{https://github.com/AdaCore/gnatcoll}). (The
-@code{GNATCOLL} distributed with GNAT GPL 2015 does not compile
-cleanly). The notes below assume that the compiler is installed at
-@file{$prefix}, e.g. @file{/usr/local/gnat-2017}, and that
-@file{$prefix/bin} is first on the @code{PATH}. If you are running
-Windows, use Cygwin or mingw64 @code{bash} to run these commands.
+AdaCore, distributed with GNAT GPL 2017 or later, and also available
+at Github (@url{https://github.com/AdaCore/gnatcoll}). The notes below
+assume that the compiler is installed at @file{$prefix},
+e.g. @file{/usr/local/gnat-2019}, and that @file{$prefix/bin} is first
+on the @code{PATH}. If you are running Windows, use mingw64
+@code{bash} to run these commands.
 
 In general, @file{gpr_query} should be compiled with the compiler
 version that is used to generate the user project @file{.ali} files;
@@ -239,134 +237,27 @@ version. @file{gpr_query} creates a database of cross reference
 information; that database must be deleted if the compiler version
 changes, to force a complete rebuild.
 
-The default binary gnatcoll distributed with GNAT GPL 2017 and 2018
+The default binary gnatcoll distributed with GNAT GPL 2019
 does not include the xref package, which is required by
-@file{gpr_query}. So we must build gnatcoll from sources. The process
-for doing that changed significantly between GPL 2017 and GPL 2018.
+@file{gpr_query}. So we must build gnatcoll xref from sources.
 
 @menu
-* Building GNATCOLL 2017::
-* Building GNATCOLL 2018::
+* Building GNATCOLL 2019::
 * Building @file{gpr_query}::
 @end menu
 
-@node Building GNATCOLL 2017
-@subsection Building GNATCOLL 2017
+@node Building GNATCOLL 2019
+@subsection Building GNATCOLL 2019
 
-First install the @code{libiconv} library, as follows.
+Download the gnatcoll xref source file from
+@url{https://github.com/AdaCore/gnatcoll-db}; click on the ``clone or
+download'' button, select ``Download ZIP''.
 
-On many Linux distributions, use the package manager to install the
-development version of @code{libiconv} (usually named
-@code{libiconv-dev}).
-
-On Windows, one way to get the library is to install MingW32 from the
-MSYS2 project (@url{http://www.msys2.org/}), use its package manger
-@code{pacman} to install @code{libiconv}, then copy the
-@code{libiconv} files to the GNAT installation:
+Then unpack, build, and install the required components:
 
 @example
-cp d:/msys64/mingw32/include/iconv.h d:/Apps/GNAT-gpl_2017/include/
-cp d:/msys64/mingw32/lib/libiconv.a  d:/Apps/GNAT-gpl_2017/lib/gcc/i686-pc-mingw32/6.3.1/
-@end example
-
-Then configure by:
-
-@example
-tar zxf ~/Downloads/gnatcoll-gpl-2017-src.tar.gz
-cd gnatcoll-gpl-2017-src
-./configure --prefix=$prefix
-@end example
-
-where @code{$prefix} is the GNAT installation directory.
-
-You should see at least the following lines at the end of the
-configure output:
-
-@example
-configure:   Sqlite:                 embedded  (see --with-sqlite)
-configure:   Iconv:                  yes (see --with-iconv)
-configure:   Projects:               yes
-configure:   Xref:                   yes
-@end example
-
-If you are using GNAT GPL 2016, the @code{Xref} line is not present.
-
-Then, build and install:
-
-@example
-make
-sudo make install
-@end example
-
-If you are debugging @file{gpr_query}, you may want to build an
-sqlite3 executable that is compatible with the database it creates:
-
-@example
-cd gnatcoll-gpl-2017-src/src/sqlite/amalgamation/
-gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
-@end example
-
-@node Building GNATCOLL 2018
-@subsection Building GNATCOLL 2018
-
-The default gnatcoll distributed with GNAT GPL 2018 does not include
-the xref package, which is required by @file{gpr_query}. So we must
-build gnatcoll from sources. Here we assume you are using the 64 bit
-GNAT.
-
-Download three gnatcoll source files from
-@url{https://libre.adacore.com/}; click on ``More packages, platforms,
-versions and sources'' below the main components list. Select your
-target, click on ``Sources'' under the GNAT Community
-component. Search for 'gnatcoll'; the three files are:
-
-@example
-gnatcoll-bindings-gpl-2018-20180523-src.tar.gz
-gnatcoll-core-gpl-2018-20180523-src.tar.gz
-gnatcoll-db-gpl-2018-20180523-src.tar.gz
-@end example
-
-Install the @code{libiconv} library, as follows:
-
-On many Linux distributions, use the package manager to install the
-development version of @code{libiconv}. On Debian, @code{iconv} is
-provided by the @code{libc} package. On Suse, it is proviced by
-@code{glibc-devel}. On other Linux distributions, it
-may be a separate package named @code{libiconv-dev}.
-
-On Windows, one way to get the library is to install MingW64 from the
-MSYS2 project (@url{http://www.msys2.org/}), use its package manger
-@code{pacman} to install @code{libiconv}, then copy the
-@code{libiconv} files to the GNAT installation:
-
-@example
-cp d:/msys64/mingw64/include/iconv.h d:/Apps/GNAT-gpl_2018/include/
-cp d:/msys64/mingw64/lib/libiconv.a  d:/Apps/GNAT-gpl_2018/lib/gcc/x86_64-pc-mingw32/7.3.1/
-@end example
-
-Then unpack, build, and install the required components. On Debian, we
-need to tell the linker where to find @code{iconv} via
-@code{GNATCOLL_ICONV_OPT}, which sets a the variable @var{Iconv_Opt}
-in the gpr file. On Suse, @var{Iconv_Opt} must be empty, which can
-only be achieved by editing the gpr file.
-
-@example
-tar xf ~/Downloads/gnatcoll-core-gpl-2018-20180524-src.tar.gz
-cd gnatcoll-core-gpl-2018-src
-make
-make install
-cd ..
-
-tar xf ~/Downloads/gnatcoll-bindings-gpl-2018-20180524-src.tar.gz
-cd gnatcoll-bindings-gpl-2018-src
-cd iconv
-export GNATCOLL_ICONV_OPT="-lc"
-./setup.py build
-./setup.py install
-cd ../..
-
-tar xf ~/Downloads/gnatcoll-db-gpl-2018-20180524-src.tar.gz
-cd gnatcoll-db-gpl-2018-src
+tar xf ~/Downloads/gnatcoll-db-19.2.zip
+cd gnatcoll-db-19.2
 make -C sql
 make -C sql install
 make -C sqlite
@@ -1928,7 +1819,8 @@ Other keys and menu entries are defined:
 @item C-c C-w
 @findex ada-case-adjust-at-point
 Adjust case of the word at point. With prefix arg, adjust case even if
-in comment. Normally, comments are not affected by case adjust.
+in a comment or string. Normally, comments and strings are not
+affected by case adjust.
 
 @item Ada | Casing | Adjust case region
 Adjust case in the active region.
@@ -2041,7 +1933,7 @@ Show all references to the identifier surrounding point.
 @item C-c C-w
 @xref{Automatic casing}.
 Adjust case of the word at point. With prefix arg, adjust case even if
-in comment.
+in comment or string.
 
 @item C-c C-x
 @xref{Moving Through Ada Code}.

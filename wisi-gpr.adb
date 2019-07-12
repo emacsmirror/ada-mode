@@ -18,6 +18,7 @@
 pragma License (Modified_GPL);
 
 with Ada.Strings.Fixed;
+with Gpr_Process_Actions;
 package body Wisi.Gpr is
 
    overriding
@@ -32,12 +33,18 @@ package body Wisi.Gpr is
       Params            : in     String)
    is
       use Ada.Strings.Fixed;
+      use all type Gpr_Process_Actions.Token_Enum_ID;
       First : Integer := Params'First;
       Last  : Integer := Index (Params, " ");
    begin
       Wisi.Initialize
         (Wisi.Parse_Data_Type (Data), Descriptor, Source_File_Name, Post_Parse_Action, Begin_Line, End_Line,
          Begin_Indent, "");
+
+      Data.First_Comment_ID := +COMMENT_ID;
+      Data.Last_Comment_ID  := WisiToken.Invalid_Token_ID;
+      Data.Left_Paren_ID    := WisiToken.Invalid_Token_ID;
+      Data.Right_Paren_ID   := WisiToken.Invalid_Token_ID;
 
       if Params /= "" then
          --  must match [1] wisi-parse-format-language-options

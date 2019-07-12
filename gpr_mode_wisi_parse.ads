@@ -23,11 +23,12 @@ with Gpr_Process_Actions;
 with Gpr_Process_LR1_Main;
 with Wisi.Gpr;
 procedure Gpr_Mode_Wisi_Parse is new Gen_Emacs_Wisi_LR_Parse
-  (Parse_Data_Type                       => Wisi.Gpr.Parse_Data_Type,
-   Name                                  => "gpr_mode_wisi_parse",
-   Descriptor                            => Gpr_Process_Actions.Descriptor,
-   Partial_Parse_Active                  => Gpr_Process_Actions.Partial_Parse_Active,
-   Language_Fixes                        => null,
-   Language_Use_Minimal_Complete_Actions => null,
-   Language_String_ID_Set                => null,
-   Create_Parser                         => Gpr_Process_LR1_Main.Create_Parser);
+  (Parse_Data_Type                => Wisi.Gpr.Parse_Data_Type,
+   Language_Protocol_Version      => Wisi.Gpr.Language_Protocol_Version,
+   Name                           => "gpr_mode_wisi_parse",
+   Descriptor                     => Gpr_Process_Actions.Descriptor,
+   Partial_Parse_Active           => Gpr_Process_Actions.Partial_Parse_Active,
+   Language_Fixes                 => null,
+   Language_Matching_Begin_Tokens => null,
+   Language_String_ID_Set         => null,
+   Create_Parser                  => Gpr_Process_LR1_Main.Create_Parser);

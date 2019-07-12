@@ -165,6 +165,7 @@ package body Emacs_Wisi_Common_Parse is
    begin
       return Result : Parse_Params do
          --  We don't use an aggregate, to enforce execution order.
+         --  Match wisi-process-parse.el wisi-process--send-parse
 
          Result.Post_Parse_Action    := Wisi.Post_Parse_Action_Type'Val (Get_Integer (Command_Line, Last));
          Result.Source_File_Name     := +Get_String (Command_Line, Last);
@@ -185,20 +186,21 @@ package body Emacs_Wisi_Common_Parse is
          Result.Action_Verbosity     := Get_Integer (Command_Line, Last);
          Result.McKenzie_Disable     := Get_Integer (Command_Line, Last);
          Result.Task_Count           := Get_Integer (Command_Line, Last);
-         Result.Cost_Limit           := Get_Integer (Command_Line, Last);
          Result.Check_Limit          := Get_Integer (Command_Line, Last);
          Result.Enqueue_Limit        := Get_Integer (Command_Line, Last);
+         Result.Max_Parallel         := Get_Integer (Command_Line, Last);
          Result.Byte_Count           := Get_Integer (Command_Line, Last);
       end return;
    end Get_Parse_Params;
 
    procedure Parse_Stream
-     (Name                 : in     String;
-      Partial_Parse_Active : in out Boolean;
-      Params               : in     Process_Start_Params;
-      Parser               : in out WisiToken.Parse.LR.Parser.Parser;
-      Parse_Data           : in out Wisi.Parse_Data_Type'Class;
-      Descriptor           : in     WisiToken.Descriptor)
+     (Name                      : in     String;
+      Language_Protocol_Version : in     String;
+      Partial_Parse_Active      : in out Boolean;
+      Params                    : in     Process_Start_Params;
+      Parser                    : in out WisiToken.Parse.LR.Parser.Parser;
+      Parse_Data                : in out Wisi.Parse_Data_Type'Class;
+      Descriptor                : in     WisiToken.Descriptor)
    is
       use Ada.Text_IO;
       use WisiToken; -- "+", "-" Unbounded_string
@@ -229,7 +231,8 @@ package body Emacs_Wisi_Common_Parse is
 
       Parser.Trace.Set_Prefix (";; "); -- so debug messages don't confuse Emacs.
 
-      Put_Line (Name & " " & Version & ", protocol version " & Protocol_Version);
+      Put_Line
+        (Name & " protocol: process version " & Protocol_Version & " language version " & Language_Protocol_Version);
 
       --  Read commands and tokens from standard_input via GNAT.OS_Lib,
       --  send results to standard_output.
@@ -276,9 +279,6 @@ package body Emacs_Wisi_Common_Parse is
                   end Clean_Up;
 
                begin
-                  --  Computing Line_Count in elisp allows parsing in parallel with
-                  --  sending source text.
-
                   Trace_Parse    := Params.Parse_Verbosity;
                   Trace_McKenzie := Params.McKenzie_Verbosity;
                   Trace_Action   := Params.Action_Verbosity;
@@ -305,14 +305,15 @@ package body Emacs_Wisi_Common_Parse is
                   if Params.Task_Count > 0 then
                      Parser.Table.McKenzie_Param.Task_Count := System.Multiprocessors.CPU_Range (Params.Task_Count);
                   end if;
-                  if Params.Cost_Limit > 0 then
-                     Parser.Table.McKenzie_Param.Cost_Limit := Params.Cost_Limit;
-                  end if;
                   if Params.Check_Limit > 0 then
                      Parser.Table.McKenzie_Param.Check_Limit := Base_Token_Index (Params.Check_Limit);
                   end if;
                   if Params.Enqueue_Limit > 0 then
                      Parser.Table.McKenzie_Param.Enqueue_Limit := Params.Enqueue_Limit;
+                  end if;
+
+                  if Params.Max_Parallel > 0 then
+                     Parser.Max_Parallel := SAL.Base_Peek_Type (Params.Max_Parallel);
                   end if;
 
                   Buffer := new String (Params.Begin_Byte_Pos .. Params.End_Byte_Pos);

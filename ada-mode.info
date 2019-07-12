@@ -22,7 +22,7 @@ END-INFO-DIR-ENTRY
 
 File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Ada Mode Version 6.1.0
+Ada Mode Version 6.1.1
 
    Copyright (C) 1999 - 2019 Free Software Foundation, Inc.
 
@@ -71,8 +71,7 @@ Installation
 
 gpr_query
 
-* Building GNATCOLL 2017::
-* Building GNATCOLL 2018::
+* Building GNATCOLL 2019::
 * Building gpr_query::
 
 Customizing Ada mode
@@ -229,13 +228,11 @@ is an AdaCore extension, not available in FSF GCC.
 must be built.  Its source code is in the 'ada-mode' Gnu ELPA package.
 
    'gpr_query' requires the 'GNATCOLL' library provided by AdaCore,
-distributed with GNAT GPL 2016 or later, and also available at Github
-(<https://github.com/AdaCore/gnatcoll>).  (The 'GNATCOLL' distributed
-with GNAT GPL 2015 does not compile cleanly).  The notes below assume
-that the compiler is installed at '$prefix', e.g.
-'/usr/local/gnat-2017', and that '$prefix/bin' is first on the 'PATH'.
-If you are running Windows, use Cygwin or mingw64 'bash' to run these
-commands.
+distributed with GNAT GPL 2017 or later, and also available at Github
+(<https://github.com/AdaCore/gnatcoll>).  The notes below assume that
+the compiler is installed at '$prefix', e.g.  '/usr/local/gnat-2019',
+and that '$prefix/bin' is first on the 'PATH'.  If you are running
+Windows, use mingw64 'bash' to run these commands.
 
    In general, 'gpr_query' should be compiled with the compiler version
 that is used to generate the user project '.ali' files; the 'ali' file
@@ -243,122 +240,29 @@ format can change with each compiler version.  'gpr_query' creates a
 database of cross reference information; that database must be deleted
 if the compiler version changes, to force a complete rebuild.
 
-   The default binary gnatcoll distributed with GNAT GPL 2017 and 2018
-does not include the xref package, which is required by 'gpr_query'.  So
-we must build gnatcoll from sources.  The process for doing that changed
-significantly between GPL 2017 and GPL 2018.
+   The default binary gnatcoll distributed with GNAT GPL 2019 does not
+include the xref package, which is required by 'gpr_query'.  So we must
+build gnatcoll xref from sources.
 
 * Menu:
 
-* Building GNATCOLL 2017::
-* Building GNATCOLL 2018::
+* Building GNATCOLL 2019::
 * Building gpr_query::
 
 
-File: ada-mode.info,  Node: Building GNATCOLL 2017,  Next: Building GNATCOLL 2018,  Up: gpr_query
+File: ada-mode.info,  Node: Building GNATCOLL 2019,  Next: Building gpr_query,  Up: gpr_query
 
-2.2.1 Building GNATCOLL 2017
+2.2.1 Building GNATCOLL 2019
 ----------------------------
 
-First install the 'libiconv' library, as follows.
+Download the gnatcoll xref source file from
+<https://github.com/AdaCore/gnatcoll-db>; click on the "clone or
+download" button, select "Download ZIP".
 
-   On many Linux distributions, use the package manager to install the
-development version of 'libiconv' (usually named 'libiconv-dev').
+   Then unpack, build, and install the required components:
 
-   On Windows, one way to get the library is to install MingW32 from the
-MSYS2 project (<http://www.msys2.org/>), use its package manger 'pacman'
-to install 'libiconv', then copy the 'libiconv' files to the GNAT
-installation:
-
-     cp d:/msys64/mingw32/include/iconv.h d:/Apps/GNAT-gpl_2017/include/
-     cp d:/msys64/mingw32/lib/libiconv.a  d:/Apps/GNAT-gpl_2017/lib/gcc/i686-pc-mingw32/6.3.1/
-
-   Then configure by:
-
-     tar zxf ~/Downloads/gnatcoll-gpl-2017-src.tar.gz
-     cd gnatcoll-gpl-2017-src
-     ./configure --prefix=$prefix
-
-   where '$prefix' is the GNAT installation directory.
-
-   You should see at least the following lines at the end of the
-configure output:
-
-     configure:   Sqlite:                 embedded  (see --with-sqlite)
-     configure:   Iconv:                  yes (see --with-iconv)
-     configure:   Projects:               yes
-     configure:   Xref:                   yes
-
-   If you are using GNAT GPL 2016, the 'Xref' line is not present.
-
-   Then, build and install:
-
-     make
-     sudo make install
-
-   If you are debugging 'gpr_query', you may want to build an sqlite3
-executable that is compatible with the database it creates:
-
-     cd gnatcoll-gpl-2017-src/src/sqlite/amalgamation/
-     gcc -O2 -o sqlite3 shell.c sqlite3.c -ldl -lpthread
-
-
-File: ada-mode.info,  Node: Building GNATCOLL 2018,  Next: Building gpr_query,  Prev: Building GNATCOLL 2017,  Up: gpr_query
-
-2.2.2 Building GNATCOLL 2018
-----------------------------
-
-The default gnatcoll distributed with GNAT GPL 2018 does not include the
-xref package, which is required by 'gpr_query'.  So we must build
-gnatcoll from sources.  Here we assume you are using the 64 bit GNAT.
-
-   Download three gnatcoll source files from
-<https://libre.adacore.com/>; click on "More packages, platforms,
-versions and sources" below the main components list.  Select your
-target, click on "Sources" under the GNAT Community component.  Search
-for 'gnatcoll'; the three files are:
-
-     gnatcoll-bindings-gpl-2018-20180523-src.tar.gz
-     gnatcoll-core-gpl-2018-20180523-src.tar.gz
-     gnatcoll-db-gpl-2018-20180523-src.tar.gz
-
-   Install the 'libiconv' library, as follows:
-
-   On many Linux distributions, use the package manager to install the
-development version of 'libiconv'.  On Debian, 'iconv' is provided by
-the 'libc' package.  On Suse, it is proviced by 'glibc-devel'.  On other
-Linux distributions, it may be a separate package named 'libiconv-dev'.
-
-   On Windows, one way to get the library is to install MingW64 from the
-MSYS2 project (<http://www.msys2.org/>), use its package manger 'pacman'
-to install 'libiconv', then copy the 'libiconv' files to the GNAT
-installation:
-
-     cp d:/msys64/mingw64/include/iconv.h d:/Apps/GNAT-gpl_2018/include/
-     cp d:/msys64/mingw64/lib/libiconv.a  d:/Apps/GNAT-gpl_2018/lib/gcc/x86_64-pc-mingw32/7.3.1/
-
-   Then unpack, build, and install the required components.  On Debian,
-we need to tell the linker where to find 'iconv' via
-'GNATCOLL_ICONV_OPT', which sets a the variable ICONV_OPT in the gpr
-file.  On Suse, ICONV_OPT must be empty, which can only be achieved by
-editing the gpr file.
-
-     tar xf ~/Downloads/gnatcoll-core-gpl-2018-20180524-src.tar.gz
-     cd gnatcoll-core-gpl-2018-src
-     make
-     make install
-     cd ..
-
-     tar xf ~/Downloads/gnatcoll-bindings-gpl-2018-20180524-src.tar.gz
-     cd gnatcoll-bindings-gpl-2018-src
-     cd iconv
-     export GNATCOLL_ICONV_OPT="-lc"
-     ./setup.py build
-     ./setup.py install
-     cd ../..
-
-     tar xf ~/Downloads/gnatcoll-db-gpl-2018-20180524-src.tar.gz
-     cd gnatcoll-db-gpl-2018-src
+     tar xf ~/Downloads/gnatcoll-db-19.2.zip
+     cd gnatcoll-db-19.2
      make -C sql
      make -C sql install
      make -C sqlite
@@ -367,9 +271,9 @@ editing the gpr file.
      make -C xref install
 
 
-File: ada-mode.info,  Node: Building gpr_query,  Prev: Building GNATCOLL 2018,  Up: gpr_query
+File: ada-mode.info,  Node: Building gpr_query,  Prev: Building GNATCOLL 2019,  Up: gpr_query
 
-2.2.3 Building 'gpr_query'
+2.2.2 Building 'gpr_query'
 --------------------------
 
 To build and install 'gpr_query', assuming the 'ada-mode-6.0.xx' GNU
@@ -1821,8 +1725,8 @@ create a new exception, you are prompted for the file to save it in.
 
 'C-c C-w'
      Adjust case of the word at point.  With prefix arg, adjust case
-     even if in comment.  Normally, comments are not affected by case
-     adjust.
+     even if in a comment or string.  Normally, comments and strings are
+     not affected by case adjust.
 
 'Ada | Casing | Adjust case region'
      Adjust case in the active region.
@@ -1924,7 +1828,7 @@ displays keys bound to menu operations.
 
 'C-c C-w'
      *Note Automatic casing::.  Adjust case of the word at point.  With
-     prefix arg, adjust case even if in comment.
+     prefix arg, adjust case even if in comment or string.
 
 'C-c C-x'
      *Note Moving Through Ada Code::.  Show all declarations that
@@ -2783,54 +2687,53 @@ Index
 
 Tag Table:
 Node: Top945
-Node: Overview3584
-Node: Why not LSP?4821
-Node: Installation5163
-Node: Ada Reference Manual6220
-Node: gpr_query6496
-Node: Building GNATCOLL 20178332
-Node: Building GNATCOLL 20189964
-Node: Building gpr_query12413
-Node: process parser12820
-Node: Customization13152
-Node: Slow response13652
-Node: Non-standard file names15540
-Node: Other compiler17381
-Node: Other cross-reference17960
-Node: Other customization18702
-Node: Compiling Executing21922
-Node: Compile commands22657
-Node: Compiling Examples25308
-Node: No project files26140
-Node: Set compiler options31506
-Node: Set source search path33468
-Node: Use GNAT project file35921
-Node: Use multiple GNAT project files38695
-Node: Use a Makefile41415
-Node: Compiler errors42730
-Node: Project files43547
-Node: Project file overview44574
-Node: Project file variables46118
-Node: Moving Through Ada Code50993
-Node: Identifier completion53692
-Node: Indentation54654
-Node: Statement skeletons59224
-Node: Aligning code61009
-Node: Automatic casing61954
-Node: Comment Handling64658
-Node: Key summary65177
-Node: Developer overview67804
-Node: Directory structure68172
-Node: Package organization72143
-Node: Ada mode72378
-Node: gpr mode74574
-Node: GNAT core74857
-Node: Wisi75691
-Node: OpenToken76591
-Node: ELPA77193
-Node: Savannah77803
-Node: ada-france78141
-Node: GNU Free Documentation License78381
-Node: Index103542
+Node: Overview3557
+Node: Why not LSP?4794
+Node: Installation5136
+Node: Ada Reference Manual6193
+Node: gpr_query6469
+Node: Building GNATCOLL 20198110
+Node: Building gpr_query8683
+Node: process parser9090
+Node: Customization9422
+Node: Slow response9922
+Node: Non-standard file names11810
+Node: Other compiler13651
+Node: Other cross-reference14230
+Node: Other customization14972
+Node: Compiling Executing18192
+Node: Compile commands18927
+Node: Compiling Examples21578
+Node: No project files22410
+Node: Set compiler options27776
+Node: Set source search path29738
+Node: Use GNAT project file32191
+Node: Use multiple GNAT project files34965
+Node: Use a Makefile37685
+Node: Compiler errors39000
+Node: Project files39817
+Node: Project file overview40844
+Node: Project file variables42388
+Node: Moving Through Ada Code47263
+Node: Identifier completion49962
+Node: Indentation50924
+Node: Statement skeletons55494
+Node: Aligning code57279
+Node: Automatic casing58224
+Node: Comment Handling60952
+Node: Key summary61471
+Node: Developer overview64108
+Node: Directory structure64476
+Node: Package organization68447
+Node: Ada mode68682
+Node: gpr mode70878
+Node: GNAT core71161
+Node: Wisi71995
+Node: OpenToken72895
+Node: ELPA73497
+Node: Savannah74107
+Node: ada-france74445
+Node: GNU Free Documentation License74685
+Node: Index99846
 
 End Tag Table

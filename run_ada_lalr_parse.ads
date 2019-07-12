@@ -2,7 +2,7 @@
 --
 --  Run the Ada LALR parser standalone. Useful for debugging grammar issues.
 --
---  Copyright (C) 2017, 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -27,6 +27,6 @@ procedure Run_Ada_LALR_Parse is new Gen_Run_Wisi_LR_Parse
   (Wisi.Ada.Parse_Data_Type,
    Ada_Process_Actions.Descriptor,
    WisiToken.Parse.LR.McKenzie_Recover.Ada.Language_Fixes'Access,
-   WisiToken.Parse.LR.McKenzie_Recover.Ada.Use_Minimal_Complete_Actions'Access,
+   WisiToken.Parse.LR.McKenzie_Recover.Ada.Matching_Begin_Tokens'Access,
    WisiToken.Parse.LR.McKenzie_Recover.Ada.String_ID_Set'Access,
    Ada_Process_LALR_Main.Create_Parser);

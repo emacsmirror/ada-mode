@@ -3,7 +3,7 @@
 ;; gpr-query supports Ada and any gcc language that supports the
 ;; AdaCore -fdump-xref switch (which includes C, C++).
 ;;
-;; Copyright (C) 2013 - 2018  Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2019  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -440,7 +440,7 @@ Enable mode if ARG is positive."
 
 (defun gpr-query-refresh (delete-files)
   "For `ada-xref-refresh-function', using gpr_query."
-  (interactive)
+  (interactive "P")
   ;; Kill the current session and delete the database, to get changed
   ;; env vars etc when it restarts.
   ;;

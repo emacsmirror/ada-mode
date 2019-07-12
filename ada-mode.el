@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 6.1.0
-;; package-requires: ((wisi "2.1.0") (cl-lib "1.0") (emacs "25.0"))
+;; Version: 6.1.1
+;; package-requires: ((wisi "2.1.1") (cl-lib "1.0") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; (Gnu ELPA requires single digits between dots in versions)
@@ -169,7 +169,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "6.1.0"))
+  (let ((version-string "6.1.1"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode
@@ -190,14 +190,16 @@ before file local variables are processed.")
   :group 'languages)
 
 (defcustom ada-auto-case t
-  ;; can be per-buffer
   "Buffer-local value that may override project variable `auto_case'.
 Global value is default for project variable `auto_case'.
-Non-nil means automatically change case of preceding word while typing.
+t means automatically change case of preceding word while typing.
+not-upper-case means only change case if typed word is not all upper-case.
 Casing of Ada keywords is done according to `ada-case-keyword',
 identifiers are Mixed_Case."
-  :type  'boolean
-  :safe  #'booleanp)
+  :type  '(choice (const nil)
+		  (const t)
+		  (const not-upper-case))
+  :safe  (lambda (val) (memq val '(nil t not-upper-case))))
 (make-variable-buffer-local 'ada-auto-case)
 
 (defcustom ada-case-exception-file nil
@@ -323,9 +325,14 @@ slower to load on first use, but gives better error recovery."
   :group 'ada-indentation)
 
 (defcustom ada-process-parse-exec-opts nil
-  "List of process start options for ’ada-process-parse-exec’."
+  "List of process start options for `ada-process-parse-exec'."
   :type 'string
   :group 'ada-indentation)
+
+(defcustom ada-which-func-parse-size 30000
+  "Minimum size of the region surrounding point that is parsed for `which-function-mode'."
+  :type 'integer
+  :safe #'integerp)
 
 ;;;;; end of user variables
 
@@ -562,10 +569,10 @@ button was clicked."
     ;; Partial parse may think 'begin' is just the start of a
     ;; statement, when it's actually part of a larger declaration. So
     ;; don't indent 'begin'. Similarly for 'else'; error recovery will
-    ;; probaly insert 'if then' immediately before it
+    ;; probably insert 'if then' immediately before it
     (forward-char -1)
-    (funcall indent-line-function))
-  (forward-char 1)
+    (funcall indent-line-function)
+    (forward-char 1))
   (funcall indent-line-function))
 
 (defvar ada-indent-statement nil
@@ -635,7 +642,7 @@ Placeholders are defined by the skeleton backend."
      (valid   . (lambda () (ada-align-valid)))
      (modes   . '(ada-mode)))
     (ada-at
-     (regexp . "\\(\\s-+\\)\\(at\\)\\>")
+     (regexp . "\\(\\s-+\\)\\(at\\)\\_>")
      (valid   . (lambda () (ada-align-valid)))
      (modes . '(ada-mode))))
   "Rules to use to align different lines.")
@@ -668,7 +675,7 @@ Placeholders are defined by the skeleton backend."
      "return\\|"
      "type\\|"
      "when"
-     "\\)\\>[^_]\\)")) ;; in case "_" has punctuation syntax
+     "\\)\\_>\\)"))
   "See the variable `align-region-separate' for more information.")
 
 (defun ada-align ()
@@ -1335,7 +1342,7 @@ otherwise, capitalize words in comments and strings.
 If ’ada-auto-case’ is nil, capitalize current word."
   (interactive "P")
   (cond
-   ((or (not ada-auto-case)
+   ((or (null ada-auto-case)
 	(and (not in-comment)
 	     (ada-in-string-or-comment-p)))
     (skip-syntax-backward "w_")
@@ -1377,21 +1384,32 @@ ARG is the prefix the user entered with \\[universal-argument]."
   (interactive "P")
 
   ;; character typed has not been inserted yet
-  (let ((lastk last-command-event))
+  (let ((lastk last-command-event)
+	(do-adjust nil))
+    (cond
+     ((null ada-auto-case))
+     ((eq ada-auto-case 'not-upper-case)
+      (save-excursion
+	(let* ((begin (progn (skip-syntax-backward "w_") (point)))
+	       (end  (progn (skip-syntax-forward "w_") (point)))
+	       (word (buffer-substring-no-properties begin end)))
+	  (setq do-adjust (not (string-equal word (upcase word)))))))
+     (t
+      (setq do-adjust t)))
 
     (cond
      ((eq lastk ?\n)
-        (when ada-auto-case
+        (when do-adjust
 	  (ada-case-adjust lastk))
 	(funcall ada-lfd-binding))
 
      ((memq lastk '(?\r return))
-      (when ada-auto-case
+      (when do-adjust
 	(ada-case-adjust lastk))
       (funcall ada-ret-binding))
 
      (t
-      (when ada-auto-case
+      (when do-adjust
 	(ada-case-adjust lastk))
       (self-insert-command (prefix-numeric-value arg)))
      )))
@@ -2124,7 +2142,6 @@ other file.")
 
 (defun ada-which-function (&optional include-type)
   "See `ada-which-function' variable."
-  (interactive "P")
   (when ada-which-function
     (funcall ada-which-function include-type)))
 
@@ -2164,13 +2181,13 @@ other file.")
     (funcall ada-goto-subunit-name)))
 
 (defun ada-add-log-current-function ()
-  "For `add-log-current-defun-function'; uses `ada-which-function'."
+  "For `add-log-current-defun-function'."
   ;; add-log-current-defun is typically called with point at the start
   ;; of an ediff change section, which is before the start of the
-  ;; declaration of a new item. So go to the end of the current line
-  ;; first, then call `ada-which-function'
+  ;; declaration of a new item. So go to the start of the current line
+  ;; first
   (save-excursion
-    (end-of-line 1)
+    (back-to-indentation)
     (ada-which-function t)))
 
 (defun ada-set-point-accordingly ()
@@ -2239,10 +2256,7 @@ set."
   corresponding specification.
 
 - If point is in a subprogram body or specification, position point
-  on the corresponding specification or body.
-
-If OTHER-WINDOW (set by interactive prefix) is non-nil, show the
-buffer in another window."
+  on the corresponding specification or body."
 
   ;; ff-get-file, ff-find-other file first process
   ;; ff-special-constructs, then run the following hooks:
@@ -2257,7 +2271,7 @@ buffer in another window."
   (interactive)
   (ada-check-current-project (buffer-file-name))
 
-  ;; clear ff-function-name, so it either ff-special-constructs or
+  ;; clear ff-function-name, so either ff-special-constructs or
   ;; ada-which-function will set it.
   (setq ff-function-name nil)
 
@@ -2382,7 +2396,7 @@ LINE, COLUMN are Emacs origin."
     (cond
      ((bufferp buffer)
       ;; use pop-to-buffer, so package other-frame-window works.
-      (pop-to-buffer buffer (list #'display-buffer-same-window) nil))
+      (pop-to-buffer buffer (list #'display-buffer-same-window)))
 
      ((file-exists-p file)
       (find-file file))
@@ -2651,11 +2665,9 @@ compiler-specific compilation filters."
        ))
     ))
 
-(defvar ada-goto-declaration-start #'ignore
+(defvar ada-goto-declaration-start nil
   ;; Supplied by indentation engine.
   ;;
-  ;; This is run from ff-pre-load-hook, so ff-function-name may have
-  ;; been set by ff-treat-special; don't reset it.
   "For `beginning-of-defun-function'. Function to move point to
 start of the generic, package, protected, subprogram, or task
 declaration point is currently in or just after.  Called with no
@@ -2874,8 +2886,10 @@ The paragraph is indented on the first line."
    ;; Grammar actions set `font-lock-face' property for all
    ;; non-keyword tokens that need it.
   (list
-   (list (concat "\\<" (regexp-opt ada-keywords t) "\\>") '(0 font-lock-keyword-face))
+   (list (concat "\\_<" (regexp-opt ada-keywords t) "\\_>") '(0 font-lock-keyword-face))
    ))
+
+(defvar which-func-functions nil) ;; which-func.el
 
 ;;;; ada-mode
 
@@ -2933,10 +2947,10 @@ The paragraph is indented on the first line."
 
   (set (make-local-variable 'ff-other-file-alist)
        'ada-other-file-alist)
-  (setq ff-post-load-hook    'ada-set-point-accordingly
-	ff-file-created-hook 'ada-ff-create-body)
-  (add-hook 'ff-pre-load-hook 'ada-goto-push-pos)
-  (add-hook 'ff-pre-load-hook 'ada-which-function)
+  (setq ff-post-load-hook    #'ada-set-point-accordingly
+	ff-file-created-hook #'ada-ff-create-body)
+  (add-hook 'ff-pre-load-hook #'ada-goto-push-pos)
+  (add-hook 'ff-pre-load-hook #'ada-which-function)
   (setq ff-search-directories 'compilation-search-path)
   (when (null (car compilation-search-path))
     ;; find-file doesn't handle nil in search path
@@ -2946,10 +2960,12 @@ The paragraph is indented on the first line."
   (ada-set-ff-special-constructs)
 
   (set (make-local-variable 'add-log-current-defun-function)
-       'ada-add-log-current-function)
+       #'ada-add-log-current-function)
 
-  (when (boundp 'which-func-functions)
-    (add-hook 'which-func-functions 'ada-which-function nil t))
+  ;; We set this even if which-func.el is not loaded, because if it is
+  ;; loaded later, it will use the add-log which-function, which
+  ;; forces a navigate parse.
+  (add-hook 'which-func-functions #'ada-which-function nil t)
 
   ;;  Support for align
   (add-to-list 'align-dq-string-modes 'ada-mode)
@@ -2964,7 +2980,7 @@ The paragraph is indented on the first line."
 		 (modes   . '(ada-mode))))
   (add-to-list 'align-exclude-rules-list
 	       '(ada-solo-use
-		 (regexp  . "^\\(\\s-*\\)\\<use\\>")
+		 (regexp  . "^\\(\\s-*\\)\\_<use\\_>")
 		 (modes   . '(ada-mode))))
 
   (setq align-mode-rules-list ada-align-rules)

@@ -29,7 +29,7 @@ begin
    --  Create parser first so Put_Usage has defaults from Parser.Table,
    --  and Get_CL_Params can override them.
    Create_Parser
-     (Parser, Language_Fixes, Language_Use_Minimal_Complete_Actions, Language_String_ID_Set,
+     (Parser, Language_Fixes, Language_Matching_Begin_Tokens, Language_String_ID_Set,
       Trace'Unrestricted_Access, Parse_Data'Unchecked_Access);
 
    Run_Wisi_Common_Parse.Parse_File (Parser, Parse_Data, Descriptor);

@@ -24,8 +24,20 @@ with Wisi;
 with WisiToken.Parse.LR.Parser;
 package Emacs_Wisi_Common_Parse is
 
-   Protocol_Version : constant String := "2";
-   Version          : constant String := "2.0";
+   Protocol_Version : constant String := "3";
+   --  Protocol_Version defines the data sent between elisp and the
+   --  background process, except for the language-specific parameters,
+   --  which are defined by the Language_Protocol_Version parameter to
+   --  Parse_Stream, below.
+   --
+   --  This value must match wisi-process-parse.el
+   --  wisi-process-parse-protocol-version.
+   --
+   --  See wisi-process-parse.el functions, and this package body, for
+   --  the implementation of the protocol.
+   --
+   --  Only changes once per wisi release. Increment as soon as required,
+   --  record new version in NEWS-wisi.text.
 
    Prompt : constant String := ";;> ";
 
@@ -88,9 +100,9 @@ package Emacs_Wisi_Common_Parse is
       Action_Verbosity     : Integer;
       McKenzie_Disable     : Integer;
       Task_Count           : Integer;
-      Cost_Limit           : Integer;
       Check_Limit          : Integer;
       Enqueue_Limit        : Integer;
+      Max_Parallel         : Integer;
       Byte_Count           : Integer;
       --  Count of bytes of source file sent.
    end record;
@@ -98,11 +110,12 @@ package Emacs_Wisi_Common_Parse is
    function Get_Parse_Params (Command_Line : in String; Last : in out Integer) return Parse_Params;
 
    procedure Parse_Stream
-     (Name                 : in     String;
-      Partial_Parse_Active : in out Boolean;
-      Params               : in     Process_Start_Params;
-      Parser               : in out WisiToken.Parse.LR.Parser.Parser;
-      Parse_Data           : in out Wisi.Parse_Data_Type'Class;
-      Descriptor           : in     WisiToken.Descriptor);
+     (Name                      : in     String;
+      Language_Protocol_Version : in     String;
+      Partial_Parse_Active      : in out Boolean;
+      Params                    : in     Process_Start_Params;
+      Parser                    : in out WisiToken.Parse.LR.Parser.Parser;
+      Parse_Data                : in out Wisi.Parse_Data_Type'Class;
+      Descriptor                : in     WisiToken.Descriptor);
 
 end Emacs_Wisi_Common_Parse;

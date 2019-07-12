@@ -29,10 +29,9 @@ package body Ada_Process_LALR_Main is
       ada_re2c_c.Next_Token);
 
    procedure Create_Parser
-     (Parser                       :    out WisiToken.Parse.LR.Parser.Parser;
-      Language_Fixes               : in     WisiToken.Parse.LR.Parser.Language_Fixes_Access;
-      Language_Use_Minimal_Complete_Actions : in
-     WisiToken.Parse.LR.Parser.Language_Use_Minimal_Complete_Actions_Access;
+     (Parser                         :    out WisiToken.Parse.LR.Parser.Parser;
+      Language_Fixes                 : in     WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+      Language_Matching_Begin_Tokens : in     WisiToken.Parse.LR.Parser.Language_Matching_Begin_Tokens_Access;
       Language_String_ID_Set       : in     WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
       Trace                        : not null access WisiToken.Trace'Class;
       User_Data                    : in     WisiToken.Syntax_Trees.User_Data_Access)
@@ -44,30 +43,40 @@ package body Ada_Process_LALR_Main is
          First_Nonterminal => 108,
          Last_Nonterminal  => 332,
          Insert =>
-           (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 2, 3, 2, 3, 3, 3, 3, 2, 3, 1, 3, 3, 2, 3, 3, 3, 3, 2, 3, 3, 2, 3, 2, 3,
-            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 2, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3,
-            3, 2, 1, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3),
+           (4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4),
          Delete =>
-           (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 2, 3, 1, 3, 3, 3, 3, 1, 3, 2, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 3, 2, 3,
-            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-            3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3),
+           (4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4),
          Push_Back =>
-           (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+           (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             2, 2, 2, 2, 2, 2),
-         Ignore_Check_Fail  => 0,
+         Undo_Reduce =>
+           (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2),
+         Minimal_Complete_Cost_Delta => -3,
+         Fast_Forward =>  2,
+         Matching_Begin =>  3,
+         Ignore_Check_Fail  => 2,
          Task_Count  => 0,
-         Cost_Limit  => 20,
          Check_Limit => 4,
-         Check_Delta_Limit => 200,
-         Enqueue_Limit => 15000);
+         Check_Delta_Limit => 100,
+         Enqueue_Limit => 45000);
 
       Table : constant Parse_Table_Ptr := new Parse_Table
         (State_First       => 0,
@@ -81,7 +90,6 @@ package body Ada_Process_LALR_Main is
       declare
          procedure Subr_1
          is begin
-            Table.States (0).Productions := WisiToken.To_Vector ((1 => (108, 0)));
             Add_Action (Table.States (0), 4, 1);
             Add_Action (Table.States (0), 5, 2);
             Add_Action (Table.States (0), 13, Reduce, (132, 1), 0, null, null);
@@ -90,7 +98,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (0), 18, 4);
             Add_Action (Table.States (0), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (0), 27, 5);
-            Add_Action (Table.States (0), 28, 6, (132, 1), 0, null, null);
+            Add_Action (Table.States (0), 28, 6);
+            Add_Conflict (Table.States (0), 28, (132, 1), 0, null, null);
             Add_Action (Table.States (0), 29, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (0), 30, 8);
             Add_Action (Table.States (0), 31, 9);
@@ -204,12 +213,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (0), 325, 115);
             Add_Goto (Table.States (0), 331, 116);
             Add_Goto (Table.States (0), 332, 117);
-            Table.States (0).Minimal_Complete_Action := (Shift, 41, 13);
-            Table.States (1).Productions := WisiToken.To_Vector (((113, 0), (113, 1)));
+            Table.States (0).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 13)));
             Add_Action (Table.States (1), 104, 118);
             Add_Error (Table.States (1));
-            Table.States (1).Minimal_Complete_Action := (Shift, 104, 118);
-            Table.States (2).Productions := WisiToken.To_Vector ((1 => (303, 8)));
+            Table.States (1).Kernel := To_Vector (((113, 4, 4, False), (113, 4, 2, False)));
+            Table.States (1).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 118)));
             Add_Action (Table.States (2), 104, 119);
             Add_Action (Table.States (2), 105, 33);
             Add_Action (Table.States (2), 106, 34);
@@ -218,8 +226,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (2), 239, 120);
             Add_Goto (Table.States (2), 272, 92);
             Add_Goto (Table.States (2), 293, 97);
-            Table.States (2).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (3).Productions := WisiToken.To_Vector ((1 => (139, 0)));
+            Table.States (2).Kernel := To_Vector ((0 => (303, 5, 2, False)));
+            Table.States (2).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (3), 3, 121);
             Add_Action (Table.States (3), 35, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (3), 39, 122);
@@ -254,8 +262,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (3), 320, 144);
             Add_Goto (Table.States (3), 321, 145);
             Add_Goto (Table.States (3), 330, 146);
-            Table.States (3).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (4).Productions := WisiToken.To_Vector (((161, 0), (161, 1)));
+            Table.States (3).Kernel := To_Vector ((0 => (139, 15, 6, False)));
+            Table.States (3).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (4), 3, 121);
             Add_Action (Table.States (4), 39, 122);
             Add_Action (Table.States (4), 40, 123);
@@ -291,15 +299,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (4), 320, 144);
             Add_Goto (Table.States (4), 321, 145);
             Add_Goto (Table.States (4), 330, 146);
-            Table.States (4).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (5).Productions := WisiToken.To_Vector (((190, 0), (190, 1)));
+            Table.States (4).Kernel := To_Vector (((161, 18, 2, False), (161, 18, 1, False)));
+            Table.States (4).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (5), 72, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (5), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (5), 104, 149);
             Add_Error (Table.States (5));
             Add_Goto (Table.States (5), 220, 150);
-            Table.States (5).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (6).Productions := WisiToken.To_Vector (((121, 0), (127, 0), (182, 0), (229, 1), (281, 0)));
+            Table.States (5).Kernel := To_Vector (((190, 27, 2, False), (190, 27, 1, False)));
+            Table.States (5).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (6), 104, 151);
             Add_Action (Table.States (6), 105, 152);
             Add_Action (Table.States (6), 106, 34);
@@ -311,8 +319,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (6), 239, 157);
             Add_Goto (Table.States (6), 272, 92);
             Add_Goto (Table.States (6), 293, 97);
-            Table.States (6).Minimal_Complete_Action := (Reduce, 231, 0);
-            Table.States (7).Productions := WisiToken.To_Vector ((1 => (207, 0)));
+            Table.States (6).Kernel := To_Vector (((121, 28, 5, False), (127, 28, 4, False), (182, 28, 5, False), (229,
+            28, 0, False), (281, 28, 14, False)));
+            Table.States (6).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 231, 0)));
             Add_Action (Table.States (7), 104, 119);
             Add_Action (Table.States (7), 105, 33);
             Add_Action (Table.States (7), 106, 34);
@@ -321,12 +330,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (7), 239, 158);
             Add_Goto (Table.States (7), 272, 92);
             Add_Goto (Table.States (7), 293, 97);
-            Table.States (7).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (8).Productions := WisiToken.To_Vector (((210, 0), (210, 1), (215, 0), (215, 1), (215, 2)));
-            Add_Action (Table.States (8), 29, 159, (210, 1), 1, generic_formal_part_1'Access, null);
-            Add_Action (Table.States (8), 47, 160, (210, 1), 1, generic_formal_part_1'Access, null);
+            Table.States (7).Kernel := To_Vector ((0 => (207, 29, 2, False)));
+            Table.States (7).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Add_Action (Table.States (8), 29, 159);
+            Add_Conflict (Table.States (8), 29, (210, 1), 1, generic_formal_part_1'Access, null);
+            Add_Action (Table.States (8), 47, 160);
+            Add_Conflict (Table.States (8), 47, (210, 1), 1, generic_formal_part_1'Access, null);
             Add_Action (Table.States (8), 48, 16);
-            Add_Action (Table.States (8), 50, 161, (210, 1), 1, generic_formal_part_1'Access, null);
+            Add_Action (Table.States (8), 50, 161);
+            Add_Conflict (Table.States (8), 50, (210, 1), 1, generic_formal_part_1'Access, null);
             Add_Action (Table.States (8), 69, 162);
             Add_Action (Table.States (8), 71, 28);
             Add_Action (Table.States (8), 74, 163);
@@ -341,12 +353,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (8), 219, 171);
             Add_Goto (Table.States (8), 257, 172);
             Add_Goto (Table.States (8), 331, 173);
-            Table.States (8).Minimal_Complete_Action := (Reduce, 210, 1);
-            Table.States (9).Productions := WisiToken.To_Vector ((1 => (303, 3)));
+            Table.States (8).Kernel := To_Vector (((210, 30, 3, False), (210, 30, 0, False), (215, 30, 5, False), (215,
+            30, 5, False), (215, 30, 5, False)));
+            Table.States (8).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 210, 1)));
             Add_Action (Table.States (9), 104, 174);
             Add_Error (Table.States (9));
-            Table.States (9).Minimal_Complete_Action := (Shift, 104, 174);
-            Table.States (10).Productions := WisiToken.To_Vector (((222, 0), (222, 1), (222, 2), (222, 3)));
+            Table.States (9).Kernel := To_Vector ((0 => (303, 31, 2, False)));
+            Table.States (9).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 174)));
             Add_Action (Table.States (10), 3, 121);
             Add_Action (Table.States (10), 39, 122);
             Add_Action (Table.States (10), 40, 123);
@@ -381,25 +394,25 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (10), 320, 144);
             Add_Goto (Table.States (10), 321, 145);
             Add_Goto (Table.States (10), 330, 146);
-            Table.States (10).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (11).Productions := WisiToken.To_Vector (((332, 0), (332, 1)));
+            Table.States (10).Kernel := To_Vector (((222, 32, 7, False), (222, 32, 5, False), (222, 32, 6, False),
+            (222, 32, 4, False)));
+            Table.States (10).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (11), 49, 176);
             Add_Action (Table.States (11), 74, 177);
             Add_Error (Table.States (11));
-            Table.States (11).Minimal_Complete_Action := (Shift, 74, 177);
-            Table.States (12).Productions := WisiToken.To_Vector ((1 => (246, 0)));
+            Table.States (11).Kernel := To_Vector (((332, 36, 4, False), (332, 36, 3, False)));
+            Table.States (11).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 177)));
             Add_Action (Table.States (12), 46, 178);
             Add_Error (Table.States (12));
-            Table.States (12).Minimal_Complete_Action := (Shift, 46, 178);
-            Table.States (13).Productions := WisiToken.To_Vector ((1 => (303, 0)));
+            Table.States (12).Kernel := To_Vector ((0 => (246, 40, 1, False)));
+            Table.States (12).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 46, 178)));
             Add_Action (Table.States (13), 96, 179);
             Add_Error (Table.States (13));
-            Table.States (13).Minimal_Complete_Action := (Shift, 96, 179);
-            Table.States (14).Productions := WisiToken.To_Vector ((1 => (246, 1)));
+            Table.States (13).Kernel := To_Vector ((0 => (303, 41, 1, False)));
+            Table.States (13).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 179)));
             Add_Action (Table.States (14), (25, 29, 50), (246, 1), 1, overriding_indicator_opt_1'Access, null);
-            Table.States (14).Minimal_Complete_Action := (Reduce, 246, 1);
-            Table.States (15).Productions := WisiToken.To_Vector (((213, 0), (247, 0), (247, 1), (248, 0), (250, 0),
-            (251, 0), (251, 1)));
+            Table.States (14).Kernel := To_Vector ((0 => (246, 46, 0, False)));
+            Table.States (14).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 246, 1)));
             Add_Action (Table.States (15), 14, 180);
             Add_Action (Table.States (15), 104, 119);
             Add_Action (Table.States (15), 105, 33);
@@ -409,12 +422,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (15), 239, 181);
             Add_Goto (Table.States (15), 272, 92);
             Add_Goto (Table.States (15), 293, 97);
-            Table.States (15).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (16).Productions := WisiToken.To_Vector (((257, 0), (257, 1), (257, 2)));
+            Table.States (15).Kernel := To_Vector (((213, 47, 5, False), (247, 47, 6, False), (247, 47, 5, False),
+            (248, 47, 5, False), (250, 47, 4, False), (251, 47, 4, False), (251, 47, 3, False)));
+            Table.States (15).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (16), 104, 182);
             Add_Error (Table.States (16));
-            Table.States (16).Minimal_Complete_Action := (Shift, 104, 182);
-            Table.States (17).Productions := WisiToken.To_Vector (((142, 2), (332, 2)));
+            Table.States (16).Kernel := To_Vector (((257, 48, 4, False), (257, 48, 6, False), (257, 48, 2, False)));
+            Table.States (16).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 182)));
             Add_Action (Table.States (17), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (17), 28, 183);
             Add_Action (Table.States (17), 29, Reduce, (246, 2), 0, null, null);
@@ -481,8 +495,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (17), 319, 113);
             Add_Goto (Table.States (17), 325, 115);
             Add_Goto (Table.States (17), 331, 116);
-            Table.States (17).Minimal_Complete_Action := (Reduce, 246, 0);
-            Table.States (18).Productions := WisiToken.To_Vector ((1 => (262, 0)));
+            Table.States (17).Kernel := To_Vector (((142, 49, 3, False), (332, 49, 3, False)));
+            Table.States (17).Minimal_Complete_Actions := To_Vector (((Reduce, 246, 0), (Shift, 74, 184)));
             Add_Action (Table.States (18), 104, 119);
             Add_Action (Table.States (18), 105, 33);
             Add_Action (Table.States (18), 106, 34);
@@ -491,15 +505,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (18), 239, 187);
             Add_Goto (Table.States (18), 272, 92);
             Add_Goto (Table.States (18), 293, 97);
-            Table.States (18).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (19).Productions := WisiToken.To_Vector (((264, 0), (265, 0), (271, 0), (271, 1), (304, 0),
-            (304, 1)));
+            Table.States (18).Kernel := To_Vector ((0 => (262, 50, 1, False)));
+            Table.States (18).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (19), 14, 188);
             Add_Action (Table.States (19), 69, 189);
             Add_Action (Table.States (19), 104, 190);
             Add_Error (Table.States (19));
-            Table.States (19).Minimal_Complete_Action := (Shift, 104, 190);
-            Table.States (20).Productions := WisiToken.To_Vector (((276, 0), (276, 1), (276, 2)));
+            Table.States (19).Kernel := To_Vector (((264, 51, 5, False), (265, 51, 5, False), (271, 51, 8, False),
+            (271, 51, 5, False), (304, 51, 7, False), (304, 51, 4, False)));
+            Table.States (19).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 190)));
             Add_Action (Table.States (20), 96, 191);
             Add_Action (Table.States (20), 104, 119);
             Add_Action (Table.States (20), 105, 33);
@@ -509,8 +523,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (20), 239, 192);
             Add_Goto (Table.States (20), 272, 92);
             Add_Goto (Table.States (20), 293, 97);
-            Table.States (20).Minimal_Complete_Action := (Shift, 96, 191);
-            Table.States (21).Productions := WisiToken.To_Vector (((290, 0), (290, 1)));
+            Table.States (20).Kernel := To_Vector (((276, 52, 3, False), (276, 52, 2, False), (276, 52, 1, False)));
+            Table.States (20).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 191)));
             Add_Action (Table.States (21), 104, 119);
             Add_Action (Table.States (21), 105, 33);
             Add_Action (Table.States (21), 106, 34);
@@ -519,8 +533,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (21), 239, 193);
             Add_Goto (Table.States (21), 272, 92);
             Add_Goto (Table.States (21), 293, 97);
-            Table.States (21).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (22).Productions := WisiToken.To_Vector (((196, 0), (196, 1), (302, 0)));
+            Table.States (21).Kernel := To_Vector (((290, 57, 4, False), (290, 57, 2, False)));
+            Table.States (21).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (22), 3, 121);
             Add_Action (Table.States (22), 21, Reduce, (195, 1), 0, null, null);
             Add_Action (Table.States (22), 39, 122);
@@ -558,12 +572,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (22), 320, 144);
             Add_Goto (Table.States (22), 321, 145);
             Add_Goto (Table.States (22), 330, 146);
-            Table.States (22).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (23).Productions := WisiToken.To_Vector ((1 => (315, 0)));
+            Table.States (22).Kernel := To_Vector (((196, 58, 4, False), (196, 58, 4, False), (302, 58, 1, False)));
+            Table.States (22).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (23), 76, 198);
             Add_Error (Table.States (23));
-            Table.States (23).Minimal_Complete_Action := (Shift, 76, 198);
-            Table.States (24).Productions := WisiToken.To_Vector (((126, 0), (152, 0), (294, 0), (294, 1), (323, 0)));
+            Table.States (23).Kernel := To_Vector ((0 => (315, 60, 9, False)));
+            Table.States (23).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 76, 198)));
             Add_Action (Table.States (24), 4, 1);
             Add_Action (Table.States (24), 18, 4);
             Add_Action (Table.States (24), 22, Reduce, (297, 1), 0, null, null);
@@ -587,23 +601,25 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (24), 296, 208);
             Add_Goto (Table.States (24), 297, 209);
             Add_Goto (Table.States (24), 324, 210);
-            Table.States (24).Minimal_Complete_Action := (Reduce, 297, 0);
-            Table.States (25).Productions := WisiToken.To_Vector ((1 => (313, 0)));
+            Table.States (24).Kernel := To_Vector (((126, 61, 6, False), (152, 61, 5, False), (294, 61, 4, False),
+            (294, 61, 3, False), (323, 61, 7, False)));
+            Table.States (24).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 297, 0)));
             Add_Action (Table.States (25), 104, 211);
             Add_Error (Table.States (25));
-            Table.States (25).Minimal_Complete_Action := (Shift, 104, 211);
-            Table.States (26).Productions := WisiToken.To_Vector (((305, 0), (305, 1), (305, 2), (316, 0), (317, 0),
-            (319, 0), (319, 1), (319, 2)));
+            Table.States (25).Kernel := To_Vector ((0 => (313, 63, 4, False)));
+            Table.States (25).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 211)));
             Add_Action (Table.States (26), 14, 212);
             Add_Action (Table.States (26), 69, 213);
             Add_Action (Table.States (26), 104, 214);
             Add_Error (Table.States (26));
-            Table.States (26).Minimal_Complete_Action := (Shift, 104, 214);
-            Table.States (27).Productions := WisiToken.To_Vector (((206, 0), (223, 0), (223, 1), (259, 0), (260, 0)));
+            Table.States (26).Kernel := To_Vector (((305, 66, 7, False), (305, 66, 4, False), (305, 66, 2, False),
+            (316, 66, 6, False), (317, 66, 5, False), (319, 66, 8, False), (319, 66, 5, False), (319, 66, 3, False)));
+            Table.States (26).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 214)));
             Add_Action (Table.States (27), 104, 215);
             Add_Error (Table.States (27));
-            Table.States (27).Minimal_Complete_Action := (Shift, 104, 215);
-            Table.States (28).Productions := WisiToken.To_Vector (((331, 0), (331, 1), (331, 2)));
+            Table.States (27).Kernel := To_Vector (((206, 69, 4, False), (223, 69, 4, False), (223, 69, 2, False),
+            (259, 69, 7, False), (260, 69, 4, False)));
+            Table.States (27).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 215)));
             Add_Action (Table.States (28), 9, 216);
             Add_Action (Table.States (28), 69, 217);
             Add_Action (Table.States (28), 104, 119);
@@ -615,8 +631,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (28), 239, 219);
             Add_Goto (Table.States (28), 272, 92);
             Add_Goto (Table.States (28), 293, 97);
-            Table.States (28).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (29).Productions := WisiToken.To_Vector ((1 => (229, 0)));
+            Table.States (28).Kernel := To_Vector (((331, 71, 4, False), (331, 71, 3, False), (331, 71, 2, False)));
+            Table.States (28).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (29), 3, 121);
             Add_Action (Table.States (29), 37, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (29), 39, 122);
@@ -651,8 +667,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (29), 320, 144);
             Add_Goto (Table.States (29), 321, 145);
             Add_Goto (Table.States (29), 330, 146);
-            Table.States (29).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (30).Productions := WisiToken.To_Vector ((1 => (332, 3)));
+            Table.States (29).Kernel := To_Vector ((0 => (229, 73, 0, False)));
+            Table.States (29).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (30), 104, 119);
             Add_Action (Table.States (30), 105, 33);
             Add_Action (Table.States (30), 106, 34);
@@ -662,73 +678,75 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (30), 239, 219);
             Add_Goto (Table.States (30), 272, 92);
             Add_Goto (Table.States (30), 293, 97);
-            Table.States (30).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (31).Productions := WisiToken.To_Vector ((1 => (217, 0)));
+            Table.States (30).Kernel := To_Vector ((0 => (332, 74, 2, False)));
+            Table.States (30).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (31), 104, 222);
             Add_Error (Table.States (31));
-            Table.States (31).Minimal_Complete_Action := (Shift, 104, 222);
-            Table.States (32).Productions := WisiToken.To_Vector (((131, 0), (219, 1), (239, 5), (245, 0), (245, 1),
-            (245, 2)));
+            Table.States (31).Kernel := To_Vector ((0 => (217, 93, 2, False)));
+            Table.States (31).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 222)));
             Add_Action (Table.States (32), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
-            Add_Action (Table.States (32), 81, 223, (219, 1), 1, null, null);
+            Add_Action (Table.States (32), 81, 223);
+            Add_Conflict (Table.States (32), 81, (219, 1), 1, identifier_list_1'Access, null);
             Add_Action (Table.States (32), 82, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
-            Add_Action (Table.States (32), 83, Reduce, (219, 1), 1, null, null);
+            Add_Action (Table.States (32), 83, Reduce, (219, 1), 1, identifier_list_1'Access, null);
             Add_Action (Table.States (32), 84, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (32), 96, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (32), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (32), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (32));
-            Table.States (32).Minimal_Complete_Action := (Reduce, 219, 1);
-            Table.States (33).Productions := WisiToken.To_Vector ((1 => (239, 7)));
+            Table.States (32).Kernel := To_Vector (((131, 104, 1, False), (219, 104, 0, False), (239, 104, 0, False),
+            (245, 104, 5, False), (245, 104, 6, False), (245, 104, 5, False)));
+            Table.States (32).Minimal_Complete_Actions := To_Vector (((Reduce, 219, 1), (Reduce, 239, 1)));
             Add_Action (Table.States (33), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 7), 1, null,
             name_7_check'Access);
-            Table.States (33).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (34).Productions := WisiToken.To_Vector ((1 => (239, 6)));
+            Table.States (33).Kernel := To_Vector ((0 => (239, 105, 0, False)));
+            Table.States (33).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (34), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 6), 1, null, null);
-            Table.States (34).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (35).Productions := WisiToken.To_Vector ((1 => (157, 0)));
+            Table.States (34).Kernel := To_Vector ((0 => (239, 106, 0, False)));
+            Table.States (34).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (35), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 0), 1, null,
             null);
-            Table.States (35).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (36).Productions := WisiToken.To_Vector ((1 => (151, 5)));
+            Table.States (35).Kernel := To_Vector ((0 => (157, 112, 0, False)));
+            Table.States (35).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (36), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 5), 1, null, null);
-            Table.States (36).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (37).Productions := WisiToken.To_Vector ((1 => (157, 1)));
+            Table.States (36).Kernel := To_Vector ((0 => (151, 113, 0, False)));
+            Table.States (36).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (37), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 1), 1, null,
             null);
-            Table.States (37).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (38).Productions := WisiToken.To_Vector ((1 => (303, 1)));
+            Table.States (37).Kernel := To_Vector ((0 => (157, 121, 0, False)));
+            Table.States (37).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (38), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 1), 1, null, null);
-            Table.States (38).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (39).Productions := WisiToken.To_Vector ((1 => (298, 3)));
+            Table.States (38).Kernel := To_Vector ((0 => (303, 123, 0, False)));
+            Table.States (38).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (39), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (298, 3), 1, null, null);
-            Table.States (39).Minimal_Complete_Action := (Reduce, 298, 1);
-            Table.States (40).Productions := WisiToken.To_Vector ((1 => (121, 3)));
+            Table.States (39).Kernel := To_Vector ((0 => (298, 126, 0, False)));
+            Table.States (39).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 298, 1)));
             Add_Action (Table.States (40), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (121, 3), 1,
             null, null);
-            Table.States (40).Minimal_Complete_Action := (Reduce, 121, 1);
-            Table.States (41).Productions := WisiToken.To_Vector ((1 => (239, 3)));
+            Table.States (40).Kernel := To_Vector ((0 => (121, 127, 0, False)));
+            Table.States (40).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 121, 1)));
             Add_Action (Table.States (41), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 3), 1, null, null);
-            Table.States (41).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (42).Productions := WisiToken.To_Vector ((1 => (132, 0)));
+            Table.States (41).Kernel := To_Vector ((0 => (239, 128, 0, True)));
+            Table.States (41).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
+            Table.States (41).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (42), (13, 17, 28, 37, 73), (132, 0), 1, null, block_label_opt_0_check'Access);
-            Table.States (42).Minimal_Complete_Action := (Reduce, 132, 1);
-            Table.States (43).Productions := WisiToken.To_Vector (((133, 0), (133, 1), (232, 0), (232, 1)));
+            Table.States (42).Kernel := To_Vector ((0 => (132, 131, 0, False)));
+            Table.States (42).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 132, 1)));
             Add_Action (Table.States (43), 13, 224);
             Add_Action (Table.States (43), 17, 225);
             Add_Action (Table.States (43), 28, 226);
@@ -736,33 +754,34 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (43), 73, 29);
             Add_Error (Table.States (43));
             Add_Goto (Table.States (43), 229, 228);
-            Table.States (43).Minimal_Complete_Action := (Shift, 13, 224);
-            Table.States (44).Productions := WisiToken.To_Vector ((1 => (151, 3)));
+            Table.States (43).Kernel := To_Vector (((133, 132, 4, False), (133, 132, 3, False), (232, 132, 5, False),
+            (232, 132, 4, False)));
+            Table.States (43).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 13, 224)));
             Add_Action (Table.States (44), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 3), 1, null, null);
-            Table.States (44).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (45).Productions := WisiToken.To_Vector ((1 => (157, 2)));
+            Table.States (44).Kernel := To_Vector ((0 => (151, 133, 0, False)));
+            Table.States (44).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (45), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 2), 1, null,
             null);
-            Table.States (45).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (46).Productions := WisiToken.To_Vector ((1 => (134, 1)));
+            Table.States (45).Kernel := To_Vector ((0 => (157, 134, 0, False)));
+            Table.States (45).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (46), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (134, 1), 1, null,
             null);
-            Table.States (46).Minimal_Complete_Action := (Reduce, 134, 1);
-            Table.States (47).Productions := WisiToken.To_Vector ((1 => (151, 1)));
+            Table.States (46).Kernel := To_Vector ((0 => (134, 135, 0, False)));
+            Table.States (46).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 134, 1)));
             Add_Action (Table.States (47), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 1), 1, null, null);
-            Table.States (47).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (48).Productions := WisiToken.To_Vector ((1 => (143, 1)));
+            Table.States (47).Kernel := To_Vector ((0 => (151, 139, 0, False)));
+            Table.States (47).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (48), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (143, 1), 1,
             compilation_unit_list_1'Access, compilation_unit_list_1_check'Access);
-            Table.States (48).Minimal_Complete_Action := (Reduce, 143, 1);
-            Table.States (49).Productions := WisiToken.To_Vector (((108, 0), (143, 0)));
+            Table.States (48).Kernel := To_Vector ((0 => (143, 142, 0, False)));
+            Table.States (48).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 143, 1)));
             Add_Action (Table.States (49), 4, 1);
             Add_Action (Table.States (49), 5, 2);
             Add_Action (Table.States (49), 13, Reduce, (132, 1), 0, null, null);
@@ -771,7 +790,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (49), 18, 4);
             Add_Action (Table.States (49), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (49), 27, 5);
-            Add_Action (Table.States (49), 28, 6, (132, 1), 0, null, null);
+            Add_Action (Table.States (49), 28, 6);
+            Add_Conflict (Table.States (49), 28, (132, 1), 0, null, null);
             Add_Action (Table.States (49), 29, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (49), 30, 8);
             Add_Action (Table.States (49), 31, 9);
@@ -885,73 +905,73 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (49), 325, 115);
             Add_Goto (Table.States (49), 331, 116);
             Add_Goto (Table.States (49), 332, 117);
+            Table.States (49).Kernel := To_Vector (((108, 143, 1, False), (143, 143, 2, True)));
          end Subr_1;
          procedure Subr_2
          is begin
-            Table.States (50).Productions := WisiToken.To_Vector ((1 => (306, 2)));
             Add_Action (Table.States (50), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (306, 2), 1, null, null);
-            Table.States (50).Minimal_Complete_Action := (Reduce, 306, 1);
-            Table.States (51).Productions := WisiToken.To_Vector ((1 => (298, 2)));
+            Table.States (50).Kernel := To_Vector ((0 => (306, 151, 0, False)));
+            Table.States (50).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 306, 1)));
             Add_Action (Table.States (51), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (298, 2), 1, null, null);
-            Table.States (51).Minimal_Complete_Action := (Reduce, 298, 1);
-            Table.States (52).Productions := WisiToken.To_Vector ((1 => (142, 3)));
+            Table.States (51).Kernel := To_Vector ((0 => (298, 152, 0, False)));
+            Table.States (51).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 298, 1)));
             Add_Action (Table.States (52), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (142, 3), 1, null,
             null);
-            Table.States (52).Minimal_Complete_Action := (Reduce, 142, 1);
-            Table.States (53).Productions := WisiToken.To_Vector ((1 => (303, 7)));
+            Table.States (52).Kernel := To_Vector ((0 => (142, 157, 0, False)));
+            Table.States (52).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 142, 1)));
             Add_Action (Table.States (53), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 7), 1, null, null);
-            Table.States (53).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (54).Productions := WisiToken.To_Vector ((1 => (157, 3)));
+            Table.States (53).Kernel := To_Vector ((0 => (303, 161, 0, False)));
+            Table.States (53).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (54), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 3), 1, null,
             null);
-            Table.States (54).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (55).Productions := WisiToken.To_Vector ((1 => (121, 1)));
+            Table.States (54).Kernel := To_Vector ((0 => (157, 179, 0, False)));
+            Table.States (54).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (55), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (121, 1), 1,
             null, null);
-            Table.States (55).Minimal_Complete_Action := (Reduce, 121, 1);
-            Table.States (56).Productions := WisiToken.To_Vector ((1 => (157, 4)));
+            Table.States (55).Kernel := To_Vector ((0 => (121, 182, 0, False)));
+            Table.States (55).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 121, 1)));
             Add_Action (Table.States (56), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 4), 1, null,
             null);
-            Table.States (56).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (57).Productions := WisiToken.To_Vector ((1 => (303, 2)));
+            Table.States (56).Kernel := To_Vector ((0 => (157, 186, 0, False)));
+            Table.States (56).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (57), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 2), 1, null, null);
-            Table.States (57).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (58).Productions := WisiToken.To_Vector ((1 => (157, 5)));
+            Table.States (57).Kernel := To_Vector ((0 => (303, 190, 0, False)));
+            Table.States (57).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (58), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 5), 1, null,
             null);
-            Table.States (58).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (59).Productions := WisiToken.To_Vector ((1 => (151, 4)));
+            Table.States (58).Kernel := To_Vector ((0 => (157, 193, 0, False)));
+            Table.States (58).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (59), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 4), 1, null, null);
-            Table.States (59).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (60).Productions := WisiToken.To_Vector ((1 => (325, 0)));
+            Table.States (59).Kernel := To_Vector ((0 => (151, 196, 0, False)));
+            Table.States (59).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (60), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (325, 0), 1, null,
             null);
-            Table.States (60).Minimal_Complete_Action := (Reduce, 325, 1);
-            Table.States (61).Productions := WisiToken.To_Vector ((1 => (312, 1)));
+            Table.States (60).Kernel := To_Vector ((0 => (325, 206, 0, False)));
+            Table.States (60).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 325, 1)));
             Add_Action (Table.States (61), (35, 74, 96), (312, 1), 1, null, subprogram_specification_1_check'Access);
-            Table.States (61).Minimal_Complete_Action := (Reduce, 312, 1);
-            Table.States (62).Productions := WisiToken.To_Vector ((1 => (157, 6)));
+            Table.States (61).Kernel := To_Vector ((0 => (312, 207, 0, False)));
+            Table.States (61).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 312, 1)));
             Add_Action (Table.States (62), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 6), 1, null,
             null);
-            Table.States (62).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (63).Productions := WisiToken.To_Vector (((214, 0), (216, 0)));
+            Table.States (62).Kernel := To_Vector ((0 => (157, 209, 0, False)));
+            Table.States (62).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (63), 29, 7);
             Add_Action (Table.States (63), 47, 230);
             Add_Action (Table.States (63), 50, 18);
@@ -960,55 +980,55 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (63), 251, 231);
             Add_Goto (Table.States (63), 262, 87);
             Add_Goto (Table.States (63), 312, 232);
-            Table.States (63).Minimal_Complete_Action := (Shift, 50, 18);
-            Table.States (64).Productions := WisiToken.To_Vector ((1 => (157, 7)));
+            Table.States (63).Kernel := To_Vector (((214, 210, 5, False), (216, 210, 3, False)));
+            Table.States (63).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 50, 18)));
             Add_Action (Table.States (64), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 7), 1, null,
             null);
-            Table.States (64).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (65).Productions := WisiToken.To_Vector ((1 => (209, 1)));
+            Table.States (64).Kernel := To_Vector ((0 => (157, 213, 0, False)));
+            Table.States (64).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (65), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (209, 1), 1, null,
             null);
-            Table.States (65).Minimal_Complete_Action := (Reduce, 209, 1);
-            Table.States (66).Productions := WisiToken.To_Vector ((1 => (289, 3)));
+            Table.States (65).Kernel := To_Vector ((0 => (209, 214, 0, False)));
+            Table.States (65).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 209, 1)));
             Add_Action (Table.States (66), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (289, 3), 1, null,
             null);
-            Table.States (66).Minimal_Complete_Action := (Reduce, 289, 1);
-            Table.States (67).Productions := WisiToken.To_Vector ((1 => (209, 0)));
+            Table.States (66).Kernel := To_Vector ((0 => (289, 215, 0, False)));
+            Table.States (66).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 289, 1)));
             Add_Action (Table.States (67), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (209, 0), 1, null,
             null);
-            Table.States (67).Minimal_Complete_Action := (Reduce, 209, 1);
-            Table.States (68).Productions := WisiToken.To_Vector ((1 => (306, 0)));
+            Table.States (67).Kernel := To_Vector ((0 => (209, 216, 0, False)));
+            Table.States (67).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 209, 1)));
             Add_Action (Table.States (68), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (306, 0), 1, null, null);
-            Table.States (68).Minimal_Complete_Action := (Reduce, 306, 1);
-            Table.States (69).Productions := WisiToken.To_Vector (((157, 9), (186, 0), (219, 0), (244, 0), (244, 1),
-            (244, 2), (244, 3), (244, 4), (244, 5)));
+            Table.States (68).Kernel := To_Vector ((0 => (306, 217, 0, False)));
+            Table.States (68).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 306, 1)));
             Add_Action (Table.States (69), 81, 233);
             Add_Action (Table.States (69), 83, 234);
             Add_Error (Table.States (69));
-            Table.States (69).Minimal_Complete_Action := (Shift, 81, 233);
-            Table.States (70).Productions := WisiToken.To_Vector ((1 => (151, 0)));
+            Table.States (69).Kernel := To_Vector (((157, 219, 4, False), (186, 219, 3, False), (219, 219, 2, True),
+            (244, 219, 4, False), (244, 219, 5, False), (244, 219, 11, False), (244, 219, 3, False), (244, 219, 4,
+            False), (244, 219, 10, False)));
+            Table.States (69).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 81, 233)));
             Add_Action (Table.States (70), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 0), 1, null, null);
-            Table.States (70).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (71).Productions := WisiToken.To_Vector ((1 => (325, 1)));
+            Table.States (70).Kernel := To_Vector ((0 => (151, 222, 0, False)));
+            Table.States (70).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (71), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (325, 1), 1, null,
             null);
-            Table.States (71).Minimal_Complete_Action := (Reduce, 325, 1);
-            Table.States (72).Productions := WisiToken.To_Vector ((1 => (151, 2)));
+            Table.States (71).Kernel := To_Vector ((0 => (325, 223, 0, False)));
+            Table.States (71).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 325, 1)));
             Add_Action (Table.States (72), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 2), 1, null, null);
-            Table.States (72).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (73).Productions := WisiToken.To_Vector (((123, 0), (128, 0), (239, 0), (239, 1), (261, 0),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (72).Kernel := To_Vector ((0 => (151, 232, 0, False)));
+            Table.States (72).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (73), 76, 235);
             Add_Action (Table.States (73), 82, 236);
             Add_Action (Table.States (73), 84, 237);
@@ -1018,24 +1038,25 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (73));
             Add_Goto (Table.States (73), 115, 241);
             Add_Goto (Table.States (73), 322, 242);
-            Table.States (73).Minimal_Complete_Action := (Shift, 96, 238);
-            Table.States (74).Productions := WisiToken.To_Vector ((1 => (157, 8)));
+            Table.States (73).Kernel := To_Vector (((123, 239, 2, False), (128, 239, 2, True), (239, 239, 5, True),
+            (239, 239, 2, True), (261, 239, 1, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (73).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 238)));
             Add_Action (Table.States (74), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 8), 1, null,
             null);
-            Table.States (74).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (75).Productions := WisiToken.To_Vector ((1 => (157, 10)));
+            Table.States (74).Kernel := To_Vector ((0 => (157, 243, 0, False)));
+            Table.States (74).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (75), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 10), 1,
             null, null);
-            Table.States (75).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (76).Productions := WisiToken.To_Vector ((1 => (289, 0)));
+            Table.States (75).Kernel := To_Vector ((0 => (157, 244, 0, False)));
+            Table.States (75).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (76), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (289, 0), 1, null,
             null);
-            Table.States (76).Minimal_Complete_Action := (Reduce, 289, 1);
-            Table.States (77).Productions := WisiToken.To_Vector (((112, 0), (179, 0), (179, 1), (193, 0), (213, 1),
-            (213, 2), (243, 0), (307, 0), (308, 0), (309, 0), (311, 0)));
+            Table.States (76).Kernel := To_Vector ((0 => (289, 245, 0, False)));
+            Table.States (76).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 289, 1)));
             Add_Action (Table.States (77), 25, 243);
             Add_Action (Table.States (77), 29, 244);
             Add_Action (Table.States (77), 50, 245);
@@ -1043,221 +1064,225 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (77), 207, 246);
             Add_Goto (Table.States (77), 262, 247);
             Add_Goto (Table.States (77), 312, 248);
-            Table.States (77).Minimal_Complete_Action := (Shift, 25, 243);
-            Table.States (78).Productions := WisiToken.To_Vector ((1 => (263, 1)));
+            Table.States (77).Kernel := To_Vector (((112, 246, 5, False), (179, 246, 6, False), (179, 246, 3, False),
+            (193, 246, 7, False), (213, 246, 6, False), (213, 246, 6, False), (243, 246, 5, False), (307, 246, 6,
+            False), (308, 246, 5, False), (309, 246, 3, False), (311, 246, 5, False)));
+            Table.States (77).Minimal_Complete_Actions := To_Vector (((Shift, 25, 243), (Shift, 50, 245)));
             Add_Action (Table.States (78), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (263, 1), 1, null,
             null);
-            Table.States (78).Minimal_Complete_Action := (Reduce, 263, 1);
-            Table.States (79).Productions := WisiToken.To_Vector ((1 => (135, 1)));
+            Table.States (78).Kernel := To_Vector ((0 => (263, 247, 0, False)));
+            Table.States (78).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 263, 1)));
             Add_Action (Table.States (79), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (135, 1), 1, null,
             null);
-            Table.States (79).Minimal_Complete_Action := (Reduce, 135, 1);
-            Table.States (80).Productions := WisiToken.To_Vector ((1 => (157, 11)));
+            Table.States (79).Kernel := To_Vector ((0 => (135, 248, 0, False)));
+            Table.States (79).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 135, 1)));
             Add_Action (Table.States (80), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 11), 1,
             null, null);
-            Table.States (80).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (81).Productions := WisiToken.To_Vector ((1 => (289, 1)));
+            Table.States (80).Kernel := To_Vector ((0 => (157, 249, 0, False)));
+            Table.States (80).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (81), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (289, 1), 1, null,
             null);
-            Table.States (81).Minimal_Complete_Action := (Reduce, 289, 1);
-            Table.States (82).Productions := WisiToken.To_Vector ((1 => (249, 0)));
+            Table.States (81).Kernel := To_Vector ((0 => (289, 250, 0, False)));
+            Table.States (81).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 289, 1)));
             Add_Action (Table.States (82), 96, 249);
             Add_Error (Table.States (82));
-            Table.States (82).Minimal_Complete_Action := (Shift, 96, 249);
-            Table.States (83).Productions := WisiToken.To_Vector ((1 => (303, 10)));
+            Table.States (82).Kernel := To_Vector ((0 => (249, 251, 1, False)));
+            Table.States (82).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 249)));
             Add_Action (Table.States (83), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 10), 1, null, null);
-            Table.States (83).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (84).Productions := WisiToken.To_Vector ((1 => (325, 3)));
+            Table.States (83).Kernel := To_Vector ((0 => (303, 257, 0, False)));
+            Table.States (83).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (84), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (325, 3), 1, null,
             null);
-            Table.States (84).Minimal_Complete_Action := (Reduce, 325, 1);
-            Table.States (85).Productions := WisiToken.To_Vector ((1 => (325, 2)));
+            Table.States (84).Kernel := To_Vector ((0 => (325, 259, 0, False)));
+            Table.States (84).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 325, 1)));
             Add_Action (Table.States (85), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (325, 2), 1, null,
             null);
-            Table.States (85).Minimal_Complete_Action := (Reduce, 325, 1);
-            Table.States (86).Productions := WisiToken.To_Vector ((1 => (303, 4)));
+            Table.States (85).Kernel := To_Vector ((0 => (325, 260, 0, False)));
+            Table.States (85).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 325, 1)));
             Add_Action (Table.States (86), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 4), 1, null, null);
-            Table.States (86).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (87).Productions := WisiToken.To_Vector ((1 => (312, 0)));
+            Table.States (86).Kernel := To_Vector ((0 => (303, 261, 0, False)));
+            Table.States (86).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (87), (35, 74, 96), (312, 0), 1, null, subprogram_specification_0_check'Access);
-            Table.States (87).Minimal_Complete_Action := (Reduce, 312, 1);
-            Table.States (88).Productions := WisiToken.To_Vector ((1 => (134, 0)));
+            Table.States (87).Kernel := To_Vector ((0 => (312, 262, 0, False)));
+            Table.States (87).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 312, 1)));
             Add_Action (Table.States (88), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (134, 0), 1, null,
             null);
-            Table.States (88).Minimal_Complete_Action := (Reduce, 134, 1);
-            Table.States (89).Productions := WisiToken.To_Vector ((1 => (263, 3)));
+            Table.States (88).Kernel := To_Vector ((0 => (134, 263, 0, False)));
+            Table.States (88).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 134, 1)));
             Add_Action (Table.States (89), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (263, 3), 1, null,
             null);
-            Table.States (89).Minimal_Complete_Action := (Reduce, 263, 1);
-            Table.States (90).Productions := WisiToken.To_Vector ((1 => (135, 3)));
+            Table.States (89).Kernel := To_Vector ((0 => (263, 264, 0, False)));
+            Table.States (89).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 263, 1)));
             Add_Action (Table.States (90), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (135, 3), 1, null,
             null);
-            Table.States (90).Minimal_Complete_Action := (Reduce, 135, 1);
-            Table.States (91).Productions := WisiToken.To_Vector ((1 => (206, 2)));
+            Table.States (90).Kernel := To_Vector ((0 => (135, 265, 0, False)));
+            Table.States (90).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 135, 1)));
             Add_Action (Table.States (91), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (206, 2), 1, null,
             null);
-            Table.States (91).Minimal_Complete_Action := (Reduce, 206, 1);
-            Table.States (92).Productions := WisiToken.To_Vector ((1 => (239, 4)));
+            Table.States (91).Kernel := To_Vector ((0 => (206, 271, 0, False)));
+            Table.States (91).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 206, 1)));
             Add_Action (Table.States (92), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 4), 1, null, null);
-            Table.States (92).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (93).Productions := WisiToken.To_Vector ((1 => (303, 9)));
+            Table.States (92).Kernel := To_Vector ((0 => (239, 272, 0, True)));
+            Table.States (92).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
+            Table.States (92).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (93), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 9), 1, null, null);
-            Table.States (93).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (94).Productions := WisiToken.To_Vector ((1 => (121, 2)));
+            Table.States (93).Kernel := To_Vector ((0 => (303, 276, 0, False)));
+            Table.States (93).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (94), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (121, 2), 1,
             null, null);
-            Table.States (94).Minimal_Complete_Action := (Reduce, 121, 1);
-            Table.States (95).Productions := WisiToken.To_Vector ((1 => (157, 12)));
+            Table.States (94).Kernel := To_Vector ((0 => (121, 281, 0, False)));
+            Table.States (94).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 121, 1)));
             Add_Action (Table.States (95), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 12), 1,
             null, null);
-            Table.States (95).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (96).Productions := WisiToken.To_Vector ((1 => (303, 6)));
+            Table.States (95).Kernel := To_Vector ((0 => (157, 289, 0, False)));
+            Table.States (95).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (96), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 6), 1, null, null);
-            Table.States (96).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (97).Productions := WisiToken.To_Vector ((1 => (239, 2)));
+            Table.States (96).Kernel := To_Vector ((0 => (303, 290, 0, False)));
+            Table.States (96).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (97), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 2), 1, null,
             name_2_check'Access);
-            Table.States (97).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (98).Productions := WisiToken.To_Vector ((1 => (298, 0)));
+            Table.States (97).Kernel := To_Vector ((0 => (239, 293, 0, True)));
+            Table.States (97).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
+            Table.States (97).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (98), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (298, 0), 1, null, null);
-            Table.States (98).Minimal_Complete_Action := (Reduce, 298, 1);
-            Table.States (99).Productions := WisiToken.To_Vector ((1 => (151, 6)));
+            Table.States (98).Kernel := To_Vector ((0 => (298, 294, 0, False)));
+            Table.States (98).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 298, 1)));
             Add_Action (Table.States (99), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (151, 6), 1, null, null);
-            Table.States (99).Minimal_Complete_Action := (Reduce, 151, 1);
-            Table.States (100).Productions := WisiToken.To_Vector ((1 => (303, 5)));
+            Table.States (99).Kernel := To_Vector ((0 => (151, 298, 0, False)));
+            Table.States (99).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 151, 1)));
             Add_Action (Table.States (100), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 5), 1, null, null);
-            Table.States (100).Minimal_Complete_Action := (Reduce, 303, 1);
-            Table.States (101).Productions := WisiToken.To_Vector ((1 => (306, 1)));
+            Table.States (100).Kernel := To_Vector ((0 => (303, 302, 0, False)));
+            Table.States (100).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 1)));
             Add_Action (Table.States (101), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (306, 1), 1, null, null);
-            Table.States (101).Minimal_Complete_Action := (Reduce, 306, 1);
-            Table.States (102).Productions := WisiToken.To_Vector ((1 => (244, 7)));
+            Table.States (101).Kernel := To_Vector ((0 => (306, 303, 0, False)));
+            Table.States (101).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 306, 1)));
             Add_Action (Table.States (102), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 7), 1, null,
             null);
-            Table.States (102).Minimal_Complete_Action := (Reduce, 244, 1);
-            Table.States (103).Productions := WisiToken.To_Vector ((1 => (244, 6)));
+            Table.States (102).Kernel := To_Vector ((0 => (244, 304, 0, False)));
+            Table.States (102).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 1)));
             Add_Action (Table.States (103), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 6), 1, null,
             null);
-            Table.States (103).Minimal_Complete_Action := (Reduce, 244, 1);
-            Table.States (104).Productions := WisiToken.To_Vector ((1 => (142, 4)));
+            Table.States (103).Kernel := To_Vector ((0 => (244, 305, 0, False)));
+            Table.States (103).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 1)));
             Add_Action (Table.States (104), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (142, 4), 1, null,
             null);
-            Table.States (104).Minimal_Complete_Action := (Reduce, 142, 1);
-            Table.States (105).Productions := WisiToken.To_Vector ((1 => (263, 0)));
+            Table.States (104).Kernel := To_Vector ((0 => (142, 306, 0, False)));
+            Table.States (104).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 142, 1)));
             Add_Action (Table.States (105), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (263, 0), 1, null,
             null);
-            Table.States (105).Minimal_Complete_Action := (Reduce, 263, 1);
-            Table.States (106).Productions := WisiToken.To_Vector ((1 => (135, 0)));
+            Table.States (105).Kernel := To_Vector ((0 => (263, 307, 0, False)));
+            Table.States (105).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 263, 1)));
             Add_Action (Table.States (106), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (135, 0), 1, null,
             null);
-            Table.States (106).Minimal_Complete_Action := (Reduce, 135, 1);
-            Table.States (107).Productions := WisiToken.To_Vector ((1 => (157, 13)));
+            Table.States (106).Kernel := To_Vector ((0 => (135, 308, 0, False)));
+            Table.States (106).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 135, 1)));
             Add_Action (Table.States (107), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 13), 1,
             null, null);
-            Table.States (107).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (108).Productions := WisiToken.To_Vector ((1 => (289, 2)));
+            Table.States (107).Kernel := To_Vector ((0 => (157, 309, 0, False)));
+            Table.States (107).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (108), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (289, 2), 1, null,
             null);
-            Table.States (108).Minimal_Complete_Action := (Reduce, 289, 1);
-            Table.States (109).Productions := WisiToken.To_Vector ((1 => (157, 14)));
+            Table.States (108).Kernel := To_Vector ((0 => (289, 311, 0, False)));
+            Table.States (108).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 289, 1)));
             Add_Action (Table.States (109), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 14), 1,
             null, null);
-            Table.States (109).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (110).Productions := WisiToken.To_Vector ((1 => (142, 1)));
+            Table.States (109).Kernel := To_Vector ((0 => (157, 313, 0, False)));
+            Table.States (109).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (110), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (142, 1), 1, null,
             null);
-            Table.States (110).Minimal_Complete_Action := (Reduce, 142, 1);
-            Table.States (111).Productions := WisiToken.To_Vector ((1 => (263, 2)));
+            Table.States (110).Kernel := To_Vector ((0 => (142, 315, 0, False)));
+            Table.States (110).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 142, 1)));
             Add_Action (Table.States (111), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (263, 2), 1, null,
             null);
-            Table.States (111).Minimal_Complete_Action := (Reduce, 263, 1);
-            Table.States (112).Productions := WisiToken.To_Vector ((1 => (135, 2)));
+            Table.States (111).Kernel := To_Vector ((0 => (263, 316, 0, False)));
+            Table.States (111).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 263, 1)));
             Add_Action (Table.States (112), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (135, 2), 1, null,
             null);
-            Table.States (112).Minimal_Complete_Action := (Reduce, 135, 1);
-            Table.States (113).Productions := WisiToken.To_Vector ((1 => (206, 1)));
+            Table.States (112).Kernel := To_Vector ((0 => (135, 317, 0, False)));
+            Table.States (112).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 135, 1)));
             Add_Action (Table.States (113), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (206, 1), 1, null,
             null);
-            Table.States (113).Minimal_Complete_Action := (Reduce, 206, 1);
-            Table.States (114).Productions := WisiToken.To_Vector ((1 => (298, 1)));
+            Table.States (113).Kernel := To_Vector ((0 => (206, 319, 0, False)));
+            Table.States (113).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 206, 1)));
             Add_Action (Table.States (114), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (298, 1), 1, null, null);
-            Table.States (114).Minimal_Complete_Action := (Reduce, 298, 1);
-            Table.States (115).Productions := WisiToken.To_Vector ((1 => (157, 15)));
+            Table.States (114).Kernel := To_Vector ((0 => (298, 323, 0, False)));
+            Table.States (114).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 298, 1)));
             Add_Action (Table.States (115), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 15), 1,
             null, null);
-            Table.States (115).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (116).Productions := WisiToken.To_Vector ((1 => (157, 16)));
+            Table.States (115).Kernel := To_Vector ((0 => (157, 325, 0, False)));
+            Table.States (115).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (116), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 16), 1,
             null, null);
-            Table.States (116).Minimal_Complete_Action := (Reduce, 157, 1);
-            Table.States (117).Productions := WisiToken.To_Vector ((1 => (142, 0)));
+            Table.States (116).Kernel := To_Vector ((0 => (157, 331, 0, False)));
+            Table.States (116).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 1)));
             Add_Action (Table.States (117), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (142, 0), 1, null,
             null);
-            Table.States (117).Minimal_Complete_Action := (Reduce, 142, 1);
-            Table.States (118).Productions := WisiToken.To_Vector (((113, 0), (113, 1)));
+            Table.States (117).Kernel := To_Vector ((0 => (142, 332, 0, False)));
+            Table.States (117).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 142, 1)));
             Add_Action (Table.States (118), 21, Reduce, (116, 1), 0, null, null);
-            Add_Action (Table.States (118), 76, 250, (116, 1), 0, null, null);
+            Add_Action (Table.States (118), 76, 250);
+            Add_Conflict (Table.States (118), 76, (116, 1), 0, null, null);
             Add_Action (Table.States (118), 96, Reduce, (116, 1), 0, null, null);
             Add_Error (Table.States (118));
             Add_Goto (Table.States (118), 115, 251);
             Add_Goto (Table.States (118), 116, 252);
-            Table.States (118).Minimal_Complete_Action := (Reduce, 116, 0);
-            Table.States (119).Productions := WisiToken.To_Vector ((1 => (239, 5)));
+            Table.States (118).Kernel := To_Vector (((113, 104, 3, False), (113, 104, 1, False)));
+            Table.States (118).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 116, 0)));
             Add_Action (Table.States (119), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 5), 1, name_5'Access,
             name_5_check'Access);
-            Table.States (119).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (120).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3), (303, 8)));
+            Table.States (119).Kernel := To_Vector ((0 => (239, 104, 0, False)));
+            Table.States (119).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (120), 76, 235);
             Add_Action (Table.States (120), 84, 237);
             Add_Action (Table.States (120), 96, 253);
@@ -1266,8 +1291,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (120));
             Add_Goto (Table.States (120), 115, 241);
             Add_Goto (Table.States (120), 322, 242);
-            Table.States (120).Minimal_Complete_Action := (Shift, 96, 253);
-            Table.States (121).Productions := WisiToken.To_Vector ((1 => (197, 2)));
+            Table.States (120).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (303, 239, 1, False)));
+            Table.States (120).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 253)));
             Add_Action (Table.States (121), 39, 122);
             Add_Action (Table.States (121), 41, 124);
             Add_Action (Table.States (121), 76, 126);
@@ -1282,8 +1309,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (121), 258, 254);
             Add_Goto (Table.States (121), 272, 92);
             Add_Goto (Table.States (121), 293, 97);
-            Table.States (121).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (122).Productions := WisiToken.To_Vector ((1 => (258, 4)));
+            Table.States (121).Kernel := To_Vector ((0 => (197, 3, 1, False)));
+            Table.States (121).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (122), 104, 119);
             Add_Action (Table.States (122), 105, 33);
             Add_Action (Table.States (122), 106, 34);
@@ -1292,8 +1319,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (122), 239, 255);
             Add_Goto (Table.States (122), 272, 92);
             Add_Goto (Table.States (122), 293, 97);
-            Table.States (122).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (123).Productions := WisiToken.To_Vector ((1 => (197, 3)));
+            Table.States (122).Kernel := To_Vector ((0 => (258, 39, 1, False)));
+            Table.States (122).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (123), 39, 122);
             Add_Action (Table.States (123), 41, 124);
             Add_Action (Table.States (123), 76, 126);
@@ -1308,12 +1335,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (123), 258, 256);
             Add_Goto (Table.States (123), 272, 92);
             Add_Goto (Table.States (123), 293, 97);
-            Table.States (123).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (124).Productions := WisiToken.To_Vector ((1 => (258, 1)));
+            Table.States (123).Kernel := To_Vector ((0 => (197, 40, 1, False)));
+            Table.States (123).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (124), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99, 100), (258, 1), 1, null, null);
-            Table.States (124).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (125).Productions := WisiToken.To_Vector (((275, 0), (275, 1)));
+            Table.States (124).Kernel := To_Vector ((0 => (258, 41, 0, False)));
+            Table.States (124).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (125), 104, 119);
             Add_Action (Table.States (125), 105, 33);
             Add_Action (Table.States (125), 106, 34);
@@ -1322,8 +1349,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (125), 239, 257);
             Add_Goto (Table.States (125), 272, 92);
             Add_Goto (Table.States (125), 293, 97);
-            Table.States (125).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (126).Productions := WisiToken.To_Vector (((117, 0), (117, 1), (117, 2), (117, 3), (117, 4)));
+            Table.States (125).Kernel := To_Vector (((275, 52, 2, True), (275, 52, 1, False)));
+            Table.States (125).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (126), 3, 121);
             Add_Action (Table.States (126), 15, 258);
             Add_Action (Table.States (126), 28, 259);
@@ -1375,37 +1402,38 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (126), 320, 144);
             Add_Goto (Table.States (126), 321, 145);
             Add_Goto (Table.States (126), 330, 146);
-            Table.States (126).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (127).Productions := WisiToken.To_Vector ((1 => (330, 1)));
+            Table.States (126).Kernel := To_Vector (((117, 76, 4, False), (117, 76, 2, False), (117, 76, 3, False),
+            (117, 76, 3, False), (117, 76, 1, False)));
+            Table.States (126).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
             Add_Action (Table.States (127), (3, 39, 40, 41, 76, 103, 104, 105, 106), (330, 1), 1, null, null);
-            Table.States (127).Minimal_Complete_Action := (Reduce, 330, 1);
-            Table.States (128).Productions := WisiToken.To_Vector ((1 => (330, 0)));
+            Table.States (127).Kernel := To_Vector ((0 => (330, 94, 0, False)));
+            Table.States (127).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 330, 1)));
             Add_Action (Table.States (128), (3, 39, 40, 41, 76, 103, 104, 105, 106), (330, 0), 1, null, null);
-            Table.States (128).Minimal_Complete_Action := (Reduce, 330, 1);
-            Table.States (129).Productions := WisiToken.To_Vector ((1 => (258, 0)));
+            Table.States (128).Kernel := To_Vector ((0 => (330, 95, 0, False)));
+            Table.States (128).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 330, 1)));
             Add_Action (Table.States (129), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99, 100), (258, 0), 1, primary_0'Access,
             null);
-            Table.States (129).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (130).Productions := WisiToken.To_Vector ((1 => (258, 2)));
+            Table.States (129).Kernel := To_Vector ((0 => (258, 103, 0, False)));
+            Table.States (129).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (130), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99, 100), (258, 2), 1, primary_2'Access,
             null);
-            Table.States (130).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (131).Productions := WisiToken.To_Vector ((1 => (192, 0)));
+            Table.States (130).Kernel := To_Vector ((0 => (258, 117, 0, False)));
+            Table.States (130).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (131), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (192,
             0), 1, null, null);
-            Table.States (131).Minimal_Complete_Action := (Reduce, 192, 1);
-            Table.States (132).Productions := WisiToken.To_Vector ((1 => (139, 0)));
+            Table.States (131).Kernel := To_Vector ((0 => (192, 191, 0, True)));
+            Table.States (131).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 1)));
+            Table.States (131).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (132), 35, 278);
             Add_Error (Table.States (132));
-            Table.States (132).Minimal_Complete_Action := (Shift, 35, 278);
-            Table.States (133).Productions := WisiToken.To_Vector ((1 => (320, 1)));
+            Table.States (132).Kernel := To_Vector ((0 => (139, 192, 6, False)));
+            Table.States (132).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 278)));
             Add_Action (Table.States (133), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99), (320, 1), 1, null, null);
-            Table.States (133).Minimal_Complete_Action := (Reduce, 320, 1);
-            Table.States (134).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (258, 3), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (133).Kernel := To_Vector ((0 => (320, 197, 0, False)));
+            Table.States (133).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 320, 1)));
             Add_Action (Table.States (134), 10, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (134), 20, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (134), 21, Reduce, (258, 3), 1, null, null);
@@ -1449,8 +1477,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (134));
             Add_Goto (Table.States (134), 115, 241);
             Add_Goto (Table.States (134), 322, 242);
-            Table.States (134).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (135).Productions := WisiToken.To_Vector (((197, 0), (197, 1)));
+            Table.States (134).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (258, 239, 0, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (134).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (135), 10, Reduce, (197, 1), 1, null, null);
             Add_Action (Table.States (135), 20, Reduce, (197, 1), 1, null, null);
             Add_Action (Table.States (135), 21, Reduce, (197, 1), 1, null, null);
@@ -1488,13 +1518,15 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (135), 99, Reduce, (197, 1), 1, null, null);
             Add_Action (Table.States (135), 100, 279);
             Add_Error (Table.States (135));
-            Table.States (135).Minimal_Complete_Action := (Reduce, 197, 1);
-            Table.States (136).Productions := WisiToken.To_Vector ((1 => (287, 4)));
+            Table.States (135).Kernel := To_Vector (((197, 258, 2, False), (197, 258, 0, False)));
+            Table.States (135).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 197, 1)));
             Add_Action (Table.States (136), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (287,
             4), 1, null, null);
-            Table.States (136).Minimal_Complete_Action := (Reduce, 287, 1);
-            Table.States (137).Productions := WisiToken.To_Vector (((191, 1), (282, 0)));
-            Add_Action (Table.States (137), 10, 280, (191, 1), 1, null, null);
+            Table.States (136).Kernel := To_Vector ((0 => (287, 275, 0, True)));
+            Table.States (136).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 287, 1)));
+            Table.States (136).Minimal_Complete_Actions_Recursive := True;
+            Add_Action (Table.States (137), 10, 280);
+            Add_Conflict (Table.States (137), 10, (191, 1), 1, null, null);
             Add_Action (Table.States (137), 20, Reduce, (191, 1), 1, null, null);
             Add_Action (Table.States (137), 21, Reduce, (191, 1), 1, null, null);
             Add_Action (Table.States (137), 22, Reduce, (191, 1), 1, null, null);
@@ -1512,9 +1544,11 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (137), 87, Reduce, (191, 1), 1, null, null);
             Add_Action (Table.States (137), 96, Reduce, (191, 1), 1, null, null);
             Add_Error (Table.States (137));
-            Table.States (137).Minimal_Complete_Action := (Reduce, 191, 1);
-            Table.States (138).Productions := WisiToken.To_Vector (((191, 2), (283, 0)));
-            Add_Action (Table.States (138), 10, 281, (191, 2), 1, null, null);
+            Table.States (137).Kernel := To_Vector (((191, 282, 0, True), (282, 282, 2, True)));
+            Table.States (137).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 191, 1)));
+            Table.States (137).Minimal_Complete_Actions_Recursive := True;
+            Add_Action (Table.States (138), 10, 281);
+            Add_Conflict (Table.States (138), 10, (191, 2), 1, null, null);
             Add_Action (Table.States (138), 20, Reduce, (191, 2), 1, null, null);
             Add_Action (Table.States (138), 21, Reduce, (191, 2), 1, null, null);
             Add_Action (Table.States (138), 22, Reduce, (191, 2), 1, null, null);
@@ -1532,8 +1566,9 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (138), 87, Reduce, (191, 2), 1, null, null);
             Add_Action (Table.States (138), 96, Reduce, (191, 2), 1, null, null);
             Add_Error (Table.States (138));
-            Table.States (138).Minimal_Complete_Action := (Reduce, 191, 1);
-            Table.States (139).Productions := WisiToken.To_Vector (((191, 3), (284, 0)));
+            Table.States (138).Kernel := To_Vector (((191, 283, 0, True), (283, 283, 3, True)));
+            Table.States (138).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 191, 1)));
+            Table.States (138).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (139), 10, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 20, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 21, Reduce, (191, 3), 1, null, null);
@@ -1541,7 +1576,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (139), 23, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 35, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 37, Reduce, (191, 3), 1, null, null);
-            Add_Action (Table.States (139), 43, 282, (191, 3), 1, null, null);
+            Add_Action (Table.States (139), 43, 282);
+            Add_Conflict (Table.States (139), 43, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 53, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 68, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 74, Reduce, (191, 3), 1, null, null);
@@ -1552,8 +1588,9 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (139), 87, Reduce, (191, 3), 1, null, null);
             Add_Action (Table.States (139), 96, Reduce, (191, 3), 1, null, null);
             Add_Error (Table.States (139));
-            Table.States (139).Minimal_Complete_Action := (Reduce, 191, 1);
-            Table.States (140).Productions := WisiToken.To_Vector (((191, 4), (285, 0)));
+            Table.States (139).Kernel := To_Vector (((191, 284, 0, True), (284, 284, 2, True)));
+            Table.States (139).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 191, 1)));
+            Table.States (139).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (140), 10, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 20, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 21, Reduce, (191, 4), 1, null, null);
@@ -1561,7 +1598,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (140), 23, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 35, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 37, Reduce, (191, 4), 1, null, null);
-            Add_Action (Table.States (140), 43, 283, (191, 4), 1, null, null);
+            Add_Action (Table.States (140), 43, 283);
+            Add_Conflict (Table.States (140), 43, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 53, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 68, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 74, Reduce, (191, 4), 1, null, null);
@@ -1572,8 +1610,12 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (140), 87, Reduce, (191, 4), 1, null, null);
             Add_Action (Table.States (140), 96, Reduce, (191, 4), 1, null, null);
             Add_Error (Table.States (140));
-            Table.States (140).Minimal_Complete_Action := (Reduce, 191, 1);
-            Table.States (141).Productions := WisiToken.To_Vector (((191, 5), (286, 0)));
+            Table.States (140).Kernel := To_Vector (((191, 285, 0, True), (285, 285, 3, True)));
+            Table.States (140).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 191, 1)));
+            Table.States (140).Minimal_Complete_Actions_Recursive := True;
+         end Subr_2;
+         procedure Subr_3
+         is begin
             Add_Action (Table.States (141), 10, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 20, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 21, Reduce, (191, 5), 1, null, null);
@@ -1585,39 +1627,42 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (141), 53, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 68, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 74, Reduce, (191, 5), 1, null, null);
-            Add_Action (Table.States (141), 75, 284, (191, 5), 1, null, null);
+            Add_Action (Table.States (141), 75, 284);
+            Add_Conflict (Table.States (141), 75, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 77, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 79, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 83, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 87, Reduce, (191, 5), 1, null, null);
             Add_Action (Table.States (141), 96, Reduce, (191, 5), 1, null, null);
             Add_Error (Table.States (141));
-            Table.States (141).Minimal_Complete_Action := (Reduce, 191, 1);
-         end Subr_2;
-         procedure Subr_3
-         is begin
-            Table.States (142).Productions := WisiToken.To_Vector (((191, 0), (282, 1), (283, 1), (284, 1), (285, 1),
-            (286, 1)));
-            Add_Action (Table.States (142), 10, 285, (191, 0), 1, null, null);
+            Table.States (141).Kernel := To_Vector (((191, 286, 0, True), (286, 286, 2, True)));
+            Table.States (141).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 191, 1)));
+            Table.States (141).Minimal_Complete_Actions_Recursive := True;
+            Add_Action (Table.States (142), 10, 285);
+            Add_Conflict (Table.States (142), 10, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 20, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 21, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 22, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 23, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 35, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 37, Reduce, (191, 0), 1, null, null);
-            Add_Action (Table.States (142), 43, 286, (191, 0), 1, null, null);
+            Add_Action (Table.States (142), 43, 286);
+            Add_Conflict (Table.States (142), 43, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 53, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 68, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 74, Reduce, (191, 0), 1, null, null);
-            Add_Action (Table.States (142), 75, 287, (191, 0), 1, null, null);
+            Add_Action (Table.States (142), 75, 287);
+            Add_Conflict (Table.States (142), 75, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 77, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 79, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 83, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 87, Reduce, (191, 0), 1, null, null);
             Add_Action (Table.States (142), 96, Reduce, (191, 0), 1, null, null);
             Add_Error (Table.States (142));
-            Table.States (142).Minimal_Complete_Action := (Reduce, 191, 1);
-            Table.States (143).Productions := WisiToken.To_Vector (((287, 0), (287, 1), (287, 2), (287, 3)));
+            Table.States (142).Kernel := To_Vector (((191, 287, 0, True), (282, 287, 2, True), (283, 287, 3, True),
+            (284, 287, 2, True), (285, 287, 3, True), (286, 287, 2, True)));
+            Table.States (142).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 191, 1)));
+            Table.States (142).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (143), 10, Reduce, (287, 3), 1, null, null);
             Add_Action (Table.States (143), 20, Reduce, (287, 3), 1, null, null);
             Add_Action (Table.States (143), 21, Reduce, (287, 3), 1, null, null);
@@ -1645,8 +1690,9 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (143), 98, 295);
             Add_Error (Table.States (143));
             Add_Goto (Table.States (143), 288, 296);
-            Table.States (143).Minimal_Complete_Action := (Reduce, 287, 1);
-            Table.States (144).Productions := WisiToken.To_Vector (((320, 0), (321, 1)));
+            Table.States (143).Kernel := To_Vector (((287, 301, 3, False), (287, 301, 2, False), (287, 301, 2, False),
+            (287, 301, 0, False)));
+            Table.States (143).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 287, 1)));
             Add_Action (Table.States (144), 10, Reduce, (321, 1), 1, null, null);
             Add_Action (Table.States (144), 20, Reduce, (321, 1), 1, null, null);
             Add_Action (Table.States (144), 21, Reduce, (321, 1), 1, null, null);
@@ -1684,8 +1730,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (144), 99, 300);
             Add_Error (Table.States (144));
             Add_Goto (Table.States (144), 237, 301);
-            Table.States (144).Minimal_Complete_Action := (Reduce, 321, 1);
-            Table.States (145).Productions := WisiToken.To_Vector (((301, 1), (321, 0)));
+            Table.States (144).Kernel := To_Vector (((320, 320, 2, True), (321, 320, 0, False)));
+            Table.States (144).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 321, 1)));
             Add_Action (Table.States (145), 10, Reduce, (301, 1), 1, null, null);
             Add_Action (Table.States (145), 20, Reduce, (301, 1), 1, null, null);
             Add_Action (Table.States (145), 21, Reduce, (301, 1), 1, null, null);
@@ -1719,8 +1765,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (145), 98, Reduce, (301, 1), 1, null, null);
             Add_Error (Table.States (145));
             Add_Goto (Table.States (145), 130, 305);
-            Table.States (145).Minimal_Complete_Action := (Reduce, 301, 1);
-            Table.States (146).Productions := WisiToken.To_Vector ((1 => (301, 0)));
+            Table.States (145).Kernel := To_Vector (((301, 321, 0, False), (321, 321, 2, True)));
+            Table.States (145).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 301, 1)));
             Add_Action (Table.States (146), 3, 121);
             Add_Action (Table.States (146), 39, 122);
             Add_Action (Table.States (146), 40, 123);
@@ -1740,8 +1786,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (146), 293, 97);
             Add_Goto (Table.States (146), 320, 144);
             Add_Goto (Table.States (146), 321, 306);
-            Table.States (146).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (147).Productions := WisiToken.To_Vector ((1 => (161, 0)));
+            Table.States (146).Kernel := To_Vector ((0 => (301, 330, 1, False)));
+            Table.States (146).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (147), 3, 121);
             Add_Action (Table.States (147), 39, 122);
             Add_Action (Table.States (147), 40, 123);
@@ -1776,61 +1822,63 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (147), 320, 144);
             Add_Goto (Table.States (147), 321, 145);
             Add_Goto (Table.States (147), 330, 146);
-            Table.States (147).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (148).Productions := WisiToken.To_Vector ((1 => (161, 1)));
+            Table.States (147).Kernel := To_Vector ((0 => (161, 70, 1, False)));
+            Table.States (147).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (148), 96, 308);
             Add_Error (Table.States (148));
-            Table.States (148).Minimal_Complete_Action := (Shift, 96, 308);
-            Table.States (149).Productions := WisiToken.To_Vector ((1 => (220, 0)));
+            Table.States (148).Kernel := To_Vector ((0 => (161, 192, 1, False)));
+            Table.States (148).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 308)));
             Add_Action (Table.States (149), (72, 96), (220, 0), 1, null, identifier_opt_0_check'Access);
-            Table.States (149).Minimal_Complete_Action := (Reduce, 220, 1);
-            Table.States (150).Productions := WisiToken.To_Vector (((190, 0), (190, 1)));
+            Table.States (149).Kernel := To_Vector ((0 => (220, 104, 0, False)));
+            Table.States (149).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 1)));
             Add_Action (Table.States (150), 72, 309);
             Add_Action (Table.States (150), 96, 310);
             Add_Error (Table.States (150));
-            Table.States (150).Minimal_Complete_Action := (Shift, 96, 310);
-            Table.States (151).Productions := WisiToken.To_Vector (((163, 0), (230, 0), (230, 1), (230, 2), (230, 3),
-            (230, 4), (230, 5), (239, 5)));
+            Table.States (150).Kernel := To_Vector (((190, 220, 2, False), (190, 220, 1, False)));
+            Table.States (150).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 310)));
             Add_Action (Table.States (151), 33, 311);
             Add_Action (Table.States (151), 42, 312);
-            Add_Action (Table.States (151), 71, Reduce, (163, 0), 1, null, null, (239, 5), 1, name_5'Access,
-            name_5_check'Access);
+            Add_Action (Table.States (151), 71, Reduce, (163, 0), 1, null, null);
+            Add_Conflict (Table.States (151), 71, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (151), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (151), 81, 313);
             Add_Action (Table.States (151), 84, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (151), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (151), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (151));
-            Table.States (151).Minimal_Complete_Action := (Reduce, 163, 1);
-            Table.States (152).Productions := WisiToken.To_Vector (((163, 1), (239, 7)));
-            Add_Action (Table.States (152), 71, Reduce, (163, 1), 1, null, null, (239, 7), 1, null,
-            name_7_check'Access);
+            Table.States (151).Kernel := To_Vector (((163, 104, 0, False), (230, 104, 5, False), (230, 104, 4, False),
+            (230, 104, 3, False), (230, 104, 3, False), (230, 104, 2, False), (230, 104, 2, False), (239, 104, 0,
+            False)));
+            Table.States (151).Minimal_Complete_Actions := To_Vector (((Reduce, 163, 1), (Reduce, 239, 1)));
+            Add_Action (Table.States (152), 71, Reduce, (163, 1), 1, null, null);
+            Add_Conflict (Table.States (152), 71, (239, 7), 1, null, name_7_check'Access);
             Add_Action (Table.States (152), 76, Reduce, (239, 7), 1, null, name_7_check'Access);
             Add_Action (Table.States (152), 84, Reduce, (239, 7), 1, null, name_7_check'Access);
             Add_Action (Table.States (152), 101, Reduce, (239, 7), 1, null, name_7_check'Access);
             Add_Action (Table.States (152), 102, Reduce, (239, 7), 1, null, name_7_check'Access);
             Add_Error (Table.States (152));
-            Table.States (152).Minimal_Complete_Action := (Reduce, 163, 1);
-            Table.States (153).Productions := WisiToken.To_Vector (((121, 0), (239, 3)));
-            Add_Action (Table.States (153), 71, 314, (239, 3), 1, null, null);
+            Table.States (152).Kernel := To_Vector (((163, 105, 0, False), (239, 105, 0, False)));
+            Table.States (152).Minimal_Complete_Actions := To_Vector (((Reduce, 163, 1), (Reduce, 239, 1)));
+            Add_Action (Table.States (153), 71, 314);
+            Add_Conflict (Table.States (153), 71, (239, 3), 1, null, null);
             Add_Action (Table.States (153), 76, Reduce, (239, 3), 1, null, null);
             Add_Action (Table.States (153), 84, Reduce, (239, 3), 1, null, null);
             Add_Action (Table.States (153), 101, Reduce, (239, 3), 1, null, null);
             Add_Action (Table.States (153), 102, Reduce, (239, 3), 1, null, null);
             Add_Error (Table.States (153));
-            Table.States (153).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (154).Productions := WisiToken.To_Vector ((1 => (127, 0)));
+            Table.States (153).Kernel := To_Vector (((121, 128, 2, False), (239, 128, 0, True)));
+            Table.States (153).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
+            Table.States (153).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (154), 71, 315);
             Add_Error (Table.States (154));
-            Table.States (154).Minimal_Complete_Action := (Shift, 71, 315);
-            Table.States (155).Productions := WisiToken.To_Vector ((1 => (231, 0)));
+            Table.States (154).Kernel := To_Vector ((0 => (127, 163, 3, False)));
+            Table.States (154).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 71, 315)));
             Add_Action (Table.States (155), (1 =>  37), (231, 0), 1, null, null);
-            Table.States (155).Minimal_Complete_Action := (Reduce, 231, 1);
-            Table.States (156).Productions := WisiToken.To_Vector ((1 => (229, 1)));
+            Table.States (155).Kernel := To_Vector ((0 => (231, 230, 0, False)));
+            Table.States (155).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 231, 1)));
             Add_Action (Table.States (156), (1 =>  37), (229, 1), 2, iteration_scheme_1'Access, null);
-            Table.States (156).Minimal_Complete_Action := (Reduce, 229, 2);
-            Table.States (157).Productions := WisiToken.To_Vector (((128, 0), (182, 0), (239, 0), (239, 1), (272, 0),
-            (281, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (156).Kernel := To_Vector ((0 => (229, 231, 0, False)));
+            Table.States (156).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 229, 2)));
             Add_Action (Table.States (157), 71, 316);
             Add_Action (Table.States (157), 76, 235);
             Add_Action (Table.States (157), 84, 237);
@@ -1839,9 +1887,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (157));
             Add_Goto (Table.States (157), 115, 241);
             Add_Goto (Table.States (157), 322, 242);
-            Table.States (157).Minimal_Complete_Action := (Shift, 71, 316);
-            Table.States (158).Productions := WisiToken.To_Vector (((128, 0), (207, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (157).Kernel := To_Vector (((128, 239, 2, True), (182, 239, 4, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (281, 239, 13, False), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (157).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 71, 316)));
             Add_Action (Table.States (158), 58, 317);
             Add_Action (Table.States (158), 76, 318);
             Add_Action (Table.States (158), 84, 237);
@@ -1853,8 +1902,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (158), 252, 320);
             Add_Goto (Table.States (158), 291, 321);
             Add_Goto (Table.States (158), 322, 242);
-            Table.States (158).Minimal_Complete_Action := (Shift, 58, 317);
-            Table.States (159).Productions := WisiToken.To_Vector ((1 => (215, 2)));
+            Table.States (158).Kernel := To_Vector (((128, 239, 2, True), (207, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (158).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 58, 317)));
             Add_Action (Table.States (159), 104, 119);
             Add_Action (Table.States (159), 105, 33);
             Add_Action (Table.States (159), 106, 34);
@@ -1863,8 +1914,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (159), 239, 322);
             Add_Goto (Table.States (159), 272, 92);
             Add_Goto (Table.States (159), 293, 97);
-            Table.States (159).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (160).Productions := WisiToken.To_Vector ((1 => (215, 0)));
+            Table.States (159).Kernel := To_Vector ((0 => (215, 29, 4, False)));
+            Table.States (159).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (160), 104, 119);
             Add_Action (Table.States (160), 105, 33);
             Add_Action (Table.States (160), 106, 34);
@@ -1873,8 +1924,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (160), 239, 323);
             Add_Goto (Table.States (160), 272, 92);
             Add_Goto (Table.States (160), 293, 97);
-            Table.States (160).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (161).Productions := WisiToken.To_Vector ((1 => (215, 1)));
+            Table.States (160).Kernel := To_Vector ((0 => (215, 47, 4, False)));
+            Table.States (160).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (161), 104, 119);
             Add_Action (Table.States (161), 105, 33);
             Add_Action (Table.States (161), 106, 34);
@@ -1883,12 +1934,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (161), 239, 324);
             Add_Goto (Table.States (161), 272, 92);
             Add_Goto (Table.States (161), 293, 97);
-            Table.States (161).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (162).Productions := WisiToken.To_Vector (((201, 0), (201, 1), (201, 2)));
+            Table.States (161).Kernel := To_Vector ((0 => (215, 50, 4, False)));
+            Table.States (161).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (162), 104, 325);
             Add_Error (Table.States (162));
-            Table.States (162).Minimal_Complete_Action := (Shift, 104, 325);
-            Table.States (163).Productions := WisiToken.To_Vector (((200, 0), (200, 1), (200, 2), (200, 3), (204, 0)));
+            Table.States (162).Kernel := To_Vector (((201, 69, 4, False), (201, 69, 4, False), (201, 69, 2, False)));
+            Table.States (162).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 325)));
             Add_Action (Table.States (163), 29, 7);
             Add_Action (Table.States (163), 47, 326);
             Add_Action (Table.States (163), 50, 18);
@@ -1896,23 +1947,24 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (163), 207, 61);
             Add_Goto (Table.States (163), 262, 87);
             Add_Goto (Table.States (163), 312, 327);
-            Table.States (163).Minimal_Complete_Action := (Shift, 50, 18);
-            Table.States (164).Productions := WisiToken.To_Vector ((1 => (219, 1)));
-            Add_Action (Table.States (164), (81, 83), (219, 1), 1, null, null);
-            Table.States (164).Minimal_Complete_Action := (Reduce, 219, 1);
-            Table.States (165).Productions := WisiToken.To_Vector ((1 => (212, 0)));
+            Table.States (163).Kernel := To_Vector (((200, 74, 6, False), (200, 74, 5, False), (200, 74, 5, False),
+            (200, 74, 3, False), (204, 74, 6, False)));
+            Table.States (163).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 50, 18)));
+            Add_Action (Table.States (164), (81, 83), (219, 1), 1, identifier_list_1'Access, null);
+            Table.States (164).Kernel := To_Vector ((0 => (219, 104, 0, False)));
+            Table.States (164).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 219, 1)));
             Add_Action (Table.States (165), (29, 47, 48, 50, 69, 71, 74, 104), (212, 0), 1, null, null);
-            Table.States (165).Minimal_Complete_Action := (Reduce, 212, 1);
-            Table.States (166).Productions := WisiToken.To_Vector ((1 => (212, 2)));
+            Table.States (165).Kernel := To_Vector ((0 => (212, 198, 0, False)));
+            Table.States (165).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 212, 1)));
             Add_Action (Table.States (166), (29, 47, 48, 50, 69, 71, 74, 104), (212, 2), 1, null, null);
-            Table.States (166).Minimal_Complete_Action := (Reduce, 212, 1);
-            Table.States (167).Productions := WisiToken.To_Vector ((1 => (212, 1)));
+            Table.States (166).Kernel := To_Vector ((0 => (212, 200, 0, False)));
+            Table.States (166).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 212, 1)));
             Add_Action (Table.States (167), (29, 47, 48, 50, 69, 71, 74, 104), (212, 1), 1, null, null);
-            Table.States (167).Minimal_Complete_Action := (Reduce, 212, 1);
-            Table.States (168).Productions := WisiToken.To_Vector ((1 => (212, 3)));
+            Table.States (167).Kernel := To_Vector ((0 => (212, 201, 0, False)));
+            Table.States (167).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 212, 1)));
             Add_Action (Table.States (168), (29, 47, 48, 50, 69, 71, 74, 104), (212, 3), 1, null, null);
-            Table.States (168).Minimal_Complete_Action := (Reduce, 212, 1);
-            Table.States (169).Productions := WisiToken.To_Vector (((210, 0), (211, 0)));
+            Table.States (168).Kernel := To_Vector ((0 => (212, 204, 0, False)));
+            Table.States (168).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 212, 1)));
             Add_Action (Table.States (169), 29, Reduce, (210, 0), 2, generic_formal_part_0'Access, null);
             Add_Action (Table.States (169), 47, Reduce, (210, 0), 2, generic_formal_part_0'Access, null);
             Add_Action (Table.States (169), 48, 16);
@@ -1930,34 +1982,36 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (169), 219, 171);
             Add_Goto (Table.States (169), 257, 172);
             Add_Goto (Table.States (169), 331, 173);
-            Table.States (169).Minimal_Complete_Action := (Reduce, 210, 2);
-            Table.States (170).Productions := WisiToken.To_Vector ((1 => (211, 1)));
+            Table.States (169).Kernel := To_Vector (((210, 211, 0, False), (211, 211, 3, True)));
+            Table.States (169).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 210, 2)));
             Add_Action (Table.States (170), (29, 47, 48, 50, 69, 71, 74, 104), (211, 1), 1, null, null);
-            Table.States (170).Minimal_Complete_Action := (Reduce, 211, 1);
-            Table.States (171).Productions := WisiToken.To_Vector (((198, 0), (198, 1), (198, 2), (198, 3), (219, 0)));
+            Table.States (170).Kernel := To_Vector ((0 => (211, 212, 0, False)));
+            Table.States (170).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 211, 1)));
             Add_Action (Table.States (171), 81, 329);
             Add_Action (Table.States (171), 83, 234);
             Add_Error (Table.States (171));
-            Table.States (171).Minimal_Complete_Action := (Shift, 81, 329);
-            Table.States (172).Productions := WisiToken.To_Vector ((1 => (212, 4)));
+            Table.States (171).Kernel := To_Vector (((198, 219, 4, False), (198, 219, 5, False), (198, 219, 3, False),
+            (198, 219, 4, False), (219, 219, 2, True)));
+            Table.States (171).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 81, 329)));
             Add_Action (Table.States (172), (29, 47, 48, 50, 69, 71, 74, 104), (212, 4), 1, null, null);
-            Table.States (172).Minimal_Complete_Action := (Reduce, 212, 1);
-            Table.States (173).Productions := WisiToken.To_Vector ((1 => (212, 5)));
+            Table.States (172).Kernel := To_Vector ((0 => (212, 257, 0, False)));
+            Table.States (172).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 212, 1)));
             Add_Action (Table.States (173), (29, 47, 48, 50, 69, 71, 74, 104), (212, 5), 1, null, null);
-            Table.States (173).Minimal_Complete_Action := (Reduce, 212, 1);
-            Table.States (174).Productions := WisiToken.To_Vector ((1 => (303, 3)));
+            Table.States (173).Kernel := To_Vector ((0 => (212, 331, 0, False)));
+            Table.States (173).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 212, 1)));
             Add_Action (Table.States (174), 96, 330);
             Add_Error (Table.States (174));
-            Table.States (174).Minimal_Complete_Action := (Shift, 96, 330);
-            Table.States (175).Productions := WisiToken.To_Vector (((222, 0), (222, 1), (222, 2), (222, 3)));
+            Table.States (174).Kernel := To_Vector ((0 => (303, 104, 1, False)));
+            Table.States (174).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 330)));
             Add_Action (Table.States (175), 68, 331);
             Add_Error (Table.States (175));
-            Table.States (175).Minimal_Complete_Action := (Shift, 68, 331);
-            Table.States (176).Productions := WisiToken.To_Vector ((1 => (332, 0)));
+            Table.States (175).Kernel := To_Vector (((222, 192, 7, False), (222, 192, 5, False), (222, 192, 6, False),
+            (222, 192, 4, False)));
+            Table.States (175).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 68, 331)));
             Add_Action (Table.States (176), 74, 332);
             Add_Error (Table.States (176));
-            Table.States (176).Minimal_Complete_Action := (Shift, 74, 332);
-            Table.States (177).Productions := WisiToken.To_Vector ((1 => (332, 1)));
+            Table.States (176).Kernel := To_Vector ((0 => (332, 49, 3, False)));
+            Table.States (176).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 332)));
             Add_Action (Table.States (177), 104, 119);
             Add_Action (Table.States (177), 105, 33);
             Add_Action (Table.States (177), 106, 34);
@@ -1967,16 +2021,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (177), 239, 219);
             Add_Goto (Table.States (177), 272, 92);
             Add_Goto (Table.States (177), 293, 97);
-            Table.States (177).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (178).Productions := WisiToken.To_Vector ((1 => (246, 0)));
+            Table.States (177).Kernel := To_Vector ((0 => (332, 74, 2, False)));
+            Table.States (177).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (178), (25, 29, 50), (246, 0), 2, overriding_indicator_opt_0'Access, null);
-            Table.States (178).Minimal_Complete_Action := (Reduce, 246, 2);
-            Table.States (179).Productions := WisiToken.To_Vector ((1 => (303, 0)));
+            Table.States (178).Kernel := To_Vector ((0 => (246, 46, 0, False)));
+            Table.States (178).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 246, 2)));
             Add_Action (Table.States (179), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 0), 2, simple_statement_0'Access, null);
-            Table.States (179).Minimal_Complete_Action := (Reduce, 303, 2);
-            Table.States (180).Productions := WisiToken.To_Vector (((247, 0), (247, 1), (248, 0)));
+            Table.States (179).Kernel := To_Vector ((0 => (303, 96, 0, False)));
+            Table.States (179).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 2)));
             Add_Action (Table.States (180), 104, 119);
             Add_Action (Table.States (180), 105, 33);
             Add_Action (Table.States (180), 106, 34);
@@ -1985,10 +2039,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (180), 239, 334);
             Add_Goto (Table.States (180), 272, 92);
             Add_Goto (Table.States (180), 293, 97);
-            Table.States (180).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (181).Productions := WisiToken.To_Vector (((128, 0), (213, 0), (239, 0), (239, 1), (250, 0),
-            (251, 0), (251, 1), (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
-            Add_Action (Table.States (181), 35, 335, (122, 1), 0, null, null);
+            Table.States (180).Kernel := To_Vector (((247, 14, 5, False), (247, 14, 4, False), (248, 14, 4, False)));
+            Table.States (180).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Add_Action (Table.States (181), 35, 335);
+            Add_Conflict (Table.States (181), 35, (122, 1), 0, null, null);
             Add_Action (Table.States (181), 56, 336);
             Add_Action (Table.States (181), 74, 337);
             Add_Action (Table.States (181), 76, 235);
@@ -1999,13 +2053,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (181), 115, 241);
             Add_Goto (Table.States (181), 122, 338);
             Add_Goto (Table.States (181), 322, 242);
-            Table.States (181).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (182).Productions := WisiToken.To_Vector (((257, 0), (257, 1), (257, 2)));
+            Table.States (181).Kernel := To_Vector (((128, 239, 2, True), (213, 239, 4, False), (239, 239, 5, True),
+            (239, 239, 2, True), (250, 239, 3, False), (251, 239, 3, False), (251, 239, 2, False), (272, 239, 3, True),
+            (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (181).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (182), 76, 339);
             Add_Action (Table.States (182), 96, 340);
             Add_Error (Table.States (182));
-            Table.States (182).Minimal_Complete_Action := (Shift, 96, 340);
-            Table.States (183).Productions := WisiToken.To_Vector (((121, 0), (127, 0), (182, 0), (281, 0)));
+            Table.States (182).Kernel := To_Vector (((257, 104, 3, False), (257, 104, 5, False), (257, 104, 1,
+            False)));
+            Table.States (182).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 340)));
             Add_Action (Table.States (183), 104, 341);
             Add_Action (Table.States (183), 105, 152);
             Add_Action (Table.States (183), 106, 34);
@@ -2015,8 +2072,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (183), 239, 157);
             Add_Goto (Table.States (183), 272, 92);
             Add_Goto (Table.States (183), 293, 97);
-            Table.States (183).Minimal_Complete_Action := (Shift, 104, 341);
-            Table.States (184).Productions := WisiToken.To_Vector ((1 => (332, 2)));
+            Table.States (183).Kernel := To_Vector (((121, 28, 5, False), (127, 28, 4, False), (182, 28, 5, False),
+            (281, 28, 14, False)));
+            Table.States (183).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 341)));
             Add_Action (Table.States (184), 104, 119);
             Add_Action (Table.States (184), 105, 33);
             Add_Action (Table.States (184), 106, 34);
@@ -2026,19 +2084,20 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (184), 239, 219);
             Add_Goto (Table.States (184), 272, 92);
             Add_Goto (Table.States (184), 293, 97);
-            Table.States (184).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (185).Productions := WisiToken.To_Vector (((219, 1), (245, 0), (245, 1), (245, 2)));
-            Add_Action (Table.States (185), 81, 343, (219, 1), 1, null, null);
-            Add_Action (Table.States (185), 83, Reduce, (219, 1), 1, null, null);
+            Table.States (184).Kernel := To_Vector ((0 => (332, 74, 2, False)));
+            Table.States (184).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Add_Action (Table.States (185), 81, 343);
+            Add_Conflict (Table.States (185), 81, (219, 1), 1, identifier_list_1'Access, null);
+            Add_Action (Table.States (185), 83, Reduce, (219, 1), 1, identifier_list_1'Access, null);
             Add_Error (Table.States (185));
-            Table.States (185).Minimal_Complete_Action := (Reduce, 219, 1);
-            Table.States (186).Productions := WisiToken.To_Vector ((1 => (142, 2)));
+            Table.States (185).Kernel := To_Vector (((219, 104, 0, False), (245, 104, 5, False), (245, 104, 6, False),
+            (245, 104, 5, False)));
+            Table.States (185).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 219, 1)));
             Add_Action (Table.States (186), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (142, 2), 2,
             compilation_unit_2'Access, null);
-            Table.States (186).Minimal_Complete_Action := (Reduce, 142, 2);
-            Table.States (187).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (262, 0), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (186).Kernel := To_Vector ((0 => (142, 157, 0, False)));
+            Table.States (186).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 142, 2)));
             Add_Action (Table.States (187), 35, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (187), 74, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (187), 76, 318);
@@ -2051,28 +2110,29 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (187), 199, 344);
             Add_Goto (Table.States (187), 253, 345);
             Add_Goto (Table.States (187), 322, 242);
-            Table.States (187).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (188).Productions := WisiToken.To_Vector (((264, 0), (265, 0)));
+            Table.States (187).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (262, 239, 0, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (187).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (188), 104, 346);
             Add_Error (Table.States (188));
-            Table.States (188).Minimal_Complete_Action := (Shift, 104, 346);
-            Table.States (189).Productions := WisiToken.To_Vector (((271, 0), (271, 1)));
+            Table.States (188).Kernel := To_Vector (((264, 14, 4, False), (265, 14, 4, False)));
+            Table.States (188).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 346)));
             Add_Action (Table.States (189), 104, 347);
             Add_Error (Table.States (189));
-            Table.States (189).Minimal_Complete_Action := (Shift, 104, 347);
-            Table.States (190).Productions := WisiToken.To_Vector (((304, 0), (304, 1)));
+            Table.States (189).Kernel := To_Vector (((271, 69, 7, False), (271, 69, 4, False)));
+            Table.States (189).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 347)));
             Add_Action (Table.States (190), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (190), 74, 337);
             Add_Error (Table.States (190));
             Add_Goto (Table.States (190), 122, 348);
-            Table.States (190).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (191).Productions := WisiToken.To_Vector ((1 => (276, 2)));
+            Table.States (190).Kernel := To_Vector (((304, 104, 6, False), (304, 104, 3, False)));
+            Table.States (190).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (191), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (276, 2), 2, raise_statement_2'Access, null);
-            Table.States (191).Minimal_Complete_Action := (Reduce, 276, 2);
-            Table.States (192).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (276, 0),
-            (276, 1), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (191).Kernel := To_Vector ((0 => (276, 96, 0, False)));
+            Table.States (191).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 276, 2)));
             Add_Action (Table.States (192), 74, 349);
             Add_Action (Table.States (192), 76, 235);
             Add_Action (Table.States (192), 84, 237);
@@ -2082,9 +2142,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (192));
             Add_Goto (Table.States (192), 115, 241);
             Add_Goto (Table.States (192), 322, 242);
-            Table.States (192).Minimal_Complete_Action := (Shift, 96, 350);
-            Table.States (193).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (290, 0),
-            (290, 1), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (192).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (276, 239, 2, False), (276, 239, 1, False), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (192).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 350)));
             Add_Action (Table.States (193), 74, 351);
             Add_Action (Table.States (193), 76, 235);
             Add_Action (Table.States (193), 84, 237);
@@ -2094,8 +2155,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (193));
             Add_Goto (Table.States (193), 115, 241);
             Add_Goto (Table.States (193), 322, 242);
-            Table.States (193).Minimal_Complete_Action := (Shift, 96, 352);
-            Table.States (194).Productions := WisiToken.To_Vector (((194, 0), (194, 1), (239, 5)));
+            Table.States (193).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (290, 239, 3, False), (290, 239, 1, False), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (193).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 352)));
             Add_Action (Table.States (194), 10, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (194), 33, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (194), 38, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
@@ -2122,21 +2185,22 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (194), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (194), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (194));
-            Table.States (194).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (195).Productions := WisiToken.To_Vector ((1 => (302, 0)));
+            Table.States (194).Kernel := To_Vector (((194, 104, 3, False), (194, 104, 2, False), (239, 104, 0,
+            False)));
+            Table.States (194).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (195), 96, 354);
             Add_Error (Table.States (195));
-            Table.States (195).Minimal_Complete_Action := (Shift, 96, 354);
-            Table.States (196).Productions := WisiToken.To_Vector (((195, 0), (196, 1)));
+            Table.States (195).Kernel := To_Vector ((0 => (302, 192, 1, False)));
+            Table.States (195).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 354)));
             Add_Action (Table.States (196), 21, Reduce, (195, 0), 1, null, null);
             Add_Action (Table.States (196), 96, 355);
             Add_Error (Table.States (196));
-            Table.States (196).Minimal_Complete_Action := (Reduce, 195, 1);
-            Table.States (197).Productions := WisiToken.To_Vector ((1 => (196, 0)));
+            Table.States (196).Kernel := To_Vector (((195, 194, 0, False), (196, 194, 1, False)));
+            Table.States (196).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 195, 1)));
             Add_Action (Table.States (197), 21, 356);
             Add_Error (Table.States (197));
-            Table.States (197).Minimal_Complete_Action := (Shift, 21, 356);
-            Table.States (198).Productions := WisiToken.To_Vector ((1 => (315, 0)));
+            Table.States (197).Kernel := To_Vector ((0 => (196, 195, 4, False)));
+            Table.States (197).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 21, 356)));
             Add_Action (Table.States (198), 104, 119);
             Add_Action (Table.States (198), 105, 33);
             Add_Action (Table.States (198), 106, 34);
@@ -2145,12 +2209,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (198), 239, 357);
             Add_Goto (Table.States (198), 272, 92);
             Add_Goto (Table.States (198), 293, 97);
-            Table.States (198).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (199).Productions := WisiToken.To_Vector ((1 => (295, 4)));
+            Table.States (198).Kernel := To_Vector ((0 => (315, 76, 8, False)));
+            Table.States (198).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (199), 96, 358);
             Add_Error (Table.States (199));
-            Table.States (199).Minimal_Complete_Action := (Shift, 96, 358);
-            Table.States (200).Productions := WisiToken.To_Vector (((295, 0), (295, 1), (295, 2)));
+            Table.States (199).Kernel := To_Vector ((0 => (295, 67, 1, False)));
+            Table.States (199).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 358)));
             Add_Action (Table.States (200), 3, 121);
             Add_Action (Table.States (200), 39, 122);
             Add_Action (Table.States (200), 40, 123);
@@ -2185,8 +2249,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (200), 320, 144);
             Add_Goto (Table.States (200), 321, 145);
             Add_Goto (Table.States (200), 330, 146);
-            Table.States (200).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (201).Productions := WisiToken.To_Vector ((1 => (295, 3)));
+            Table.States (200).Kernel := To_Vector (((295, 72, 4, False), (295, 72, 3, False), (295, 72, 3, False)));
+            Table.States (200).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
+         end Subr_3;
+         procedure Subr_4
+         is begin
             Add_Action (Table.States (201), 4, 1);
             Add_Action (Table.States (201), 5, 2);
             Add_Action (Table.States (201), 13, Reduce, (132, 1), 0, null, null);
@@ -2244,14 +2311,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (201), 303, 101);
             Add_Goto (Table.States (201), 306, 363);
             Add_Goto (Table.States (201), 323, 114);
-            Table.States (201).Minimal_Complete_Action := (Reduce, 300, 0);
-         end Subr_3;
-         procedure Subr_4
-         is begin
-            Table.States (202).Productions := WisiToken.To_Vector ((1 => (295, 5)));
+            Table.States (201).Kernel := To_Vector ((0 => (295, 113, 0, False)));
+            Table.States (201).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (202), (22, 24, 43), (295, 5), 1, null, null);
-            Table.States (202).Minimal_Complete_Action := (Reduce, 295, 1);
-            Table.States (203).Productions := WisiToken.To_Vector (((160, 0), (324, 2)));
+            Table.States (202).Kernel := To_Vector ((0 => (295, 160, 0, False)));
+            Table.States (202).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 295, 1)));
             Add_Action (Table.States (203), 4, 1);
             Add_Action (Table.States (203), 5, 2);
             Add_Action (Table.States (203), 13, Reduce, (132, 1), 0, null, null);
@@ -2310,14 +2374,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (203), 303, 101);
             Add_Goto (Table.States (203), 306, 363);
             Add_Goto (Table.States (203), 323, 114);
-            Table.States (203).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (204).Productions := WisiToken.To_Vector (((152, 0), (323, 0)));
+            Table.States (203).Kernel := To_Vector (((160, 161, 0, False), (324, 161, 0, False)));
+            Table.States (203).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (204), 22, 365);
             Add_Action (Table.States (204), 43, 366);
             Add_Error (Table.States (204));
-            Table.States (204).Minimal_Complete_Action := (Shift, 22, 365);
-            Table.States (205).Productions := WisiToken.To_Vector (((128, 0), (178, 1), (239, 0), (239, 1), (261, 0),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3), (324, 1)));
+            Table.States (204).Kernel := To_Vector (((152, 178, 4, False), (323, 178, 6, False)));
+            Table.States (204).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 22, 365)));
             Add_Action (Table.States (205), 4, 1);
             Add_Action (Table.States (205), 5, 2);
             Add_Action (Table.States (205), 13, Reduce, (132, 1), 0, null, null);
@@ -2382,8 +2445,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (205), 306, 363);
             Add_Goto (Table.States (205), 322, 242);
             Add_Goto (Table.States (205), 323, 114);
-            Table.States (205).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (206).Productions := WisiToken.To_Vector (((178, 0), (324, 0)));
+            Table.States (205).Kernel := To_Vector (((128, 239, 2, True), (178, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (261, 239, 1, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True), (324, 239, 0, False)));
+            Table.States (205).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (206), 4, 1);
             Add_Action (Table.States (206), 5, 2);
             Add_Action (Table.States (206), 13, Reduce, (132, 1), 0, null, null);
@@ -2441,56 +2506,58 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (206), 303, 101);
             Add_Goto (Table.States (206), 306, 363);
             Add_Goto (Table.States (206), 323, 114);
-            Table.States (206).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (207).Productions := WisiToken.To_Vector ((1 => (296, 1)));
+            Table.States (206).Kernel := To_Vector (((178, 261, 0, False), (324, 261, 0, False)));
+            Table.States (206).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (207), (22, 24, 43), (296, 1), 1, select_alternative_list_1'Access, null);
-            Table.States (207).Minimal_Complete_Action := (Reduce, 296, 1);
-            Table.States (208).Productions := WisiToken.To_Vector (((296, 0), (297, 0)));
+            Table.States (207).Kernel := To_Vector ((0 => (296, 295, 0, False)));
+            Table.States (207).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 296, 1)));
             Add_Action (Table.States (208), 22, Reduce, (297, 0), 1, null, null);
             Add_Action (Table.States (208), 24, Reduce, (297, 0), 1, null, null);
             Add_Action (Table.States (208), 43, 369);
             Add_Error (Table.States (208));
-            Table.States (208).Minimal_Complete_Action := (Reduce, 297, 1);
-            Table.States (209).Productions := WisiToken.To_Vector (((294, 0), (294, 1)));
+            Table.States (208).Kernel := To_Vector (((296, 296, 3, True), (297, 296, 0, False)));
+            Table.States (208).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 297, 1)));
             Add_Action (Table.States (209), 22, 370);
             Add_Action (Table.States (209), 24, 371);
             Add_Error (Table.States (209));
-            Table.States (209).Minimal_Complete_Action := (Shift, 24, 371);
-            Table.States (210).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (209).Kernel := To_Vector (((294, 297, 4, False), (294, 297, 3, False)));
+            Table.States (209).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 371)));
             Add_Action (Table.States (210), 68, 372);
             Add_Error (Table.States (210));
-            Table.States (210).Minimal_Complete_Action := (Shift, 68, 372);
-            Table.States (211).Productions := WisiToken.To_Vector ((1 => (313, 0)));
+            Table.States (210).Kernel := To_Vector ((0 => (126, 324, 5, False)));
+            Table.States (210).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 68, 372)));
             Add_Action (Table.States (211), 35, 373);
             Add_Error (Table.States (211));
-            Table.States (211).Minimal_Complete_Action := (Shift, 35, 373);
-            Table.States (212).Productions := WisiToken.To_Vector (((316, 0), (317, 0)));
+            Table.States (211).Kernel := To_Vector ((0 => (313, 104, 3, False)));
+            Table.States (211).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 373)));
             Add_Action (Table.States (212), 104, 374);
             Add_Error (Table.States (212));
-            Table.States (212).Minimal_Complete_Action := (Shift, 104, 374);
-            Table.States (213).Productions := WisiToken.To_Vector (((319, 0), (319, 1), (319, 2)));
+            Table.States (212).Kernel := To_Vector (((316, 14, 5, False), (317, 14, 4, False)));
+            Table.States (212).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 374)));
             Add_Action (Table.States (213), 104, 375);
             Add_Error (Table.States (213));
-            Table.States (213).Minimal_Complete_Action := (Shift, 104, 375);
-            Table.States (214).Productions := WisiToken.To_Vector (((305, 0), (305, 1), (305, 2)));
+            Table.States (213).Kernel := To_Vector (((319, 69, 7, False), (319, 69, 4, False), (319, 69, 2, False)));
+            Table.States (213).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 375)));
             Add_Action (Table.States (214), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (214), 74, 337);
             Add_Action (Table.States (214), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (214));
             Add_Goto (Table.States (214), 122, 376);
-            Table.States (214).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (215).Productions := WisiToken.To_Vector (((206, 0), (223, 0), (223, 1), (259, 0), (260, 0)));
+            Table.States (214).Kernel := To_Vector (((305, 104, 6, False), (305, 104, 3, False), (305, 104, 1,
+            False)));
+            Table.States (214).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (215), 35, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (215), 76, 377);
             Add_Action (Table.States (215), 96, Reduce, (169, 2), 0, null, null);
             Add_Error (Table.States (215));
             Add_Goto (Table.States (215), 169, 378);
-            Table.States (215).Minimal_Complete_Action := (Reduce, 169, 0);
-            Table.States (216).Productions := WisiToken.To_Vector ((1 => (331, 0)));
+            Table.States (215).Kernel := To_Vector (((206, 104, 3, False), (223, 104, 3, False), (223, 104, 1, False),
+            (259, 104, 6, False), (260, 104, 3, False)));
+            Table.States (215).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 169, 0)));
             Add_Action (Table.States (216), 69, 379);
             Add_Error (Table.States (216));
-            Table.States (216).Minimal_Complete_Action := (Shift, 69, 379);
-            Table.States (217).Productions := WisiToken.To_Vector ((1 => (331, 1)));
+            Table.States (216).Kernel := To_Vector ((0 => (331, 9, 3, False)));
+            Table.States (216).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 69, 379)));
             Add_Action (Table.States (217), 104, 119);
             Add_Action (Table.States (217), 105, 33);
             Add_Action (Table.States (217), 106, 34);
@@ -2500,14 +2567,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (217), 239, 219);
             Add_Goto (Table.States (217), 272, 92);
             Add_Goto (Table.States (217), 293, 97);
-            Table.States (217).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (218).Productions := WisiToken.To_Vector (((238, 0), (331, 2)));
+            Table.States (217).Kernel := To_Vector ((0 => (331, 69, 2, False)));
+            Table.States (217).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (218), 83, 381);
             Add_Action (Table.States (218), 96, 382);
             Add_Error (Table.States (218));
-            Table.States (218).Minimal_Complete_Action := (Shift, 96, 382);
-            Table.States (219).Productions := WisiToken.To_Vector (((128, 0), (238, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (218).Kernel := To_Vector (((238, 238, 2, True), (331, 238, 1, False)));
+            Table.States (218).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 382)));
             Add_Action (Table.States (219), 76, 235);
             Add_Action (Table.States (219), 83, Reduce, (238, 1), 1, null, null);
             Add_Action (Table.States (219), 84, 237);
@@ -2517,20 +2583,22 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (219));
             Add_Goto (Table.States (219), 115, 241);
             Add_Goto (Table.States (219), 322, 242);
-            Table.States (219).Minimal_Complete_Action := (Reduce, 238, 1);
-            Table.States (220).Productions := WisiToken.To_Vector ((1 => (229, 0)));
+            Table.States (219).Kernel := To_Vector (((128, 239, 2, True), (238, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (219).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 238, 1)));
             Add_Action (Table.States (220), (1 =>  37), (229, 0), 2, iteration_scheme_0'Access, null);
-            Table.States (220).Minimal_Complete_Action := (Reduce, 229, 2);
-            Table.States (221).Productions := WisiToken.To_Vector (((238, 0), (332, 3)));
+            Table.States (220).Kernel := To_Vector ((0 => (229, 192, 0, False)));
+            Table.States (220).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 229, 2)));
             Add_Action (Table.States (221), 83, 381);
             Add_Action (Table.States (221), 96, 383);
             Add_Error (Table.States (221));
-            Table.States (221).Minimal_Complete_Action := (Shift, 96, 383);
-            Table.States (222).Productions := WisiToken.To_Vector ((1 => (217, 0)));
+            Table.States (221).Kernel := To_Vector (((238, 238, 2, True), (332, 238, 1, False)));
+            Table.States (221).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 383)));
             Add_Action (Table.States (222), 90, 384);
             Add_Error (Table.States (222));
-            Table.States (222).Minimal_Complete_Action := (Shift, 90, 384);
-            Table.States (223).Productions := WisiToken.To_Vector (((131, 0), (245, 0), (245, 1), (245, 2)));
+            Table.States (222).Kernel := To_Vector ((0 => (217, 104, 1, False)));
+            Table.States (222).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 90, 384)));
             Add_Action (Table.States (223), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (223), 13, Reduce, (131, 0), 2, block_label_0'Access, block_label_0_check'Access);
             Add_Action (Table.States (223), 17, Reduce, (131, 0), 2, block_label_0'Access, block_label_0_check'Access);
@@ -2545,8 +2613,9 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (223));
             Add_Goto (Table.States (223), 114, 387);
             Add_Goto (Table.States (223), 241, 388);
-            Table.States (223).Minimal_Complete_Action := (Reduce, 131, 2);
-            Table.States (224).Productions := WisiToken.To_Vector ((1 => (133, 1)));
+            Table.States (223).Kernel := To_Vector (((131, 81, 0, False), (245, 81, 4, False), (245, 81, 5, False),
+            (245, 81, 4, False)));
+            Table.States (223).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 131, 2)));
             Add_Action (Table.States (224), 4, 1);
             Add_Action (Table.States (224), 5, 2);
             Add_Action (Table.States (224), 13, Reduce, (132, 1), 0, null, null);
@@ -2604,8 +2673,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (224), 303, 101);
             Add_Goto (Table.States (224), 306, 363);
             Add_Goto (Table.States (224), 323, 114);
-            Table.States (224).Minimal_Complete_Action := (Reduce, 218, 0);
-            Table.States (225).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (224).Kernel := To_Vector ((0 => (133, 13, 2, False)));
+            Table.States (224).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (225), 13, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (225), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (225), 28, 183);
@@ -2676,15 +2745,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (225), 319, 113);
             Add_Goto (Table.States (225), 325, 115);
             Add_Goto (Table.States (225), 331, 116);
-            Table.States (225).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (226).Productions := WisiToken.To_Vector ((1 => (229, 1)));
+            Table.States (225).Kernel := To_Vector ((0 => (133, 17, 3, False)));
+            Table.States (225).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (226), 37, Reduce, (231, 1), 0, null, null);
             Add_Action (Table.States (226), 104, 395);
             Add_Error (Table.States (226));
             Add_Goto (Table.States (226), 230, 155);
             Add_Goto (Table.States (226), 231, 156);
-            Table.States (226).Minimal_Complete_Action := (Reduce, 231, 0);
-            Table.States (227).Productions := WisiToken.To_Vector ((1 => (232, 1)));
+            Table.States (226).Kernel := To_Vector ((0 => (229, 28, 0, False)));
+            Table.States (226).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 231, 0)));
             Add_Action (Table.States (227), 4, 1);
             Add_Action (Table.States (227), 5, 2);
             Add_Action (Table.States (227), 13, Reduce, (132, 1), 0, null, null);
@@ -2740,17 +2809,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (227), 303, 101);
             Add_Goto (Table.States (227), 306, 363);
             Add_Goto (Table.States (227), 323, 114);
-            Table.States (227).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (228).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (227).Kernel := To_Vector ((0 => (232, 37, 3, False)));
+            Table.States (227).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (228), 37, 397);
             Add_Error (Table.States (228));
-            Table.States (228).Minimal_Complete_Action := (Shift, 37, 397);
-            Table.States (229).Productions := WisiToken.To_Vector ((1 => (143, 0)));
+            Table.States (228).Kernel := To_Vector ((0 => (232, 229, 4, False)));
+            Table.States (228).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 37, 397)));
             Add_Action (Table.States (229), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (143, 0), 2,
             compilation_unit_list_0'Access, null);
-            Table.States (229).Minimal_Complete_Action := (Reduce, 143, 2);
-            Table.States (230).Productions := WisiToken.To_Vector (((251, 0), (251, 1)));
+            Table.States (229).Kernel := To_Vector ((0 => (143, 142, 0, True)));
+            Table.States (229).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 143, 2)));
+            Table.States (229).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (230), 104, 119);
             Add_Action (Table.States (230), 105, 33);
             Add_Action (Table.States (230), 106, 34);
@@ -2759,23 +2829,23 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (230), 239, 398);
             Add_Goto (Table.States (230), 272, 92);
             Add_Goto (Table.States (230), 293, 97);
-            Table.States (230).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (231).Productions := WisiToken.To_Vector ((1 => (214, 0)));
+            Table.States (230).Kernel := To_Vector (((251, 47, 4, False), (251, 47, 3, False)));
+            Table.States (230).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (231), 96, 399);
             Add_Error (Table.States (231));
-            Table.States (231).Minimal_Complete_Action := (Shift, 96, 399);
-            Table.States (232).Productions := WisiToken.To_Vector ((1 => (216, 0)));
+            Table.States (231).Kernel := To_Vector ((0 => (214, 251, 1, False)));
+            Table.States (231).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 399)));
             Add_Action (Table.States (232), 74, 337);
             Add_Action (Table.States (232), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (232));
             Add_Goto (Table.States (232), 122, 400);
-            Table.States (232).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (233).Productions := WisiToken.To_Vector (((157, 9), (186, 0), (244, 0), (244, 1), (244, 2),
-            (244, 3), (244, 4), (244, 5)));
+            Table.States (232).Kernel := To_Vector ((0 => (216, 312, 1, False)));
+            Table.States (232).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (233), 7, Reduce, (118, 1), 0, null, null);
             Add_Action (Table.States (233), 8, 401);
             Add_Action (Table.States (233), 11, Reduce, (118, 1), 0, null, null);
-            Add_Action (Table.States (233), 16, 402, (118, 1), 0, null, null);
+            Add_Action (Table.States (233), 16, 402);
+            Add_Conflict (Table.States (233), 16, (118, 1), 0, null, null);
             Add_Action (Table.States (233), 26, 403);
             Add_Action (Table.States (233), 40, Reduce, (118, 1), 0, null, null);
             Add_Action (Table.States (233), 74, Reduce, (118, 1), 0, null, null);
@@ -2786,12 +2856,14 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (233), 106, Reduce, (118, 1), 0, null, null);
             Add_Error (Table.States (233));
             Add_Goto (Table.States (233), 118, 404);
-            Table.States (233).Minimal_Complete_Action := (Shift, 26, 403);
-            Table.States (234).Productions := WisiToken.To_Vector ((1 => (219, 0)));
+            Table.States (233).Kernel := To_Vector (((157, 81, 3, False), (186, 81, 2, False), (244, 81, 3, False),
+            (244, 81, 4, False), (244, 81, 10, False), (244, 81, 2, False), (244, 81, 3, False), (244, 81, 9, False)));
+            Table.States (233).Minimal_Complete_Actions := To_Vector (((Shift, 26, 403), (Reduce, 118, 0)));
             Add_Action (Table.States (234), 104, 405);
             Add_Error (Table.States (234));
-            Table.States (234).Minimal_Complete_Action := (Shift, 104, 405);
-            Table.States (235).Productions := WisiToken.To_Vector (((115, 0), (115, 1), (239, 0)));
+            Table.States (234).Kernel := To_Vector ((0 => (219, 83, 1, True)));
+            Table.States (234).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 405)));
+            Table.States (234).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (235), 3, 121);
             Add_Action (Table.States (235), 15, 258);
             Add_Action (Table.States (235), 28, 259);
@@ -2842,8 +2914,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (235), 320, 144);
             Add_Goto (Table.States (235), 321, 145);
             Add_Goto (Table.States (235), 330, 146);
-            Table.States (235).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (236).Productions := WisiToken.To_Vector ((1 => (123, 0)));
+            Table.States (235).Kernel := To_Vector (((115, 76, 1, False), (115, 76, 3, False), (239, 76, 4, True)));
+            Table.States (235).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
+            Table.States (235).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (236), 3, 121);
             Add_Action (Table.States (236), 39, 122);
             Add_Action (Table.States (236), 40, 123);
@@ -2878,32 +2951,39 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (236), 320, 144);
             Add_Goto (Table.States (236), 321, 145);
             Add_Goto (Table.States (236), 330, 146);
-            Table.States (236).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (237).Productions := WisiToken.To_Vector (((293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (236).Kernel := To_Vector ((0 => (123, 82, 1, False)));
+            Table.States (236).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
+         end Subr_4;
+         procedure Subr_5
+         is begin
             Add_Action (Table.States (237), 9, 412);
             Add_Action (Table.States (237), 104, 413);
             Add_Action (Table.States (237), 105, 414);
             Add_Action (Table.States (237), 106, 415);
             Add_Error (Table.States (237));
-            Table.States (237).Minimal_Complete_Action := (Shift, 104, 413);
-            Table.States (238).Productions := WisiToken.To_Vector ((1 => (261, 0)));
+            Table.States (237).Kernel := To_Vector (((293, 84, 1, True), (293, 84, 1, True), (293, 84, 1, True), (293,
+            84, 1, True)));
+            Table.States (237).Minimal_Complete_Actions := To_Vector (((Shift, 104, 413), (Shift, 106, 415), (Shift,
+            105, 414), (Shift, 9, 412)));
+            Table.States (237).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (238), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (261, 0), 2, procedure_call_statement_0'Access, null);
-            Table.States (238).Minimal_Complete_Action := (Reduce, 261, 2);
-            Table.States (239).Productions := WisiToken.To_Vector ((1 => (322, 0)));
+            Table.States (238).Kernel := To_Vector ((0 => (261, 96, 0, False)));
+            Table.States (238).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 261, 2)));
             Add_Action (Table.States (239), (7, 19, 20, 38, 53, 76, 104, 105, 106), (322, 0), 1, null, null);
-            Table.States (239).Minimal_Complete_Action := (Reduce, 322, 1);
-            Table.States (240).Productions := WisiToken.To_Vector ((1 => (322, 1)));
+            Table.States (239).Kernel := To_Vector ((0 => (322, 101, 0, False)));
+            Table.States (239).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 322, 1)));
             Add_Action (Table.States (240), (7, 19, 20, 38, 53, 76, 104, 105, 106), (322, 1), 1, null, null);
-            Table.States (240).Minimal_Complete_Action := (Reduce, 322, 1);
-            Table.States (241).Productions := WisiToken.To_Vector ((1 => (239, 1)));
+            Table.States (240).Kernel := To_Vector ((0 => (322, 102, 0, False)));
+            Table.States (240).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 322, 1)));
             Add_Action (Table.States (241), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 1), 2, name_1'Access,
             null);
-            Table.States (241).Minimal_Complete_Action := (Reduce, 239, 2);
-            Table.States (242).Productions := WisiToken.To_Vector (((128, 0), (272, 0)));
+            Table.States (241).Kernel := To_Vector ((0 => (239, 115, 0, True)));
+            Table.States (241).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 2)));
+            Table.States (241).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (242), 7, 416);
             Add_Action (Table.States (242), 19, 417);
             Add_Action (Table.States (242), 20, 418);
@@ -2919,12 +2999,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (242), 239, 422);
             Add_Goto (Table.States (242), 272, 92);
             Add_Goto (Table.States (242), 293, 97);
-            Table.States (242).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (243).Productions := WisiToken.To_Vector (((179, 0), (179, 1)));
+            Table.States (242).Kernel := To_Vector (((128, 322, 1, True), (272, 322, 2, True)));
+            Table.States (242).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (242).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (243), 104, 423);
             Add_Error (Table.States (243));
-            Table.States (243).Minimal_Complete_Action := (Shift, 104, 423);
-            Table.States (244).Productions := WisiToken.To_Vector (((207, 0), (213, 2)));
+            Table.States (243).Kernel := To_Vector (((179, 25, 5, False), (179, 25, 2, False)));
+            Table.States (243).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 423)));
             Add_Action (Table.States (244), 104, 119);
             Add_Action (Table.States (244), 105, 33);
             Add_Action (Table.States (244), 106, 34);
@@ -2933,8 +3014,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (244), 239, 424);
             Add_Goto (Table.States (244), 272, 92);
             Add_Goto (Table.States (244), 293, 97);
-            Table.States (244).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (245).Productions := WisiToken.To_Vector (((213, 1), (262, 0)));
+            Table.States (244).Kernel := To_Vector (((207, 29, 2, False), (213, 29, 5, False)));
+            Table.States (244).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (245), 104, 119);
             Add_Action (Table.States (245), 105, 33);
             Add_Action (Table.States (245), 106, 34);
@@ -2943,38 +3024,39 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (245), 239, 425);
             Add_Goto (Table.States (245), 272, 92);
             Add_Goto (Table.States (245), 293, 97);
-            Table.States (245).Minimal_Complete_Action := (Shift, 104, 119);
-         end Subr_4;
-         procedure Subr_5
-         is begin
-            Table.States (246).Productions := WisiToken.To_Vector (((193, 0), (312, 1)));
-            Add_Action (Table.States (246), 35, 426, (312, 1), 1, null, subprogram_specification_1_check'Access);
+            Table.States (245).Kernel := To_Vector (((213, 50, 5, False), (262, 50, 1, False)));
+            Table.States (245).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Add_Action (Table.States (246), 35, 426);
+            Add_Conflict (Table.States (246), 35, (312, 1), 1, null, subprogram_specification_1_check'Access);
             Add_Action (Table.States (246), 56, Reduce, (312, 1), 1, null, subprogram_specification_1_check'Access);
             Add_Action (Table.States (246), 74, Reduce, (312, 1), 1, null, subprogram_specification_1_check'Access);
             Add_Action (Table.States (246), 96, Reduce, (312, 1), 1, null, subprogram_specification_1_check'Access);
             Add_Error (Table.States (246));
-            Table.States (246).Minimal_Complete_Action := (Reduce, 312, 1);
-            Table.States (247).Productions := WisiToken.To_Vector (((243, 0), (312, 0)));
-            Add_Action (Table.States (247), 35, 427, (312, 0), 1, null, subprogram_specification_0_check'Access);
+            Table.States (246).Kernel := To_Vector (((193, 207, 4, False), (312, 207, 0, False)));
+            Table.States (246).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 312, 1)));
+            Add_Action (Table.States (247), 35, 427);
+            Add_Conflict (Table.States (247), 35, (312, 0), 1, null, subprogram_specification_0_check'Access);
             Add_Action (Table.States (247), 56, Reduce, (312, 0), 1, null, subprogram_specification_0_check'Access);
             Add_Action (Table.States (247), 74, Reduce, (312, 0), 1, null, subprogram_specification_0_check'Access);
             Add_Action (Table.States (247), 96, Reduce, (312, 0), 1, null, subprogram_specification_0_check'Access);
             Add_Error (Table.States (247));
-            Table.States (247).Minimal_Complete_Action := (Reduce, 312, 1);
-            Table.States (248).Productions := WisiToken.To_Vector (((112, 0), (307, 0), (308, 0), (309, 0), (311, 0)));
-            Add_Action (Table.States (248), 35, 428, (122, 1), 0, null, null);
+            Table.States (247).Kernel := To_Vector (((243, 262, 3, False), (312, 262, 0, False)));
+            Table.States (247).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 312, 1)));
+            Add_Action (Table.States (248), 35, 428);
+            Add_Conflict (Table.States (248), 35, (122, 1), 0, null, null);
             Add_Action (Table.States (248), 56, 429);
             Add_Action (Table.States (248), 74, 337);
             Add_Action (Table.States (248), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (248));
             Add_Goto (Table.States (248), 122, 430);
-            Table.States (248).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (249).Productions := WisiToken.To_Vector ((1 => (249, 0)));
+            Table.States (248).Kernel := To_Vector (((112, 312, 3, False), (307, 312, 4, False), (308, 312, 3, False),
+            (309, 312, 1, False), (311, 312, 3, False)));
+            Table.States (248).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (249), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (249, 0), 2,
             package_declaration_0'Access, null);
-            Table.States (249).Minimal_Complete_Action := (Reduce, 249, 2);
-            Table.States (250).Productions := WisiToken.To_Vector (((115, 0), (115, 1)));
+            Table.States (249).Kernel := To_Vector ((0 => (249, 96, 0, False)));
+            Table.States (249).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 249, 2)));
             Add_Action (Table.States (250), 3, 121);
             Add_Action (Table.States (250), 15, 258);
             Add_Action (Table.States (250), 28, 259);
@@ -3024,29 +3106,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (250), 320, 144);
             Add_Goto (Table.States (250), 321, 145);
             Add_Goto (Table.States (250), 330, 146);
-            Table.States (250).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (251).Productions := WisiToken.To_Vector ((1 => (116, 0)));
+            Table.States (250).Kernel := To_Vector (((115, 76, 1, False), (115, 76, 3, False)));
+            Table.States (250).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
             Add_Action (Table.States (251), (21, 76, 96), (116, 0), 1, null, null);
-            Table.States (251).Minimal_Complete_Action := (Reduce, 116, 1);
-            Table.States (252).Productions := WisiToken.To_Vector (((113, 0), (113, 1)));
+            Table.States (251).Kernel := To_Vector ((0 => (116, 115, 0, False)));
+            Table.States (251).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 116, 1)));
             Add_Action (Table.States (252), 21, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (252), 76, 431);
             Add_Action (Table.States (252), 96, Reduce, (253, 1), 0, null, null);
             Add_Error (Table.States (252));
             Add_Goto (Table.States (252), 199, 344);
             Add_Goto (Table.States (252), 253, 432);
-            Table.States (252).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (253).Productions := WisiToken.To_Vector ((1 => (303, 8)));
+            Table.States (252).Kernel := To_Vector (((113, 116, 3, False), (113, 116, 1, False)));
+            Table.States (252).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (253), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 8), 3, simple_statement_8'Access, null);
-            Table.States (253).Minimal_Complete_Action := (Reduce, 303, 3);
-            Table.States (254).Productions := WisiToken.To_Vector ((1 => (197, 2)));
+            Table.States (253).Kernel := To_Vector ((0 => (303, 96, 0, False)));
+            Table.States (253).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 3)));
             Add_Action (Table.States (254), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99), (197, 2), 2, null, null);
-            Table.States (254).Minimal_Complete_Action := (Reduce, 197, 2);
-            Table.States (255).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (258, 4), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (254).Kernel := To_Vector ((0 => (197, 258, 0, False)));
+            Table.States (254).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 197, 2)));
             Add_Action (Table.States (255), 10, Reduce, (258, 4), 2, primary_4'Access, null);
             Add_Action (Table.States (255), 20, Reduce, (258, 4), 2, primary_4'Access, null);
             Add_Action (Table.States (255), 21, Reduce, (258, 4), 2, primary_4'Access, null);
@@ -3090,13 +3171,14 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (255));
             Add_Goto (Table.States (255), 115, 241);
             Add_Goto (Table.States (255), 322, 242);
-            Table.States (255).Minimal_Complete_Action := (Reduce, 258, 2);
-            Table.States (256).Productions := WisiToken.To_Vector ((1 => (197, 3)));
+            Table.States (255).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (258, 239, 0, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (255).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 2)));
             Add_Action (Table.States (256), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99), (197, 3), 2, null, null);
-            Table.States (256).Minimal_Complete_Action := (Reduce, 197, 2);
-            Table.States (257).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (275, 0),
-            (275, 1), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (256).Kernel := To_Vector ((0 => (197, 258, 0, False)));
+            Table.States (256).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 197, 2)));
             Add_Action (Table.States (257), 10, Reduce, (275, 1), 2, null, null);
             Add_Action (Table.States (257), 20, Reduce, (275, 1), 2, null, null);
             Add_Action (Table.States (257), 21, Reduce, (275, 1), 2, null, null);
@@ -3107,7 +3189,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (257), 43, Reduce, (275, 1), 2, null, null);
             Add_Action (Table.States (257), 53, Reduce, (275, 1), 2, null, null);
             Add_Action (Table.States (257), 68, Reduce, (275, 1), 2, null, null);
-            Add_Action (Table.States (257), 74, 433, (275, 1), 2, null, null);
+            Add_Action (Table.States (257), 74, 433);
+            Add_Conflict (Table.States (257), 74, (275, 1), 2, null, null);
             Add_Action (Table.States (257), 75, Reduce, (275, 1), 2, null, null);
             Add_Action (Table.States (257), 76, 235);
             Add_Action (Table.States (257), 77, Reduce, (275, 1), 2, null, null);
@@ -3121,8 +3204,11 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (257));
             Add_Goto (Table.States (257), 115, 241);
             Add_Goto (Table.States (257), 322, 242);
-            Table.States (257).Minimal_Complete_Action := (Reduce, 275, 2);
-            Table.States (258).Productions := WisiToken.To_Vector ((1 => (136, 0)));
+            Table.States (257).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (275, 239, 1, True), (275, 239, 0, False), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (257).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 275, 2)));
+            Table.States (257).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (258), 3, 121);
             Add_Action (Table.States (258), 35, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (258), 39, 122);
@@ -3157,14 +3243,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (258), 320, 144);
             Add_Goto (Table.States (258), 321, 145);
             Add_Goto (Table.States (258), 330, 146);
-            Table.States (258).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (259).Productions := WisiToken.To_Vector ((1 => (273, 0)));
+            Table.States (258).Kernel := To_Vector ((0 => (136, 15, 3, False)));
+            Table.States (258).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (259), 9, 435);
             Add_Action (Table.States (259), 62, 436);
             Add_Error (Table.States (259));
             Add_Goto (Table.States (259), 274, 437);
-            Table.States (259).Minimal_Complete_Action := (Shift, 9, 435);
-            Table.States (260).Productions := WisiToken.To_Vector (((221, 0), (221, 1), (221, 2), (221, 3)));
+            Table.States (259).Kernel := To_Vector ((0 => (273, 28, 5, False)));
+            Table.States (259).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 9, 435)));
             Add_Action (Table.States (260), 3, 121);
             Add_Action (Table.States (260), 39, 122);
             Add_Action (Table.States (260), 40, 123);
@@ -3199,8 +3285,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (260), 320, 144);
             Add_Goto (Table.States (260), 321, 145);
             Add_Goto (Table.States (260), 330, 146);
-            Table.States (260).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (261).Productions := WisiToken.To_Vector (((165, 1), (197, 3)));
+            Table.States (260).Kernel := To_Vector (((221, 32, 4, False), (221, 32, 2, False), (221, 32, 3, False),
+            (221, 32, 1, False)));
+            Table.States (260).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (261), 39, 122);
             Add_Action (Table.States (261), 41, 439);
             Add_Action (Table.States (261), 76, 126);
@@ -3215,8 +3302,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (261), 258, 256);
             Add_Goto (Table.States (261), 272, 92);
             Add_Goto (Table.States (261), 293, 97);
-            Table.States (261).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (262).Productions := WisiToken.To_Vector (((117, 2), (258, 1)));
+            Table.States (261).Kernel := To_Vector (((165, 40, 2, False), (197, 40, 1, False)));
+            Table.States (261).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (262), 10, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (262), 33, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (262), 38, Reduce, (258, 1), 1, null, null);
@@ -3244,11 +3331,11 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (262), 99, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (262), 100, Reduce, (258, 1), 1, null, null);
             Add_Error (Table.States (262));
-            Table.States (262).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (263).Productions := WisiToken.To_Vector ((1 => (165, 3)));
+            Table.States (262).Kernel := To_Vector (((117, 41, 2, False), (258, 41, 0, False)));
+            Table.States (262).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (263), (79, 87), (165, 3), 1, null, null);
-            Table.States (263).Minimal_Complete_Action := (Reduce, 165, 1);
-            Table.States (264).Productions := WisiToken.To_Vector (((124, 0), (124, 1), (239, 6)));
+            Table.States (263).Kernel := To_Vector ((0 => (165, 44, 0, False)));
+            Table.States (263).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 165, 1)));
             Add_Action (Table.States (264), 10, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 33, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 35, Reduce, (239, 6), 1, null, null);
@@ -3267,7 +3354,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (264), 84, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 85, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 86, Reduce, (239, 6), 1, null, null);
-            Add_Action (Table.States (264), 87, 441, (239, 6), 1, null, null);
+            Add_Action (Table.States (264), 87, 441);
+            Add_Conflict (Table.States (264), 87, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 88, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 89, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 91, Reduce, (239, 6), 1, null, null);
@@ -3282,48 +3370,50 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (264), 101, Reduce, (239, 6), 1, null, null);
             Add_Action (Table.States (264), 102, Reduce, (239, 6), 1, null, null);
             Add_Error (Table.States (264));
-            Table.States (264).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (265).Productions := WisiToken.To_Vector ((1 => (125, 1)));
+            Table.States (264).Kernel := To_Vector (((124, 106, 1, False), (124, 106, 2, False), (239, 106, 0,
+            False)));
+            Table.States (264).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (265), (35, 77, 83, 96), (125, 1), 1, null, null);
-            Table.States (265).Minimal_Complete_Action := (Reduce, 125, 1);
-            Table.States (266).Productions := WisiToken.To_Vector (((117, 4), (125, 0)));
+            Table.States (265).Kernel := To_Vector ((0 => (125, 124, 0, False)));
+            Table.States (265).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 1)));
             Add_Action (Table.States (266), 77, 442);
             Add_Action (Table.States (266), 83, 443);
             Add_Error (Table.States (266));
-            Table.States (266).Minimal_Complete_Action := (Shift, 77, 442);
-            Table.States (267).Productions := WisiToken.To_Vector ((1 => (153, 1)));
+            Table.States (266).Kernel := To_Vector (((117, 125, 1, False), (125, 125, 1, True)));
+            Table.States (266).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 442)));
             Add_Action (Table.States (267), (1 =>  77), (153, 1), 1, null, null);
-            Table.States (267).Minimal_Complete_Action := (Reduce, 153, 1);
-            Table.States (268).Productions := WisiToken.To_Vector ((1 => (117, 3)));
+            Table.States (267).Kernel := To_Vector ((0 => (153, 136, 0, False)));
+            Table.States (267).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 153, 1)));
             Add_Action (Table.States (268), 77, 444);
             Add_Error (Table.States (268));
-            Table.States (268).Minimal_Complete_Action := (Shift, 77, 444);
-            Table.States (269).Productions := WisiToken.To_Vector ((1 => (166, 1)));
+            Table.States (268).Kernel := To_Vector ((0 => (117, 153, 1, False)));
+            Table.States (268).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 444)));
             Add_Action (Table.States (269), (79, 87), (166, 1), 1, null, null);
-            Table.States (269).Minimal_Complete_Action := (Reduce, 166, 1);
-            Table.States (270).Productions := WisiToken.To_Vector (((124, 2), (124, 3), (166, 0)));
+            Table.States (269).Kernel := To_Vector ((0 => (166, 165, 0, False)));
+            Table.States (269).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 166, 1)));
             Add_Action (Table.States (270), 79, 445);
             Add_Action (Table.States (270), 87, 446);
             Add_Error (Table.States (270));
-            Table.States (270).Minimal_Complete_Action := (Shift, 87, 446);
-            Table.States (271).Productions := WisiToken.To_Vector (((124, 4), (165, 0), (192, 0)));
+            Table.States (270).Kernel := To_Vector (((124, 166, 1, False), (124, 166, 2, False), (166, 166, 2, True)));
+            Table.States (270).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 446)));
             Add_Action (Table.States (271), 74, Reduce, (192, 0), 1, null, null);
-            Add_Action (Table.States (271), 77, Reduce, (124, 4), 1, association_opt_4'Access, null, (192, 0), 1, null,
-            null);
+            Add_Action (Table.States (271), 77, Reduce, (124, 4), 1, association_opt_4'Access, null);
+            Add_Conflict (Table.States (271), 77, (192, 0), 1, null, null);
             Add_Action (Table.States (271), 79, Reduce, (165, 0), 1, null, null);
             Add_Action (Table.States (271), 83, Reduce, (124, 4), 1, association_opt_4'Access, null);
             Add_Action (Table.States (271), 87, Reduce, (165, 0), 1, null, null);
             Add_Error (Table.States (271));
-            Table.States (271).Minimal_Complete_Action := (Reduce, 124, 1);
-            Table.States (272).Productions := WisiToken.To_Vector (((117, 0), (117, 1)));
+            Table.States (271).Kernel := To_Vector (((124, 191, 0, False), (165, 191, 0, False), (192, 191, 0, True)));
+            Table.States (271).Minimal_Complete_Actions := To_Vector (((Reduce, 124, 1), (Reduce, 165, 1), (Reduce,
+            192, 1)));
+            Table.States (271).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (272), 74, 447);
             Add_Error (Table.States (272));
-            Table.States (272).Minimal_Complete_Action := (Shift, 74, 447);
-            Table.States (273).Productions := WisiToken.To_Vector ((1 => (153, 0)));
+            Table.States (272).Kernel := To_Vector (((117, 192, 4, False), (117, 192, 2, False)));
+            Table.States (272).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 447)));
             Add_Action (Table.States (273), (1 =>  77), (153, 0), 1, null, null);
-            Table.States (273).Minimal_Complete_Action := (Reduce, 153, 1);
-            Table.States (274).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (258, 3), (272, 0),
-            (277, 0), (277, 1), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (273).Kernel := To_Vector ((0 => (153, 221, 0, False)));
+            Table.States (273).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 153, 1)));
             Add_Action (Table.States (274), 10, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (274), 20, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (274), 21, Reduce, (258, 3), 1, null, null);
@@ -3365,14 +3455,16 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (274));
             Add_Goto (Table.States (274), 115, 241);
             Add_Goto (Table.States (274), 322, 448);
-            Table.States (274).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (275).Productions := WisiToken.To_Vector ((1 => (153, 2)));
+            Table.States (274).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (258, 239, 0, False), (272, 239, 3, True), (277, 239, 4, False), (277, 239, 2, False), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (274).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (275), (1 =>  77), (153, 2), 1, null, null);
-            Table.States (275).Minimal_Complete_Action := (Reduce, 153, 1);
-            Table.States (276).Productions := WisiToken.To_Vector ((1 => (165, 2)));
+            Table.States (275).Kernel := To_Vector ((0 => (153, 273, 0, False)));
+            Table.States (275).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 153, 1)));
             Add_Action (Table.States (276), (79, 87), (165, 2), 1, null, null);
-            Table.States (276).Minimal_Complete_Action := (Reduce, 165, 1);
-            Table.States (277).Productions := WisiToken.To_Vector (((277, 2), (287, 0), (287, 1), (287, 2), (287, 3)));
+            Table.States (276).Kernel := To_Vector ((0 => (165, 277, 0, False)));
+            Table.States (276).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 165, 1)));
             Add_Action (Table.States (277), 10, Reduce, (287, 3), 1, null, null);
             Add_Action (Table.States (277), 33, 288);
             Add_Action (Table.States (277), 35, Reduce, (287, 3), 1, null, null);
@@ -3394,14 +3486,15 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (277), 98, 295);
             Add_Error (Table.States (277));
             Add_Goto (Table.States (277), 288, 296);
-            Table.States (277).Minimal_Complete_Action := (Reduce, 287, 1);
-            Table.States (278).Productions := WisiToken.To_Vector ((1 => (139, 0)));
+            Table.States (277).Kernel := To_Vector (((277, 301, 2, False), (287, 301, 3, False), (287, 301, 2, False),
+            (287, 301, 2, False), (287, 301, 0, False)));
+            Table.States (277).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 287, 1)));
             Add_Action (Table.States (278), 72, 450);
             Add_Error (Table.States (278));
             Add_Goto (Table.States (278), 140, 451);
             Add_Goto (Table.States (278), 141, 452);
-            Table.States (278).Minimal_Complete_Action := (Shift, 72, 450);
-            Table.States (279).Productions := WisiToken.To_Vector ((1 => (197, 0)));
+            Table.States (278).Kernel := To_Vector ((0 => (139, 35, 5, False)));
+            Table.States (278).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 72, 450)));
             Add_Action (Table.States (279), 39, 122);
             Add_Action (Table.States (279), 41, 124);
             Add_Action (Table.States (279), 76, 126);
@@ -3416,8 +3509,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (279), 258, 453);
             Add_Goto (Table.States (279), 272, 92);
             Add_Goto (Table.States (279), 293, 97);
-            Table.States (279).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (280).Productions := WisiToken.To_Vector ((1 => (282, 0)));
+            Table.States (279).Kernel := To_Vector ((0 => (197, 100, 1, False)));
+            Table.States (279).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (280), 3, 121);
             Add_Action (Table.States (280), 39, 122);
             Add_Action (Table.States (280), 40, 123);
@@ -3444,12 +3537,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (280), 320, 144);
             Add_Goto (Table.States (280), 321, 145);
             Add_Goto (Table.States (280), 330, 146);
-            Table.States (280).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (281).Productions := WisiToken.To_Vector ((1 => (283, 0)));
+            Table.States (280).Kernel := To_Vector ((0 => (282, 10, 1, True)));
+            Table.States (280).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (280).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (281), 68, 455);
             Add_Error (Table.States (281));
-            Table.States (281).Minimal_Complete_Action := (Shift, 68, 455);
-            Table.States (282).Productions := WisiToken.To_Vector ((1 => (284, 0)));
+            Table.States (281).Kernel := To_Vector ((0 => (283, 10, 2, True)));
+            Table.States (281).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 68, 455)));
+            Table.States (281).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (282), 3, 121);
             Add_Action (Table.States (282), 39, 122);
             Add_Action (Table.States (282), 40, 123);
@@ -3476,12 +3571,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (282), 320, 144);
             Add_Goto (Table.States (282), 321, 145);
             Add_Goto (Table.States (282), 330, 146);
-            Table.States (282).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (283).Productions := WisiToken.To_Vector ((1 => (285, 0)));
+            Table.States (282).Kernel := To_Vector ((0 => (284, 43, 1, True)));
+            Table.States (282).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (282).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (283), 22, 457);
             Add_Error (Table.States (283));
-            Table.States (283).Minimal_Complete_Action := (Shift, 22, 457);
-            Table.States (284).Productions := WisiToken.To_Vector ((1 => (286, 0)));
+            Table.States (283).Kernel := To_Vector ((0 => (285, 43, 2, True)));
+            Table.States (283).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 22, 457)));
+            Table.States (283).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (284), 3, 121);
             Add_Action (Table.States (284), 39, 122);
             Add_Action (Table.States (284), 40, 123);
@@ -3508,8 +3605,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (284), 320, 144);
             Add_Goto (Table.States (284), 321, 145);
             Add_Goto (Table.States (284), 330, 146);
-            Table.States (284).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (285).Productions := WisiToken.To_Vector (((282, 1), (283, 1)));
+            Table.States (284).Kernel := To_Vector ((0 => (286, 75, 1, True)));
+            Table.States (284).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (284).Minimal_Complete_Actions_Recursive := True;
+         end Subr_5;
+         procedure Subr_6
+         is begin
             Add_Action (Table.States (285), 3, 121);
             Add_Action (Table.States (285), 39, 122);
             Add_Action (Table.States (285), 40, 123);
@@ -3537,8 +3638,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (285), 320, 144);
             Add_Goto (Table.States (285), 321, 145);
             Add_Goto (Table.States (285), 330, 146);
-            Table.States (285).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (286).Productions := WisiToken.To_Vector (((284, 1), (285, 1)));
+            Table.States (285).Kernel := To_Vector (((282, 10, 1, True), (283, 10, 2, True)));
+            Table.States (285).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (285).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (286), 3, 121);
             Add_Action (Table.States (286), 22, 461);
             Add_Action (Table.States (286), 39, 122);
@@ -3566,8 +3668,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (286), 320, 144);
             Add_Goto (Table.States (286), 321, 145);
             Add_Goto (Table.States (286), 330, 146);
-            Table.States (286).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (287).Productions := WisiToken.To_Vector ((1 => (286, 1)));
+            Table.States (286).Kernel := To_Vector (((284, 43, 1, True), (285, 43, 2, True)));
+            Table.States (286).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (286).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (287), 3, 121);
             Add_Action (Table.States (287), 39, 122);
             Add_Action (Table.States (287), 40, 123);
@@ -3594,11 +3697,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (287), 320, 144);
             Add_Goto (Table.States (287), 321, 145);
             Add_Goto (Table.States (287), 330, 146);
-            Table.States (287).Minimal_Complete_Action := (Shift, 103, 129);
-         end Subr_5;
-         procedure Subr_6
-         is begin
-            Table.States (288).Productions := WisiToken.To_Vector ((1 => (287, 1)));
+            Table.States (287).Kernel := To_Vector ((0 => (286, 75, 1, True)));
+            Table.States (287).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (287).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (288), 3, 121);
             Add_Action (Table.States (288), 39, 122);
             Add_Action (Table.States (288), 40, 123);
@@ -3625,30 +3726,30 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (288), 320, 144);
             Add_Goto (Table.States (288), 321, 145);
             Add_Goto (Table.States (288), 330, 146);
-            Table.States (288).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (289).Productions := WisiToken.To_Vector ((1 => (287, 0)));
+            Table.States (288).Kernel := To_Vector ((0 => (287, 33, 1, False)));
+            Table.States (288).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (289), 33, 468);
             Add_Error (Table.States (289));
-            Table.States (289).Minimal_Complete_Action := (Shift, 33, 468);
-            Table.States (290).Productions := WisiToken.To_Vector ((1 => (288, 0)));
+            Table.States (289).Kernel := To_Vector ((0 => (287, 40, 2, False)));
+            Table.States (289).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 33, 468)));
             Add_Action (Table.States (290), (3, 39, 40, 41, 76, 94, 95, 103, 104, 105, 106), (288, 0), 1, null, null);
-            Table.States (290).Minimal_Complete_Action := (Reduce, 288, 1);
-            Table.States (291).Productions := WisiToken.To_Vector ((1 => (288, 4)));
+            Table.States (290).Kernel := To_Vector ((0 => (288, 86, 0, False)));
+            Table.States (290).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 288, 1)));
             Add_Action (Table.States (291), (3, 39, 40, 41, 76, 94, 95, 103, 104, 105, 106), (288, 4), 1, null, null);
-            Table.States (291).Minimal_Complete_Action := (Reduce, 288, 1);
-            Table.States (292).Productions := WisiToken.To_Vector ((1 => (288, 5)));
+            Table.States (291).Kernel := To_Vector ((0 => (288, 88, 0, False)));
+            Table.States (291).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 288, 1)));
             Add_Action (Table.States (292), (3, 39, 40, 41, 76, 94, 95, 103, 104, 105, 106), (288, 5), 1, null, null);
-            Table.States (292).Minimal_Complete_Action := (Reduce, 288, 1);
-            Table.States (293).Productions := WisiToken.To_Vector ((1 => (288, 2)));
+            Table.States (292).Kernel := To_Vector ((0 => (288, 89, 0, False)));
+            Table.States (292).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 288, 1)));
             Add_Action (Table.States (293), (3, 39, 40, 41, 76, 94, 95, 103, 104, 105, 106), (288, 2), 1, null, null);
-            Table.States (293).Minimal_Complete_Action := (Reduce, 288, 1);
-            Table.States (294).Productions := WisiToken.To_Vector ((1 => (288, 3)));
+            Table.States (293).Kernel := To_Vector ((0 => (288, 91, 0, False)));
+            Table.States (293).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 288, 1)));
             Add_Action (Table.States (294), (3, 39, 40, 41, 76, 94, 95, 103, 104, 105, 106), (288, 3), 1, null, null);
-            Table.States (294).Minimal_Complete_Action := (Reduce, 288, 1);
-            Table.States (295).Productions := WisiToken.To_Vector ((1 => (288, 1)));
+            Table.States (294).Kernel := To_Vector ((0 => (288, 92, 0, False)));
+            Table.States (294).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 288, 1)));
             Add_Action (Table.States (295), (3, 39, 40, 41, 76, 94, 95, 103, 104, 105, 106), (288, 1), 1, null, null);
-            Table.States (295).Minimal_Complete_Action := (Reduce, 288, 1);
-            Table.States (296).Productions := WisiToken.To_Vector ((1 => (287, 2)));
+            Table.States (295).Kernel := To_Vector ((0 => (288, 98, 0, False)));
+            Table.States (295).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 288, 1)));
             Add_Action (Table.States (296), 3, 121);
             Add_Action (Table.States (296), 39, 122);
             Add_Action (Table.States (296), 40, 123);
@@ -3672,20 +3773,20 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (296), 320, 144);
             Add_Goto (Table.States (296), 321, 145);
             Add_Goto (Table.States (296), 330, 146);
-            Table.States (296).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (297).Productions := WisiToken.To_Vector ((1 => (237, 2)));
+            Table.States (296).Kernel := To_Vector ((0 => (287, 288, 1, False)));
+            Table.States (296).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (297), (3, 39, 40, 41, 76, 103, 104, 105, 106), (237, 2), 1, null, null);
-            Table.States (297).Minimal_Complete_Action := (Reduce, 237, 1);
-            Table.States (298).Productions := WisiToken.To_Vector ((1 => (237, 3)));
+            Table.States (297).Kernel := To_Vector ((0 => (237, 38, 0, False)));
+            Table.States (297).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 237, 1)));
             Add_Action (Table.States (298), (3, 39, 40, 41, 76, 103, 104, 105, 106), (237, 3), 1, null, null);
-            Table.States (298).Minimal_Complete_Action := (Reduce, 237, 1);
-            Table.States (299).Productions := WisiToken.To_Vector ((1 => (237, 1)));
+            Table.States (298).Kernel := To_Vector ((0 => (237, 55, 0, False)));
+            Table.States (298).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 237, 1)));
             Add_Action (Table.States (299), (3, 39, 40, 41, 76, 103, 104, 105, 106), (237, 1), 1, null, null);
-            Table.States (299).Minimal_Complete_Action := (Reduce, 237, 1);
-            Table.States (300).Productions := WisiToken.To_Vector ((1 => (237, 0)));
+            Table.States (299).Kernel := To_Vector ((0 => (237, 97, 0, False)));
+            Table.States (299).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 237, 1)));
             Add_Action (Table.States (300), (3, 39, 40, 41, 76, 103, 104, 105, 106), (237, 0), 1, null, null);
-            Table.States (300).Minimal_Complete_Action := (Reduce, 237, 1);
-            Table.States (301).Productions := WisiToken.To_Vector ((1 => (320, 0)));
+            Table.States (300).Kernel := To_Vector ((0 => (237, 99, 0, False)));
+            Table.States (300).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 237, 1)));
             Add_Action (Table.States (301), 3, 121);
             Add_Action (Table.States (301), 39, 122);
             Add_Action (Table.States (301), 40, 123);
@@ -3703,17 +3804,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (301), 258, 135);
             Add_Goto (Table.States (301), 272, 92);
             Add_Goto (Table.States (301), 293, 97);
-            Table.States (301).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (302).Productions := WisiToken.To_Vector ((1 => (130, 2)));
+            Table.States (301).Kernel := To_Vector ((0 => (320, 237, 1, True)));
+            Table.States (301).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (301).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (302), (3, 39, 40, 41, 76, 103, 104, 105, 106), (130, 2), 1, null, null);
-            Table.States (302).Minimal_Complete_Action := (Reduce, 130, 1);
-            Table.States (303).Productions := WisiToken.To_Vector ((1 => (130, 1)));
+            Table.States (302).Kernel := To_Vector ((0 => (130, 78, 0, False)));
+            Table.States (302).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 130, 1)));
             Add_Action (Table.States (303), (3, 39, 40, 41, 76, 103, 104, 105, 106), (130, 1), 1, null, null);
-            Table.States (303).Minimal_Complete_Action := (Reduce, 130, 1);
-            Table.States (304).Productions := WisiToken.To_Vector ((1 => (130, 0)));
+            Table.States (303).Kernel := To_Vector ((0 => (130, 94, 0, False)));
+            Table.States (303).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 130, 1)));
             Add_Action (Table.States (304), (3, 39, 40, 41, 76, 103, 104, 105, 106), (130, 0), 1, null, null);
-            Table.States (304).Minimal_Complete_Action := (Reduce, 130, 1);
-            Table.States (305).Productions := WisiToken.To_Vector ((1 => (321, 0)));
+            Table.States (304).Kernel := To_Vector ((0 => (130, 95, 0, False)));
+            Table.States (304).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 130, 1)));
             Add_Action (Table.States (305), 3, 121);
             Add_Action (Table.States (305), 39, 122);
             Add_Action (Table.States (305), 40, 123);
@@ -3732,8 +3834,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (305), 272, 92);
             Add_Goto (Table.States (305), 293, 97);
             Add_Goto (Table.States (305), 320, 471);
-            Table.States (305).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (306).Productions := WisiToken.To_Vector (((301, 0), (321, 0)));
+            Table.States (305).Kernel := To_Vector ((0 => (321, 130, 1, True)));
+            Table.States (305).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (305).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (306), 10, Reduce, (301, 0), 2, null, null);
             Add_Action (Table.States (306), 20, Reduce, (301, 0), 2, null, null);
             Add_Action (Table.States (306), 21, Reduce, (301, 0), 2, null, null);
@@ -3767,17 +3870,17 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (306), 98, Reduce, (301, 0), 2, null, null);
             Add_Error (Table.States (306));
             Add_Goto (Table.States (306), 130, 305);
-            Table.States (306).Minimal_Complete_Action := (Reduce, 301, 2);
-            Table.States (307).Productions := WisiToken.To_Vector ((1 => (161, 0)));
+            Table.States (306).Kernel := To_Vector (((301, 321, 0, False), (321, 321, 2, True)));
+            Table.States (306).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 301, 2)));
             Add_Action (Table.States (307), 96, 472);
             Add_Error (Table.States (307));
-            Table.States (307).Minimal_Complete_Action := (Shift, 96, 472);
-            Table.States (308).Productions := WisiToken.To_Vector ((1 => (161, 1)));
+            Table.States (307).Kernel := To_Vector ((0 => (161, 192, 1, False)));
+            Table.States (307).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 472)));
             Add_Action (Table.States (308), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (161, 1), 3, delay_statement_1'Access, null);
-            Table.States (308).Minimal_Complete_Action := (Reduce, 161, 3);
-            Table.States (309).Productions := WisiToken.To_Vector ((1 => (190, 0)));
+            Table.States (308).Kernel := To_Vector ((0 => (161, 96, 0, False)));
+            Table.States (308).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 161, 3)));
             Add_Action (Table.States (309), 3, 121);
             Add_Action (Table.States (309), 39, 122);
             Add_Action (Table.States (309), 40, 123);
@@ -3812,13 +3915,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (309), 320, 144);
             Add_Goto (Table.States (309), 321, 145);
             Add_Goto (Table.States (309), 330, 146);
-            Table.States (309).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (310).Productions := WisiToken.To_Vector ((1 => (190, 1)));
+            Table.States (309).Kernel := To_Vector ((0 => (190, 72, 1, False)));
+            Table.States (309).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (310), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (190, 1), 3, exit_statement_1'Access, null);
-            Table.States (310).Minimal_Complete_Action := (Reduce, 190, 3);
-            Table.States (311).Productions := WisiToken.To_Vector (((230, 2), (230, 5)));
+            Table.States (310).Kernel := To_Vector ((0 => (190, 96, 0, False)));
+            Table.States (310).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 190, 3)));
             Add_Action (Table.States (311), 3, 121);
             Add_Action (Table.States (311), 39, 122);
             Add_Action (Table.States (311), 40, 474);
@@ -3846,8 +3949,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (311), 320, 144);
             Add_Goto (Table.States (311), 321, 145);
             Add_Goto (Table.States (311), 330, 146);
-            Table.States (311).Minimal_Complete_Action := (Shift, 40, 474);
-            Table.States (312).Productions := WisiToken.To_Vector (((230, 3), (230, 4)));
+            Table.States (311).Kernel := To_Vector (((230, 33, 2, False), (230, 33, 1, False)));
+            Table.States (311).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (312), 59, 481);
             Add_Action (Table.States (312), 104, 119);
             Add_Action (Table.States (312), 105, 33);
@@ -3857,8 +3960,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (312), 239, 482);
             Add_Goto (Table.States (312), 272, 92);
             Add_Goto (Table.States (312), 293, 97);
-            Table.States (312).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (313).Productions := WisiToken.To_Vector (((230, 0), (230, 1)));
+            Table.States (312).Kernel := To_Vector (((230, 42, 2, False), (230, 42, 1, False)));
+            Table.States (312).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (313), 40, 483);
             Add_Action (Table.States (313), 104, 119);
             Add_Action (Table.States (313), 105, 33);
@@ -3869,8 +3972,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (313), 272, 92);
             Add_Goto (Table.States (313), 293, 97);
             Add_Goto (Table.States (313), 314, 485);
-            Table.States (313).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (314).Productions := WisiToken.To_Vector ((1 => (121, 0)));
+            Table.States (313).Kernel := To_Vector (((230, 81, 4, False), (230, 81, 3, False)));
+            Table.States (313).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (314), 3, 121);
             Add_Action (Table.States (314), 39, 122);
             Add_Action (Table.States (314), 40, 123);
@@ -3905,18 +4008,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (314), 320, 144);
             Add_Goto (Table.States (314), 321, 145);
             Add_Goto (Table.States (314), 330, 146);
-            Table.States (314).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (315).Productions := WisiToken.To_Vector ((1 => (127, 0)));
+            Table.States (314).Kernel := To_Vector ((0 => (121, 71, 1, False)));
+            Table.States (314).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (315), 12, 487);
             Add_Error (Table.States (315));
-            Table.States (315).Minimal_Complete_Action := (Shift, 12, 487);
-            Table.States (316).Productions := WisiToken.To_Vector (((182, 0), (281, 0)));
+            Table.States (315).Kernel := To_Vector ((0 => (127, 71, 2, False)));
+            Table.States (315).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 12, 487)));
             Add_Action (Table.States (316), 54, 488);
             Add_Action (Table.States (316), 76, 126);
             Add_Error (Table.States (316));
             Add_Goto (Table.States (316), 117, 489);
-            Table.States (316).Minimal_Complete_Action := (Shift, 76, 126);
-            Table.States (317).Productions := WisiToken.To_Vector (((291, 0), (291, 1)));
+            Table.States (316).Kernel := To_Vector (((182, 71, 3, False), (281, 71, 12, False)));
+            Table.States (316).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 76, 126)));
             Add_Action (Table.States (317), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (317), 21, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (317), 35, Reduce, (241, 1), 0, null, null);
@@ -3932,8 +4035,8 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (317));
             Add_Goto (Table.States (317), 114, 490);
             Add_Goto (Table.States (317), 241, 491);
-            Table.States (317).Minimal_Complete_Action := (Reduce, 241, 0);
-            Table.States (318).Productions := WisiToken.To_Vector (((115, 0), (115, 1), (199, 0), (239, 0)));
+            Table.States (317).Kernel := To_Vector (((291, 58, 0, False), (291, 58, 2, True)));
+            Table.States (317).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 241, 0)));
             Add_Action (Table.States (318), 3, 121);
             Add_Action (Table.States (318), 15, 258);
             Add_Action (Table.States (318), 28, 259);
@@ -3944,7 +4047,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (318), 44, 263);
             Add_Action (Table.States (318), 52, 125);
             Add_Action (Table.States (318), 76, 126);
-            Add_Action (Table.States (318), 77, Reduce, (124, 5), 0, null, null, (254, 4), 0, null, null);
+            Add_Action (Table.States (318), 77, Reduce, (124, 5), 0, null, null);
+            Add_Conflict (Table.States (318), 77, (254, 4), 0, null, null);
             Add_Action (Table.States (318), 79, Reduce, (166, 2), 0, null, null);
             Add_Action (Table.States (318), 83, Reduce, (124, 5), 0, null, null);
             Add_Action (Table.States (318), 87, Reduce, (166, 2), 0, null, null);
@@ -3988,21 +4092,24 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (318), 320, 144);
             Add_Goto (Table.States (318), 321, 145);
             Add_Goto (Table.States (318), 330, 146);
-            Table.States (318).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (319).Productions := WisiToken.To_Vector ((1 => (252, 0)));
+            Table.States (318).Kernel := To_Vector (((115, 76, 1, False), (115, 76, 3, False), (199, 76, 1, False),
+            (239, 76, 4, True)));
+            Table.States (318).Minimal_Complete_Actions := To_Vector (((Reduce, 125, 0), (Reduce, 255, 0)));
+            Table.States (318).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (319), 58, 317);
             Add_Error (Table.States (319));
             Add_Goto (Table.States (319), 291, 496);
-            Table.States (319).Minimal_Complete_Action := (Shift, 58, 317);
-            Table.States (320).Productions := WisiToken.To_Vector ((1 => (207, 0)));
+            Table.States (319).Kernel := To_Vector ((0 => (252, 199, 1, True)));
+            Table.States (319).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 58, 317)));
+            Table.States (319).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (320), (35, 56, 74, 96), (207, 0), 3, function_specification_0'Access,
             function_specification_0_check'Access);
-            Table.States (320).Minimal_Complete_Action := (Reduce, 207, 3);
-            Table.States (321).Productions := WisiToken.To_Vector ((1 => (252, 1)));
+            Table.States (320).Kernel := To_Vector ((0 => (207, 252, 0, False)));
+            Table.States (320).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 207, 3)));
             Add_Action (Table.States (321), (21, 35, 56, 74, 77, 82, 96), (252, 1), 1, null, null);
-            Table.States (321).Minimal_Complete_Action := (Reduce, 252, 1);
-            Table.States (322).Productions := WisiToken.To_Vector (((128, 0), (215, 2), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (321).Kernel := To_Vector ((0 => (252, 291, 0, True)));
+            Table.States (321).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 252, 1)));
+            Table.States (321).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (322), 56, 497);
             Add_Action (Table.States (322), 76, 235);
             Add_Action (Table.States (322), 84, 237);
@@ -4011,9 +4118,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (322));
             Add_Goto (Table.States (322), 115, 241);
             Add_Goto (Table.States (322), 322, 242);
-            Table.States (322).Minimal_Complete_Action := (Shift, 56, 497);
-            Table.States (323).Productions := WisiToken.To_Vector (((128, 0), (215, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (322).Kernel := To_Vector (((128, 239, 2, True), (215, 239, 3, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (322).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 56, 497)));
             Add_Action (Table.States (323), 56, 498);
             Add_Action (Table.States (323), 76, 235);
             Add_Action (Table.States (323), 84, 237);
@@ -4022,9 +4130,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (323));
             Add_Goto (Table.States (323), 115, 241);
             Add_Goto (Table.States (323), 322, 242);
-            Table.States (323).Minimal_Complete_Action := (Shift, 56, 498);
-            Table.States (324).Productions := WisiToken.To_Vector (((128, 0), (215, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (323).Kernel := To_Vector (((128, 239, 2, True), (215, 239, 3, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (323).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 56, 498)));
             Add_Action (Table.States (324), 56, 499);
             Add_Action (Table.States (324), 76, 235);
             Add_Action (Table.States (324), 84, 237);
@@ -4033,16 +4142,19 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (324));
             Add_Goto (Table.States (324), 115, 241);
             Add_Goto (Table.States (324), 322, 242);
-            Table.States (324).Minimal_Complete_Action := (Shift, 56, 499);
-            Table.States (325).Productions := WisiToken.To_Vector (((201, 0), (201, 1), (201, 2)));
+            Table.States (324).Kernel := To_Vector (((128, 239, 2, True), (215, 239, 3, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (324).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 56, 499)));
             Add_Action (Table.States (325), 35, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (325), 74, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (325), 76, 377);
             Add_Action (Table.States (325), 96, Reduce, (169, 2), 0, null, null);
             Add_Error (Table.States (325));
             Add_Goto (Table.States (325), 169, 500);
-            Table.States (325).Minimal_Complete_Action := (Reduce, 169, 0);
-            Table.States (326).Productions := WisiToken.To_Vector ((1 => (204, 0)));
+            Table.States (325).Kernel := To_Vector (((201, 104, 3, False), (201, 104, 3, False), (201, 104, 1,
+            False)));
+            Table.States (325).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 169, 0)));
             Add_Action (Table.States (326), 104, 119);
             Add_Action (Table.States (326), 105, 33);
             Add_Action (Table.States (326), 106, 34);
@@ -4051,18 +4163,20 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (326), 239, 501);
             Add_Goto (Table.States (326), 272, 92);
             Add_Goto (Table.States (326), 293, 97);
-            Table.States (326).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (327).Productions := WisiToken.To_Vector (((200, 0), (200, 1), (200, 2), (200, 3)));
+            Table.States (326).Kernel := To_Vector ((0 => (204, 47, 5, False)));
+            Table.States (326).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (327), 35, 502);
             Add_Action (Table.States (327), 74, 337);
             Add_Action (Table.States (327), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (327));
             Add_Goto (Table.States (327), 122, 503);
-            Table.States (327).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (328).Productions := WisiToken.To_Vector ((1 => (211, 0)));
+            Table.States (327).Kernel := To_Vector (((200, 312, 4, False), (200, 312, 3, False), (200, 312, 3, False),
+            (200, 312, 1, False)));
+            Table.States (327).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (328), (29, 47, 48, 50, 69, 71, 74, 104), (211, 0), 2, null, null);
-            Table.States (328).Minimal_Complete_Action := (Reduce, 211, 2);
-            Table.States (329).Productions := WisiToken.To_Vector (((198, 0), (198, 1), (198, 2), (198, 3)));
+            Table.States (328).Kernel := To_Vector ((0 => (211, 212, 0, True)));
+            Table.States (328).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 211, 2)));
+            Table.States (328).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (329), 7, Reduce, (236, 3), 0, null, null);
             Add_Action (Table.States (329), 33, 504);
             Add_Action (Table.States (329), 40, Reduce, (236, 3), 0, null, null);
@@ -4075,13 +4189,14 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (329), 106, Reduce, (236, 3), 0, null, null);
             Add_Error (Table.States (329));
             Add_Goto (Table.States (329), 236, 506);
-            Table.States (329).Minimal_Complete_Action := (Reduce, 236, 0);
-            Table.States (330).Productions := WisiToken.To_Vector ((1 => (303, 3)));
+            Table.States (329).Kernel := To_Vector (((198, 81, 3, False), (198, 81, 4, False), (198, 81, 2, False),
+            (198, 81, 3, False)));
+            Table.States (329).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 236, 0)));
             Add_Action (Table.States (330), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (303, 3), 3, simple_statement_3'Access, null);
-            Table.States (330).Minimal_Complete_Action := (Reduce, 303, 3);
-            Table.States (331).Productions := WisiToken.To_Vector (((222, 0), (222, 1), (222, 2), (222, 3)));
+            Table.States (330).Kernel := To_Vector ((0 => (303, 96, 0, False)));
+            Table.States (330).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 303, 3)));
             Add_Action (Table.States (331), 4, 1);
             Add_Action (Table.States (331), 5, 2);
             Add_Action (Table.States (331), 13, Reduce, (132, 1), 0, null, null);
@@ -4139,8 +4254,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (331), 303, 101);
             Add_Goto (Table.States (331), 306, 363);
             Add_Goto (Table.States (331), 323, 114);
-            Table.States (331).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (332).Productions := WisiToken.To_Vector ((1 => (332, 0)));
+            Table.States (331).Kernel := To_Vector (((222, 68, 6, False), (222, 68, 4, False), (222, 68, 5, False),
+            (222, 68, 3, False)));
+            Table.States (331).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (332), 104, 119);
             Add_Action (Table.States (332), 105, 33);
             Add_Action (Table.States (332), 106, 34);
@@ -4150,15 +4266,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (332), 239, 219);
             Add_Goto (Table.States (332), 272, 92);
             Add_Goto (Table.States (332), 293, 97);
-            Table.States (332).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (333).Productions := WisiToken.To_Vector (((238, 0), (332, 1)));
+            Table.States (332).Kernel := To_Vector ((0 => (332, 74, 2, False)));
+            Table.States (332).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (333), 83, 381);
             Add_Action (Table.States (333), 96, 509);
             Add_Error (Table.States (333));
-            Table.States (333).Minimal_Complete_Action := (Shift, 96, 509);
-            Table.States (334).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (247, 0), (247, 1),
-            (248, 0), (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
-            Add_Action (Table.States (334), 35, 510, (122, 1), 0, null, null);
+            Table.States (333).Kernel := To_Vector (((238, 238, 2, True), (332, 238, 1, False)));
+            Table.States (333).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 509)));
+            Add_Action (Table.States (334), 35, 510);
+            Add_Conflict (Table.States (334), 35, (122, 1), 0, null, null);
             Add_Action (Table.States (334), 74, 337);
             Add_Action (Table.States (334), 76, 235);
             Add_Action (Table.States (334), 84, 237);
@@ -4168,12 +4284,17 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (334), 115, 241);
             Add_Goto (Table.States (334), 122, 511);
             Add_Goto (Table.States (334), 322, 242);
-            Table.States (334).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (335).Productions := WisiToken.To_Vector ((1 => (213, 0)));
+            Table.States (334).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (247, 239, 4, False), (247, 239, 3, False), (248, 239, 3, False), (272, 239, 3, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (334).Minimal_Complete_Actions := To_Vector (((Reduce, 122, 0), (Shift, 35, 510)));
             Add_Action (Table.States (335), 39, 512);
             Add_Error (Table.States (335));
-            Table.States (335).Minimal_Complete_Action := (Shift, 39, 512);
-            Table.States (336).Productions := WisiToken.To_Vector ((1 => (250, 0)));
+            Table.States (335).Kernel := To_Vector ((0 => (213, 35, 3, False)));
+            Table.States (335).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 512)));
+         end Subr_6;
+         procedure Subr_7
+         is begin
             Add_Action (Table.States (336), 104, 119);
             Add_Action (Table.States (336), 105, 33);
             Add_Action (Table.States (336), 106, 34);
@@ -4182,8 +4303,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (336), 239, 513);
             Add_Goto (Table.States (336), 272, 92);
             Add_Goto (Table.States (336), 293, 97);
-            Table.States (336).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (337).Productions := WisiToken.To_Vector ((1 => (122, 0)));
+            Table.States (336).Kernel := To_Vector ((0 => (250, 56, 2, False)));
+            Table.States (336).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (337), 3, 121);
             Add_Action (Table.States (337), 35, Reduce, (124, 5), 0, null, null);
             Add_Action (Table.States (337), 39, 122);
@@ -4227,12 +4348,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (337), 320, 144);
             Add_Goto (Table.States (337), 321, 145);
             Add_Goto (Table.States (337), 330, 146);
-            Table.States (337).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (338).Productions := WisiToken.To_Vector (((251, 0), (251, 1)));
+            Table.States (337).Kernel := To_Vector ((0 => (122, 74, 0, False)));
+            Table.States (337).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
             Add_Action (Table.States (338), 35, 515);
             Add_Error (Table.States (338));
-            Table.States (338).Minimal_Complete_Action := (Shift, 35, 515);
-            Table.States (339).Productions := WisiToken.To_Vector (((257, 0), (257, 1)));
+            Table.States (338).Kernel := To_Vector (((251, 122, 3, False), (251, 122, 2, False)));
+            Table.States (338).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 515)));
             Add_Action (Table.States (339), 3, 121);
             Add_Action (Table.States (339), 15, 258);
             Add_Action (Table.States (339), 28, 259);
@@ -4282,30 +4403,27 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (339), 320, 144);
             Add_Goto (Table.States (339), 321, 145);
             Add_Goto (Table.States (339), 330, 146);
-            Table.States (339).Minimal_Complete_Action := (Reduce, 125, 0);
-         end Subr_6;
-         procedure Subr_7
-         is begin
-            Table.States (340).Productions := WisiToken.To_Vector ((1 => (257, 2)));
+            Table.States (339).Kernel := To_Vector (((257, 76, 2, False), (257, 76, 4, False)));
+            Table.States (339).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
             Add_Action (Table.States (340), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (257, 2), 3, pragma_g_2'Access, null);
-            Table.States (340).Minimal_Complete_Action := (Reduce, 257, 3);
-            Table.States (341).Productions := WisiToken.To_Vector (((163, 0), (239, 5)));
-            Add_Action (Table.States (341), 71, Reduce, (163, 0), 1, null, null, (239, 5), 1, name_5'Access,
-            name_5_check'Access);
+            Table.States (340).Kernel := To_Vector ((0 => (257, 96, 0, False)));
+            Table.States (340).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 257, 3)));
+            Add_Action (Table.States (341), 71, Reduce, (163, 0), 1, null, null);
+            Add_Conflict (Table.States (341), 71, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (341), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (341), 84, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (341), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (341), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (341));
-            Table.States (341).Minimal_Complete_Action := (Reduce, 163, 1);
-            Table.States (342).Productions := WisiToken.To_Vector (((238, 0), (332, 2)));
+            Table.States (341).Kernel := To_Vector (((163, 104, 0, False), (239, 104, 0, False)));
+            Table.States (341).Minimal_Complete_Actions := To_Vector (((Reduce, 163, 1), (Reduce, 239, 1)));
             Add_Action (Table.States (342), 83, 381);
             Add_Action (Table.States (342), 96, 518);
             Add_Error (Table.States (342));
-            Table.States (342).Minimal_Complete_Action := (Shift, 96, 518);
-            Table.States (343).Productions := WisiToken.To_Vector (((245, 0), (245, 1), (245, 2)));
+            Table.States (342).Kernel := To_Vector (((238, 238, 2, True), (332, 238, 1, False)));
+            Table.States (342).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 518)));
             Add_Action (Table.States (343), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (343), 26, 385);
             Add_Action (Table.States (343), 40, 386);
@@ -4315,32 +4433,33 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (343));
             Add_Goto (Table.States (343), 114, 387);
             Add_Goto (Table.States (343), 241, 388);
-            Table.States (343).Minimal_Complete_Action := (Reduce, 241, 0);
-            Table.States (344).Productions := WisiToken.To_Vector ((1 => (253, 0)));
+            Table.States (343).Kernel := To_Vector (((245, 81, 4, False), (245, 81, 5, False), (245, 81, 4, False)));
+            Table.States (343).Minimal_Complete_Actions := To_Vector (((Reduce, 241, 0), (Shift, 26, 385)));
             Add_Action (Table.States (344), (21, 35, 56, 72, 74, 77, 82, 96), (253, 0), 1, null, null);
-            Table.States (344).Minimal_Complete_Action := (Reduce, 253, 1);
-            Table.States (345).Productions := WisiToken.To_Vector ((1 => (262, 0)));
+            Table.States (344).Kernel := To_Vector ((0 => (253, 199, 0, False)));
+            Table.States (344).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 1)));
             Add_Action (Table.States (345), (35, 56, 74, 96), (262, 0), 3, procedure_specification_0'Access,
             procedure_specification_0_check'Access);
-            Table.States (345).Minimal_Complete_Action := (Reduce, 262, 3);
-            Table.States (346).Productions := WisiToken.To_Vector (((264, 0), (265, 0)));
-            Add_Action (Table.States (346), 35, 519, (122, 1), 0, null, null);
+            Table.States (345).Kernel := To_Vector ((0 => (262, 253, 0, False)));
+            Table.States (345).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 262, 3)));
+            Add_Action (Table.States (346), 35, 519);
+            Add_Conflict (Table.States (346), 35, (122, 1), 0, null, null);
             Add_Action (Table.States (346), 74, 337);
             Add_Error (Table.States (346));
             Add_Goto (Table.States (346), 122, 520);
-            Table.States (346).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (347).Productions := WisiToken.To_Vector (((271, 0), (271, 1)));
+            Table.States (346).Kernel := To_Vector (((264, 104, 3, False), (265, 104, 3, False)));
+            Table.States (346).Minimal_Complete_Actions := To_Vector (((Reduce, 122, 0), (Shift, 35, 519)));
             Add_Action (Table.States (347), 35, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (347), 74, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (347), 76, 377);
             Add_Error (Table.States (347));
             Add_Goto (Table.States (347), 169, 521);
-            Table.States (347).Minimal_Complete_Action := (Reduce, 169, 0);
-            Table.States (348).Productions := WisiToken.To_Vector (((304, 0), (304, 1)));
+            Table.States (347).Kernel := To_Vector (((271, 104, 6, False), (271, 104, 3, False)));
+            Table.States (347).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 169, 0)));
             Add_Action (Table.States (348), 35, 522);
             Add_Error (Table.States (348));
-            Table.States (348).Minimal_Complete_Action := (Shift, 35, 522);
-            Table.States (349).Productions := WisiToken.To_Vector ((1 => (276, 0)));
+            Table.States (348).Kernel := To_Vector (((304, 122, 6, False), (304, 122, 3, False)));
+            Table.States (348).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 522)));
             Add_Action (Table.States (349), 3, 121);
             Add_Action (Table.States (349), 39, 122);
             Add_Action (Table.States (349), 40, 123);
@@ -4375,22 +4494,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (349), 320, 144);
             Add_Goto (Table.States (349), 321, 145);
             Add_Goto (Table.States (349), 330, 146);
-            Table.States (349).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (350).Productions := WisiToken.To_Vector ((1 => (276, 1)));
+            Table.States (349).Kernel := To_Vector ((0 => (276, 74, 1, False)));
+            Table.States (349).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (350), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (276, 1), 3, raise_statement_1'Access, null);
-            Table.States (350).Minimal_Complete_Action := (Reduce, 276, 3);
-            Table.States (351).Productions := WisiToken.To_Vector ((1 => (290, 0)));
+            Table.States (350).Kernel := To_Vector ((0 => (276, 96, 0, False)));
+            Table.States (350).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 276, 3)));
             Add_Action (Table.States (351), 5, 524);
             Add_Error (Table.States (351));
-            Table.States (351).Minimal_Complete_Action := (Shift, 5, 524);
-            Table.States (352).Productions := WisiToken.To_Vector ((1 => (290, 1)));
+            Table.States (351).Kernel := To_Vector ((0 => (290, 74, 2, False)));
+            Table.States (351).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 5, 524)));
             Add_Action (Table.States (352), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (290, 1), 3, requeue_statement_1'Access, null);
-            Table.States (352).Minimal_Complete_Action := (Reduce, 290, 3);
-            Table.States (353).Productions := WisiToken.To_Vector (((194, 0), (194, 1)));
+            Table.States (352).Kernel := To_Vector ((0 => (290, 96, 0, False)));
+            Table.States (352).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 290, 3)));
             Add_Action (Table.States (353), 7, Reduce, (118, 1), 0, null, null);
             Add_Action (Table.States (353), 8, 401);
             Add_Action (Table.States (353), 16, Reduce, (118, 1), 0, null, null);
@@ -4403,18 +4522,18 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (353), 106, Reduce, (118, 1), 0, null, null);
             Add_Error (Table.States (353));
             Add_Goto (Table.States (353), 118, 525);
-            Table.States (353).Minimal_Complete_Action := (Reduce, 118, 0);
-            Table.States (354).Productions := WisiToken.To_Vector ((1 => (302, 0)));
+            Table.States (353).Kernel := To_Vector (((194, 81, 2, False), (194, 81, 1, False)));
+            Table.States (353).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 118, 0)));
             Add_Action (Table.States (354), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (302, 0), 3, simple_return_statement_0'Access, null);
-            Table.States (354).Minimal_Complete_Action := (Reduce, 302, 3);
-            Table.States (355).Productions := WisiToken.To_Vector ((1 => (196, 1)));
+            Table.States (354).Kernel := To_Vector ((0 => (302, 96, 0, False)));
+            Table.States (354).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 302, 3)));
             Add_Action (Table.States (355), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (196, 1), 3, extended_return_statement_1'Access, null);
-            Table.States (355).Minimal_Complete_Action := (Reduce, 196, 3);
-            Table.States (356).Productions := WisiToken.To_Vector ((1 => (196, 0)));
+            Table.States (355).Kernel := To_Vector ((0 => (196, 96, 0, False)));
+            Table.States (355).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 196, 3)));
             Add_Action (Table.States (356), 4, 1);
             Add_Action (Table.States (356), 5, 2);
             Add_Action (Table.States (356), 13, Reduce, (132, 1), 0, null, null);
@@ -4472,9 +4591,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (356), 303, 101);
             Add_Goto (Table.States (356), 306, 363);
             Add_Goto (Table.States (356), 323, 114);
-            Table.States (356).Minimal_Complete_Action := (Reduce, 218, 0);
-            Table.States (357).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3), (315, 0)));
+            Table.States (356).Kernel := To_Vector ((0 => (196, 21, 3, False)));
+            Table.States (356).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (357), 76, 235);
             Add_Action (Table.States (357), 77, 527);
             Add_Action (Table.States (357), 84, 237);
@@ -4483,15 +4601,18 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (357));
             Add_Goto (Table.States (357), 115, 241);
             Add_Goto (Table.States (357), 322, 242);
-            Table.States (357).Minimal_Complete_Action := (Shift, 77, 527);
-            Table.States (358).Productions := WisiToken.To_Vector ((1 => (295, 4)));
+            Table.States (357).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (315, 239, 7, False)));
+            Table.States (357).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 527)));
             Add_Action (Table.States (358), (22, 24, 43), (295, 4), 2, select_alternative_4'Access, null);
-            Table.States (358).Minimal_Complete_Action := (Reduce, 295, 2);
-            Table.States (359).Productions := WisiToken.To_Vector (((295, 0), (295, 1), (295, 2)));
+            Table.States (358).Kernel := To_Vector ((0 => (295, 96, 0, False)));
+            Table.States (358).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 295, 2)));
             Add_Action (Table.States (359), 87, 528);
             Add_Error (Table.States (359));
-            Table.States (359).Minimal_Complete_Action := (Shift, 87, 528);
-            Table.States (360).Productions := WisiToken.To_Vector (((131, 0), (239, 5)));
+            Table.States (359).Kernel := To_Vector (((295, 192, 4, False), (295, 192, 3, False), (295, 192, 3,
+            False)));
+            Table.States (359).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 528)));
             Add_Action (Table.States (360), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (360), 81, 529);
             Add_Action (Table.States (360), 82, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
@@ -4500,8 +4621,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (360), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (360), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (360));
-            Table.States (360).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (361).Productions := WisiToken.To_Vector (((299, 0), (300, 0)));
+            Table.States (360).Kernel := To_Vector (((131, 104, 1, False), (239, 104, 0, False)));
+            Table.States (360).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (361), 4, 1);
             Add_Action (Table.States (361), 5, 2);
             Add_Action (Table.States (361), 13, Reduce, (132, 1), 0, null, null);
@@ -4561,22 +4682,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (361), 303, 101);
             Add_Goto (Table.States (361), 306, 530);
             Add_Goto (Table.States (361), 323, 114);
-            Table.States (361).Minimal_Complete_Action := (Reduce, 300, 1);
-            Table.States (362).Productions := WisiToken.To_Vector ((1 => (295, 3)));
+            Table.States (361).Kernel := To_Vector (((299, 299, 2, True), (300, 299, 0, False)));
+            Table.States (361).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 1)));
             Add_Action (Table.States (362), (22, 24, 43), (295, 3), 2, null, null);
-            Table.States (362).Minimal_Complete_Action := (Reduce, 295, 2);
-            Table.States (363).Productions := WisiToken.To_Vector ((1 => (299, 1)));
+            Table.States (362).Kernel := To_Vector ((0 => (295, 300, 0, False)));
+            Table.States (362).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 295, 2)));
             Add_Action (Table.States (363), (4, 5, 13, 15, 17, 18, 22, 23, 24, 26, 27, 28, 31, 32, 37, 41, 43, 48, 52,
             57, 58, 61, 68, 72, 73, 93, 104, 105, 106), (299, 1), 1, null, null);
-            Table.States (363).Minimal_Complete_Action := (Reduce, 299, 1);
-            Table.States (364).Productions := WisiToken.To_Vector (((160, 0), (324, 2)));
+            Table.States (363).Kernel := To_Vector ((0 => (299, 306, 0, False)));
+            Table.States (363).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 299, 1)));
             Add_Action (Table.States (364), 22, Reduce, (160, 0), 2, null, null);
             Add_Action (Table.States (364), 24, Reduce, (160, 0), 2, null, null);
             Add_Action (Table.States (364), 43, Reduce, (160, 0), 2, null, null);
             Add_Action (Table.States (364), 68, Reduce, (324, 2), 2, null, null);
             Add_Error (Table.States (364));
-            Table.States (364).Minimal_Complete_Action := (Reduce, 160, 2);
-            Table.States (365).Productions := WisiToken.To_Vector ((1 => (152, 0)));
+            Table.States (364).Kernel := To_Vector (((160, 300, 0, False), (324, 300, 0, False)));
+            Table.States (364).Minimal_Complete_Actions := To_Vector (((Reduce, 160, 2), (Reduce, 324, 2)));
             Add_Action (Table.States (365), 4, 1);
             Add_Action (Table.States (365), 5, 2);
             Add_Action (Table.States (365), 13, Reduce, (132, 1), 0, null, null);
@@ -4632,26 +4753,26 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (365), 303, 101);
             Add_Goto (Table.States (365), 306, 363);
             Add_Goto (Table.States (365), 323, 114);
-            Table.States (365).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (366).Productions := WisiToken.To_Vector ((1 => (323, 0)));
+            Table.States (365).Kernel := To_Vector ((0 => (152, 22, 3, False)));
+            Table.States (365).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (366), 18, 4);
             Add_Error (Table.States (366));
             Add_Goto (Table.States (366), 160, 532);
             Add_Goto (Table.States (366), 161, 533);
-            Table.States (366).Minimal_Complete_Action := (Shift, 18, 4);
-            Table.States (367).Productions := WisiToken.To_Vector (((178, 1), (324, 1)));
+            Table.States (366).Kernel := To_Vector ((0 => (323, 43, 5, False)));
+            Table.States (366).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 18, 4)));
             Add_Action (Table.States (367), 22, Reduce, (178, 1), 2, null, null);
             Add_Action (Table.States (367), 43, Reduce, (178, 1), 2, null, null);
             Add_Action (Table.States (367), 68, Reduce, (324, 1), 2, null, null);
             Add_Error (Table.States (367));
-            Table.States (367).Minimal_Complete_Action := (Reduce, 178, 2);
-            Table.States (368).Productions := WisiToken.To_Vector (((178, 0), (324, 0)));
+            Table.States (367).Kernel := To_Vector (((178, 300, 0, False), (324, 300, 0, False)));
+            Table.States (367).Minimal_Complete_Actions := To_Vector (((Reduce, 178, 2), (Reduce, 324, 2)));
             Add_Action (Table.States (368), 22, Reduce, (178, 0), 2, null, null);
             Add_Action (Table.States (368), 43, Reduce, (178, 0), 2, null, null);
             Add_Action (Table.States (368), 68, Reduce, (324, 0), 2, null, null);
             Add_Error (Table.States (368));
-            Table.States (368).Minimal_Complete_Action := (Reduce, 178, 2);
-            Table.States (369).Productions := WisiToken.To_Vector ((1 => (296, 0)));
+            Table.States (368).Kernel := To_Vector (((178, 300, 0, False), (324, 300, 0, False)));
+            Table.States (368).Minimal_Complete_Actions := To_Vector (((Reduce, 178, 2), (Reduce, 324, 2)));
             Add_Action (Table.States (369), 4, 1);
             Add_Action (Table.States (369), 18, 4);
             Add_Action (Table.States (369), 67, 199);
@@ -4661,8 +4782,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (369), 160, 202);
             Add_Goto (Table.States (369), 161, 533);
             Add_Goto (Table.States (369), 295, 534);
-            Table.States (369).Minimal_Complete_Action := (Shift, 67, 199);
-            Table.States (370).Productions := WisiToken.To_Vector ((1 => (294, 0)));
+            Table.States (369).Kernel := To_Vector ((0 => (296, 43, 2, True)));
+            Table.States (369).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 67, 199)));
+            Table.States (369).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (370), 4, 1);
             Add_Action (Table.States (370), 5, 2);
             Add_Action (Table.States (370), 13, Reduce, (132, 1), 0, null, null);
@@ -4718,16 +4840,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (370), 303, 101);
             Add_Goto (Table.States (370), 306, 363);
             Add_Goto (Table.States (370), 323, 114);
-            Table.States (370).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (371).Productions := WisiToken.To_Vector ((1 => (294, 1)));
+            Table.States (370).Kernel := To_Vector ((0 => (294, 22, 3, False)));
+            Table.States (370).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (371), 61, 536);
             Add_Error (Table.States (371));
-            Table.States (371).Minimal_Complete_Action := (Shift, 61, 536);
-            Table.States (372).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (371).Kernel := To_Vector ((0 => (294, 24, 2, False)));
+            Table.States (371).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 61, 536)));
             Add_Action (Table.States (372), 5, 537);
             Add_Error (Table.States (372));
-            Table.States (372).Minimal_Complete_Action := (Shift, 5, 537);
-            Table.States (373).Productions := WisiToken.To_Vector ((1 => (313, 0)));
+            Table.States (372).Kernel := To_Vector ((0 => (126, 68, 4, False)));
+            Table.States (372).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 5, 537)));
             Add_Action (Table.States (373), 40, 483);
             Add_Action (Table.States (373), 104, 119);
             Add_Action (Table.States (373), 105, 33);
@@ -4738,27 +4860,30 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (373), 272, 92);
             Add_Goto (Table.States (373), 293, 97);
             Add_Goto (Table.States (373), 314, 538);
-            Table.States (373).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (374).Productions := WisiToken.To_Vector (((316, 0), (317, 0)));
-            Add_Action (Table.States (374), 35, 539, (122, 1), 0, null, null);
+            Table.States (373).Kernel := To_Vector ((0 => (313, 35, 2, False)));
+            Table.States (373).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Add_Action (Table.States (374), 35, 539);
+            Add_Conflict (Table.States (374), 35, (122, 1), 0, null, null);
             Add_Action (Table.States (374), 74, 337);
             Add_Error (Table.States (374));
             Add_Goto (Table.States (374), 122, 540);
-            Table.States (374).Minimal_Complete_Action := (Shift, 35, 539);
-            Table.States (375).Productions := WisiToken.To_Vector (((319, 0), (319, 1), (319, 2)));
+            Table.States (374).Kernel := To_Vector (((316, 104, 4, False), (317, 104, 3, False)));
+            Table.States (374).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 539)));
             Add_Action (Table.States (375), 35, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (375), 74, Reduce, (169, 2), 0, null, null);
             Add_Action (Table.States (375), 76, 377);
             Add_Action (Table.States (375), 96, Reduce, (169, 2), 0, null, null);
             Add_Error (Table.States (375));
             Add_Goto (Table.States (375), 169, 541);
-            Table.States (375).Minimal_Complete_Action := (Reduce, 169, 0);
-            Table.States (376).Productions := WisiToken.To_Vector (((305, 0), (305, 1), (305, 2)));
+            Table.States (375).Kernel := To_Vector (((319, 104, 6, False), (319, 104, 3, False), (319, 104, 1,
+            False)));
+            Table.States (375).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 169, 0)));
             Add_Action (Table.States (376), 35, 542);
             Add_Action (Table.States (376), 96, 543);
             Add_Error (Table.States (376));
-            Table.States (376).Minimal_Complete_Action := (Shift, 96, 543);
-            Table.States (377).Productions := WisiToken.To_Vector (((169, 0), (169, 1)));
+            Table.States (376).Kernel := To_Vector (((305, 122, 6, False), (305, 122, 3, False), (305, 122, 1,
+            False)));
+            Table.States (376).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 543)));
             Add_Action (Table.States (377), 77, Reduce, (170, 4), 0, null, null);
             Add_Action (Table.States (377), 80, 544);
             Add_Action (Table.States (377), 96, Reduce, (170, 4), 0, null, null);
@@ -4767,13 +4892,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (377), 170, 545);
             Add_Goto (Table.States (377), 171, 546);
             Add_Goto (Table.States (377), 219, 547);
-            Table.States (377).Minimal_Complete_Action := (Reduce, 171, 0);
-            Table.States (378).Productions := WisiToken.To_Vector (((206, 0), (223, 0), (223, 1), (259, 0), (260, 0)));
+            Table.States (377).Kernel := To_Vector (((169, 76, 2, False), (169, 76, 1, False)));
+            Table.States (377).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 171, 0)));
             Add_Action (Table.States (378), 35, 548);
             Add_Action (Table.States (378), 96, 549);
             Add_Error (Table.States (378));
-            Table.States (378).Minimal_Complete_Action := (Shift, 96, 549);
-            Table.States (379).Productions := WisiToken.To_Vector ((1 => (331, 0)));
+            Table.States (378).Kernel := To_Vector (((206, 169, 3, False), (223, 169, 3, False), (223, 169, 1, False),
+            (259, 169, 6, False), (260, 169, 3, False)));
+            Table.States (378).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 549)));
             Add_Action (Table.States (379), 104, 119);
             Add_Action (Table.States (379), 105, 33);
             Add_Action (Table.States (379), 106, 34);
@@ -4783,13 +4909,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (379), 239, 219);
             Add_Goto (Table.States (379), 272, 92);
             Add_Goto (Table.States (379), 293, 97);
-            Table.States (379).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (380).Productions := WisiToken.To_Vector (((238, 0), (331, 1)));
+            Table.States (379).Kernel := To_Vector ((0 => (331, 69, 2, False)));
+            Table.States (379).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (380), 83, 381);
             Add_Action (Table.States (380), 96, 551);
             Add_Error (Table.States (380));
-            Table.States (380).Minimal_Complete_Action := (Shift, 96, 551);
-            Table.States (381).Productions := WisiToken.To_Vector ((1 => (238, 0)));
+            Table.States (380).Kernel := To_Vector (((238, 238, 2, True), (331, 238, 1, False)));
+            Table.States (380).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 551)));
             Add_Action (Table.States (381), 104, 119);
             Add_Action (Table.States (381), 105, 33);
             Add_Action (Table.States (381), 106, 34);
@@ -4798,35 +4924,36 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (381), 239, 552);
             Add_Goto (Table.States (381), 272, 92);
             Add_Goto (Table.States (381), 293, 97);
-            Table.States (381).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (382).Productions := WisiToken.To_Vector ((1 => (331, 2)));
+            Table.States (381).Kernel := To_Vector ((0 => (238, 83, 1, True)));
+            Table.States (381).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (381).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (382), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (331, 2), 3,
             use_clause_2'Access, null);
-            Table.States (382).Minimal_Complete_Action := (Reduce, 331, 3);
-            Table.States (383).Productions := WisiToken.To_Vector ((1 => (332, 3)));
+            Table.States (382).Kernel := To_Vector ((0 => (331, 96, 0, False)));
+            Table.States (382).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 331, 3)));
             Add_Action (Table.States (383), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (332, 3), 3,
             with_clause_3'Access, null);
-            Table.States (383).Minimal_Complete_Action := (Reduce, 332, 3);
-            Table.States (384).Productions := WisiToken.To_Vector ((1 => (217, 0)));
+            Table.States (383).Kernel := To_Vector ((0 => (332, 96, 0, False)));
+            Table.States (383).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 332, 3)));
             Add_Action (Table.States (384), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (217, 0), 3, goto_label_0'Access, null);
-            Table.States (384).Minimal_Complete_Action := (Reduce, 217, 3);
-            Table.States (385).Productions := WisiToken.To_Vector ((1 => (245, 2)));
+            Table.States (384).Kernel := To_Vector ((0 => (217, 90, 0, False)));
+            Table.States (384).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 217, 3)));
             Add_Action (Table.States (385), 56, 553);
             Add_Error (Table.States (385));
-            Table.States (385).Minimal_Complete_Action := (Shift, 56, 553);
-            Table.States (386).Productions := WisiToken.To_Vector ((1 => (241, 0)));
+            Table.States (385).Kernel := To_Vector ((0 => (245, 26, 3, False)));
+            Table.States (385).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 56, 553)));
             Add_Action (Table.States (386), 41, 554);
             Add_Error (Table.States (386));
-            Table.States (386).Minimal_Complete_Action := (Shift, 41, 554);
-            Table.States (387).Productions := WisiToken.To_Vector ((1 => (245, 1)));
+            Table.States (386).Kernel := To_Vector ((0 => (241, 40, 1, False)));
+            Table.States (386).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 554)));
             Add_Action (Table.States (387), 56, 555);
             Add_Error (Table.States (387));
-            Table.States (387).Minimal_Complete_Action := (Shift, 56, 555);
-            Table.States (388).Productions := WisiToken.To_Vector (((114, 0), (114, 1), (114, 2), (245, 0)));
+            Table.States (387).Kernel := To_Vector ((0 => (245, 114, 3, False)));
+            Table.States (387).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 56, 555)));
             Add_Action (Table.States (388), 7, 556);
             Add_Action (Table.States (388), 104, 119);
             Add_Action (Table.States (388), 105, 33);
@@ -4836,21 +4963,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (388), 239, 557);
             Add_Goto (Table.States (388), 272, 92);
             Add_Goto (Table.States (388), 293, 97);
-            Table.States (388).Minimal_Complete_Action := (Shift, 7, 556);
-            Table.States (389).Productions := WisiToken.To_Vector ((1 => (133, 1)));
+            Table.States (388).Kernel := To_Vector (((114, 241, 2, False), (114, 241, 3, True), (114, 241, 2, False),
+            (245, 241, 4, False)));
+            Table.States (388).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 7, 556)));
             Add_Action (Table.States (389), 24, 558);
             Add_Error (Table.States (389));
-            Table.States (389).Minimal_Complete_Action := (Shift, 24, 558);
-            Table.States (390).Productions := WisiToken.To_Vector (((218, 0), (218, 1)));
+            Table.States (389).Kernel := To_Vector ((0 => (133, 218, 2, False)));
+            Table.States (389).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 558)));
             Add_Action (Table.States (390), 24, Reduce, (218, 1), 1, null, null);
             Add_Action (Table.States (390), 26, 559);
             Add_Error (Table.States (390));
-            Table.States (390).Minimal_Complete_Action := (Reduce, 218, 1);
-            Table.States (391).Productions := WisiToken.To_Vector ((1 => (158, 2)));
+            Table.States (390).Kernel := To_Vector (((218, 300, 1, False), (218, 300, 0, False)));
+            Table.States (390).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 1)));
             Add_Action (Table.States (391), (13, 24, 25, 28, 29, 30, 40, 46, 47, 48, 49, 50, 51, 63, 66, 69, 71, 104),
             (158, 2), 1, null, null);
-            Table.States (391).Minimal_Complete_Action := (Reduce, 158, 1);
-            Table.States (392).Productions := WisiToken.To_Vector (((158, 0), (158, 1), (159, 0)));
+            Table.States (391).Kernel := To_Vector ((0 => (158, 157, 0, False)));
+            Table.States (391).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 158, 1)));
             Add_Action (Table.States (392), 13, Reduce, (159, 0), 1, null, null);
             Add_Action (Table.States (392), 24, Reduce, (159, 0), 1, null, null);
             Add_Action (Table.States (392), 25, Reduce, (246, 2), 0, null, null);
@@ -4921,27 +5049,30 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (392), 319, 113);
             Add_Goto (Table.States (392), 325, 115);
             Add_Goto (Table.States (392), 331, 116);
-            Table.States (392).Minimal_Complete_Action := (Reduce, 159, 1);
-            Table.States (393).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (392).Kernel := To_Vector (((158, 158, 3, True), (158, 158, 3, True), (159, 158, 0, False)));
+            Table.States (392).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 1)));
+         end Subr_7;
+         procedure Subr_8
+         is begin
             Add_Action (Table.States (393), 13, 562);
             Add_Error (Table.States (393));
-            Table.States (393).Minimal_Complete_Action := (Shift, 13, 562);
-            Table.States (394).Productions := WisiToken.To_Vector ((1 => (158, 3)));
+            Table.States (393).Kernel := To_Vector ((0 => (133, 159, 3, False)));
+            Table.States (393).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 13, 562)));
             Add_Action (Table.States (394), (13, 24, 25, 28, 29, 30, 40, 46, 47, 48, 49, 50, 51, 63, 66, 69, 71, 104),
             (158, 3), 1, null, null);
-            Table.States (394).Minimal_Complete_Action := (Reduce, 158, 1);
-            Table.States (395).Productions := WisiToken.To_Vector (((230, 0), (230, 1), (230, 2), (230, 3), (230, 4),
-            (230, 5)));
+            Table.States (394).Kernel := To_Vector ((0 => (158, 257, 0, False)));
+            Table.States (394).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 158, 1)));
             Add_Action (Table.States (395), 33, 311);
             Add_Action (Table.States (395), 42, 312);
             Add_Action (Table.States (395), 81, 313);
             Add_Error (Table.States (395));
-            Table.States (395).Minimal_Complete_Action := (Shift, 42, 312);
-            Table.States (396).Productions := WisiToken.To_Vector ((1 => (232, 1)));
+            Table.States (395).Kernel := To_Vector (((230, 104, 5, False), (230, 104, 4, False), (230, 104, 3, False),
+            (230, 104, 3, False), (230, 104, 2, False), (230, 104, 2, False)));
+            Table.States (395).Minimal_Complete_Actions := To_Vector (((Shift, 42, 312), (Shift, 33, 311)));
             Add_Action (Table.States (396), 24, 563);
             Add_Error (Table.States (396));
-            Table.States (396).Minimal_Complete_Action := (Shift, 24, 563);
-            Table.States (397).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (396).Kernel := To_Vector ((0 => (232, 300, 3, False)));
+            Table.States (396).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 563)));
             Add_Action (Table.States (397), 4, 1);
             Add_Action (Table.States (397), 5, 2);
             Add_Action (Table.States (397), 13, Reduce, (132, 1), 0, null, null);
@@ -4997,12 +5128,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (397), 303, 101);
             Add_Goto (Table.States (397), 306, 363);
             Add_Goto (Table.States (397), 323, 114);
-            Table.States (397).Minimal_Complete_Action := (Reduce, 300, 0);
-         end Subr_7;
-         procedure Subr_8
-         is begin
-            Table.States (398).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (251, 0), (251, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (397).Kernel := To_Vector ((0 => (232, 37, 3, False)));
+            Table.States (397).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (398), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (398), 74, 337);
             Add_Action (Table.States (398), 76, 235);
@@ -5013,30 +5140,31 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (398), 115, 241);
             Add_Goto (Table.States (398), 122, 338);
             Add_Goto (Table.States (398), 322, 242);
-            Table.States (398).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (399).Productions := WisiToken.To_Vector ((1 => (214, 0)));
+            Table.States (398).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (251, 239, 3, False), (251, 239, 2, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (398).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (399), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (214, 0), 3,
             generic_package_declaration_0'Access, null);
-            Table.States (399).Minimal_Complete_Action := (Reduce, 214, 3);
-            Table.States (400).Productions := WisiToken.To_Vector ((1 => (216, 0)));
+            Table.States (399).Kernel := To_Vector ((0 => (214, 96, 0, False)));
+            Table.States (399).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 214, 3)));
             Add_Action (Table.States (400), 96, 565);
             Add_Error (Table.States (400));
-            Table.States (400).Minimal_Complete_Action := (Shift, 96, 565);
-            Table.States (401).Productions := WisiToken.To_Vector ((1 => (118, 0)));
+            Table.States (400).Kernel := To_Vector ((0 => (216, 122, 1, False)));
+            Table.States (400).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 565)));
             Add_Action (Table.States (401), (7, 11, 16, 21, 33, 40, 45, 74, 77, 82, 96, 104, 105, 106), (118, 0), 1,
             null, null);
-            Table.States (401).Minimal_Complete_Action := (Reduce, 118, 1);
-            Table.States (402).Productions := WisiToken.To_Vector ((1 => (157, 9)));
+            Table.States (401).Kernel := To_Vector ((0 => (118, 8, 0, False)));
+            Table.States (401).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 118, 1)));
             Add_Action (Table.States (402), 82, 566);
             Add_Error (Table.States (402));
-            Table.States (402).Minimal_Complete_Action := (Shift, 82, 566);
-            Table.States (403).Productions := WisiToken.To_Vector ((1 => (186, 0)));
+            Table.States (402).Kernel := To_Vector ((0 => (157, 16, 2, False)));
+            Table.States (402).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 82, 566)));
             Add_Action (Table.States (403), 96, 567);
             Add_Error (Table.States (403));
-            Table.States (403).Minimal_Complete_Action := (Shift, 96, 567);
-            Table.States (404).Productions := WisiToken.To_Vector (((244, 0), (244, 1), (244, 2), (244, 3), (244, 4),
-            (244, 5)));
+            Table.States (403).Kernel := To_Vector ((0 => (186, 26, 1, False)));
+            Table.States (403).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 567)));
             Add_Action (Table.States (404), 7, Reduce, (154, 1), 0, null, null);
             Add_Action (Table.States (404), 11, Reduce, (154, 1), 0, null, null);
             Add_Action (Table.States (404), 16, 568);
@@ -5049,20 +5177,22 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (404), 106, Reduce, (154, 1), 0, null, null);
             Add_Error (Table.States (404));
             Add_Goto (Table.States (404), 154, 569);
-            Table.States (404).Minimal_Complete_Action := (Reduce, 154, 0);
-            Table.States (405).Productions := WisiToken.To_Vector ((1 => (219, 0)));
+            Table.States (404).Kernel := To_Vector (((244, 118, 3, False), (244, 118, 4, False), (244, 118, 10, False),
+            (244, 118, 2, False), (244, 118, 3, False), (244, 118, 9, False)));
+            Table.States (404).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 154, 0)));
             Add_Action (Table.States (405), (81, 83), (219, 0), 3, identifier_list_0'Access, null);
-            Table.States (405).Minimal_Complete_Action := (Reduce, 219, 3);
-            Table.States (406).Productions := WisiToken.To_Vector (((115, 0), (125, 0)));
+            Table.States (405).Kernel := To_Vector ((0 => (219, 104, 0, True)));
+            Table.States (405).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 219, 3)));
+            Table.States (405).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (406), 77, 570);
             Add_Action (Table.States (406), 83, 443);
             Add_Error (Table.States (406));
-            Table.States (406).Minimal_Complete_Action := (Shift, 77, 570);
-            Table.States (407).Productions := WisiToken.To_Vector ((1 => (115, 1)));
+            Table.States (406).Kernel := To_Vector (((115, 125, 1, False), (125, 125, 1, True)));
+            Table.States (406).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 570)));
             Add_Action (Table.States (407), 77, 571);
             Add_Error (Table.States (407));
-            Table.States (407).Minimal_Complete_Action := (Shift, 77, 571);
-            Table.States (408).Productions := WisiToken.To_Vector (((124, 4), (165, 0)));
+            Table.States (407).Kernel := To_Vector ((0 => (115, 153, 1, False)));
+            Table.States (407).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 571)));
             Add_Action (Table.States (408), 35, Reduce, (124, 4), 1, association_opt_4'Access, null);
             Add_Action (Table.States (408), 77, Reduce, (124, 4), 1, association_opt_4'Access, null);
             Add_Action (Table.States (408), 79, Reduce, (165, 0), 1, null, null);
@@ -5070,80 +5200,86 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (408), 87, Reduce, (165, 0), 1, null, null);
             Add_Action (Table.States (408), 96, Reduce, (124, 4), 1, association_opt_4'Access, null);
             Add_Error (Table.States (408));
-            Table.States (408).Minimal_Complete_Action := (Reduce, 124, 1);
-            Table.States (409).Productions := WisiToken.To_Vector (((165, 2), (278, 1)));
+            Table.States (408).Kernel := To_Vector (((124, 191, 0, False), (165, 191, 0, False)));
+            Table.States (408).Minimal_Complete_Actions := To_Vector (((Reduce, 124, 1), (Reduce, 165, 1)));
             Add_Action (Table.States (409), 77, Reduce, (278, 1), 1, null, null);
             Add_Action (Table.States (409), 79, Reduce, (165, 2), 1, null, null);
             Add_Action (Table.States (409), 83, Reduce, (278, 1), 1, null, null);
             Add_Action (Table.States (409), 87, Reduce, (165, 2), 1, null, null);
             Add_Error (Table.States (409));
-            Table.States (409).Minimal_Complete_Action := (Reduce, 165, 1);
-            Table.States (410).Productions := WisiToken.To_Vector (((239, 0), (278, 0)));
+            Table.States (409).Kernel := To_Vector (((165, 277, 0, False), (278, 277, 0, False)));
+            Table.States (409).Minimal_Complete_Actions := To_Vector (((Reduce, 165, 1), (Reduce, 278, 1)));
             Add_Action (Table.States (410), 77, 572);
             Add_Action (Table.States (410), 83, 573);
             Add_Error (Table.States (410));
-            Table.States (410).Minimal_Complete_Action := (Shift, 77, 572);
-            Table.States (411).Productions := WisiToken.To_Vector ((1 => (123, 0)));
+            Table.States (410).Kernel := To_Vector (((239, 278, 1, True), (278, 278, 4, True)));
+            Table.States (410).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 572)));
+            Table.States (410).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (411), 96, 574);
             Add_Error (Table.States (411));
-            Table.States (411).Minimal_Complete_Action := (Shift, 96, 574);
-            Table.States (412).Productions := WisiToken.To_Vector ((1 => (293, 3)));
+            Table.States (411).Kernel := To_Vector ((0 => (123, 192, 1, False)));
+            Table.States (411).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 574)));
             Add_Action (Table.States (412), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (293, 3), 3,
             selected_component_3'Access, null);
-            Table.States (412).Minimal_Complete_Action := (Reduce, 293, 3);
-            Table.States (413).Productions := WisiToken.To_Vector ((1 => (293, 0)));
+            Table.States (412).Kernel := To_Vector ((0 => (293, 9, 0, True)));
+            Table.States (412).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 293, 3)));
+            Table.States (412).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (413), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (293, 0), 3,
             selected_component_0'Access, selected_component_0_check'Access);
-            Table.States (413).Minimal_Complete_Action := (Reduce, 293, 3);
-            Table.States (414).Productions := WisiToken.To_Vector ((1 => (293, 2)));
+            Table.States (413).Kernel := To_Vector ((0 => (293, 104, 0, True)));
+            Table.States (413).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 293, 3)));
+            Table.States (413).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (414), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (293, 2), 3,
             selected_component_2'Access, selected_component_2_check'Access);
-            Table.States (414).Minimal_Complete_Action := (Reduce, 293, 3);
-            Table.States (415).Productions := WisiToken.To_Vector ((1 => (293, 1)));
+            Table.States (414).Kernel := To_Vector ((0 => (293, 105, 0, True)));
+            Table.States (414).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 293, 3)));
+            Table.States (414).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (415), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (293, 1), 3,
             selected_component_1'Access, null);
-            Table.States (415).Minimal_Complete_Action := (Reduce, 293, 3);
-            Table.States (416).Productions := WisiToken.To_Vector ((1 => (129, 1)));
+            Table.States (415).Kernel := To_Vector ((0 => (293, 106, 0, True)));
+            Table.States (415).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 293, 3)));
+            Table.States (415).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (416), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (129, 1), 1, null, null);
-            Table.States (416).Minimal_Complete_Action := (Reduce, 129, 1);
-            Table.States (417).Productions := WisiToken.To_Vector ((1 => (129, 2)));
+            Table.States (416).Kernel := To_Vector ((0 => (129, 7, 0, False)));
+            Table.States (416).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 129, 1)));
             Add_Action (Table.States (417), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (129, 2), 1, null, null);
-            Table.States (417).Minimal_Complete_Action := (Reduce, 129, 1);
-            Table.States (418).Productions := WisiToken.To_Vector ((1 => (129, 3)));
+            Table.States (417).Kernel := To_Vector ((0 => (129, 19, 0, False)));
+            Table.States (417).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 129, 1)));
             Add_Action (Table.States (418), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (129, 3), 1, null, null);
-            Table.States (418).Minimal_Complete_Action := (Reduce, 129, 1);
-            Table.States (419).Productions := WisiToken.To_Vector ((1 => (129, 4)));
+            Table.States (418).Kernel := To_Vector ((0 => (129, 20, 0, False)));
+            Table.States (418).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 129, 1)));
             Add_Action (Table.States (419), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (129, 4), 1, null, null);
-            Table.States (419).Minimal_Complete_Action := (Reduce, 129, 1);
-            Table.States (420).Productions := WisiToken.To_Vector ((1 => (272, 0)));
+            Table.States (419).Kernel := To_Vector ((0 => (129, 38, 0, False)));
+            Table.States (419).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 129, 1)));
             Add_Action (Table.States (420), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (272, 0), 3,
             qualified_expression_0'Access, null);
-            Table.States (420).Minimal_Complete_Action := (Reduce, 272, 3);
-            Table.States (421).Productions := WisiToken.To_Vector ((1 => (128, 0)));
+            Table.States (420).Kernel := To_Vector ((0 => (272, 117, 0, True)));
+            Table.States (420).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 272, 3)));
+            Table.States (420).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (421), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (128, 0), 3, null, null);
-            Table.States (421).Minimal_Complete_Action := (Reduce, 128, 3);
-            Table.States (422).Productions := WisiToken.To_Vector (((128, 0), (129, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (421).Kernel := To_Vector ((0 => (128, 129, 0, True)));
+            Table.States (421).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 128, 3)));
+            Table.States (421).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (422), 4, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 5, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 10, Reduce, (129, 0), 1, null, null);
@@ -5180,13 +5316,15 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (422), 73, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 74, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 75, Reduce, (129, 0), 1, null, null);
-            Add_Action (Table.States (422), 76, 235, (129, 0), 1, null, null);
+            Add_Action (Table.States (422), 76, 235);
+            Add_Conflict (Table.States (422), 76, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 77, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 78, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 79, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 82, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 83, Reduce, (129, 0), 1, null, null);
-            Add_Action (Table.States (422), 84, 237, (129, 0), 1, null, null);
+            Add_Action (Table.States (422), 84, 237);
+            Add_Conflict (Table.States (422), 84, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 85, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 86, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 87, Reduce, (129, 0), 1, null, null);
@@ -5202,25 +5340,29 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (422), 98, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 99, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 100, Reduce, (129, 0), 1, null, null);
-            Add_Action (Table.States (422), 101, 239, (129, 0), 1, null, null);
-            Add_Action (Table.States (422), 102, 240, (129, 0), 1, null, null);
+            Add_Action (Table.States (422), 101, 239);
+            Add_Conflict (Table.States (422), 101, (129, 0), 1, null, null);
+            Add_Action (Table.States (422), 102, 240);
+            Add_Conflict (Table.States (422), 102, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 104, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 105, Reduce, (129, 0), 1, null, null);
             Add_Action (Table.States (422), 106, Reduce, (129, 0), 1, null, null);
             Add_Error (Table.States (422));
             Add_Goto (Table.States (422), 115, 241);
             Add_Goto (Table.States (422), 322, 242);
-            Table.States (422).Minimal_Complete_Action := (Reduce, 129, 1);
-            Table.States (423).Productions := WisiToken.To_Vector (((179, 0), (179, 1)));
+            Table.States (422).Kernel := To_Vector (((128, 239, 2, True), (129, 239, 0, True), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (422).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 129, 1)));
+            Table.States (422).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (423), 74, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (423), 76, 575);
             Add_Action (Table.States (423), 96, Reduce, (253, 1), 0, null, null);
             Add_Error (Table.States (423));
             Add_Goto (Table.States (423), 199, 344);
             Add_Goto (Table.States (423), 253, 576);
-            Table.States (423).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (424).Productions := WisiToken.To_Vector (((128, 0), (207, 0), (213, 2), (239, 0), (239, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (423).Kernel := To_Vector (((179, 104, 4, False), (179, 104, 1, False)));
+            Table.States (423).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (424), 35, 577);
             Add_Action (Table.States (424), 58, 317);
             Add_Action (Table.States (424), 76, 318);
@@ -5233,10 +5375,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (424), 252, 320);
             Add_Goto (Table.States (424), 291, 321);
             Add_Goto (Table.States (424), 322, 242);
-            Table.States (424).Minimal_Complete_Action := (Shift, 58, 317);
-            Table.States (425).Productions := WisiToken.To_Vector (((128, 0), (213, 1), (239, 0), (239, 1), (262, 0),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
-            Add_Action (Table.States (425), 35, 578, (253, 1), 0, null, null);
+            Table.States (424).Kernel := To_Vector (((128, 239, 2, True), (207, 239, 1, False), (213, 239, 4, False),
+            (239, 239, 5, True), (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (424).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 58, 317)));
+            Add_Action (Table.States (425), 35, 578);
+            Add_Conflict (Table.States (425), 35, (253, 1), 0, null, null);
             Add_Action (Table.States (425), 56, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (425), 74, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (425), 76, 318);
@@ -5249,22 +5393,24 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (425), 199, 344);
             Add_Goto (Table.States (425), 253, 345);
             Add_Goto (Table.States (425), 322, 242);
-            Table.States (425).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (426).Productions := WisiToken.To_Vector ((1 => (193, 0)));
+            Table.States (425).Kernel := To_Vector (((128, 239, 2, True), (213, 239, 4, False), (239, 239, 5, True),
+            (239, 239, 2, True), (262, 239, 0, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (425).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (426), 76, 579);
             Add_Error (Table.States (426));
             Add_Goto (Table.States (426), 256, 580);
-            Table.States (426).Minimal_Complete_Action := (Shift, 76, 579);
-            Table.States (427).Productions := WisiToken.To_Vector ((1 => (243, 0)));
+            Table.States (426).Kernel := To_Vector ((0 => (193, 35, 3, False)));
+            Table.States (426).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 76, 579)));
             Add_Action (Table.States (427), 41, 581);
             Add_Error (Table.States (427));
-            Table.States (427).Minimal_Complete_Action := (Shift, 41, 581);
-            Table.States (428).Productions := WisiToken.To_Vector (((112, 0), (308, 0)));
+            Table.States (427).Kernel := To_Vector ((0 => (243, 35, 2, False)));
+            Table.States (427).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 581)));
             Add_Action (Table.States (428), 6, 582);
             Add_Action (Table.States (428), 60, 583);
             Add_Error (Table.States (428));
-            Table.States (428).Minimal_Complete_Action := (Shift, 6, 582);
-            Table.States (429).Productions := WisiToken.To_Vector ((1 => (311, 0)));
+            Table.States (428).Kernel := To_Vector (((112, 35, 2, False), (308, 35, 2, False)));
+            Table.States (428).Minimal_Complete_Actions := To_Vector (((Shift, 6, 582), (Shift, 60, 583)));
             Add_Action (Table.States (429), 104, 119);
             Add_Action (Table.States (429), 105, 33);
             Add_Action (Table.States (429), 106, 34);
@@ -5273,13 +5419,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (429), 239, 584);
             Add_Goto (Table.States (429), 272, 92);
             Add_Goto (Table.States (429), 293, 97);
-            Table.States (429).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (430).Productions := WisiToken.To_Vector (((307, 0), (309, 0)));
+            Table.States (429).Kernel := To_Vector ((0 => (311, 56, 2, False)));
+            Table.States (429).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (430), 35, 585);
             Add_Action (Table.States (430), 96, 586);
             Add_Error (Table.States (430));
-            Table.States (430).Minimal_Complete_Action := (Shift, 96, 586);
-            Table.States (431).Productions := WisiToken.To_Vector ((1 => (199, 0)));
+            Table.States (430).Kernel := To_Vector (((307, 122, 4, False), (309, 122, 1, False)));
+            Table.States (430).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 586)));
             Add_Action (Table.States (431), 77, Reduce, (254, 4), 0, null, null);
             Add_Action (Table.States (431), 96, Reduce, (254, 4), 0, null, null);
             Add_Action (Table.States (431), 104, 164);
@@ -5287,13 +5433,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (431), 219, 493);
             Add_Goto (Table.States (431), 254, 494);
             Add_Goto (Table.States (431), 255, 495);
-            Table.States (431).Minimal_Complete_Action := (Reduce, 255, 0);
-            Table.States (432).Productions := WisiToken.To_Vector (((113, 0), (113, 1)));
+            Table.States (431).Kernel := To_Vector ((0 => (199, 76, 1, False)));
+            Table.States (431).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 255, 0)));
             Add_Action (Table.States (432), 21, 587);
             Add_Action (Table.States (432), 96, 588);
             Add_Error (Table.States (432));
-            Table.States (432).Minimal_Complete_Action := (Shift, 96, 588);
-            Table.States (433).Productions := WisiToken.To_Vector ((1 => (275, 0)));
+            Table.States (432).Kernel := To_Vector (((113, 253, 3, False), (113, 253, 1, False)));
+            Table.States (432).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 588)));
             Add_Action (Table.States (433), 3, 121);
             Add_Action (Table.States (433), 10, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (433), 20, Reduce, (192, 1), 0, null, null);
@@ -5344,27 +5490,29 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (433), 320, 144);
             Add_Goto (Table.States (433), 321, 145);
             Add_Goto (Table.States (433), 330, 146);
-            Table.States (433).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (434).Productions := WisiToken.To_Vector ((1 => (136, 0)));
+            Table.States (433).Kernel := To_Vector ((0 => (275, 74, 0, True)));
+            Table.States (433).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
+            Table.States (433).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (434), 35, 590);
             Add_Error (Table.States (434));
-            Table.States (434).Minimal_Complete_Action := (Shift, 35, 590);
-            Table.States (435).Productions := WisiToken.To_Vector ((1 => (274, 0)));
+            Table.States (434).Kernel := To_Vector ((0 => (136, 192, 3, False)));
+            Table.States (434).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 590)));
             Add_Action (Table.States (435), (1 =>  104), (274, 0), 1, null, null);
-            Table.States (435).Minimal_Complete_Action := (Reduce, 274, 1);
-            Table.States (436).Productions := WisiToken.To_Vector ((1 => (274, 1)));
+            Table.States (435).Kernel := To_Vector ((0 => (274, 9, 0, False)));
+            Table.States (435).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 274, 1)));
             Add_Action (Table.States (436), (1 =>  104), (274, 1), 1, null, null);
-            Table.States (436).Minimal_Complete_Action := (Reduce, 274, 1);
-            Table.States (437).Productions := WisiToken.To_Vector ((1 => (273, 0)));
+            Table.States (436).Kernel := To_Vector ((0 => (274, 62, 0, False)));
+            Table.States (436).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 274, 1)));
             Add_Action (Table.States (437), 104, 395);
             Add_Error (Table.States (437));
             Add_Goto (Table.States (437), 230, 591);
-            Table.States (437).Minimal_Complete_Action := (Shift, 104, 395);
-            Table.States (438).Productions := WisiToken.To_Vector (((221, 0), (221, 1), (221, 2), (221, 3)));
+            Table.States (437).Kernel := To_Vector ((0 => (273, 274, 4, False)));
+            Table.States (437).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 395)));
             Add_Action (Table.States (438), 68, 592);
             Add_Error (Table.States (438));
-            Table.States (438).Minimal_Complete_Action := (Shift, 68, 592);
-            Table.States (439).Productions := WisiToken.To_Vector (((165, 1), (258, 1)));
+            Table.States (438).Kernel := To_Vector (((221, 192, 4, False), (221, 192, 2, False), (221, 192, 3, False),
+            (221, 192, 1, False)));
+            Table.States (438).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 68, 592)));
             Add_Action (Table.States (439), 10, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (439), 33, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (439), 35, Reduce, (258, 1), 1, null, null);
@@ -5399,12 +5547,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (439), 239, 593);
             Add_Goto (Table.States (439), 272, 92);
             Add_Goto (Table.States (439), 293, 97);
-            Table.States (439).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (440).Productions := WisiToken.To_Vector ((1 => (117, 2)));
+            Table.States (439).Kernel := To_Vector (((165, 41, 1, False), (258, 41, 0, False)));
+            Table.States (439).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (440), 77, 594);
             Add_Error (Table.States (440));
-            Table.States (440).Minimal_Complete_Action := (Shift, 77, 594);
-            Table.States (441).Productions := WisiToken.To_Vector (((124, 0), (124, 1)));
+            Table.States (440).Kernel := To_Vector ((0 => (117, 54, 1, False)));
+            Table.States (440).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 594)));
             Add_Action (Table.States (441), 3, 121);
             Add_Action (Table.States (441), 35, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (441), 39, 122);
@@ -5443,14 +5591,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (441), 320, 144);
             Add_Goto (Table.States (441), 321, 145);
             Add_Goto (Table.States (441), 330, 146);
-            Table.States (441).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (442).Productions := WisiToken.To_Vector ((1 => (117, 4)));
+            Table.States (441).Kernel := To_Vector (((124, 87, 0, False), (124, 87, 1, False)));
+            Table.States (441).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (442), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (117, 4), 3, aggregate_4'Access,
             null);
-            Table.States (442).Minimal_Complete_Action := (Reduce, 117, 3);
-            Table.States (443).Productions := WisiToken.To_Vector ((1 => (125, 0)));
+            Table.States (442).Kernel := To_Vector ((0 => (117, 77, 0, False)));
+            Table.States (442).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 117, 3)));
             Add_Action (Table.States (443), 3, 121);
             Add_Action (Table.States (443), 35, Reduce, (124, 5), 0, null, null);
             Add_Action (Table.States (443), 39, 122);
@@ -5494,14 +5642,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (443), 320, 144);
             Add_Goto (Table.States (443), 321, 145);
             Add_Goto (Table.States (443), 330, 146);
-            Table.States (443).Minimal_Complete_Action := (Reduce, 124, 0);
-            Table.States (444).Productions := WisiToken.To_Vector ((1 => (117, 3)));
+            Table.States (443).Kernel := To_Vector ((0 => (125, 83, 0, True)));
+            Table.States (443).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 124, 0)));
+            Table.States (443).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (444), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (117, 3), 3, aggregate_3'Access,
             null);
-            Table.States (444).Minimal_Complete_Action := (Reduce, 117, 3);
-            Table.States (445).Productions := WisiToken.To_Vector ((1 => (166, 0)));
+            Table.States (444).Kernel := To_Vector ((0 => (117, 77, 0, False)));
+            Table.States (444).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 117, 3)));
             Add_Action (Table.States (445), 3, 121);
             Add_Action (Table.States (445), 39, 122);
             Add_Action (Table.States (445), 40, 261);
@@ -5537,8 +5686,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (445), 320, 144);
             Add_Goto (Table.States (445), 321, 145);
             Add_Goto (Table.States (445), 330, 146);
-            Table.States (445).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (446).Productions := WisiToken.To_Vector (((124, 2), (124, 3)));
+            Table.States (445).Kernel := To_Vector ((0 => (166, 79, 1, True)));
+            Table.States (445).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (445).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (446), 3, 121);
             Add_Action (Table.States (446), 35, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (446), 39, 122);
@@ -5577,8 +5727,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (446), 320, 144);
             Add_Goto (Table.States (446), 321, 145);
             Add_Goto (Table.States (446), 330, 146);
-            Table.States (446).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (447).Productions := WisiToken.To_Vector (((117, 0), (117, 1)));
+            Table.States (446).Kernel := To_Vector (((124, 87, 0, False), (124, 87, 1, False)));
+            Table.States (446).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
+         end Subr_8;
+         procedure Subr_9
+         is begin
             Add_Action (Table.States (447), 3, 121);
             Add_Action (Table.States (447), 39, 122);
             Add_Action (Table.States (447), 40, 261);
@@ -5621,8 +5774,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (447), 320, 144);
             Add_Goto (Table.States (447), 321, 145);
             Add_Goto (Table.States (447), 330, 146);
-            Table.States (447).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (448).Productions := WisiToken.To_Vector (((128, 0), (272, 0), (277, 0), (277, 1)));
+            Table.States (447).Kernel := To_Vector (((117, 74, 3, False), (117, 74, 1, False)));
+            Table.States (447).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
             Add_Action (Table.States (448), 7, 416);
             Add_Action (Table.States (448), 19, 417);
             Add_Action (Table.States (448), 20, 418);
@@ -5639,8 +5792,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (448), 239, 422);
             Add_Goto (Table.States (448), 272, 92);
             Add_Goto (Table.States (448), 293, 97);
-            Table.States (448).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (449).Productions := WisiToken.To_Vector ((1 => (277, 2)));
+            Table.States (448).Kernel := To_Vector (((128, 322, 1, True), (272, 322, 2, True), (277, 322, 3, False),
+            (277, 322, 1, False)));
+            Table.States (448).Minimal_Complete_Actions := To_Vector (((Shift, 104, 119), (Shift, 53, 604)));
+            Table.States (448).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (449), 3, 121);
             Add_Action (Table.States (449), 39, 122);
             Add_Action (Table.States (449), 40, 123);
@@ -5664,11 +5819,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (449), 320, 144);
             Add_Goto (Table.States (449), 321, 145);
             Add_Goto (Table.States (449), 330, 146);
-            Table.States (449).Minimal_Complete_Action := (Shift, 103, 129);
-         end Subr_8;
-         procedure Subr_9
-         is begin
-            Table.States (450).Productions := WisiToken.To_Vector ((1 => (140, 0)));
+            Table.States (449).Kernel := To_Vector ((0 => (277, 85, 1, False)));
+            Table.States (449).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (450), 3, 121);
             Add_Action (Table.States (450), 39, 122);
             Add_Action (Table.States (450), 40, 261);
@@ -5707,25 +5859,26 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (450), 320, 144);
             Add_Goto (Table.States (450), 321, 145);
             Add_Goto (Table.States (450), 330, 146);
-            Table.States (450).Minimal_Complete_Action := (Reduce, 166, 0);
-            Table.States (451).Productions := WisiToken.To_Vector ((1 => (141, 1)));
+            Table.States (450).Kernel := To_Vector ((0 => (140, 72, 1, False)));
+            Table.States (450).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 166, 0)));
             Add_Action (Table.States (451), (24, 72), (141, 1), 1, null, null);
-            Table.States (451).Minimal_Complete_Action := (Reduce, 141, 1);
-            Table.States (452).Productions := WisiToken.To_Vector (((139, 0), (141, 0)));
+            Table.States (451).Kernel := To_Vector ((0 => (141, 140, 0, False)));
+            Table.States (451).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 141, 1)));
             Add_Action (Table.States (452), 24, 607);
             Add_Action (Table.States (452), 72, 450);
             Add_Error (Table.States (452));
             Add_Goto (Table.States (452), 140, 608);
-            Table.States (452).Minimal_Complete_Action := (Shift, 24, 607);
-            Table.States (453).Productions := WisiToken.To_Vector ((1 => (197, 0)));
+            Table.States (452).Kernel := To_Vector (((139, 141, 3, False), (141, 141, 2, True)));
+            Table.States (452).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 607)));
             Add_Action (Table.States (453), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99), (197, 0), 3, null, null);
-            Table.States (453).Minimal_Complete_Action := (Reduce, 197, 3);
-            Table.States (454).Productions := WisiToken.To_Vector ((1 => (282, 0)));
+            Table.States (453).Kernel := To_Vector ((0 => (197, 258, 0, False)));
+            Table.States (453).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 197, 3)));
             Add_Action (Table.States (454), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (282,
             0), 3, null, null);
-            Table.States (454).Minimal_Complete_Action := (Reduce, 282, 3);
-            Table.States (455).Productions := WisiToken.To_Vector ((1 => (283, 0)));
+            Table.States (454).Kernel := To_Vector ((0 => (282, 287, 0, True)));
+            Table.States (454).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 282, 3)));
+            Table.States (454).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (455), 3, 121);
             Add_Action (Table.States (455), 39, 122);
             Add_Action (Table.States (455), 40, 123);
@@ -5752,12 +5905,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (455), 320, 144);
             Add_Goto (Table.States (455), 321, 145);
             Add_Goto (Table.States (455), 330, 146);
-            Table.States (455).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (456).Productions := WisiToken.To_Vector ((1 => (284, 0)));
+            Table.States (455).Kernel := To_Vector ((0 => (283, 68, 1, True)));
+            Table.States (455).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (455).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (456), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (284,
             0), 3, null, null);
-            Table.States (456).Minimal_Complete_Action := (Reduce, 284, 3);
-            Table.States (457).Productions := WisiToken.To_Vector ((1 => (285, 0)));
+            Table.States (456).Kernel := To_Vector ((0 => (284, 287, 0, True)));
+            Table.States (456).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 284, 3)));
+            Table.States (456).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (457), 3, 121);
             Add_Action (Table.States (457), 39, 122);
             Add_Action (Table.States (457), 40, 123);
@@ -5784,12 +5939,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (457), 320, 144);
             Add_Goto (Table.States (457), 321, 145);
             Add_Goto (Table.States (457), 330, 146);
-            Table.States (457).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (458).Productions := WisiToken.To_Vector ((1 => (286, 0)));
+            Table.States (457).Kernel := To_Vector ((0 => (285, 22, 1, True)));
+            Table.States (457).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (457).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (458), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (286,
             0), 3, null, null);
-            Table.States (458).Minimal_Complete_Action := (Reduce, 286, 3);
-            Table.States (459).Productions := WisiToken.To_Vector ((1 => (283, 1)));
+            Table.States (458).Kernel := To_Vector ((0 => (286, 287, 0, True)));
+            Table.States (458).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 286, 3)));
+            Table.States (458).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (459), 3, 121);
             Add_Action (Table.States (459), 39, 122);
             Add_Action (Table.States (459), 40, 123);
@@ -5816,12 +5973,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (459), 320, 144);
             Add_Goto (Table.States (459), 321, 145);
             Add_Goto (Table.States (459), 330, 146);
-            Table.States (459).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (460).Productions := WisiToken.To_Vector ((1 => (282, 1)));
+            Table.States (459).Kernel := To_Vector ((0 => (283, 68, 1, True)));
+            Table.States (459).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (459).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (460), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (282,
             1), 3, null, null);
-            Table.States (460).Minimal_Complete_Action := (Reduce, 282, 3);
-            Table.States (461).Productions := WisiToken.To_Vector ((1 => (285, 1)));
+            Table.States (460).Kernel := To_Vector ((0 => (282, 287, 0, True)));
+            Table.States (460).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 282, 3)));
+            Table.States (460).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (461), 3, 121);
             Add_Action (Table.States (461), 39, 122);
             Add_Action (Table.States (461), 40, 123);
@@ -5848,16 +6007,19 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (461), 320, 144);
             Add_Goto (Table.States (461), 321, 145);
             Add_Goto (Table.States (461), 330, 146);
-            Table.States (461).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (462).Productions := WisiToken.To_Vector ((1 => (284, 1)));
+            Table.States (461).Kernel := To_Vector ((0 => (285, 22, 1, True)));
+            Table.States (461).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (461).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (462), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (284,
             1), 3, null, null);
-            Table.States (462).Minimal_Complete_Action := (Reduce, 284, 3);
-            Table.States (463).Productions := WisiToken.To_Vector ((1 => (286, 1)));
+            Table.States (462).Kernel := To_Vector ((0 => (284, 287, 0, True)));
+            Table.States (462).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 284, 3)));
+            Table.States (462).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (463), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (286,
             1), 3, null, null);
-            Table.States (463).Minimal_Complete_Action := (Reduce, 286, 3);
-            Table.States (464).Productions := WisiToken.To_Vector (((233, 0), (287, 1)));
+            Table.States (463).Kernel := To_Vector ((0 => (286, 287, 0, True)));
+            Table.States (463).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 286, 3)));
+            Table.States (463).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (464), 10, Reduce, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 20, Reduce, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 21, Reduce, (287, 1), 3, null, null);
@@ -5871,21 +6033,22 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (464), 74, Reduce, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 75, Reduce, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 77, Reduce, (287, 1), 3, null, null);
-            Add_Action (Table.States (464), 79, 613, (287, 1), 3, null, null);
+            Add_Action (Table.States (464), 79, 613);
+            Add_Conflict (Table.States (464), 79, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 83, Reduce, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 87, Reduce, (287, 1), 3, null, null);
             Add_Action (Table.States (464), 96, Reduce, (287, 1), 3, null, null);
             Add_Error (Table.States (464));
-            Table.States (464).Minimal_Complete_Action := (Reduce, 287, 3);
-            Table.States (465).Productions := WisiToken.To_Vector ((1 => (233, 1)));
+            Table.States (464).Kernel := To_Vector (((233, 233, 2, True), (287, 233, 0, False)));
+            Table.States (464).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 287, 3)));
             Add_Action (Table.States (465), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (233,
             1), 1, null, null);
-            Table.States (465).Minimal_Complete_Action := (Reduce, 233, 1);
-            Table.States (466).Productions := WisiToken.To_Vector ((1 => (234, 1)));
+            Table.States (465).Kernel := To_Vector ((0 => (233, 234, 0, False)));
+            Table.States (465).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 233, 1)));
             Add_Action (Table.States (466), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (234,
             1), 1, null, null);
-            Table.States (466).Minimal_Complete_Action := (Reduce, 234, 1);
-            Table.States (467).Productions := WisiToken.To_Vector (((234, 0), (277, 2)));
+            Table.States (466).Kernel := To_Vector ((0 => (234, 277, 0, False)));
+            Table.States (466).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 234, 1)));
             Add_Action (Table.States (467), 10, Reduce, (234, 0), 1, null, null);
             Add_Action (Table.States (467), 20, Reduce, (234, 0), 1, null, null);
             Add_Action (Table.States (467), 21, Reduce, (234, 0), 1, null, null);
@@ -5905,8 +6068,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (467), 87, Reduce, (234, 0), 1, null, null);
             Add_Action (Table.States (467), 96, Reduce, (234, 0), 1, null, null);
             Add_Error (Table.States (467));
-            Table.States (467).Minimal_Complete_Action := (Reduce, 234, 1);
-            Table.States (468).Productions := WisiToken.To_Vector ((1 => (287, 0)));
+            Table.States (467).Kernel := To_Vector (((234, 301, 0, False), (277, 301, 2, False)));
+            Table.States (467).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 234, 1)));
             Add_Action (Table.States (468), 3, 121);
             Add_Action (Table.States (468), 39, 122);
             Add_Action (Table.States (468), 40, 123);
@@ -5933,16 +6096,17 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (468), 320, 144);
             Add_Goto (Table.States (468), 321, 145);
             Add_Goto (Table.States (468), 330, 146);
-            Table.States (468).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (469).Productions := WisiToken.To_Vector ((1 => (287, 2)));
+            Table.States (468).Kernel := To_Vector ((0 => (287, 33, 1, False)));
+            Table.States (468).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (469), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (287,
             2), 3, null, null);
-            Table.States (469).Minimal_Complete_Action := (Reduce, 287, 3);
-            Table.States (470).Productions := WisiToken.To_Vector ((1 => (320, 0)));
+            Table.States (469).Kernel := To_Vector ((0 => (287, 301, 0, False)));
+            Table.States (469).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 287, 3)));
             Add_Action (Table.States (470), (10, 20, 21, 22, 23, 33, 35, 37, 38, 40, 42, 43, 53, 55, 68, 74, 75, 77,
             78, 79, 82, 83, 85, 86, 87, 88, 89, 91, 92, 94, 95, 96, 97, 98, 99), (320, 0), 3, null, null);
-            Table.States (470).Minimal_Complete_Action := (Reduce, 320, 3);
-            Table.States (471).Productions := WisiToken.To_Vector (((320, 0), (321, 0)));
+            Table.States (470).Kernel := To_Vector ((0 => (320, 197, 0, True)));
+            Table.States (470).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 320, 3)));
+            Table.States (470).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (471), 10, Reduce, (321, 0), 3, null, null);
             Add_Action (Table.States (471), 20, Reduce, (321, 0), 3, null, null);
             Add_Action (Table.States (471), 21, Reduce, (321, 0), 3, null, null);
@@ -5980,17 +6144,18 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (471), 99, 300);
             Add_Error (Table.States (471));
             Add_Goto (Table.States (471), 237, 301);
-            Table.States (471).Minimal_Complete_Action := (Reduce, 321, 3);
-            Table.States (472).Productions := WisiToken.To_Vector ((1 => (161, 0)));
+            Table.States (471).Kernel := To_Vector (((320, 320, 2, True), (321, 320, 0, True)));
+            Table.States (471).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 321, 3)));
+            Table.States (471).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (472), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (161, 0), 4, delay_statement_0'Access, null);
-            Table.States (472).Minimal_Complete_Action := (Reduce, 161, 4);
-            Table.States (473).Productions := WisiToken.To_Vector ((1 => (190, 0)));
+            Table.States (472).Kernel := To_Vector ((0 => (161, 96, 0, False)));
+            Table.States (472).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 161, 4)));
             Add_Action (Table.States (473), 96, 615);
             Add_Error (Table.States (473));
-            Table.States (473).Minimal_Complete_Action := (Shift, 96, 615);
-            Table.States (474).Productions := WisiToken.To_Vector (((197, 3), (314, 0), (314, 1)));
+            Table.States (473).Kernel := To_Vector ((0 => (190, 192, 1, False)));
+            Table.States (473).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 615)));
             Add_Action (Table.States (474), 39, 122);
             Add_Action (Table.States (474), 41, 616);
             Add_Action (Table.States (474), 76, 126);
@@ -6005,8 +6170,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (474), 258, 256);
             Add_Goto (Table.States (474), 272, 92);
             Add_Goto (Table.States (474), 293, 97);
-            Table.States (474).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (475).Productions := WisiToken.To_Vector ((1 => (230, 2)));
+            Table.States (474).Kernel := To_Vector (((197, 40, 1, False), (314, 40, 6, False), (314, 40, 2, False)));
+            Table.States (474).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (475), 3, 121);
             Add_Action (Table.States (475), 39, 122);
             Add_Action (Table.States (475), 40, 474);
@@ -6033,12 +6198,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (475), 320, 144);
             Add_Goto (Table.States (475), 321, 145);
             Add_Goto (Table.States (475), 330, 146);
-            Table.States (475).Minimal_Complete_Action := (Shift, 40, 474);
-            Table.States (476).Productions := WisiToken.To_Vector ((1 => (230, 5)));
+            Table.States (475).Kernel := To_Vector ((0 => (230, 59, 1, False)));
+            Table.States (475).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (476), (37, 87), (230, 5), 3, iterator_specification_5'Access, null);
-            Table.States (476).Minimal_Complete_Action := (Reduce, 230, 3);
-            Table.States (477).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (258, 3), (272, 0),
-            (277, 0), (277, 1), (293, 0), (293, 1), (293, 2), (293, 3), (314, 2), (314, 3)));
+            Table.States (476).Kernel := To_Vector ((0 => (230, 167, 0, False)));
+            Table.States (476).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 230, 3)));
             Add_Action (Table.States (477), 10, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 33, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 37, Reduce, (314, 3), 1, subtype_indication_3'Access, null);
@@ -6049,17 +6213,17 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (477), 55, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 75, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 76, 619);
-            Add_Action (Table.States (477), 77, Reduce, (258, 3), 1, null, null, (314, 3), 1,
-            subtype_indication_3'Access, null);
+            Add_Action (Table.States (477), 77, Reduce, (258, 3), 1, null, null);
+            Add_Conflict (Table.States (477), 77, (314, 3), 1, subtype_indication_3'Access, null);
             Add_Action (Table.States (477), 78, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 79, Reduce, (258, 3), 1, null, null);
-            Add_Action (Table.States (477), 83, Reduce, (258, 3), 1, null, null, (314, 3), 1,
-            subtype_indication_3'Access, null);
+            Add_Action (Table.States (477), 83, Reduce, (258, 3), 1, null, null);
+            Add_Conflict (Table.States (477), 83, (314, 3), 1, subtype_indication_3'Access, null);
             Add_Action (Table.States (477), 84, 237);
             Add_Action (Table.States (477), 85, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 86, Reduce, (258, 3), 1, null, null);
-            Add_Action (Table.States (477), 87, Reduce, (258, 3), 1, null, null, (314, 3), 1,
-            subtype_indication_3'Access, null);
+            Add_Action (Table.States (477), 87, Reduce, (258, 3), 1, null, null);
+            Add_Conflict (Table.States (477), 87, (314, 3), 1, subtype_indication_3'Access, null);
             Add_Action (Table.States (477), 88, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 89, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (477), 91, Reduce, (258, 3), 1, null, null);
@@ -6077,18 +6241,20 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (477), 155, 620);
             Add_Goto (Table.States (477), 224, 621);
             Add_Goto (Table.States (477), 322, 448);
-            Table.States (477).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (478).Productions := WisiToken.To_Vector ((1 => (167, 1)));
+            Table.States (477).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (258, 239, 0, False), (272, 239, 3, True), (277, 239, 4, False), (277, 239, 2, False), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (314, 239, 4, False), (314, 239, 0, False)));
+            Table.States (477).Minimal_Complete_Actions := To_Vector (((Reduce, 258, 1), (Reduce, 314, 1)));
             Add_Action (Table.States (478), (37, 77, 83, 87), (167, 1), 1, null, null);
-            Table.States (478).Minimal_Complete_Action := (Reduce, 167, 1);
-            Table.States (479).Productions := WisiToken.To_Vector ((1 => (277, 2)));
+            Table.States (478).Kernel := To_Vector ((0 => (167, 277, 0, False)));
+            Table.States (478).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 167, 1)));
             Add_Action (Table.States (479), 85, 449);
             Add_Error (Table.States (479));
-            Table.States (479).Minimal_Complete_Action := (Shift, 85, 449);
-            Table.States (480).Productions := WisiToken.To_Vector ((1 => (167, 0)));
+            Table.States (479).Kernel := To_Vector ((0 => (277, 301, 2, False)));
+            Table.States (479).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 85, 449)));
             Add_Action (Table.States (480), (37, 77, 83, 87), (167, 0), 1, null, null);
-            Table.States (480).Minimal_Complete_Action := (Reduce, 167, 1);
-            Table.States (481).Productions := WisiToken.To_Vector ((1 => (230, 3)));
+            Table.States (480).Kernel := To_Vector ((0 => (167, 314, 0, False)));
+            Table.States (480).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 167, 1)));
             Add_Action (Table.States (481), 104, 119);
             Add_Action (Table.States (481), 105, 33);
             Add_Action (Table.States (481), 106, 34);
@@ -6097,9 +6263,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (481), 239, 622);
             Add_Goto (Table.States (481), 272, 92);
             Add_Goto (Table.States (481), 293, 97);
-            Table.States (481).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (482).Productions := WisiToken.To_Vector (((128, 0), (230, 4), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (481).Kernel := To_Vector ((0 => (230, 59, 1, False)));
+            Table.States (481).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (482), 37, Reduce, (230, 4), 3, null, null);
             Add_Action (Table.States (482), 76, 235);
             Add_Action (Table.States (482), 84, 237);
@@ -6109,13 +6274,14 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (482));
             Add_Goto (Table.States (482), 115, 241);
             Add_Goto (Table.States (482), 322, 242);
-            Table.States (482).Minimal_Complete_Action := (Reduce, 230, 3);
-            Table.States (483).Productions := WisiToken.To_Vector (((314, 0), (314, 1)));
+            Table.States (482).Kernel := To_Vector (((128, 239, 2, True), (230, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (482).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 230, 3)));
             Add_Action (Table.States (483), 41, 623);
             Add_Error (Table.States (483));
-            Table.States (483).Minimal_Complete_Action := (Shift, 41, 623);
-            Table.States (484).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3), (314, 2), (314, 3)));
+            Table.States (483).Kernel := To_Vector (((314, 40, 6, False), (314, 40, 2, False)));
+            Table.States (483).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 623)));
             Add_Action (Table.States (484), 10, Reduce, (314, 3), 1, subtype_indication_3'Access, null);
             Add_Action (Table.States (484), 21, Reduce, (314, 3), 1, subtype_indication_3'Access, null);
             Add_Action (Table.States (484), 42, Reduce, (314, 3), 1, subtype_indication_3'Access, null);
@@ -6132,16 +6298,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (484), 155, 620);
             Add_Goto (Table.States (484), 224, 621);
             Add_Goto (Table.States (484), 322, 242);
-            Table.States (484).Minimal_Complete_Action := (Reduce, 314, 1);
-            Table.States (485).Productions := WisiToken.To_Vector (((230, 0), (230, 1)));
+            Table.States (484).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (314, 239, 4, False), (314, 239, 0, False)));
+            Table.States (484).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 314, 1)));
             Add_Action (Table.States (485), 42, 624);
             Add_Error (Table.States (485));
-            Table.States (485).Minimal_Complete_Action := (Shift, 42, 624);
-            Table.States (486).Productions := WisiToken.To_Vector ((1 => (121, 0)));
+            Table.States (485).Kernel := To_Vector (((230, 314, 3, False), (230, 314, 2, False)));
+            Table.States (485).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 42, 624)));
             Add_Action (Table.States (486), 96, 625);
             Add_Error (Table.States (486));
-            Table.States (486).Minimal_Complete_Action := (Shift, 96, 625);
-            Table.States (487).Productions := WisiToken.To_Vector ((1 => (127, 0)));
+            Table.States (486).Kernel := To_Vector ((0 => (121, 192, 1, False)));
+            Table.States (486).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 625)));
             Add_Action (Table.States (487), 3, 121);
             Add_Action (Table.States (487), 39, 122);
             Add_Action (Table.States (487), 40, 123);
@@ -6176,21 +6344,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (487), 320, 144);
             Add_Goto (Table.States (487), 321, 145);
             Add_Goto (Table.States (487), 330, 146);
-            Table.States (487).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (488).Productions := WisiToken.To_Vector ((1 => (281, 0)));
+            Table.States (487).Kernel := To_Vector ((0 => (127, 12, 1, False)));
+            Table.States (487).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (488), 12, 627);
             Add_Action (Table.States (488), 104, Reduce, (235, 1), 0, null, null);
             Add_Error (Table.States (488));
             Add_Goto (Table.States (488), 235, 628);
-            Table.States (488).Minimal_Complete_Action := (Reduce, 235, 0);
-            Table.States (489).Productions := WisiToken.To_Vector ((1 => (182, 0)));
+            Table.States (488).Kernel := To_Vector ((0 => (281, 54, 11, False)));
+            Table.States (488).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 235, 0)));
             Add_Action (Table.States (489), 96, 629);
             Add_Error (Table.States (489));
-            Table.States (489).Minimal_Complete_Action := (Shift, 96, 629);
-            Table.States (490).Productions := WisiToken.To_Vector ((1 => (291, 1)));
+            Table.States (489).Kernel := To_Vector ((0 => (182, 117, 1, False)));
+            Table.States (489).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 629)));
             Add_Action (Table.States (490), (21, 35, 56, 74, 77, 82, 96), (291, 1), 2, result_profile_1'Access, null);
-            Table.States (490).Minimal_Complete_Action := (Reduce, 291, 2);
-            Table.States (491).Productions := WisiToken.To_Vector (((114, 0), (114, 1), (114, 2), (291, 0)));
+            Table.States (490).Kernel := To_Vector ((0 => (291, 114, 0, True)));
+            Table.States (490).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 291, 2)));
+            Table.States (490).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (491), 7, 556);
             Add_Action (Table.States (491), 21, Reduce, (240, 1), 0, null, null);
             Add_Action (Table.States (491), 35, Reduce, (240, 1), 0, null, null);
@@ -6208,8 +6377,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (491), 240, 631);
             Add_Goto (Table.States (491), 272, 92);
             Add_Goto (Table.States (491), 293, 97);
-            Table.States (491).Minimal_Complete_Action := (Reduce, 240, 0);
-            Table.States (492).Productions := WisiToken.To_Vector (((219, 1), (239, 5)));
+            Table.States (491).Kernel := To_Vector (((114, 241, 2, False), (114, 241, 3, True), (114, 241, 2, False),
+            (291, 241, 0, False)));
+            Table.States (491).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 0)));
             Add_Action (Table.States (492), 10, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 33, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 38, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
@@ -6222,9 +6392,9 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (492), 77, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 78, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 79, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
-            Add_Action (Table.States (492), 81, Reduce, (219, 1), 1, null, null);
-            Add_Action (Table.States (492), 83, Reduce, (219, 1), 1, null, null, (239, 5), 1, name_5'Access,
-            name_5_check'Access);
+            Add_Action (Table.States (492), 81, Reduce, (219, 1), 1, identifier_list_1'Access, null);
+            Add_Action (Table.States (492), 83, Reduce, (219, 1), 1, identifier_list_1'Access, null);
+            Add_Conflict (Table.States (492), 83, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 84, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 85, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 86, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
@@ -6242,25 +6412,30 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (492), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (492), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (492));
-            Table.States (492).Minimal_Complete_Action := (Reduce, 219, 1);
-            Table.States (493).Productions := WisiToken.To_Vector (((219, 0), (254, 0), (254, 1), (254, 2), (254, 3)));
+            Table.States (492).Kernel := To_Vector (((219, 104, 0, False), (239, 104, 0, False)));
+            Table.States (492).Minimal_Complete_Actions := To_Vector (((Reduce, 219, 1), (Reduce, 239, 1)));
+         end Subr_9;
+         procedure Subr_10
+         is begin
             Add_Action (Table.States (493), 81, 632);
             Add_Action (Table.States (493), 83, 234);
             Add_Error (Table.States (493));
-            Table.States (493).Minimal_Complete_Action := (Shift, 81, 632);
-            Table.States (494).Productions := WisiToken.To_Vector ((1 => (255, 1)));
+            Table.States (493).Kernel := To_Vector (((219, 219, 2, True), (254, 219, 3, False), (254, 219, 2, False),
+            (254, 219, 4, False), (254, 219, 3, False)));
+            Table.States (493).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 81, 632)));
             Add_Action (Table.States (494), (77, 96), (255, 1), 1, null, null);
-            Table.States (494).Minimal_Complete_Action := (Reduce, 255, 1);
-            Table.States (495).Productions := WisiToken.To_Vector (((199, 0), (255, 0)));
+            Table.States (494).Kernel := To_Vector ((0 => (255, 254, 0, False)));
+            Table.States (494).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 255, 1)));
             Add_Action (Table.States (495), 77, 633);
             Add_Action (Table.States (495), 96, 634);
             Add_Error (Table.States (495));
-            Table.States (495).Minimal_Complete_Action := (Shift, 77, 633);
-            Table.States (496).Productions := WisiToken.To_Vector ((1 => (252, 0)));
+            Table.States (495).Kernel := To_Vector (((199, 255, 1, False), (255, 255, 1, True)));
+            Table.States (495).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 633)));
             Add_Action (Table.States (496), (21, 35, 56, 74, 77, 82, 96), (252, 0), 2,
             parameter_and_result_profile_0'Access, null);
-            Table.States (496).Minimal_Complete_Action := (Reduce, 252, 2);
-            Table.States (497).Productions := WisiToken.To_Vector ((1 => (215, 2)));
+            Table.States (496).Kernel := To_Vector ((0 => (252, 291, 0, True)));
+            Table.States (496).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 252, 2)));
+            Table.States (496).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (497), 104, 119);
             Add_Action (Table.States (497), 105, 33);
             Add_Action (Table.States (497), 106, 34);
@@ -6269,8 +6444,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (497), 239, 635);
             Add_Goto (Table.States (497), 272, 92);
             Add_Goto (Table.States (497), 293, 97);
-            Table.States (497).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (498).Productions := WisiToken.To_Vector ((1 => (215, 0)));
+            Table.States (497).Kernel := To_Vector ((0 => (215, 56, 2, False)));
+            Table.States (497).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (498), 104, 119);
             Add_Action (Table.States (498), 105, 33);
             Add_Action (Table.States (498), 106, 34);
@@ -6279,8 +6454,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (498), 239, 636);
             Add_Goto (Table.States (498), 272, 92);
             Add_Goto (Table.States (498), 293, 97);
-            Table.States (498).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (499).Productions := WisiToken.To_Vector ((1 => (215, 1)));
+            Table.States (498).Kernel := To_Vector ((0 => (215, 56, 2, False)));
+            Table.States (498).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (499), 104, 119);
             Add_Action (Table.States (499), 105, 33);
             Add_Action (Table.States (499), 106, 34);
@@ -6289,16 +6464,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (499), 239, 637);
             Add_Goto (Table.States (499), 272, 92);
             Add_Goto (Table.States (499), 293, 97);
-            Table.States (499).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (500).Productions := WisiToken.To_Vector (((201, 0), (201, 1), (201, 2)));
+            Table.States (499).Kernel := To_Vector ((0 => (215, 56, 2, False)));
+            Table.States (499).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (500), 35, 638);
             Add_Action (Table.States (500), 74, 337);
             Add_Action (Table.States (500), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (500));
             Add_Goto (Table.States (500), 122, 639);
-            Table.States (500).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (501).Productions := WisiToken.To_Vector (((128, 0), (204, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (500).Kernel := To_Vector (((201, 169, 3, False), (201, 169, 3, False), (201, 169, 1,
+            False)));
+            Table.States (500).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (501), 35, 640);
             Add_Action (Table.States (501), 76, 235);
             Add_Action (Table.States (501), 84, 237);
@@ -6307,8 +6482,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (501));
             Add_Goto (Table.States (501), 115, 241);
             Add_Goto (Table.States (501), 322, 242);
-            Table.States (501).Minimal_Complete_Action := (Shift, 35, 640);
-            Table.States (502).Productions := WisiToken.To_Vector (((200, 0), (200, 1), (200, 2)));
+            Table.States (501).Kernel := To_Vector (((128, 239, 2, True), (204, 239, 4, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (501).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 640)));
             Add_Action (Table.States (502), 6, 641);
             Add_Action (Table.States (502), 41, 642);
             Add_Action (Table.States (502), 80, 643);
@@ -6321,15 +6498,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (502), 272, 92);
             Add_Goto (Table.States (502), 293, 97);
             Add_Goto (Table.States (502), 310, 645);
-            Table.States (502).Minimal_Complete_Action := (Shift, 104, 119);
-         end Subr_9;
-         procedure Subr_10
-         is begin
-            Table.States (503).Productions := WisiToken.To_Vector ((1 => (200, 3)));
+            Table.States (502).Kernel := To_Vector (((200, 35, 3, False), (200, 35, 2, False), (200, 35, 2, False)));
+            Table.States (502).Minimal_Complete_Actions := To_Vector (((Shift, 104, 119), (Shift, 6, 641)));
             Add_Action (Table.States (503), 96, 646);
             Add_Error (Table.States (503));
-            Table.States (503).Minimal_Complete_Action := (Shift, 96, 646);
-            Table.States (504).Productions := WisiToken.To_Vector (((236, 0), (236, 1)));
+            Table.States (503).Kernel := To_Vector ((0 => (200, 122, 1, False)));
+            Table.States (503).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 646)));
             Add_Action (Table.States (504), 7, Reduce, (236, 0), 1, null, null);
             Add_Action (Table.States (504), 40, Reduce, (236, 0), 1, null, null);
             Add_Action (Table.States (504), 45, 647);
@@ -6340,11 +6514,11 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (504), 105, Reduce, (236, 0), 1, null, null);
             Add_Action (Table.States (504), 106, Reduce, (236, 0), 1, null, null);
             Add_Error (Table.States (504));
-            Table.States (504).Minimal_Complete_Action := (Reduce, 236, 1);
-            Table.States (505).Productions := WisiToken.To_Vector ((1 => (236, 2)));
+            Table.States (504).Kernel := To_Vector (((236, 33, 0, False), (236, 33, 1, False)));
+            Table.States (504).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 236, 1)));
             Add_Action (Table.States (505), (7, 40, 74, 82, 96, 104, 105, 106), (236, 2), 1, null, null);
-            Table.States (505).Minimal_Complete_Action := (Reduce, 236, 1);
-            Table.States (506).Productions := WisiToken.To_Vector (((198, 0), (198, 1), (198, 2), (198, 3)));
+            Table.States (505).Kernel := To_Vector ((0 => (236, 45, 0, False)));
+            Table.States (505).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 236, 1)));
             Add_Action (Table.States (506), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (506), 40, 386);
             Add_Action (Table.States (506), 104, Reduce, (241, 1), 0, null, null);
@@ -6353,34 +6527,36 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (506));
             Add_Goto (Table.States (506), 114, 648);
             Add_Goto (Table.States (506), 241, 649);
-            Table.States (506).Minimal_Complete_Action := (Reduce, 241, 0);
-            Table.States (507).Productions := WisiToken.To_Vector (((222, 0), (222, 1), (222, 2), (222, 3)));
+            Table.States (506).Kernel := To_Vector (((198, 236, 3, False), (198, 236, 4, False), (198, 236, 2, False),
+            (198, 236, 3, False)));
+            Table.States (506).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 241, 0)));
             Add_Action (Table.States (507), 22, 650);
             Add_Action (Table.States (507), 23, 651);
             Add_Action (Table.States (507), 24, 652);
             Add_Error (Table.States (507));
             Add_Goto (Table.States (507), 174, 653);
             Add_Goto (Table.States (507), 175, 654);
-            Table.States (507).Minimal_Complete_Action := (Shift, 24, 652);
-            Table.States (508).Productions := WisiToken.To_Vector (((238, 0), (332, 0)));
+            Table.States (507).Kernel := To_Vector (((222, 300, 6, False), (222, 300, 4, False), (222, 300, 5, False),
+            (222, 300, 3, False)));
+            Table.States (507).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 652)));
             Add_Action (Table.States (508), 83, 381);
             Add_Action (Table.States (508), 96, 655);
             Add_Error (Table.States (508));
-            Table.States (508).Minimal_Complete_Action := (Shift, 96, 655);
-            Table.States (509).Productions := WisiToken.To_Vector ((1 => (332, 1)));
+            Table.States (508).Kernel := To_Vector (((238, 238, 2, True), (332, 238, 1, False)));
+            Table.States (508).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 655)));
             Add_Action (Table.States (509), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (332, 1), 4,
             with_clause_1'Access, null);
-            Table.States (509).Minimal_Complete_Action := (Reduce, 332, 4);
-            Table.States (510).Productions := WisiToken.To_Vector ((1 => (248, 0)));
+            Table.States (509).Kernel := To_Vector ((0 => (332, 96, 0, False)));
+            Table.States (509).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 332, 4)));
             Add_Action (Table.States (510), 60, 656);
             Add_Error (Table.States (510));
-            Table.States (510).Minimal_Complete_Action := (Shift, 60, 656);
-            Table.States (511).Productions := WisiToken.To_Vector (((247, 0), (247, 1)));
+            Table.States (510).Kernel := To_Vector ((0 => (248, 35, 2, False)));
+            Table.States (510).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 60, 656)));
             Add_Action (Table.States (511), 35, 657);
             Add_Error (Table.States (511));
-            Table.States (511).Minimal_Complete_Action := (Shift, 35, 657);
-            Table.States (512).Productions := WisiToken.To_Vector ((1 => (213, 0)));
+            Table.States (511).Kernel := To_Vector (((247, 122, 4, False), (247, 122, 3, False)));
+            Table.States (511).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 657)));
             Add_Action (Table.States (512), 104, 119);
             Add_Action (Table.States (512), 105, 33);
             Add_Action (Table.States (512), 106, 34);
@@ -6389,9 +6565,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (512), 239, 658);
             Add_Goto (Table.States (512), 272, 92);
             Add_Goto (Table.States (512), 293, 97);
-            Table.States (512).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (513).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (250, 0), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (512).Kernel := To_Vector ((0 => (213, 39, 2, False)));
+            Table.States (512).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (513), 74, 337);
             Add_Action (Table.States (513), 76, 235);
             Add_Action (Table.States (513), 84, 237);
@@ -6402,14 +6577,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (513), 115, 241);
             Add_Goto (Table.States (513), 122, 659);
             Add_Goto (Table.States (513), 322, 242);
-            Table.States (513).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (514).Productions := WisiToken.To_Vector (((122, 0), (125, 0)));
+            Table.States (513).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (250, 239, 1, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (513).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (514), 35, Reduce, (122, 0), 2, aspect_specification_opt_0'Access, null);
             Add_Action (Table.States (514), 83, 443);
             Add_Action (Table.States (514), 96, Reduce, (122, 0), 2, aspect_specification_opt_0'Access, null);
             Add_Error (Table.States (514));
-            Table.States (514).Minimal_Complete_Action := (Reduce, 122, 2);
-            Table.States (515).Productions := WisiToken.To_Vector (((251, 0), (251, 1)));
+            Table.States (514).Kernel := To_Vector (((122, 125, 0, False), (125, 125, 1, True)));
+            Table.States (514).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 2)));
             Add_Action (Table.States (515), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (515), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (515), 28, 183);
@@ -6481,36 +6658,36 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (515), 319, 113);
             Add_Goto (Table.States (515), 325, 115);
             Add_Goto (Table.States (515), 331, 116);
-            Table.States (515).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (516).Productions := WisiToken.To_Vector (((125, 0), (257, 0)));
+            Table.States (515).Kernel := To_Vector (((251, 35, 2, False), (251, 35, 1, False)));
+            Table.States (515).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (516), 77, 661);
             Add_Action (Table.States (516), 83, 443);
             Add_Error (Table.States (516));
-            Table.States (516).Minimal_Complete_Action := (Shift, 77, 661);
-            Table.States (517).Productions := WisiToken.To_Vector ((1 => (257, 1)));
+            Table.States (516).Kernel := To_Vector (((125, 125, 1, True), (257, 125, 2, False)));
+            Table.States (516).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 661)));
             Add_Action (Table.States (517), 77, 662);
             Add_Error (Table.States (517));
-            Table.States (517).Minimal_Complete_Action := (Shift, 77, 662);
-            Table.States (518).Productions := WisiToken.To_Vector ((1 => (332, 2)));
+            Table.States (517).Kernel := To_Vector ((0 => (257, 153, 2, False)));
+            Table.States (517).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 662)));
             Add_Action (Table.States (518), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (332, 2), 4,
             with_clause_2'Access, null);
-            Table.States (518).Minimal_Complete_Action := (Reduce, 332, 4);
-            Table.States (519).Productions := WisiToken.To_Vector ((1 => (265, 0)));
+            Table.States (518).Kernel := To_Vector ((0 => (332, 96, 0, False)));
+            Table.States (518).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 332, 4)));
             Add_Action (Table.States (519), 60, 663);
             Add_Error (Table.States (519));
-            Table.States (519).Minimal_Complete_Action := (Shift, 60, 663);
-            Table.States (520).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (519).Kernel := To_Vector ((0 => (265, 35, 2, False)));
+            Table.States (519).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 60, 663)));
             Add_Action (Table.States (520), 35, 664);
             Add_Error (Table.States (520));
-            Table.States (520).Minimal_Complete_Action := (Shift, 35, 664);
-            Table.States (521).Productions := WisiToken.To_Vector (((271, 0), (271, 1)));
+            Table.States (520).Kernel := To_Vector ((0 => (264, 122, 3, False)));
+            Table.States (520).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 664)));
             Add_Action (Table.States (521), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (521), 74, 337);
             Add_Error (Table.States (521));
             Add_Goto (Table.States (521), 122, 665);
-            Table.States (521).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (522).Productions := WisiToken.To_Vector (((304, 0), (304, 1)));
+            Table.States (521).Kernel := To_Vector (((271, 169, 6, False), (271, 169, 3, False)));
+            Table.States (521).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (522), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (522), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (522), 28, 183);
@@ -6584,16 +6761,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (522), 319, 113);
             Add_Goto (Table.States (522), 325, 115);
             Add_Goto (Table.States (522), 331, 116);
-            Table.States (522).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (523).Productions := WisiToken.To_Vector ((1 => (276, 0)));
+            Table.States (522).Kernel := To_Vector (((304, 35, 5, False), (304, 35, 2, False)));
+            Table.States (522).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (523), 96, 669);
             Add_Error (Table.States (523));
-            Table.States (523).Minimal_Complete_Action := (Shift, 96, 669);
-            Table.States (524).Productions := WisiToken.To_Vector ((1 => (290, 0)));
+            Table.States (523).Kernel := To_Vector ((0 => (276, 192, 1, False)));
+            Table.States (523).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 669)));
             Add_Action (Table.States (524), 96, 670);
             Add_Error (Table.States (524));
-            Table.States (524).Minimal_Complete_Action := (Shift, 96, 670);
-            Table.States (525).Productions := WisiToken.To_Vector (((194, 0), (194, 1)));
+            Table.States (524).Kernel := To_Vector ((0 => (290, 5, 1, False)));
+            Table.States (524).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 670)));
             Add_Action (Table.States (525), 7, Reduce, (154, 1), 0, null, null);
             Add_Action (Table.States (525), 16, 568);
             Add_Action (Table.States (525), 21, Reduce, (154, 1), 0, null, null);
@@ -6605,12 +6782,12 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (525), 106, Reduce, (154, 1), 0, null, null);
             Add_Error (Table.States (525));
             Add_Goto (Table.States (525), 154, 671);
-            Table.States (525).Minimal_Complete_Action := (Reduce, 154, 0);
-            Table.States (526).Productions := WisiToken.To_Vector ((1 => (196, 0)));
+            Table.States (525).Kernel := To_Vector (((194, 118, 2, False), (194, 118, 1, False)));
+            Table.States (525).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 154, 0)));
             Add_Action (Table.States (526), 24, 672);
             Add_Error (Table.States (526));
-            Table.States (526).Minimal_Complete_Action := (Shift, 24, 672);
-            Table.States (527).Productions := WisiToken.To_Vector ((1 => (315, 0)));
+            Table.States (526).Kernel := To_Vector ((0 => (196, 218, 3, False)));
+            Table.States (526).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 672)));
             Add_Action (Table.States (527), 29, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (527), 40, 12);
             Add_Action (Table.States (527), 46, 14);
@@ -6627,8 +6804,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (527), 264, 89);
             Add_Goto (Table.States (527), 307, 105);
             Add_Goto (Table.States (527), 316, 111);
-            Table.States (527).Minimal_Complete_Action := (Reduce, 246, 0);
-            Table.States (528).Productions := WisiToken.To_Vector (((295, 0), (295, 1), (295, 2)));
+            Table.States (527).Kernel := To_Vector ((0 => (315, 77, 6, False)));
+            Table.States (527).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 246, 0)));
             Add_Action (Table.States (528), 4, 1);
             Add_Action (Table.States (528), 18, 4);
             Add_Action (Table.States (528), 67, 678);
@@ -6636,24 +6813,25 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (528), 113, 679);
             Add_Goto (Table.States (528), 160, 680);
             Add_Goto (Table.States (528), 161, 533);
-            Table.States (528).Minimal_Complete_Action := (Shift, 67, 678);
-            Table.States (529).Productions := WisiToken.To_Vector ((1 => (131, 0)));
+            Table.States (528).Kernel := To_Vector (((295, 87, 3, False), (295, 87, 2, False), (295, 87, 2, False)));
+            Table.States (528).Minimal_Complete_Actions := To_Vector (((Shift, 67, 678), (Shift, 18, 4)));
             Add_Action (Table.States (529), (13, 17, 28, 37, 73), (131, 0), 2, block_label_0'Access,
             block_label_0_check'Access);
-            Table.States (529).Minimal_Complete_Action := (Reduce, 131, 2);
-            Table.States (530).Productions := WisiToken.To_Vector ((1 => (299, 0)));
+            Table.States (529).Kernel := To_Vector ((0 => (131, 81, 0, False)));
+            Table.States (529).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 131, 2)));
             Add_Action (Table.States (530), (4, 5, 13, 15, 17, 18, 22, 23, 24, 26, 27, 28, 31, 32, 37, 41, 43, 48, 52,
             57, 58, 61, 68, 72, 73, 93, 104, 105, 106), (299, 0), 2, null, null);
-            Table.States (530).Minimal_Complete_Action := (Reduce, 299, 2);
-            Table.States (531).Productions := WisiToken.To_Vector ((1 => (152, 0)));
+            Table.States (530).Kernel := To_Vector ((0 => (299, 306, 0, True)));
+            Table.States (530).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 299, 2)));
+            Table.States (530).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (531), 24, 681);
             Add_Error (Table.States (531));
-            Table.States (531).Minimal_Complete_Action := (Shift, 24, 681);
-            Table.States (532).Productions := WisiToken.To_Vector ((1 => (323, 0)));
+            Table.States (531).Kernel := To_Vector ((0 => (152, 300, 3, False)));
+            Table.States (531).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 681)));
             Add_Action (Table.States (532), 24, 682);
             Add_Error (Table.States (532));
-            Table.States (532).Minimal_Complete_Action := (Shift, 24, 682);
-            Table.States (533).Productions := WisiToken.To_Vector ((1 => (160, 0)));
+            Table.States (532).Kernel := To_Vector ((0 => (323, 160, 3, False)));
+            Table.States (532).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 682)));
             Add_Action (Table.States (533), 4, 1);
             Add_Action (Table.States (533), 5, 2);
             Add_Action (Table.States (533), 13, Reduce, (132, 1), 0, null, null);
@@ -6711,19 +6889,20 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (533), 303, 101);
             Add_Goto (Table.States (533), 306, 363);
             Add_Goto (Table.States (533), 323, 114);
-            Table.States (533).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (534).Productions := WisiToken.To_Vector ((1 => (296, 0)));
+            Table.States (533).Kernel := To_Vector ((0 => (160, 161, 0, False)));
+            Table.States (533).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (534), (22, 24, 43), (296, 0), 3, select_alternative_list_0'Access, null);
-            Table.States (534).Minimal_Complete_Action := (Reduce, 296, 3);
-            Table.States (535).Productions := WisiToken.To_Vector ((1 => (294, 0)));
+            Table.States (534).Kernel := To_Vector ((0 => (296, 295, 0, True)));
+            Table.States (534).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 296, 3)));
+            Table.States (534).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (535), 24, 684);
             Add_Error (Table.States (535));
-            Table.States (535).Minimal_Complete_Action := (Shift, 24, 684);
-            Table.States (536).Productions := WisiToken.To_Vector ((1 => (294, 1)));
+            Table.States (535).Kernel := To_Vector ((0 => (294, 300, 3, False)));
+            Table.States (535).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 684)));
             Add_Action (Table.States (536), 96, 685);
             Add_Error (Table.States (536));
-            Table.States (536).Minimal_Complete_Action := (Shift, 96, 685);
-            Table.States (537).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (536).Kernel := To_Vector ((0 => (294, 61, 1, False)));
+            Table.States (536).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 685)));
             Add_Action (Table.States (537), 4, 1);
             Add_Action (Table.States (537), 5, 2);
             Add_Action (Table.States (537), 13, Reduce, (132, 1), 0, null, null);
@@ -6779,29 +6958,30 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (537), 303, 101);
             Add_Goto (Table.States (537), 306, 363);
             Add_Goto (Table.States (537), 323, 114);
-            Table.States (537).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (538).Productions := WisiToken.To_Vector ((1 => (313, 0)));
+            Table.States (537).Kernel := To_Vector ((0 => (126, 5, 3, False)));
+            Table.States (537).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (538), 74, 337);
             Add_Action (Table.States (538), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (538));
             Add_Goto (Table.States (538), 122, 687);
-            Table.States (538).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (539).Productions := WisiToken.To_Vector ((1 => (317, 0)));
+            Table.States (538).Kernel := To_Vector ((0 => (313, 314, 1, False)));
+            Table.States (538).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (539), 60, 688);
             Add_Error (Table.States (539));
-            Table.States (539).Minimal_Complete_Action := (Shift, 60, 688);
-            Table.States (540).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (539).Kernel := To_Vector ((0 => (317, 35, 2, False)));
+            Table.States (539).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 60, 688)));
             Add_Action (Table.States (540), 35, 689);
             Add_Error (Table.States (540));
-            Table.States (540).Minimal_Complete_Action := (Shift, 35, 689);
-            Table.States (541).Productions := WisiToken.To_Vector (((319, 0), (319, 1), (319, 2)));
+            Table.States (540).Kernel := To_Vector ((0 => (316, 122, 4, False)));
+            Table.States (540).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 689)));
             Add_Action (Table.States (541), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (541), 74, 337);
             Add_Action (Table.States (541), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (541));
             Add_Goto (Table.States (541), 122, 690);
-            Table.States (541).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (542).Productions := WisiToken.To_Vector (((305, 0), (305, 1)));
+            Table.States (541).Kernel := To_Vector (((319, 169, 6, False), (319, 169, 3, False), (319, 169, 1,
+            False)));
+            Table.States (541).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (542), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (542), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (542), 28, 183);
@@ -6875,30 +7055,31 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (542), 319, 113);
             Add_Goto (Table.States (542), 325, 115);
             Add_Goto (Table.States (542), 331, 116);
-            Table.States (542).Minimal_Complete_Action := (Reduce, 318, 0);
-            Table.States (543).Productions := WisiToken.To_Vector ((1 => (305, 2)));
+            Table.States (542).Kernel := To_Vector (((305, 35, 5, False), (305, 35, 2, False)));
+            Table.States (542).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 318, 0)));
             Add_Action (Table.States (543), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (305, 2), 4,
             single_task_declaration_2'Access, null);
-            Table.States (543).Minimal_Complete_Action := (Reduce, 305, 4);
-            Table.States (544).Productions := WisiToken.To_Vector ((1 => (169, 0)));
+            Table.States (543).Kernel := To_Vector ((0 => (305, 96, 0, False)));
+            Table.States (543).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 305, 4)));
             Add_Action (Table.States (544), 77, 694);
             Add_Error (Table.States (544));
-            Table.States (544).Minimal_Complete_Action := (Shift, 77, 694);
-            Table.States (545).Productions := WisiToken.To_Vector ((1 => (171, 1)));
+            Table.States (544).Kernel := To_Vector ((0 => (169, 80, 1, False)));
+            Table.States (544).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 694)));
             Add_Action (Table.States (545), (77, 96), (171, 1), 1, null, null);
-            Table.States (545).Minimal_Complete_Action := (Reduce, 171, 1);
-            Table.States (546).Productions := WisiToken.To_Vector (((169, 1), (171, 0)));
+            Table.States (545).Kernel := To_Vector ((0 => (171, 170, 0, False)));
+            Table.States (545).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 171, 1)));
             Add_Action (Table.States (546), 77, 695);
             Add_Action (Table.States (546), 96, 696);
             Add_Error (Table.States (546));
-            Table.States (546).Minimal_Complete_Action := (Shift, 77, 695);
-            Table.States (547).Productions := WisiToken.To_Vector (((170, 0), (170, 1), (170, 2), (170, 3), (219, 0)));
+            Table.States (546).Kernel := To_Vector (((169, 171, 1, False), (171, 171, 1, True)));
+            Table.States (546).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 695)));
             Add_Action (Table.States (547), 81, 697);
             Add_Action (Table.States (547), 83, 234);
             Add_Error (Table.States (547));
-            Table.States (547).Minimal_Complete_Action := (Shift, 81, 697);
-            Table.States (548).Productions := WisiToken.To_Vector (((206, 0), (223, 0), (259, 0), (260, 0)));
+            Table.States (547).Kernel := To_Vector (((170, 219, 3, False), (170, 219, 4, False), (170, 219, 2, False),
+            (170, 219, 3, False), (219, 219, 2, True)));
+            Table.States (547).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 81, 697)));
             Add_Action (Table.States (548), 6, 698);
             Add_Action (Table.States (548), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (548), 11, 699);
@@ -6907,7 +7088,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (548), 34, 702);
             Add_Action (Table.States (548), 36, 703);
             Add_Action (Table.States (548), 38, 704);
-            Add_Action (Table.States (548), 39, Reduce, (109, 5), 0, null, null, (110, 3), 0, null, null);
+            Add_Action (Table.States (548), 39, Reduce, (109, 5), 0, null, null);
+            Add_Conflict (Table.States (548), 39, (110, 3), 0, null, null);
             Add_Action (Table.States (548), 40, 386);
             Add_Action (Table.States (548), 41, Reduce, (111, 5), 0, null, null);
             Add_Action (Table.States (548), 49, Reduce, (111, 5), 0, null, null);
@@ -6929,24 +7111,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (548), 228, 720);
             Add_Goto (Table.States (548), 241, 721);
             Add_Goto (Table.States (548), 326, 722);
-            Table.States (548).Minimal_Complete_Action := (Shift, 38, 704);
-            Table.States (549).Productions := WisiToken.To_Vector ((1 => (223, 1)));
+            Table.States (548).Kernel := To_Vector (((206, 35, 2, False), (223, 35, 2, False), (259, 35, 5, False),
+            (260, 35, 2, False)));
+            Table.States (548).Minimal_Complete_Actions := To_Vector (((Shift, 38, 704), (Shift, 65, 710), (Reduce,
+            111, 0)));
             Add_Action (Table.States (549), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (223, 1), 4,
             incomplete_type_declaration_1'Access, null);
-            Table.States (549).Minimal_Complete_Action := (Reduce, 223, 4);
-            Table.States (550).Productions := WisiToken.To_Vector (((238, 0), (331, 0)));
+            Table.States (549).Kernel := To_Vector ((0 => (223, 96, 0, False)));
+            Table.States (549).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 223, 4)));
             Add_Action (Table.States (550), 83, 381);
             Add_Action (Table.States (550), 96, 723);
             Add_Error (Table.States (550));
-            Table.States (550).Minimal_Complete_Action := (Shift, 96, 723);
-            Table.States (551).Productions := WisiToken.To_Vector ((1 => (331, 1)));
+            Table.States (550).Kernel := To_Vector (((238, 238, 2, True), (331, 238, 1, False)));
+            Table.States (550).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 723)));
             Add_Action (Table.States (551), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (331, 1), 4,
             use_clause_1'Access, null);
-            Table.States (551).Minimal_Complete_Action := (Reduce, 331, 4);
-            Table.States (552).Productions := WisiToken.To_Vector (((128, 0), (238, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (551).Kernel := To_Vector ((0 => (331, 96, 0, False)));
+            Table.States (551).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 331, 4)));
+         end Subr_10;
+         procedure Subr_11
+         is begin
             Add_Action (Table.States (552), 76, 235);
             Add_Action (Table.States (552), 83, Reduce, (238, 0), 3, null, null);
             Add_Action (Table.States (552), 84, 237);
@@ -6956,8 +7142,11 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (552));
             Add_Goto (Table.States (552), 115, 241);
             Add_Goto (Table.States (552), 322, 242);
-            Table.States (552).Minimal_Complete_Action := (Reduce, 238, 3);
-            Table.States (553).Productions := WisiToken.To_Vector ((1 => (245, 2)));
+            Table.States (552).Kernel := To_Vector (((128, 239, 2, True), (238, 239, 0, True), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (552).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 238, 3)));
+            Table.States (552).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (553), 104, 119);
             Add_Action (Table.States (553), 105, 33);
             Add_Action (Table.States (553), 106, 34);
@@ -6966,11 +7155,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (553), 239, 724);
             Add_Goto (Table.States (553), 272, 92);
             Add_Goto (Table.States (553), 293, 97);
-            Table.States (553).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (554).Productions := WisiToken.To_Vector ((1 => (241, 0)));
+            Table.States (553).Kernel := To_Vector ((0 => (245, 56, 2, False)));
+            Table.States (553).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (554), (7, 21, 35, 56, 74, 77, 82, 96, 104, 105, 106), (241, 0), 2, null, null);
-            Table.States (554).Minimal_Complete_Action := (Reduce, 241, 2);
-            Table.States (555).Productions := WisiToken.To_Vector ((1 => (245, 1)));
+            Table.States (554).Kernel := To_Vector ((0 => (241, 41, 0, False)));
+            Table.States (554).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 241, 2)));
             Add_Action (Table.States (555), 104, 119);
             Add_Action (Table.States (555), 105, 33);
             Add_Action (Table.States (555), 106, 34);
@@ -6979,8 +7168,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (555), 239, 725);
             Add_Goto (Table.States (555), 272, 92);
             Add_Goto (Table.States (555), 293, 97);
-            Table.States (555).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (556).Productions := WisiToken.To_Vector (((114, 0), (114, 1), (114, 2)));
+            Table.States (555).Kernel := To_Vector ((0 => (245, 56, 2, False)));
+            Table.States (555).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (556), 9, 726);
             Add_Action (Table.States (556), 16, 727);
             Add_Action (Table.States (556), 29, Reduce, (270, 1), 0, null, null);
@@ -6992,9 +7181,9 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (556));
             Add_Goto (Table.States (556), 208, 729);
             Add_Goto (Table.States (556), 270, 730);
-            Table.States (556).Minimal_Complete_Action := (Reduce, 270, 0);
-            Table.States (557).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (245, 0), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (556).Kernel := To_Vector (((114, 7, 1, False), (114, 7, 2, True), (114, 7, 1, False)));
+            Table.States (556).Minimal_Complete_Actions := To_Vector (((Reduce, 270, 0), (Reduce, 208, 0)));
+            Table.States (556).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (557), 56, 731);
             Add_Action (Table.States (557), 76, 235);
             Add_Action (Table.States (557), 84, 237);
@@ -7003,14 +7192,16 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (557));
             Add_Goto (Table.States (557), 115, 241);
             Add_Goto (Table.States (557), 322, 242);
-            Table.States (557).Minimal_Complete_Action := (Shift, 56, 731);
-            Table.States (558).Productions := WisiToken.To_Vector ((1 => (133, 1)));
+            Table.States (557).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (245, 239, 3, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (557).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 56, 731)));
             Add_Action (Table.States (558), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (558), 104, 149);
             Add_Error (Table.States (558));
             Add_Goto (Table.States (558), 220, 732);
-            Table.States (558).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (559).Productions := WisiToken.To_Vector ((1 => (218, 0)));
+            Table.States (558).Kernel := To_Vector ((0 => (133, 24, 1, False)));
+            Table.States (558).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (559), 24, Reduce, (189, 1), 0, null, null);
             Add_Action (Table.States (559), 48, 16);
             Add_Action (Table.States (559), 72, 733);
@@ -7019,16 +7210,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (559), 188, 735);
             Add_Goto (Table.States (559), 189, 736);
             Add_Goto (Table.States (559), 257, 737);
-            Table.States (559).Minimal_Complete_Action := (Reduce, 189, 0);
-            Table.States (560).Productions := WisiToken.To_Vector ((1 => (158, 0)));
+            Table.States (559).Kernel := To_Vector ((0 => (218, 26, 0, False)));
+            Table.States (559).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 189, 0)));
             Add_Action (Table.States (560), (13, 24, 25, 28, 29, 30, 40, 46, 47, 48, 49, 50, 51, 63, 66, 69, 71, 104),
             (158, 0), 2, null, null);
-            Table.States (560).Minimal_Complete_Action := (Reduce, 158, 2);
-            Table.States (561).Productions := WisiToken.To_Vector ((1 => (158, 1)));
+            Table.States (560).Kernel := To_Vector ((0 => (158, 157, 0, True)));
+            Table.States (560).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 158, 2)));
+            Table.States (560).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (561), (13, 24, 25, 28, 29, 30, 40, 46, 47, 48, 49, 50, 51, 63, 66, 69, 71, 104),
             (158, 1), 2, null, null);
-            Table.States (561).Minimal_Complete_Action := (Reduce, 158, 2);
-            Table.States (562).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (561).Kernel := To_Vector ((0 => (158, 257, 0, True)));
+            Table.States (561).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 158, 2)));
+            Table.States (561).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (562), 4, 1);
             Add_Action (Table.States (562), 5, 2);
             Add_Action (Table.States (562), 13, Reduce, (132, 1), 0, null, null);
@@ -7086,24 +7279,21 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (562), 303, 101);
             Add_Goto (Table.States (562), 306, 363);
             Add_Goto (Table.States (562), 323, 114);
-            Table.States (562).Minimal_Complete_Action := (Reduce, 218, 0);
-         end Subr_10;
-         procedure Subr_11
-         is begin
-            Table.States (563).Productions := WisiToken.To_Vector ((1 => (232, 1)));
+            Table.States (562).Kernel := To_Vector ((0 => (133, 13, 2, False)));
+            Table.States (562).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (563), 37, 739);
             Add_Error (Table.States (563));
-            Table.States (563).Minimal_Complete_Action := (Shift, 37, 739);
-            Table.States (564).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (563).Kernel := To_Vector ((0 => (232, 24, 2, False)));
+            Table.States (563).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 37, 739)));
             Add_Action (Table.States (564), 24, 740);
             Add_Error (Table.States (564));
-            Table.States (564).Minimal_Complete_Action := (Shift, 24, 740);
-            Table.States (565).Productions := WisiToken.To_Vector ((1 => (216, 0)));
+            Table.States (564).Kernel := To_Vector ((0 => (232, 300, 3, False)));
+            Table.States (564).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 740)));
             Add_Action (Table.States (565), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (216, 0), 4,
             generic_subprogram_declaration_0'Access, null);
-            Table.States (565).Minimal_Complete_Action := (Reduce, 216, 4);
-            Table.States (566).Productions := WisiToken.To_Vector ((1 => (157, 9)));
+            Table.States (565).Kernel := To_Vector ((0 => (216, 96, 0, False)));
+            Table.States (565).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 216, 4)));
             Add_Action (Table.States (566), 3, 121);
             Add_Action (Table.States (566), 39, 122);
             Add_Action (Table.States (566), 40, 123);
@@ -7138,17 +7328,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (566), 320, 144);
             Add_Goto (Table.States (566), 321, 145);
             Add_Goto (Table.States (566), 330, 146);
-            Table.States (566).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (567).Productions := WisiToken.To_Vector ((1 => (186, 0)));
+            Table.States (566).Kernel := To_Vector ((0 => (157, 82, 1, False)));
+            Table.States (566).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (567), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (186, 0), 4,
             exception_declaration_0'Access, null);
-            Table.States (567).Minimal_Complete_Action := (Reduce, 186, 4);
-            Table.States (568).Productions := WisiToken.To_Vector ((1 => (154, 0)));
+            Table.States (567).Kernel := To_Vector ((0 => (186, 96, 0, False)));
+            Table.States (567).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 186, 4)));
             Add_Action (Table.States (568), (7, 11, 21, 40, 74, 82, 96, 104, 105, 106), (154, 0), 1, null, null);
-            Table.States (568).Minimal_Complete_Action := (Reduce, 154, 1);
-            Table.States (569).Productions := WisiToken.To_Vector (((244, 0), (244, 1), (244, 2), (244, 3), (244, 4),
-            (244, 5)));
+            Table.States (568).Kernel := To_Vector ((0 => (154, 16, 0, False)));
+            Table.States (568).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 154, 1)));
             Add_Action (Table.States (569), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (569), 11, 699);
             Add_Action (Table.States (569), 40, 742);
@@ -7164,26 +7353,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (569), 272, 92);
             Add_Goto (Table.States (569), 293, 97);
             Add_Goto (Table.States (569), 314, 745);
-            Table.States (569).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (570).Productions := WisiToken.To_Vector ((1 => (115, 0)));
+            Table.States (569).Kernel := To_Vector (((244, 154, 3, False), (244, 154, 4, False), (244, 154, 10, False),
+            (244, 154, 2, False), (244, 154, 3, False), (244, 154, 9, False)));
+            Table.States (569).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (570), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (115, 0), 3,
             actual_parameter_part_0'Access, null);
-            Table.States (570).Minimal_Complete_Action := (Reduce, 115, 3);
-            Table.States (571).Productions := WisiToken.To_Vector ((1 => (115, 1)));
+            Table.States (570).Kernel := To_Vector ((0 => (115, 77, 0, False)));
+            Table.States (570).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 115, 3)));
             Add_Action (Table.States (571), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (115, 1), 3,
             actual_parameter_part_1'Access, null);
-            Table.States (571).Minimal_Complete_Action := (Reduce, 115, 3);
-            Table.States (572).Productions := WisiToken.To_Vector ((1 => (239, 0)));
+            Table.States (571).Kernel := To_Vector ((0 => (115, 77, 0, False)));
+            Table.States (571).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 115, 3)));
             Add_Action (Table.States (572), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (239, 0), 4, name_0'Access,
             null);
-            Table.States (572).Minimal_Complete_Action := (Reduce, 239, 4);
-            Table.States (573).Productions := WisiToken.To_Vector ((1 => (278, 0)));
+            Table.States (572).Kernel := To_Vector ((0 => (239, 77, 0, True)));
+            Table.States (572).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 4)));
+            Table.States (572).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (573), 3, 121);
             Add_Action (Table.States (573), 39, 122);
             Add_Action (Table.States (573), 40, 123);
@@ -7208,13 +7399,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (573), 320, 144);
             Add_Goto (Table.States (573), 321, 145);
             Add_Goto (Table.States (573), 330, 146);
-            Table.States (573).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (574).Productions := WisiToken.To_Vector ((1 => (123, 0)));
+            Table.States (573).Kernel := To_Vector ((0 => (278, 83, 3, True)));
+            Table.States (573).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (573).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (574), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (123, 0), 4, assignment_statement_0'Access, null);
-            Table.States (574).Minimal_Complete_Action := (Reduce, 123, 4);
-            Table.States (575).Productions := WisiToken.To_Vector (((179, 0), (199, 0)));
+            Table.States (574).Kernel := To_Vector ((0 => (123, 96, 0, False)));
+            Table.States (574).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 123, 4)));
             Add_Action (Table.States (575), 3, 121);
             Add_Action (Table.States (575), 39, 122);
             Add_Action (Table.States (575), 40, 474);
@@ -7246,22 +7438,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (575), 320, 144);
             Add_Goto (Table.States (575), 321, 145);
             Add_Goto (Table.States (575), 330, 146);
-            Table.States (575).Minimal_Complete_Action := (Reduce, 255, 0);
-            Table.States (576).Productions := WisiToken.To_Vector ((1 => (179, 1)));
+            Table.States (575).Kernel := To_Vector (((179, 76, 3, False), (199, 76, 1, False)));
+            Table.States (575).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 255, 0)));
             Add_Action (Table.States (576), 74, 337);
             Add_Action (Table.States (576), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (576));
             Add_Goto (Table.States (576), 122, 748);
-            Table.States (576).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (577).Productions := WisiToken.To_Vector ((1 => (213, 2)));
+            Table.States (576).Kernel := To_Vector ((0 => (179, 253, 1, False)));
+            Table.States (576).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (577), 39, 749);
             Add_Error (Table.States (577));
-            Table.States (577).Minimal_Complete_Action := (Shift, 39, 749);
-            Table.States (578).Productions := WisiToken.To_Vector ((1 => (213, 1)));
+            Table.States (577).Kernel := To_Vector ((0 => (213, 35, 3, False)));
+            Table.States (577).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 749)));
             Add_Action (Table.States (578), 39, 750);
             Add_Error (Table.States (578));
-            Table.States (578).Minimal_Complete_Action := (Shift, 39, 750);
-            Table.States (579).Productions := WisiToken.To_Vector (((256, 0), (256, 1), (256, 2)));
+            Table.States (578).Kernel := To_Vector ((0 => (213, 35, 3, False)));
+            Table.States (578).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 750)));
             Add_Action (Table.States (579), 3, 121);
             Add_Action (Table.States (579), 15, 258);
             Add_Action (Table.States (579), 28, 259);
@@ -7272,7 +7464,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (579), 44, 263);
             Add_Action (Table.States (579), 52, 125);
             Add_Action (Table.States (579), 76, 126);
-            Add_Action (Table.States (579), 77, Reduce, (124, 5), 0, null, null, (192, 1), 0, null, null);
+            Add_Action (Table.States (579), 77, Reduce, (124, 5), 0, null, null);
+            Add_Conflict (Table.States (579), 77, (192, 1), 0, null, null);
             Add_Action (Table.States (579), 79, Reduce, (166, 2), 0, null, null);
             Add_Action (Table.States (579), 83, Reduce, (124, 5), 0, null, null);
             Add_Action (Table.States (579), 87, Reduce, (166, 2), 0, null, null);
@@ -7312,33 +7505,32 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (579), 320, 144);
             Add_Goto (Table.States (579), 321, 145);
             Add_Goto (Table.States (579), 330, 146);
-            Table.States (579).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (580).Productions := WisiToken.To_Vector ((1 => (193, 0)));
+            Table.States (579).Kernel := To_Vector (((256, 76, 1, False), (256, 76, 1, False), (256, 76, 3, False)));
+            Table.States (579).Minimal_Complete_Actions := To_Vector (((Reduce, 192, 0), (Reduce, 125, 0)));
             Add_Action (Table.States (580), 74, 337);
             Add_Action (Table.States (580), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (580));
             Add_Goto (Table.States (580), 122, 754);
-            Table.States (580).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (581).Productions := WisiToken.To_Vector ((1 => (243, 0)));
+            Table.States (580).Kernel := To_Vector ((0 => (193, 256, 1, False)));
+            Table.States (580).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (581), 74, 337);
             Add_Action (Table.States (581), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (581));
             Add_Goto (Table.States (581), 122, 755);
-            Table.States (581).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (582).Productions := WisiToken.To_Vector ((1 => (112, 0)));
+            Table.States (581).Kernel := To_Vector ((0 => (243, 41, 1, False)));
+            Table.States (581).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (582), 74, 337);
             Add_Action (Table.States (582), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (582));
             Add_Goto (Table.States (582), 122, 756);
-            Table.States (582).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (583).Productions := WisiToken.To_Vector ((1 => (308, 0)));
+            Table.States (582).Kernel := To_Vector ((0 => (112, 6, 1, False)));
+            Table.States (582).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (583), 74, 337);
             Add_Action (Table.States (583), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (583));
             Add_Goto (Table.States (583), 122, 757);
-            Table.States (583).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (584).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3), (311, 0)));
+            Table.States (583).Kernel := To_Vector ((0 => (308, 60, 1, False)));
+            Table.States (583).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (584), 74, 337);
             Add_Action (Table.States (584), 76, 235);
             Add_Action (Table.States (584), 84, 237);
@@ -7349,8 +7541,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (584), 115, 241);
             Add_Goto (Table.States (584), 122, 758);
             Add_Goto (Table.States (584), 322, 242);
-            Table.States (584).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (585).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (584).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (311, 239, 1, False)));
+            Table.States (584).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (585), 13, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (585), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (585), 28, 183);
@@ -7421,13 +7615,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (585), 319, 113);
             Add_Goto (Table.States (585), 325, 115);
             Add_Goto (Table.States (585), 331, 116);
-            Table.States (585).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (586).Productions := WisiToken.To_Vector ((1 => (309, 0)));
+            Table.States (585).Kernel := To_Vector ((0 => (307, 35, 3, False)));
+            Table.States (585).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (586), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (309, 0), 4,
             subprogram_declaration_0'Access, null);
-            Table.States (586).Minimal_Complete_Action := (Reduce, 309, 4);
-            Table.States (587).Productions := WisiToken.To_Vector ((1 => (113, 0)));
+            Table.States (586).Kernel := To_Vector ((0 => (309, 96, 0, False)));
+            Table.States (586).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 309, 4)));
             Add_Action (Table.States (587), 4, 1);
             Add_Action (Table.States (587), 5, 2);
             Add_Action (Table.States (587), 13, Reduce, (132, 1), 0, null, null);
@@ -7485,27 +7679,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (587), 303, 101);
             Add_Goto (Table.States (587), 306, 363);
             Add_Goto (Table.States (587), 323, 114);
-            Table.States (587).Minimal_Complete_Action := (Reduce, 218, 0);
-            Table.States (588).Productions := WisiToken.To_Vector ((1 => (113, 1)));
+            Table.States (587).Kernel := To_Vector ((0 => (113, 21, 2, False)));
+            Table.States (587).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (588), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (113, 1), 5, accept_statement_1'Access, null);
-            Table.States (588).Minimal_Complete_Action := (Reduce, 113, 5);
-            Table.States (589).Productions := WisiToken.To_Vector ((1 => (275, 0)));
+            Table.States (588).Kernel := To_Vector ((0 => (113, 96, 0, False)));
+            Table.States (588).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 113, 5)));
             Add_Action (Table.States (589), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (275,
             0), 4, raise_expression_0'Access, null);
-            Table.States (589).Minimal_Complete_Action := (Reduce, 275, 4);
-            Table.States (590).Productions := WisiToken.To_Vector ((1 => (136, 0)));
+            Table.States (589).Kernel := To_Vector ((0 => (275, 192, 0, True)));
+            Table.States (589).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 275, 4)));
+            Table.States (589).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (590), 72, 761);
             Add_Error (Table.States (590));
             Add_Goto (Table.States (590), 137, 762);
             Add_Goto (Table.States (590), 138, 763);
-            Table.States (590).Minimal_Complete_Action := (Shift, 72, 761);
-            Table.States (591).Productions := WisiToken.To_Vector ((1 => (273, 0)));
+            Table.States (590).Kernel := To_Vector ((0 => (136, 35, 2, False)));
+            Table.States (590).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 72, 761)));
             Add_Action (Table.States (591), 87, 764);
             Add_Error (Table.States (591));
-            Table.States (591).Minimal_Complete_Action := (Shift, 87, 764);
-            Table.States (592).Productions := WisiToken.To_Vector (((221, 0), (221, 1), (221, 2), (221, 3)));
+            Table.States (591).Kernel := To_Vector ((0 => (273, 230, 1, False)));
+            Table.States (591).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 764)));
             Add_Action (Table.States (592), 3, 121);
             Add_Action (Table.States (592), 22, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (592), 23, Reduce, (192, 1), 0, null, null);
@@ -7542,9 +7737,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (592), 320, 144);
             Add_Goto (Table.States (592), 321, 145);
             Add_Goto (Table.States (592), 330, 146);
-            Table.States (592).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (593).Productions := WisiToken.To_Vector (((128, 0), (165, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (592).Kernel := To_Vector (((221, 68, 3, False), (221, 68, 1, False), (221, 68, 2, False),
+            (221, 68, 0, False)));
+            Table.States (592).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (593), 76, 235);
             Add_Action (Table.States (593), 79, Reduce, (165, 1), 3, null, null);
             Add_Action (Table.States (593), 84, 237);
@@ -7554,34 +7749,38 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (593));
             Add_Goto (Table.States (593), 115, 241);
             Add_Goto (Table.States (593), 322, 242);
-            Table.States (593).Minimal_Complete_Action := (Reduce, 165, 3);
-            Table.States (594).Productions := WisiToken.To_Vector ((1 => (117, 2)));
+            Table.States (593).Kernel := To_Vector (((128, 239, 2, True), (165, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (593).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 165, 3)));
             Add_Action (Table.States (594), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (117, 2), 4, null, null);
-            Table.States (594).Minimal_Complete_Action := (Reduce, 117, 4);
-            Table.States (595).Productions := WisiToken.To_Vector ((1 => (124, 1)));
+            Table.States (594).Kernel := To_Vector ((0 => (117, 77, 0, False)));
+            Table.States (594).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 117, 4)));
             Add_Action (Table.States (595), (35, 77, 83, 96), (124, 1), 3, null, null);
-            Table.States (595).Minimal_Complete_Action := (Reduce, 124, 3);
-            Table.States (596).Productions := WisiToken.To_Vector ((1 => (124, 0)));
+            Table.States (595).Kernel := To_Vector ((0 => (124, 80, 0, False)));
+            Table.States (595).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 124, 3)));
             Add_Action (Table.States (596), (35, 77, 83, 96), (124, 0), 3, association_opt_0'Access, null);
-            Table.States (596).Minimal_Complete_Action := (Reduce, 124, 3);
-            Table.States (597).Productions := WisiToken.To_Vector ((1 => (125, 0)));
+            Table.States (596).Kernel := To_Vector ((0 => (124, 192, 0, False)));
+            Table.States (596).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 124, 3)));
             Add_Action (Table.States (597), (35, 77, 83, 96), (125, 0), 3, null, null);
-            Table.States (597).Minimal_Complete_Action := (Reduce, 125, 3);
-            Table.States (598).Productions := WisiToken.To_Vector ((1 => (166, 0)));
+            Table.States (597).Kernel := To_Vector ((0 => (125, 124, 0, True)));
+            Table.States (597).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 3)));
+            Table.States (597).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (598), (79, 87), (166, 0), 3, null, null);
-            Table.States (598).Minimal_Complete_Action := (Reduce, 166, 3);
-            Table.States (599).Productions := WisiToken.To_Vector ((1 => (165, 0)));
+            Table.States (598).Kernel := To_Vector ((0 => (166, 165, 0, True)));
+            Table.States (598).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 166, 3)));
+            Table.States (598).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (599), (79, 87), (165, 0), 1, null, null);
-            Table.States (599).Minimal_Complete_Action := (Reduce, 165, 1);
-            Table.States (600).Productions := WisiToken.To_Vector ((1 => (124, 3)));
+            Table.States (599).Kernel := To_Vector ((0 => (165, 191, 0, False)));
+            Table.States (599).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 165, 1)));
             Add_Action (Table.States (600), (35, 77, 83, 96), (124, 3), 3, association_opt_3'Access, null);
-            Table.States (600).Minimal_Complete_Action := (Reduce, 124, 3);
-            Table.States (601).Productions := WisiToken.To_Vector ((1 => (124, 2)));
+            Table.States (600).Kernel := To_Vector ((0 => (124, 80, 0, False)));
+            Table.States (600).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 124, 3)));
             Add_Action (Table.States (601), (35, 77, 83, 96), (124, 2), 3, association_opt_2'Access, null);
-            Table.States (601).Minimal_Complete_Action := (Reduce, 124, 3);
-            Table.States (602).Productions := WisiToken.To_Vector (((117, 0), (258, 1)));
+            Table.States (601).Kernel := To_Vector ((0 => (124, 192, 0, False)));
+            Table.States (601).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 124, 3)));
             Add_Action (Table.States (602), 10, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (602), 33, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (602), 38, Reduce, (258, 1), 1, null, null);
@@ -7608,13 +7807,13 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (602), 99, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (602), 100, Reduce, (258, 1), 1, null, null);
             Add_Error (Table.States (602));
-            Table.States (602).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (603).Productions := WisiToken.To_Vector (((117, 1), (125, 0)));
+            Table.States (602).Kernel := To_Vector (((117, 41, 2, False), (258, 41, 0, False)));
+            Table.States (602).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (603), 77, 767);
             Add_Action (Table.States (603), 83, 443);
             Add_Error (Table.States (603));
-            Table.States (603).Minimal_Complete_Action := (Shift, 77, 767);
-            Table.States (604).Productions := WisiToken.To_Vector (((277, 0), (277, 1)));
+            Table.States (603).Kernel := To_Vector (((117, 125, 1, False), (125, 125, 1, True)));
+            Table.States (603).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 767)));
             Add_Action (Table.States (604), 10, Reduce, (277, 1), 3, null, null);
             Add_Action (Table.States (604), 20, Reduce, (277, 1), 3, null, null);
             Add_Action (Table.States (604), 21, Reduce, (277, 1), 3, null, null);
@@ -7636,40 +7835,48 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (604), 87, Reduce, (277, 1), 3, null, null);
             Add_Action (Table.States (604), 96, Reduce, (277, 1), 3, null, null);
             Add_Error (Table.States (604));
-            Table.States (604).Minimal_Complete_Action := (Reduce, 277, 3);
-            Table.States (605).Productions := WisiToken.To_Vector ((1 => (277, 2)));
+            Table.States (604).Kernel := To_Vector (((277, 53, 2, False), (277, 53, 0, False)));
+            Table.States (604).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 277, 3)));
+         end Subr_11;
+         procedure Subr_12
+         is begin
             Add_Action (Table.States (605), (10, 20, 21, 22, 23, 35, 37, 42, 43, 53, 68, 74, 75, 77, 79, 82, 83, 87,
             96), (277, 2), 3, null, null);
-            Table.States (605).Minimal_Complete_Action := (Reduce, 277, 3);
-            Table.States (606).Productions := WisiToken.To_Vector (((140, 0), (166, 0)));
+            Table.States (605).Kernel := To_Vector ((0 => (277, 301, 0, False)));
+            Table.States (605).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 277, 3)));
             Add_Action (Table.States (606), 79, 445);
             Add_Action (Table.States (606), 87, 769);
             Add_Error (Table.States (606));
-            Table.States (606).Minimal_Complete_Action := (Shift, 87, 769);
-            Table.States (607).Productions := WisiToken.To_Vector ((1 => (139, 0)));
+            Table.States (606).Kernel := To_Vector (((140, 166, 1, False), (166, 166, 2, True)));
+            Table.States (606).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 769)));
             Add_Action (Table.States (607), 15, 770);
             Add_Error (Table.States (607));
-            Table.States (607).Minimal_Complete_Action := (Shift, 15, 770);
-            Table.States (608).Productions := WisiToken.To_Vector ((1 => (141, 0)));
+            Table.States (607).Kernel := To_Vector ((0 => (139, 24, 2, False)));
+            Table.States (607).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 15, 770)));
             Add_Action (Table.States (608), (24, 72), (141, 0), 2, null, null);
-            Table.States (608).Minimal_Complete_Action := (Reduce, 141, 2);
-            Table.States (609).Productions := WisiToken.To_Vector ((1 => (283, 0)));
+            Table.States (608).Kernel := To_Vector ((0 => (141, 140, 0, True)));
+            Table.States (608).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 141, 2)));
+            Table.States (608).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (609), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (283,
             0), 4, null, null);
-            Table.States (609).Minimal_Complete_Action := (Reduce, 283, 4);
-            Table.States (610).Productions := WisiToken.To_Vector ((1 => (285, 0)));
+            Table.States (609).Kernel := To_Vector ((0 => (283, 287, 0, True)));
+            Table.States (609).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 283, 4)));
+            Table.States (609).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (610), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (285,
             0), 4, null, null);
-            Table.States (610).Minimal_Complete_Action := (Reduce, 285, 4);
-            Table.States (611).Productions := WisiToken.To_Vector ((1 => (283, 1)));
+            Table.States (610).Kernel := To_Vector ((0 => (285, 287, 0, True)));
+            Table.States (610).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 285, 4)));
+            Table.States (610).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (611), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (283,
             1), 4, null, null);
-            Table.States (611).Minimal_Complete_Action := (Reduce, 283, 4);
-            Table.States (612).Productions := WisiToken.To_Vector ((1 => (285, 1)));
+            Table.States (611).Kernel := To_Vector ((0 => (283, 287, 0, True)));
+            Table.States (611).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 283, 4)));
+            Table.States (611).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (612), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (285,
             1), 4, null, null);
-            Table.States (612).Minimal_Complete_Action := (Reduce, 285, 4);
-            Table.States (613).Productions := WisiToken.To_Vector ((1 => (233, 0)));
+            Table.States (612).Kernel := To_Vector ((0 => (285, 287, 0, True)));
+            Table.States (612).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 285, 4)));
+            Table.States (612).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (613), 3, 121);
             Add_Action (Table.States (613), 39, 122);
             Add_Action (Table.States (613), 40, 123);
@@ -7695,8 +7902,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (613), 320, 144);
             Add_Goto (Table.States (613), 321, 145);
             Add_Goto (Table.States (613), 330, 146);
-            Table.States (613).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (614).Productions := WisiToken.To_Vector (((233, 0), (287, 0)));
+            Table.States (613).Kernel := To_Vector ((0 => (233, 79, 1, True)));
+            Table.States (613).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
+            Table.States (613).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (614), 10, Reduce, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 20, Reduce, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 21, Reduce, (287, 0), 4, null, null);
@@ -7710,18 +7918,19 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (614), 74, Reduce, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 75, Reduce, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 77, Reduce, (287, 0), 4, null, null);
-            Add_Action (Table.States (614), 79, 613, (287, 0), 4, null, null);
+            Add_Action (Table.States (614), 79, 613);
+            Add_Conflict (Table.States (614), 79, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 83, Reduce, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 87, Reduce, (287, 0), 4, null, null);
             Add_Action (Table.States (614), 96, Reduce, (287, 0), 4, null, null);
             Add_Error (Table.States (614));
-            Table.States (614).Minimal_Complete_Action := (Reduce, 287, 4);
-            Table.States (615).Productions := WisiToken.To_Vector ((1 => (190, 0)));
+            Table.States (614).Kernel := To_Vector (((233, 233, 2, True), (287, 233, 0, False)));
+            Table.States (614).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 287, 4)));
             Add_Action (Table.States (615), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (190, 0), 5, exit_statement_0'Access, null);
-            Table.States (615).Minimal_Complete_Action := (Reduce, 190, 5);
-            Table.States (616).Productions := WisiToken.To_Vector (((258, 1), (314, 0), (314, 1)));
+            Table.States (615).Kernel := To_Vector ((0 => (190, 96, 0, False)));
+            Table.States (615).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 190, 5)));
             Add_Action (Table.States (616), 38, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (616), 55, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (616), 78, Reduce, (258, 1), 1, null, null);
@@ -7738,11 +7947,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (616), 239, 772);
             Add_Goto (Table.States (616), 272, 92);
             Add_Goto (Table.States (616), 293, 97);
-            Table.States (616).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (617).Productions := WisiToken.To_Vector ((1 => (230, 2)));
+            Table.States (616).Kernel := To_Vector (((258, 41, 0, False), (314, 41, 5, False), (314, 41, 1, False)));
+            Table.States (616).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (617), (37, 87), (230, 2), 4, iterator_specification_2'Access, null);
-            Table.States (617).Minimal_Complete_Action := (Reduce, 230, 4);
-            Table.States (618).Productions := WisiToken.To_Vector ((1 => (155, 0)));
+            Table.States (617).Kernel := To_Vector ((0 => (230, 167, 0, False)));
+            Table.States (617).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 230, 4)));
             Add_Action (Table.States (618), 3, 121);
             Add_Action (Table.States (618), 39, 122);
             Add_Action (Table.States (618), 40, 123);
@@ -7767,8 +7976,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (618), 320, 144);
             Add_Goto (Table.States (618), 321, 145);
             Add_Goto (Table.States (618), 330, 146);
-            Table.States (618).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (619).Productions := WisiToken.To_Vector (((115, 0), (115, 1), (224, 0), (239, 0)));
+            Table.States (618).Kernel := To_Vector ((0 => (155, 53, 3, False)));
+            Table.States (618).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (619), 3, 121);
             Add_Action (Table.States (619), 15, 258);
             Add_Action (Table.States (619), 28, 259);
@@ -7822,19 +8031,17 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (619), 320, 144);
             Add_Goto (Table.States (619), 321, 145);
             Add_Goto (Table.States (619), 330, 146);
-            Table.States (619).Minimal_Complete_Action := (Reduce, 125, 0);
-         end Subr_11;
-         procedure Subr_12
-         is begin
-            Table.States (620).Productions := WisiToken.To_Vector ((1 => (314, 2)));
+            Table.States (619).Kernel := To_Vector (((115, 76, 1, False), (115, 76, 3, False), (224, 76, 4, False),
+            (239, 76, 4, True)));
+            Table.States (619).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
+            Table.States (619).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (620), (10, 21, 37, 42, 74, 77, 82, 83, 87, 96), (314, 2), 2,
             subtype_indication_2'Access, null);
-            Table.States (620).Minimal_Complete_Action := (Reduce, 314, 2);
-            Table.States (621).Productions := WisiToken.To_Vector ((1 => (155, 1)));
+            Table.States (620).Kernel := To_Vector ((0 => (314, 155, 0, False)));
+            Table.States (620).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 314, 2)));
             Add_Action (Table.States (621), (10, 21, 37, 42, 74, 77, 82, 83, 87, 96), (155, 1), 1, null, null);
-            Table.States (621).Minimal_Complete_Action := (Reduce, 155, 1);
-            Table.States (622).Productions := WisiToken.To_Vector (((128, 0), (230, 3), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (621).Kernel := To_Vector ((0 => (155, 224, 0, False)));
+            Table.States (621).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 155, 1)));
             Add_Action (Table.States (622), 37, Reduce, (230, 3), 4, null, null);
             Add_Action (Table.States (622), 76, 235);
             Add_Action (Table.States (622), 84, 237);
@@ -7844,8 +8051,10 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (622));
             Add_Goto (Table.States (622), 115, 241);
             Add_Goto (Table.States (622), 322, 242);
-            Table.States (622).Minimal_Complete_Action := (Reduce, 230, 4);
-            Table.States (623).Productions := WisiToken.To_Vector (((314, 0), (314, 1)));
+            Table.States (622).Kernel := To_Vector (((128, 239, 2, True), (230, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (622).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 230, 4)));
             Add_Action (Table.States (623), 104, 119);
             Add_Action (Table.States (623), 105, 33);
             Add_Action (Table.States (623), 106, 34);
@@ -7854,8 +8063,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (623), 239, 772);
             Add_Goto (Table.States (623), 272, 92);
             Add_Goto (Table.States (623), 293, 97);
-            Table.States (623).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (624).Productions := WisiToken.To_Vector (((230, 0), (230, 1)));
+            Table.States (623).Kernel := To_Vector (((314, 41, 5, False), (314, 41, 1, False)));
+            Table.States (623).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (624), 59, 778);
             Add_Action (Table.States (624), 104, 119);
             Add_Action (Table.States (624), 105, 33);
@@ -7865,33 +8074,32 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (624), 239, 779);
             Add_Goto (Table.States (624), 272, 92);
             Add_Goto (Table.States (624), 293, 97);
-            Table.States (624).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (625).Productions := WisiToken.To_Vector ((1 => (121, 0)));
+            Table.States (624).Kernel := To_Vector (((230, 42, 2, False), (230, 42, 1, False)));
+            Table.States (624).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (625), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (121, 0), 5,
             aspect_clause_0'Access, null);
-            Table.States (625).Minimal_Complete_Action := (Reduce, 121, 5);
-            Table.States (626).Productions := WisiToken.To_Vector ((1 => (127, 0)));
+            Table.States (625).Kernel := To_Vector ((0 => (121, 96, 0, False)));
+            Table.States (625).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 121, 5)));
             Add_Action (Table.States (626), 96, 780);
             Add_Error (Table.States (626));
-            Table.States (626).Minimal_Complete_Action := (Shift, 96, 780);
-            Table.States (627).Productions := WisiToken.To_Vector ((1 => (235, 0)));
+            Table.States (626).Kernel := To_Vector ((0 => (127, 192, 1, False)));
+            Table.States (626).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 780)));
             Add_Action (Table.States (627), 38, 781);
             Add_Error (Table.States (627));
-            Table.States (627).Minimal_Complete_Action := (Shift, 38, 781);
-            Table.States (628).Productions := WisiToken.To_Vector ((1 => (281, 0)));
+            Table.States (627).Kernel := To_Vector ((0 => (235, 12, 2, False)));
+            Table.States (627).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 38, 781)));
             Add_Action (Table.States (628), 104, 782);
             Add_Error (Table.States (628));
             Add_Goto (Table.States (628), 144, 783);
             Add_Goto (Table.States (628), 145, 784);
-            Table.States (628).Minimal_Complete_Action := (Shift, 104, 782);
-            Table.States (629).Productions := WisiToken.To_Vector ((1 => (182, 0)));
+            Table.States (628).Kernel := To_Vector ((0 => (281, 235, 11, False)));
+            Table.States (628).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 782)));
             Add_Action (Table.States (629), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (182, 0), 5,
             enumeration_representation_clause_0'Access, null);
-            Table.States (629).Minimal_Complete_Action := (Reduce, 182, 5);
-            Table.States (630).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (240, 0), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (629).Kernel := To_Vector ((0 => (182, 96, 0, False)));
+            Table.States (629).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 182, 5)));
             Add_Action (Table.States (630), 21, Reduce, (240, 0), 1, null, name_opt_0_check'Access);
             Add_Action (Table.States (630), 35, Reduce, (240, 0), 1, null, name_opt_0_check'Access);
             Add_Action (Table.States (630), 56, Reduce, (240, 0), 1, null, name_opt_0_check'Access);
@@ -7906,11 +8114,13 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (630));
             Add_Goto (Table.States (630), 115, 241);
             Add_Goto (Table.States (630), 322, 242);
-            Table.States (630).Minimal_Complete_Action := (Reduce, 240, 1);
-            Table.States (631).Productions := WisiToken.To_Vector ((1 => (291, 0)));
+            Table.States (630).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (240, 239, 0, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (630).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 1)));
             Add_Action (Table.States (631), (21, 35, 56, 74, 77, 82, 96), (291, 0), 3, result_profile_0'Access, null);
-            Table.States (631).Minimal_Complete_Action := (Reduce, 291, 3);
-            Table.States (632).Productions := WisiToken.To_Vector (((254, 0), (254, 1), (254, 2), (254, 3)));
+            Table.States (631).Kernel := To_Vector ((0 => (291, 240, 0, False)));
+            Table.States (631).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 291, 3)));
             Add_Action (Table.States (632), 7, Reduce, (118, 1), 0, null, null);
             Add_Action (Table.States (632), 8, 401);
             Add_Action (Table.States (632), 33, Reduce, (118, 1), 0, null, null);
@@ -7924,21 +8134,22 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (632), 106, Reduce, (118, 1), 0, null, null);
             Add_Error (Table.States (632));
             Add_Goto (Table.States (632), 118, 785);
-            Table.States (632).Minimal_Complete_Action := (Reduce, 118, 0);
-            Table.States (633).Productions := WisiToken.To_Vector ((1 => (199, 0)));
+            Table.States (632).Kernel := To_Vector (((254, 81, 2, False), (254, 81, 1, False), (254, 81, 3, False),
+            (254, 81, 2, False)));
+            Table.States (632).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 118, 0)));
             Add_Action (Table.States (633), (21, 35, 56, 58, 72, 74, 77, 82, 96), (199, 0), 3, formal_part_0'Access,
             null);
-            Table.States (633).Minimal_Complete_Action := (Reduce, 199, 3);
-            Table.States (634).Productions := WisiToken.To_Vector ((1 => (255, 0)));
+            Table.States (633).Kernel := To_Vector ((0 => (199, 77, 0, False)));
+            Table.States (633).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 199, 3)));
             Add_Action (Table.States (634), 77, Reduce, (254, 4), 0, null, null);
             Add_Action (Table.States (634), 96, Reduce, (254, 4), 0, null, null);
             Add_Action (Table.States (634), 104, 164);
             Add_Error (Table.States (634));
             Add_Goto (Table.States (634), 219, 493);
             Add_Goto (Table.States (634), 254, 786);
-            Table.States (634).Minimal_Complete_Action := (Reduce, 254, 0);
-            Table.States (635).Productions := WisiToken.To_Vector (((128, 0), (215, 2), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (634).Kernel := To_Vector ((0 => (255, 96, 0, True)));
+            Table.States (634).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 254, 0)));
+            Table.States (634).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (635), 74, 337);
             Add_Action (Table.States (635), 76, 235);
             Add_Action (Table.States (635), 84, 237);
@@ -7949,9 +8160,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (635), 115, 241);
             Add_Goto (Table.States (635), 122, 787);
             Add_Goto (Table.States (635), 322, 242);
-            Table.States (635).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (636).Productions := WisiToken.To_Vector (((128, 0), (215, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (635).Kernel := To_Vector (((128, 239, 2, True), (215, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (635).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (636), 74, 337);
             Add_Action (Table.States (636), 76, 235);
             Add_Action (Table.States (636), 84, 237);
@@ -7962,9 +8174,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (636), 115, 241);
             Add_Goto (Table.States (636), 122, 788);
             Add_Goto (Table.States (636), 322, 242);
-            Table.States (636).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (637).Productions := WisiToken.To_Vector (((128, 0), (215, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (636).Kernel := To_Vector (((128, 239, 2, True), (215, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (636).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (637), 74, 337);
             Add_Action (Table.States (637), 76, 235);
             Add_Action (Table.States (637), 84, 237);
@@ -7975,8 +8188,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (637), 115, 241);
             Add_Goto (Table.States (637), 122, 789);
             Add_Goto (Table.States (637), 322, 242);
-            Table.States (637).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (638).Productions := WisiToken.To_Vector (((201, 0), (201, 1)));
+            Table.States (637).Kernel := To_Vector (((128, 239, 2, True), (215, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (637).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (638), 6, 790);
             Add_Action (Table.States (638), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (638), 11, 699);
@@ -8003,16 +8218,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (638), 203, 803);
             Add_Goto (Table.States (638), 228, 804);
             Add_Goto (Table.States (638), 241, 721);
-            Table.States (638).Minimal_Complete_Action := (Reduce, 111, 0);
-            Table.States (639).Productions := WisiToken.To_Vector ((1 => (201, 2)));
+            Table.States (638).Kernel := To_Vector (((201, 35, 2, False), (201, 35, 2, False)));
+            Table.States (638).Minimal_Complete_Actions := To_Vector (((Reduce, 111, 0), (Shift, 65, 796)));
             Add_Action (Table.States (639), 96, 805);
             Add_Error (Table.States (639));
-            Table.States (639).Minimal_Complete_Action := (Shift, 96, 805);
-            Table.States (640).Productions := WisiToken.To_Vector ((1 => (204, 0)));
+            Table.States (639).Kernel := To_Vector ((0 => (201, 122, 1, False)));
+            Table.States (639).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 805)));
             Add_Action (Table.States (640), 39, 806);
             Add_Error (Table.States (640));
-            Table.States (640).Minimal_Complete_Action := (Shift, 39, 806);
-            Table.States (641).Productions := WisiToken.To_Vector (((200, 0), (200, 2)));
+            Table.States (640).Kernel := To_Vector ((0 => (204, 35, 3, False)));
+            Table.States (640).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 806)));
             Add_Action (Table.States (641), 41, 642);
             Add_Action (Table.States (641), 74, 337);
             Add_Action (Table.States (641), 80, 643);
@@ -8027,15 +8242,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (641), 272, 92);
             Add_Goto (Table.States (641), 293, 97);
             Add_Goto (Table.States (641), 310, 808);
-            Table.States (641).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (642).Productions := WisiToken.To_Vector ((1 => (310, 2)));
+            Table.States (641).Kernel := To_Vector (((200, 6, 2, False), (200, 6, 1, False)));
+            Table.States (641).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (642), (74, 96), (310, 2), 1, null, null);
-            Table.States (642).Minimal_Complete_Action := (Reduce, 310, 1);
-            Table.States (643).Productions := WisiToken.To_Vector ((1 => (310, 1)));
+            Table.States (642).Kernel := To_Vector ((0 => (310, 41, 0, False)));
+            Table.States (642).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 310, 1)));
             Add_Action (Table.States (643), (74, 96), (310, 1), 1, null, null);
-            Table.States (643).Minimal_Complete_Action := (Reduce, 310, 1);
-            Table.States (644).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3), (310, 0)));
+            Table.States (643).Kernel := To_Vector ((0 => (310, 80, 0, False)));
+            Table.States (643).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 310, 1)));
             Add_Action (Table.States (644), 74, Reduce, (310, 0), 1, subprogram_default_0'Access, null);
             Add_Action (Table.States (644), 76, 235);
             Add_Action (Table.States (644), 84, 237);
@@ -8045,28 +8259,30 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (644));
             Add_Goto (Table.States (644), 115, 241);
             Add_Goto (Table.States (644), 322, 242);
-            Table.States (644).Minimal_Complete_Action := (Reduce, 310, 1);
-            Table.States (645).Productions := WisiToken.To_Vector ((1 => (200, 1)));
+            Table.States (644).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (310, 239, 0, False)));
+            Table.States (644).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 310, 1)));
             Add_Action (Table.States (645), 74, 337);
             Add_Action (Table.States (645), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (645));
             Add_Goto (Table.States (645), 122, 809);
-            Table.States (645).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (646).Productions := WisiToken.To_Vector ((1 => (200, 3)));
+            Table.States (645).Kernel := To_Vector ((0 => (200, 310, 1, False)));
+            Table.States (645).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (646), (29, 47, 48, 50, 69, 71, 74, 104), (200, 3), 4,
             formal_subprogram_declaration_3'Access, null);
-            Table.States (646).Minimal_Complete_Action := (Reduce, 200, 4);
-            Table.States (647).Productions := WisiToken.To_Vector ((1 => (236, 1)));
+            Table.States (646).Kernel := To_Vector ((0 => (200, 96, 0, False)));
+            Table.States (646).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 200, 4)));
             Add_Action (Table.States (647), (7, 40, 74, 82, 96, 104, 105, 106), (236, 1), 2, null, null);
-            Table.States (647).Minimal_Complete_Action := (Reduce, 236, 2);
-            Table.States (648).Productions := WisiToken.To_Vector (((198, 1), (198, 3)));
+            Table.States (647).Kernel := To_Vector ((0 => (236, 45, 0, False)));
+            Table.States (647).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 236, 2)));
             Add_Action (Table.States (648), 74, 337);
             Add_Action (Table.States (648), 82, 810);
             Add_Action (Table.States (648), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (648));
             Add_Goto (Table.States (648), 122, 811);
-            Table.States (648).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (649).Productions := WisiToken.To_Vector (((114, 0), (114, 1), (114, 2), (198, 0), (198, 2)));
+            Table.States (648).Kernel := To_Vector (((198, 114, 2, False), (198, 114, 1, False)));
+            Table.States (648).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (649), 7, 556);
             Add_Action (Table.States (649), 104, 119);
             Add_Action (Table.States (649), 105, 33);
@@ -8076,8 +8292,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (649), 239, 812);
             Add_Goto (Table.States (649), 272, 92);
             Add_Goto (Table.States (649), 293, 97);
-            Table.States (649).Minimal_Complete_Action := (Shift, 7, 556);
-            Table.States (650).Productions := WisiToken.To_Vector ((1 => (222, 1)));
+            Table.States (649).Kernel := To_Vector (((114, 241, 2, False), (114, 241, 3, True), (114, 241, 2, False),
+            (198, 241, 3, False), (198, 241, 2, False)));
+            Table.States (649).Minimal_Complete_Actions := To_Vector (((Shift, 7, 556), (Shift, 104, 119)));
             Add_Action (Table.States (650), 4, 1);
             Add_Action (Table.States (650), 5, 2);
             Add_Action (Table.States (650), 13, Reduce, (132, 1), 0, null, null);
@@ -8133,8 +8350,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (650), 303, 101);
             Add_Goto (Table.States (650), 306, 363);
             Add_Goto (Table.States (650), 323, 114);
-            Table.States (650).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (651).Productions := WisiToken.To_Vector ((1 => (174, 0)));
+            Table.States (650).Kernel := To_Vector ((0 => (222, 22, 3, False)));
+            Table.States (650).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (651), 3, 121);
             Add_Action (Table.States (651), 39, 122);
             Add_Action (Table.States (651), 40, 123);
@@ -8169,33 +8386,33 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (651), 320, 144);
             Add_Goto (Table.States (651), 321, 145);
             Add_Goto (Table.States (651), 330, 146);
-            Table.States (651).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (652).Productions := WisiToken.To_Vector ((1 => (222, 3)));
+            Table.States (651).Kernel := To_Vector ((0 => (174, 23, 1, False)));
+            Table.States (651).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (652), 32, 815);
             Add_Error (Table.States (652));
-            Table.States (652).Minimal_Complete_Action := (Shift, 32, 815);
-            Table.States (653).Productions := WisiToken.To_Vector ((1 => (175, 1)));
+            Table.States (652).Kernel := To_Vector ((0 => (222, 24, 2, False)));
+            Table.States (652).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 32, 815)));
             Add_Action (Table.States (653), (22, 23, 24), (175, 1), 1, null, null);
-            Table.States (653).Minimal_Complete_Action := (Reduce, 175, 1);
-            Table.States (654).Productions := WisiToken.To_Vector (((175, 0), (222, 0), (222, 2)));
+            Table.States (653).Kernel := To_Vector ((0 => (175, 174, 0, False)));
+            Table.States (653).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 175, 1)));
             Add_Action (Table.States (654), 22, 816);
             Add_Action (Table.States (654), 23, 651);
             Add_Action (Table.States (654), 24, 817);
             Add_Error (Table.States (654));
             Add_Goto (Table.States (654), 174, 818);
-            Table.States (654).Minimal_Complete_Action := (Shift, 24, 817);
-            Table.States (655).Productions := WisiToken.To_Vector ((1 => (332, 0)));
+            Table.States (654).Kernel := To_Vector (((175, 175, 2, True), (222, 175, 4, False), (222, 175, 3, False)));
+            Table.States (654).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 817)));
             Add_Action (Table.States (655), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (332, 0), 5,
             with_clause_0'Access, null);
-            Table.States (655).Minimal_Complete_Action := (Reduce, 332, 5);
-            Table.States (656).Productions := WisiToken.To_Vector ((1 => (248, 0)));
+            Table.States (655).Kernel := To_Vector ((0 => (332, 96, 0, False)));
+            Table.States (655).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 332, 5)));
             Add_Action (Table.States (656), 74, 337);
             Add_Action (Table.States (656), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (656));
             Add_Goto (Table.States (656), 122, 819);
-            Table.States (656).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (657).Productions := WisiToken.To_Vector (((247, 0), (247, 1)));
+            Table.States (656).Kernel := To_Vector ((0 => (248, 60, 1, False)));
+            Table.States (656).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (657), 13, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (657), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (657), 25, Reduce, (246, 2), 0, null, null);
@@ -8267,9 +8484,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (657), 319, 113);
             Add_Goto (Table.States (657), 325, 115);
             Add_Goto (Table.States (657), 331, 116);
-            Table.States (657).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (658).Productions := WisiToken.To_Vector (((128, 0), (213, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (657).Kernel := To_Vector (((247, 35, 3, False), (247, 35, 2, False)));
+            Table.States (657).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (658), 74, 337);
             Add_Action (Table.States (658), 76, 235);
             Add_Action (Table.States (658), 84, 237);
@@ -8280,31 +8496,33 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (658), 115, 241);
             Add_Goto (Table.States (658), 122, 821);
             Add_Goto (Table.States (658), 322, 242);
-            Table.States (658).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (659).Productions := WisiToken.To_Vector ((1 => (250, 0)));
+            Table.States (658).Kernel := To_Vector (((128, 239, 2, True), (213, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (658).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (659), 96, 822);
             Add_Error (Table.States (659));
-            Table.States (659).Minimal_Complete_Action := (Shift, 96, 822);
-            Table.States (660).Productions := WisiToken.To_Vector (((251, 0), (251, 1)));
+            Table.States (659).Kernel := To_Vector ((0 => (250, 122, 1, False)));
+            Table.States (659).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 822)));
             Add_Action (Table.States (660), 24, 823);
             Add_Action (Table.States (660), 49, 824);
             Add_Error (Table.States (660));
-            Table.States (660).Minimal_Complete_Action := (Shift, 24, 823);
-            Table.States (661).Productions := WisiToken.To_Vector ((1 => (257, 0)));
+            Table.States (660).Kernel := To_Vector (((251, 159, 2, False), (251, 159, 1, False)));
+            Table.States (660).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 823)));
             Add_Action (Table.States (661), 96, 825);
             Add_Error (Table.States (661));
-            Table.States (661).Minimal_Complete_Action := (Shift, 96, 825);
-            Table.States (662).Productions := WisiToken.To_Vector ((1 => (257, 1)));
+            Table.States (661).Kernel := To_Vector ((0 => (257, 77, 1, False)));
+            Table.States (661).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 825)));
             Add_Action (Table.States (662), 96, 826);
             Add_Error (Table.States (662));
-            Table.States (662).Minimal_Complete_Action := (Shift, 96, 826);
-            Table.States (663).Productions := WisiToken.To_Vector ((1 => (265, 0)));
+            Table.States (662).Kernel := To_Vector ((0 => (257, 77, 1, False)));
+            Table.States (662).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 826)));
             Add_Action (Table.States (663), 74, 337);
             Add_Action (Table.States (663), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (663));
             Add_Goto (Table.States (663), 122, 827);
-            Table.States (663).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (664).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (663).Kernel := To_Vector ((0 => (265, 60, 1, False)));
+            Table.States (663).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (664), 24, Reduce, (269, 1), 0, null, null);
             Add_Action (Table.States (664), 25, 828);
             Add_Action (Table.States (664), 28, 183);
@@ -8328,12 +8546,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (664), 281, 94);
             Add_Goto (Table.States (664), 307, 837);
             Add_Goto (Table.States (664), 309, 838);
-            Table.States (664).Minimal_Complete_Action := (Reduce, 269, 0);
-            Table.States (665).Productions := WisiToken.To_Vector (((271, 0), (271, 1)));
+            Table.States (664).Kernel := To_Vector ((0 => (264, 35, 2, False)));
+            Table.States (664).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 269, 0)));
+         end Subr_12;
+         procedure Subr_13
+         is begin
             Add_Action (Table.States (665), 35, 839);
             Add_Error (Table.States (665));
-            Table.States (665).Minimal_Complete_Action := (Shift, 35, 839);
-            Table.States (666).Productions := WisiToken.To_Vector ((1 => (304, 0)));
+            Table.States (665).Kernel := To_Vector (((271, 122, 6, False), (271, 122, 3, False)));
+            Table.States (665).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 839)));
             Add_Action (Table.States (666), 104, 119);
             Add_Action (Table.States (666), 105, 33);
             Add_Action (Table.States (666), 106, 34);
@@ -8343,27 +8564,27 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (666), 239, 841);
             Add_Goto (Table.States (666), 272, 92);
             Add_Goto (Table.States (666), 293, 97);
-            Table.States (666).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (667).Productions := WisiToken.To_Vector (((266, 0), (266, 1)));
+            Table.States (666).Kernel := To_Vector ((0 => (304, 39, 4, False)));
+            Table.States (666).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (667), 24, 842);
             Add_Action (Table.States (667), 49, 843);
             Add_Error (Table.States (667));
-            Table.States (667).Minimal_Complete_Action := (Shift, 24, 842);
-            Table.States (668).Productions := WisiToken.To_Vector ((1 => (304, 1)));
+            Table.States (667).Kernel := To_Vector (((266, 159, 2, False), (266, 159, 1, False)));
+            Table.States (667).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 842)));
             Add_Action (Table.States (668), 96, 844);
             Add_Error (Table.States (668));
-            Table.States (668).Minimal_Complete_Action := (Shift, 96, 844);
-            Table.States (669).Productions := WisiToken.To_Vector ((1 => (276, 0)));
+            Table.States (668).Kernel := To_Vector ((0 => (304, 266, 1, False)));
+            Table.States (668).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 844)));
             Add_Action (Table.States (669), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (276, 0), 5, raise_statement_0'Access, null);
-            Table.States (669).Minimal_Complete_Action := (Reduce, 276, 5);
-            Table.States (670).Productions := WisiToken.To_Vector ((1 => (290, 0)));
+            Table.States (669).Kernel := To_Vector ((0 => (276, 96, 0, False)));
+            Table.States (669).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 276, 5)));
             Add_Action (Table.States (670), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (290, 0), 5, requeue_statement_0'Access, null);
-            Table.States (670).Minimal_Complete_Action := (Reduce, 290, 5);
-            Table.States (671).Productions := WisiToken.To_Vector (((194, 0), (194, 1)));
+            Table.States (670).Kernel := To_Vector ((0 => (290, 96, 0, False)));
+            Table.States (670).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 290, 5)));
             Add_Action (Table.States (671), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (671), 40, 742);
             Add_Action (Table.States (671), 104, 119);
@@ -8378,41 +8599,41 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (671), 292, 846);
             Add_Goto (Table.States (671), 293, 97);
             Add_Goto (Table.States (671), 314, 847);
-            Table.States (671).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (672).Productions := WisiToken.To_Vector ((1 => (196, 0)));
+            Table.States (671).Kernel := To_Vector (((194, 154, 2, False), (194, 154, 1, False)));
+            Table.States (671).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (672), 58, 848);
             Add_Error (Table.States (672));
-            Table.States (672).Minimal_Complete_Action := (Shift, 58, 848);
-            Table.States (673).Productions := WisiToken.To_Vector (((247, 0), (247, 1)));
+            Table.States (672).Kernel := To_Vector ((0 => (196, 24, 2, False)));
+            Table.States (672).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 58, 848)));
             Add_Action (Table.States (673), 14, 849);
             Add_Error (Table.States (673));
-            Table.States (673).Minimal_Complete_Action := (Shift, 14, 849);
-            Table.States (674).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (673).Kernel := To_Vector (((247, 47, 6, False), (247, 47, 5, False)));
+            Table.States (673).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 14, 849)));
             Add_Action (Table.States (674), 14, 850);
             Add_Error (Table.States (674));
-            Table.States (674).Minimal_Complete_Action := (Shift, 14, 850);
-            Table.States (675).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (674).Kernel := To_Vector ((0 => (264, 51, 5, False)));
+            Table.States (674).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 14, 850)));
             Add_Action (Table.States (675), 14, 851);
             Add_Error (Table.States (675));
-            Table.States (675).Minimal_Complete_Action := (Shift, 14, 851);
-            Table.States (676).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (675).Kernel := To_Vector ((0 => (316, 66, 6, False)));
+            Table.States (675).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 14, 851)));
             Add_Action (Table.States (676), 29, 7);
             Add_Action (Table.States (676), 50, 18);
             Add_Error (Table.States (676));
             Add_Goto (Table.States (676), 207, 61);
             Add_Goto (Table.States (676), 262, 87);
             Add_Goto (Table.States (676), 312, 852);
-            Table.States (676).Minimal_Complete_Action := (Shift, 50, 18);
-            Table.States (677).Productions := WisiToken.To_Vector ((1 => (315, 0)));
+            Table.States (676).Kernel := To_Vector ((0 => (307, 246, 6, False)));
+            Table.States (676).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 50, 18)));
             Add_Action (Table.States (677), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (315, 0), 5,
             subunit_0'Access, null);
-            Table.States (677).Minimal_Complete_Action := (Reduce, 315, 5);
-            Table.States (678).Productions := WisiToken.To_Vector ((1 => (295, 1)));
+            Table.States (677).Kernel := To_Vector ((0 => (315, 263, 0, False)));
+            Table.States (677).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 315, 5)));
             Add_Action (Table.States (678), 96, 853);
             Add_Error (Table.States (678));
-            Table.States (678).Minimal_Complete_Action := (Shift, 96, 853);
-            Table.States (679).Productions := WisiToken.To_Vector ((1 => (295, 0)));
+            Table.States (678).Kernel := To_Vector ((0 => (295, 67, 1, False)));
+            Table.States (678).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 853)));
             Add_Action (Table.States (679), 4, 1);
             Add_Action (Table.States (679), 5, 2);
             Add_Action (Table.States (679), 13, Reduce, (132, 1), 0, null, null);
@@ -8470,45 +8691,45 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (679), 303, 101);
             Add_Goto (Table.States (679), 306, 363);
             Add_Goto (Table.States (679), 323, 114);
-            Table.States (679).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (680).Productions := WisiToken.To_Vector ((1 => (295, 2)));
+            Table.States (679).Kernel := To_Vector ((0 => (295, 113, 0, False)));
+            Table.States (679).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (680), (22, 24, 43), (295, 2), 4, select_alternative_2'Access, null);
-            Table.States (680).Minimal_Complete_Action := (Reduce, 295, 4);
-            Table.States (681).Productions := WisiToken.To_Vector ((1 => (152, 0)));
+            Table.States (680).Kernel := To_Vector ((0 => (295, 160, 0, False)));
+            Table.States (680).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 295, 4)));
             Add_Action (Table.States (681), 61, 855);
             Add_Error (Table.States (681));
-            Table.States (681).Minimal_Complete_Action := (Shift, 61, 855);
-            Table.States (682).Productions := WisiToken.To_Vector ((1 => (323, 0)));
+            Table.States (681).Kernel := To_Vector ((0 => (152, 24, 2, False)));
+            Table.States (681).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 61, 855)));
             Add_Action (Table.States (682), 61, 856);
             Add_Error (Table.States (682));
-            Table.States (682).Minimal_Complete_Action := (Shift, 61, 856);
-            Table.States (683).Productions := WisiToken.To_Vector ((1 => (160, 0)));
+            Table.States (682).Kernel := To_Vector ((0 => (323, 24, 2, False)));
+            Table.States (682).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 61, 856)));
             Add_Action (Table.States (683), (22, 24, 43), (160, 0), 2, null, null);
-            Table.States (683).Minimal_Complete_Action := (Reduce, 160, 2);
-            Table.States (684).Productions := WisiToken.To_Vector ((1 => (294, 0)));
+            Table.States (683).Kernel := To_Vector ((0 => (160, 300, 0, False)));
+            Table.States (683).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 160, 2)));
             Add_Action (Table.States (684), 61, 857);
             Add_Error (Table.States (684));
-            Table.States (684).Minimal_Complete_Action := (Shift, 61, 857);
-            Table.States (685).Productions := WisiToken.To_Vector ((1 => (294, 1)));
+            Table.States (684).Kernel := To_Vector ((0 => (294, 24, 2, False)));
+            Table.States (684).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 61, 857)));
             Add_Action (Table.States (685), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (294, 1), 5, selective_accept_1'Access, null);
-            Table.States (685).Minimal_Complete_Action := (Reduce, 294, 5);
-            Table.States (686).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (685).Kernel := To_Vector ((0 => (294, 96, 0, False)));
+            Table.States (685).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 294, 5)));
             Add_Action (Table.States (686), 24, 858);
             Add_Error (Table.States (686));
-            Table.States (686).Minimal_Complete_Action := (Shift, 24, 858);
-            Table.States (687).Productions := WisiToken.To_Vector ((1 => (313, 0)));
+            Table.States (686).Kernel := To_Vector ((0 => (126, 300, 3, False)));
+            Table.States (686).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 858)));
             Add_Action (Table.States (687), 96, 859);
             Add_Error (Table.States (687));
-            Table.States (687).Minimal_Complete_Action := (Shift, 96, 859);
-            Table.States (688).Productions := WisiToken.To_Vector ((1 => (317, 0)));
+            Table.States (687).Kernel := To_Vector ((0 => (313, 122, 1, False)));
+            Table.States (687).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 859)));
             Add_Action (Table.States (688), 74, 337);
             Add_Action (Table.States (688), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (688));
             Add_Goto (Table.States (688), 122, 860);
-            Table.States (688).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (689).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (688).Kernel := To_Vector ((0 => (317, 60, 1, False)));
+            Table.States (688).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (689), 13, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (689), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (689), 28, 183);
@@ -8579,16 +8800,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (689), 319, 113);
             Add_Goto (Table.States (689), 325, 115);
             Add_Goto (Table.States (689), 331, 116);
-            Table.States (689).Minimal_Complete_Action := (Reduce, 159, 0);
-         end Subr_12;
-         procedure Subr_13
-         is begin
-            Table.States (690).Productions := WisiToken.To_Vector (((319, 0), (319, 1), (319, 2)));
+            Table.States (689).Kernel := To_Vector ((0 => (316, 35, 3, False)));
+            Table.States (689).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (690), 35, 862);
             Add_Action (Table.States (690), 96, 863);
             Add_Error (Table.States (690));
-            Table.States (690).Minimal_Complete_Action := (Shift, 96, 863);
-            Table.States (691).Productions := WisiToken.To_Vector ((1 => (305, 0)));
+            Table.States (690).Kernel := To_Vector (((319, 122, 6, False), (319, 122, 3, False), (319, 122, 1,
+            False)));
+            Table.States (690).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 863)));
             Add_Action (Table.States (691), 104, 119);
             Add_Action (Table.States (691), 105, 33);
             Add_Action (Table.States (691), 106, 34);
@@ -8598,31 +8817,32 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (691), 239, 841);
             Add_Goto (Table.States (691), 272, 92);
             Add_Goto (Table.States (691), 293, 97);
-            Table.States (691).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (692).Productions := WisiToken.To_Vector (((318, 0), (318, 1)));
+            Table.States (691).Kernel := To_Vector ((0 => (305, 39, 4, False)));
+            Table.States (691).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (692), 24, Reduce, (318, 1), 1, task_definition_1'Access, null);
             Add_Action (Table.States (692), 49, 865);
             Add_Error (Table.States (692));
-            Table.States (692).Minimal_Complete_Action := (Reduce, 318, 1);
-            Table.States (693).Productions := WisiToken.To_Vector ((1 => (305, 1)));
+            Table.States (692).Kernel := To_Vector (((318, 159, 1, False), (318, 159, 0, False)));
+            Table.States (692).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 318, 1)));
             Add_Action (Table.States (693), 24, 866);
             Add_Error (Table.States (693));
-            Table.States (693).Minimal_Complete_Action := (Shift, 24, 866);
-            Table.States (694).Productions := WisiToken.To_Vector ((1 => (169, 0)));
+            Table.States (693).Kernel := To_Vector ((0 => (305, 318, 2, False)));
+            Table.States (693).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 866)));
             Add_Action (Table.States (694), (35, 74, 96), (169, 0), 3, null, null);
-            Table.States (694).Minimal_Complete_Action := (Reduce, 169, 3);
-            Table.States (695).Productions := WisiToken.To_Vector ((1 => (169, 1)));
+            Table.States (694).Kernel := To_Vector ((0 => (169, 77, 0, False)));
+            Table.States (694).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 169, 3)));
             Add_Action (Table.States (695), (35, 74, 96), (169, 1), 3, discriminant_part_opt_1'Access, null);
-            Table.States (695).Minimal_Complete_Action := (Reduce, 169, 3);
-            Table.States (696).Productions := WisiToken.To_Vector ((1 => (171, 0)));
+            Table.States (695).Kernel := To_Vector ((0 => (169, 77, 0, False)));
+            Table.States (695).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 169, 3)));
             Add_Action (Table.States (696), 77, Reduce, (170, 4), 0, null, null);
             Add_Action (Table.States (696), 96, Reduce, (170, 4), 0, null, null);
             Add_Action (Table.States (696), 104, 164);
             Add_Error (Table.States (696));
             Add_Goto (Table.States (696), 170, 867);
             Add_Goto (Table.States (696), 219, 547);
-            Table.States (696).Minimal_Complete_Action := (Reduce, 170, 0);
-            Table.States (697).Productions := WisiToken.To_Vector (((170, 0), (170, 1), (170, 2), (170, 3)));
+            Table.States (696).Kernel := To_Vector ((0 => (171, 96, 0, True)));
+            Table.States (696).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 170, 0)));
+            Table.States (696).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (697), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (697), 40, 868);
             Add_Action (Table.States (697), 104, 869);
@@ -8636,20 +8856,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (697), 242, 872);
             Add_Goto (Table.States (697), 272, 92);
             Add_Goto (Table.States (697), 293, 873);
-            Table.States (697).Minimal_Complete_Action := (Shift, 104, 869);
-            Table.States (698).Productions := WisiToken.To_Vector (((109, 0), (109, 1), (109, 2), (110, 0), (110, 2),
-            (111, 0), (111, 1)));
+            Table.States (697).Kernel := To_Vector (((170, 81, 2, False), (170, 81, 3, False), (170, 81, 1, False),
+            (170, 81, 2, False)));
+            Table.States (697).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 869)));
             Add_Action (Table.States (698), 36, 874);
-            Add_Action (Table.States (698), 39, Reduce, (109, 2), 1, null, null, (110, 2), 1, null, null);
+            Add_Action (Table.States (698), 39, Reduce, (109, 2), 1, null, null);
+            Add_Conflict (Table.States (698), 39, (110, 2), 1, null, null);
             Add_Action (Table.States (698), 64, 875);
             Add_Action (Table.States (698), 65, 876);
             Add_Error (Table.States (698));
-            Table.States (698).Minimal_Complete_Action := (Reduce, 109, 1);
-            Table.States (699).Productions := WisiToken.To_Vector (((120, 0), (120, 1)));
+            Table.States (698).Kernel := To_Vector (((109, 6, 1, False), (109, 6, 1, False), (109, 6, 0, False), (110,
+            6, 1, False), (110, 6, 0, False), (111, 6, 2, False), (111, 6, 1, False)));
+            Table.States (698).Minimal_Complete_Actions := To_Vector (((Reduce, 109, 1), (Reduce, 110, 1)));
             Add_Action (Table.States (699), 76, 877);
             Add_Error (Table.States (699));
-            Table.States (699).Minimal_Complete_Action := (Shift, 76, 877);
-            Table.States (700).Productions := WisiToken.To_Vector (((326, 4), (326, 5)));
+            Table.States (699).Kernel := To_Vector (((120, 11, 7, False), (120, 11, 7, False)));
+            Table.States (699).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 76, 877)));
             Add_Action (Table.States (700), 3, 121);
             Add_Action (Table.States (700), 20, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (700), 39, 122);
@@ -8687,8 +8909,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (700), 320, 144);
             Add_Goto (Table.States (700), 321, 145);
             Add_Goto (Table.States (700), 330, 146);
-            Table.States (700).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (701).Productions := WisiToken.To_Vector ((1 => (326, 3)));
+            Table.States (700).Kernel := To_Vector (((326, 19, 1, False), (326, 19, 0, False)));
+            Table.States (700).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (701), 3, 121);
             Add_Action (Table.States (701), 39, 122);
             Add_Action (Table.States (701), 40, 123);
@@ -8725,19 +8947,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (701), 320, 144);
             Add_Goto (Table.States (701), 321, 145);
             Add_Goto (Table.States (701), 330, 146);
-            Table.States (701).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (702).Productions := WisiToken.To_Vector ((1 => (228, 8)));
+            Table.States (701).Kernel := To_Vector ((0 => (326, 20, 0, False)));
+            Table.States (701).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (702), (74, 96), (228, 8), 1, null, null);
-            Table.States (702).Minimal_Complete_Action := (Reduce, 228, 1);
-            Table.States (703).Productions := WisiToken.To_Vector (((109, 3), (110, 1), (111, 4), (228, 0), (228, 4)));
+            Table.States (702).Kernel := To_Vector ((0 => (228, 34, 0, False)));
+            Table.States (702).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 1)));
             Add_Action (Table.States (703), 34, 880);
-            Add_Action (Table.States (703), 39, Reduce, (109, 3), 1, null, null, (110, 1), 1, null, null);
+            Add_Action (Table.States (703), 39, Reduce, (109, 3), 1, null, null);
+            Add_Conflict (Table.States (703), 39, (110, 1), 1, null, null);
             Add_Action (Table.States (703), 41, Reduce, (111, 4), 1, null, null);
             Add_Action (Table.States (703), 49, Reduce, (111, 4), 1, null, null);
             Add_Action (Table.States (703), 54, Reduce, (111, 4), 1, null, null);
             Add_Error (Table.States (703));
-            Table.States (703).Minimal_Complete_Action := (Reduce, 109, 1);
-            Table.States (704).Productions := WisiToken.To_Vector ((1 => (326, 2)));
+            Table.States (703).Kernel := To_Vector (((109, 36, 0, False), (110, 36, 0, False), (111, 36, 0, False),
+            (228, 36, 3, False), (228, 36, 1, False)));
+            Table.States (703).Minimal_Complete_Actions := To_Vector (((Reduce, 109, 1), (Reduce, 110, 1), (Reduce,
+            111, 1)));
             Add_Action (Table.States (704), 3, 121);
             Add_Action (Table.States (704), 39, 122);
             Add_Action (Table.States (704), 40, 123);
@@ -8773,16 +8998,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (704), 320, 144);
             Add_Goto (Table.States (704), 321, 145);
             Add_Goto (Table.States (704), 330, 146);
-            Table.States (704).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (705).Productions := WisiToken.To_Vector ((1 => (280, 1)));
+            Table.States (704).Kernel := To_Vector ((0 => (326, 38, 0, False)));
+            Table.States (704).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (705), 54, 882);
             Add_Error (Table.States (705));
-            Table.States (705).Minimal_Complete_Action := (Shift, 54, 882);
-            Table.States (706).Productions := WisiToken.To_Vector (((228, 2), (228, 6)));
+            Table.States (705).Kernel := To_Vector ((0 => (280, 41, 1, False)));
+            Table.States (705).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 54, 882)));
             Add_Action (Table.States (706), 34, 883);
             Add_Error (Table.States (706));
-            Table.States (706).Minimal_Complete_Action := (Shift, 34, 883);
-            Table.States (707).Productions := WisiToken.To_Vector ((1 => (326, 1)));
+            Table.States (706).Kernel := To_Vector (((228, 51, 3, False), (228, 51, 1, False)));
+            Table.States (706).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 34, 883)));
             Add_Action (Table.States (707), 3, 121);
             Add_Action (Table.States (707), 39, 122);
             Add_Action (Table.States (707), 40, 123);
@@ -8806,8 +9031,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (707), 320, 144);
             Add_Goto (Table.States (707), 321, 145);
             Add_Goto (Table.States (707), 330, 146);
-            Table.States (707).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (708).Productions := WisiToken.To_Vector ((1 => (280, 0)));
+            Table.States (707).Kernel := To_Vector ((0 => (326, 53, 3, False)));
+            Table.States (707).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (708), 15, 885);
             Add_Action (Table.States (708), 24, Reduce, (150, 1), 0, null, null);
             Add_Action (Table.States (708), 28, 183);
@@ -8824,78 +9049,77 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (708), 219, 892);
             Add_Goto (Table.States (708), 281, 94);
             Add_Goto (Table.States (708), 327, 893);
-            Table.States (708).Minimal_Complete_Action := (Reduce, 150, 0);
-            Table.States (709).Productions := WisiToken.To_Vector (((109, 4), (228, 3), (228, 7)));
+            Table.States (708).Kernel := To_Vector ((0 => (280, 54, 2, False)));
+            Table.States (708).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 150, 0)));
             Add_Action (Table.States (709), 34, 894);
             Add_Action (Table.States (709), 39, Reduce, (109, 4), 1, null, null);
             Add_Error (Table.States (709));
-            Table.States (709).Minimal_Complete_Action := (Reduce, 109, 1);
-            Table.States (710).Productions := WisiToken.To_Vector (((111, 2), (111, 3), (223, 0)));
+            Table.States (709).Kernel := To_Vector (((109, 64, 0, False), (228, 64, 3, False), (228, 64, 1, False)));
+            Table.States (709).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 109, 1)));
             Add_Action (Table.States (710), 36, 895);
             Add_Action (Table.States (710), 41, Reduce, (111, 3), 1, null, null);
             Add_Action (Table.States (710), 49, Reduce, (111, 3), 1, null, null);
             Add_Action (Table.States (710), 54, Reduce, (111, 3), 1, null, null);
             Add_Action (Table.States (710), 96, 896);
             Add_Error (Table.States (710));
-            Table.States (710).Minimal_Complete_Action := (Reduce, 111, 1);
-            Table.States (711).Productions := WisiToken.To_Vector (((228, 1), (228, 5)));
+            Table.States (710).Kernel := To_Vector (((111, 65, 1, False), (111, 65, 0, False), (223, 65, 1, False)));
+            Table.States (710).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 111, 1)));
             Add_Action (Table.States (711), 34, 897);
             Add_Error (Table.States (711));
-            Table.States (711).Minimal_Complete_Action := (Shift, 34, 897);
-            Table.States (712).Productions := WisiToken.To_Vector ((1 => (183, 0)));
+            Table.States (711).Kernel := To_Vector (((228, 66, 3, False), (228, 66, 1, False)));
+            Table.States (711).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 34, 897)));
             Add_Action (Table.States (712), 104, 898);
             Add_Action (Table.States (712), 106, 899);
             Add_Error (Table.States (712));
             Add_Goto (Table.States (712), 180, 900);
             Add_Goto (Table.States (712), 181, 901);
-            Table.States (712).Minimal_Complete_Action := (Shift, 104, 898);
-            Table.States (713).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (712).Kernel := To_Vector ((0 => (183, 76, 2, False)));
+            Table.States (712).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 898)));
             Add_Action (Table.States (713), 39, 902);
             Add_Error (Table.States (713));
-            Table.States (713).Minimal_Complete_Action := (Shift, 39, 902);
-            Table.States (714).Productions := WisiToken.To_Vector (((162, 0), (162, 1)));
+            Table.States (713).Kernel := To_Vector ((0 => (259, 109, 5, False)));
+            Table.States (713).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 902)));
             Add_Action (Table.States (714), 39, 903);
             Add_Error (Table.States (714));
-            Table.States (714).Minimal_Complete_Action := (Shift, 39, 903);
-            Table.States (715).Productions := WisiToken.To_Vector (((260, 0), (326, 7)));
+            Table.States (714).Kernel := To_Vector (((162, 110, 5, False), (162, 110, 2, False)));
+            Table.States (714).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 903)));
             Add_Action (Table.States (715), 41, 705);
             Add_Action (Table.States (715), 49, 904);
             Add_Action (Table.States (715), 54, 708);
             Add_Error (Table.States (715));
             Add_Goto (Table.States (715), 280, 905);
-            Table.States (715).Minimal_Complete_Action := (Shift, 41, 705);
-            Table.States (716).Productions := WisiToken.To_Vector ((1 => (326, 8)));
+            Table.States (715).Kernel := To_Vector (((260, 111, 2, False), (326, 111, 2, False)));
+            Table.States (715).Minimal_Complete_Actions := To_Vector (((Shift, 49, 904), (Shift, 41, 705)));
             Add_Action (Table.States (716), (74, 96), (326, 8), 1, null, null);
-            Table.States (716).Minimal_Complete_Action := (Reduce, 326, 1);
-            Table.States (717).Productions := WisiToken.To_Vector ((1 => (326, 6)));
+            Table.States (716).Kernel := To_Vector ((0 => (326, 114, 0, False)));
+            Table.States (716).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 1)));
             Add_Action (Table.States (717), (74, 96), (326, 6), 1, null, null);
-            Table.States (717).Minimal_Complete_Action := (Reduce, 326, 1);
-            Table.States (718).Productions := WisiToken.To_Vector ((1 => (326, 9)));
+            Table.States (717).Kernel := To_Vector ((0 => (326, 120, 0, False)));
+            Table.States (717).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 1)));
             Add_Action (Table.States (718), (74, 96), (326, 9), 1, null, null);
-            Table.States (718).Minimal_Complete_Action := (Reduce, 326, 1);
-            Table.States (719).Productions := WisiToken.To_Vector ((1 => (326, 0)));
+            Table.States (718).Kernel := To_Vector ((0 => (326, 162, 0, False)));
+            Table.States (718).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 1)));
             Add_Action (Table.States (719), (74, 96), (326, 0), 1, null, null);
-            Table.States (719).Minimal_Complete_Action := (Reduce, 326, 1);
-            Table.States (720).Productions := WisiToken.To_Vector ((1 => (326, 10)));
+            Table.States (719).Kernel := To_Vector ((0 => (326, 183, 0, False)));
+            Table.States (719).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 1)));
             Add_Action (Table.States (720), (74, 96), (326, 10), 1, null, null);
-            Table.States (720).Minimal_Complete_Action := (Reduce, 326, 1);
-            Table.States (721).Productions := WisiToken.To_Vector (((114, 0), (114, 1), (114, 2)));
+            Table.States (720).Kernel := To_Vector ((0 => (326, 228, 0, False)));
+            Table.States (720).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 1)));
             Add_Action (Table.States (721), 7, 556);
             Add_Error (Table.States (721));
-            Table.States (721).Minimal_Complete_Action := (Shift, 7, 556);
-            Table.States (722).Productions := WisiToken.To_Vector ((1 => (206, 0)));
+            Table.States (721).Kernel := To_Vector (((114, 241, 2, False), (114, 241, 3, True), (114, 241, 2, False)));
+            Table.States (721).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 7, 556)));
             Add_Action (Table.States (722), 74, 337);
             Add_Action (Table.States (722), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (722));
             Add_Goto (Table.States (722), 122, 906);
-            Table.States (722).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (723).Productions := WisiToken.To_Vector ((1 => (331, 0)));
+            Table.States (722).Kernel := To_Vector ((0 => (206, 326, 1, False)));
+            Table.States (722).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (723), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (331, 0), 5,
             use_clause_0'Access, null);
-            Table.States (723).Minimal_Complete_Action := (Reduce, 331, 5);
-            Table.States (724).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (245, 2), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (723).Kernel := To_Vector ((0 => (331, 96, 0, False)));
+            Table.States (723).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 331, 5)));
             Add_Action (Table.States (724), 74, 337);
             Add_Action (Table.States (724), 76, 235);
             Add_Action (Table.States (724), 84, 237);
@@ -8906,9 +9130,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (724), 115, 241);
             Add_Goto (Table.States (724), 122, 907);
             Add_Goto (Table.States (724), 322, 242);
-            Table.States (724).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (725).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (245, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (724).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (245, 239, 1, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (724).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (725), 74, 337);
             Add_Action (Table.States (725), 76, 235);
             Add_Action (Table.States (725), 84, 237);
@@ -8919,17 +9144,19 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (725), 115, 241);
             Add_Goto (Table.States (725), 122, 908);
             Add_Goto (Table.States (725), 322, 242);
-            Table.States (725).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (726).Productions := WisiToken.To_Vector ((1 => (208, 0)));
+            Table.States (725).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (245, 239, 1, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (725).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (726), (104, 105, 106), (208, 0), 1, null, null);
-            Table.States (726).Minimal_Complete_Action := (Reduce, 208, 1);
-            Table.States (727).Productions := WisiToken.To_Vector ((1 => (208, 1)));
+            Table.States (726).Kernel := To_Vector ((0 => (208, 9, 0, False)));
+            Table.States (726).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 208, 1)));
             Add_Action (Table.States (727), (104, 105, 106), (208, 1), 1, null, null);
-            Table.States (727).Minimal_Complete_Action := (Reduce, 208, 1);
-            Table.States (728).Productions := WisiToken.To_Vector ((1 => (270, 0)));
+            Table.States (727).Kernel := To_Vector ((0 => (208, 16, 0, False)));
+            Table.States (727).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 208, 1)));
             Add_Action (Table.States (728), (29, 50), (270, 0), 1, null, null);
-            Table.States (728).Minimal_Complete_Action := (Reduce, 270, 1);
-            Table.States (729).Productions := WisiToken.To_Vector ((1 => (114, 2)));
+            Table.States (728).Kernel := To_Vector ((0 => (270, 51, 0, False)));
+            Table.States (728).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 270, 1)));
             Add_Action (Table.States (729), 104, 119);
             Add_Action (Table.States (729), 105, 33);
             Add_Action (Table.States (729), 106, 34);
@@ -8938,13 +9165,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (729), 239, 909);
             Add_Goto (Table.States (729), 272, 92);
             Add_Goto (Table.States (729), 293, 97);
-            Table.States (729).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (730).Productions := WisiToken.To_Vector (((114, 0), (114, 1)));
+            Table.States (729).Kernel := To_Vector ((0 => (114, 208, 1, False)));
+            Table.States (729).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (730), 29, 910);
             Add_Action (Table.States (730), 50, 911);
             Add_Error (Table.States (730));
-            Table.States (730).Minimal_Complete_Action := (Shift, 50, 911);
-            Table.States (731).Productions := WisiToken.To_Vector ((1 => (245, 0)));
+            Table.States (730).Kernel := To_Vector (((114, 270, 1, False), (114, 270, 2, True)));
+            Table.States (730).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 50, 911)));
+            Table.States (730).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (731), 104, 119);
             Add_Action (Table.States (731), 105, 33);
             Add_Action (Table.States (731), 106, 34);
@@ -8953,12 +9181,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (731), 239, 912);
             Add_Goto (Table.States (731), 272, 92);
             Add_Goto (Table.States (731), 293, 97);
-            Table.States (731).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (732).Productions := WisiToken.To_Vector ((1 => (133, 1)));
+            Table.States (731).Kernel := To_Vector ((0 => (245, 56, 2, False)));
+            Table.States (731).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (732), 96, 913);
             Add_Error (Table.States (732));
-            Table.States (732).Minimal_Complete_Action := (Shift, 96, 913);
-            Table.States (733).Productions := WisiToken.To_Vector (((187, 0), (187, 1)));
+            Table.States (732).Kernel := To_Vector ((0 => (133, 220, 1, False)));
+            Table.States (732).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 913)));
             Add_Action (Table.States (733), 44, 914);
             Add_Action (Table.States (733), 104, 915);
             Add_Action (Table.States (733), 105, 33);
@@ -8970,77 +9198,81 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (733), 239, 918);
             Add_Goto (Table.States (733), 272, 92);
             Add_Goto (Table.States (733), 293, 97);
-            Table.States (733).Minimal_Complete_Action := (Shift, 104, 915);
-            Table.States (734).Productions := WisiToken.To_Vector ((1 => (188, 1)));
+            Table.States (733).Kernel := To_Vector (((187, 72, 4, False), (187, 72, 2, False)));
+            Table.States (733).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 915)));
             Add_Action (Table.States (734), (24, 72), (188, 1), 1, null, null);
-            Table.States (734).Minimal_Complete_Action := (Reduce, 188, 1);
-            Table.States (735).Productions := WisiToken.To_Vector (((188, 0), (189, 0)));
+            Table.States (734).Kernel := To_Vector ((0 => (188, 187, 0, False)));
+            Table.States (734).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 188, 1)));
             Add_Action (Table.States (735), 24, Reduce, (189, 0), 1, null, null);
             Add_Action (Table.States (735), 72, 733);
             Add_Error (Table.States (735));
             Add_Goto (Table.States (735), 187, 919);
-            Table.States (735).Minimal_Complete_Action := (Reduce, 189, 1);
-            Table.States (736).Productions := WisiToken.To_Vector ((1 => (218, 0)));
+            Table.States (735).Kernel := To_Vector (((188, 188, 3, True), (189, 188, 0, False)));
+            Table.States (735).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 189, 1)));
             Add_Action (Table.States (736), (1 =>  24), (218, 0), 3, handled_sequence_of_statements_0'Access, null);
-            Table.States (736).Minimal_Complete_Action := (Reduce, 218, 3);
-            Table.States (737).Productions := WisiToken.To_Vector ((1 => (188, 2)));
+            Table.States (736).Kernel := To_Vector ((0 => (218, 189, 0, False)));
+            Table.States (736).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 3)));
             Add_Action (Table.States (737), (24, 72), (188, 2), 1, null, null);
-            Table.States (737).Minimal_Complete_Action := (Reduce, 188, 1);
-            Table.States (738).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (737).Kernel := To_Vector ((0 => (188, 257, 0, False)));
+            Table.States (737).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 188, 1)));
             Add_Action (Table.States (738), 24, 920);
             Add_Error (Table.States (738));
-            Table.States (738).Minimal_Complete_Action := (Shift, 24, 920);
-            Table.States (739).Productions := WisiToken.To_Vector ((1 => (232, 1)));
+            Table.States (738).Kernel := To_Vector ((0 => (133, 218, 2, False)));
+            Table.States (738).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 920)));
             Add_Action (Table.States (739), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (739), 104, 149);
             Add_Error (Table.States (739));
             Add_Goto (Table.States (739), 220, 921);
-            Table.States (739).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (740).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (739).Kernel := To_Vector ((0 => (232, 37, 1, False)));
+            Table.States (739).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (740), 37, 922);
             Add_Error (Table.States (740));
-            Table.States (740).Minimal_Complete_Action := (Shift, 37, 922);
-            Table.States (741).Productions := WisiToken.To_Vector ((1 => (157, 9)));
+            Table.States (740).Kernel := To_Vector ((0 => (232, 24, 2, False)));
+            Table.States (740).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 37, 922)));
             Add_Action (Table.States (741), 96, 923);
             Add_Error (Table.States (741));
-            Table.States (741).Minimal_Complete_Action := (Shift, 96, 923);
-            Table.States (742).Productions := WisiToken.To_Vector (((241, 0), (314, 0), (314, 1)));
+            Table.States (741).Kernel := To_Vector ((0 => (157, 192, 1, False)));
+            Table.States (741).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 923)));
             Add_Action (Table.States (742), 41, 924);
             Add_Error (Table.States (742));
-            Table.States (742).Minimal_Complete_Action := (Shift, 41, 924);
-            Table.States (743).Productions := WisiToken.To_Vector (((244, 1), (244, 4)));
+            Table.States (742).Kernel := To_Vector (((241, 40, 1, False), (314, 40, 6, False), (314, 40, 2, False)));
+            Table.States (742).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 924)));
             Add_Action (Table.States (743), 74, 337);
             Add_Action (Table.States (743), 82, 925);
             Add_Action (Table.States (743), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (743));
             Add_Goto (Table.States (743), 122, 926);
-            Table.States (743).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (744).Productions := WisiToken.To_Vector (((244, 2), (244, 5)));
+            Table.States (743).Kernel := To_Vector (((244, 114, 2, False), (244, 114, 1, False)));
+            Table.States (743).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (744), 74, 337);
             Add_Action (Table.States (744), 82, 927);
             Add_Action (Table.States (744), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (744));
             Add_Goto (Table.States (744), 122, 928);
-            Table.States (744).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (745).Productions := WisiToken.To_Vector (((244, 0), (244, 3)));
+            Table.States (744).Kernel := To_Vector (((244, 120, 2, False), (244, 120, 1, False)));
+            Table.States (744).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (745), 74, 337);
             Add_Action (Table.States (745), 82, 929);
             Add_Action (Table.States (745), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (745));
             Add_Goto (Table.States (745), 122, 930);
-            Table.States (745).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (746).Productions := WisiToken.To_Vector ((1 => (278, 0)));
+            Table.States (745).Kernel := To_Vector (((244, 314, 2, False), (244, 314, 1, False)));
+            Table.States (745).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
+         end Subr_13;
+         procedure Subr_14
+         is begin
             Add_Action (Table.States (746), (77, 83), (278, 0), 3, null, null);
-            Table.States (746).Minimal_Complete_Action := (Reduce, 278, 3);
-            Table.States (747).Productions := WisiToken.To_Vector ((1 => (179, 0)));
+            Table.States (746).Kernel := To_Vector ((0 => (278, 277, 0, True)));
+            Table.States (746).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 278, 3)));
+            Table.States (746).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (747), 77, 931);
             Add_Error (Table.States (747));
-            Table.States (747).Minimal_Complete_Action := (Shift, 77, 931);
-            Table.States (748).Productions := WisiToken.To_Vector ((1 => (179, 1)));
+            Table.States (747).Kernel := To_Vector ((0 => (179, 167, 2, False)));
+            Table.States (747).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 931)));
             Add_Action (Table.States (748), 96, 932);
             Add_Error (Table.States (748));
-            Table.States (748).Minimal_Complete_Action := (Shift, 96, 932);
-            Table.States (749).Productions := WisiToken.To_Vector ((1 => (213, 2)));
+            Table.States (748).Kernel := To_Vector ((0 => (179, 122, 1, False)));
+            Table.States (748).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 932)));
             Add_Action (Table.States (749), 104, 119);
             Add_Action (Table.States (749), 105, 33);
             Add_Action (Table.States (749), 106, 34);
@@ -9049,8 +9281,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (749), 239, 933);
             Add_Goto (Table.States (749), 272, 92);
             Add_Goto (Table.States (749), 293, 97);
-            Table.States (749).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (750).Productions := WisiToken.To_Vector ((1 => (213, 1)));
+            Table.States (749).Kernel := To_Vector ((0 => (213, 39, 2, False)));
+            Table.States (749).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (750), 104, 119);
             Add_Action (Table.States (750), 105, 33);
             Add_Action (Table.States (750), 106, 34);
@@ -9059,49 +9291,49 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (750), 239, 934);
             Add_Goto (Table.States (750), 272, 92);
             Add_Goto (Table.States (750), 293, 97);
-            Table.States (750).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (751).Productions := WisiToken.To_Vector (((125, 0), (256, 1)));
+            Table.States (750).Kernel := To_Vector ((0 => (213, 39, 2, False)));
+            Table.States (750).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (751), 77, 935);
             Add_Action (Table.States (751), 83, 443);
             Add_Error (Table.States (751));
-            Table.States (751).Minimal_Complete_Action := (Shift, 77, 935);
-            Table.States (752).Productions := WisiToken.To_Vector ((1 => (256, 2)));
+            Table.States (751).Kernel := To_Vector (((125, 125, 1, True), (256, 125, 1, False)));
+            Table.States (751).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 935)));
             Add_Action (Table.States (752), 77, 936);
             Add_Error (Table.States (752));
-            Table.States (752).Minimal_Complete_Action := (Shift, 77, 936);
-            Table.States (753).Productions := WisiToken.To_Vector ((1 => (256, 0)));
+            Table.States (752).Kernel := To_Vector ((0 => (256, 153, 1, False)));
+            Table.States (752).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 936)));
             Add_Action (Table.States (753), 77, 937);
             Add_Error (Table.States (753));
-            Table.States (753).Minimal_Complete_Action := (Shift, 77, 937);
-            Table.States (754).Productions := WisiToken.To_Vector ((1 => (193, 0)));
+            Table.States (753).Kernel := To_Vector ((0 => (256, 192, 1, False)));
+            Table.States (753).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 937)));
             Add_Action (Table.States (754), 96, 938);
             Add_Error (Table.States (754));
-            Table.States (754).Minimal_Complete_Action := (Shift, 96, 938);
-            Table.States (755).Productions := WisiToken.To_Vector ((1 => (243, 0)));
+            Table.States (754).Kernel := To_Vector ((0 => (193, 122, 1, False)));
+            Table.States (754).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 938)));
             Add_Action (Table.States (755), 96, 939);
             Add_Error (Table.States (755));
-            Table.States (755).Minimal_Complete_Action := (Shift, 96, 939);
-            Table.States (756).Productions := WisiToken.To_Vector ((1 => (112, 0)));
+            Table.States (755).Kernel := To_Vector ((0 => (243, 122, 1, False)));
+            Table.States (755).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 939)));
             Add_Action (Table.States (756), 96, 940);
             Add_Error (Table.States (756));
-            Table.States (756).Minimal_Complete_Action := (Shift, 96, 940);
-            Table.States (757).Productions := WisiToken.To_Vector ((1 => (308, 0)));
+            Table.States (756).Kernel := To_Vector ((0 => (112, 122, 1, False)));
+            Table.States (756).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 940)));
             Add_Action (Table.States (757), 96, 941);
             Add_Error (Table.States (757));
-            Table.States (757).Minimal_Complete_Action := (Shift, 96, 941);
-            Table.States (758).Productions := WisiToken.To_Vector ((1 => (311, 0)));
+            Table.States (757).Kernel := To_Vector ((0 => (308, 122, 1, False)));
+            Table.States (757).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 941)));
             Add_Action (Table.States (758), 96, 942);
             Add_Error (Table.States (758));
-            Table.States (758).Minimal_Complete_Action := (Shift, 96, 942);
-            Table.States (759).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (758).Kernel := To_Vector ((0 => (311, 122, 1, False)));
+            Table.States (758).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 942)));
             Add_Action (Table.States (759), 13, 943);
             Add_Error (Table.States (759));
-            Table.States (759).Minimal_Complete_Action := (Shift, 13, 943);
-            Table.States (760).Productions := WisiToken.To_Vector ((1 => (113, 0)));
+            Table.States (759).Kernel := To_Vector ((0 => (307, 159, 3, False)));
+            Table.States (759).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 13, 943)));
             Add_Action (Table.States (760), 24, 944);
             Add_Error (Table.States (760));
-            Table.States (760).Minimal_Complete_Action := (Shift, 24, 944);
-            Table.States (761).Productions := WisiToken.To_Vector ((1 => (137, 0)));
+            Table.States (760).Kernel := To_Vector ((0 => (113, 218, 2, False)));
+            Table.States (760).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 944)));
             Add_Action (Table.States (761), 3, 121);
             Add_Action (Table.States (761), 39, 122);
             Add_Action (Table.States (761), 40, 261);
@@ -9140,16 +9372,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (761), 320, 144);
             Add_Goto (Table.States (761), 321, 145);
             Add_Goto (Table.States (761), 330, 146);
-            Table.States (761).Minimal_Complete_Action := (Reduce, 166, 0);
-            Table.States (762).Productions := WisiToken.To_Vector ((1 => (138, 1)));
+            Table.States (761).Kernel := To_Vector ((0 => (137, 72, 1, False)));
+            Table.States (761).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 166, 0)));
             Add_Action (Table.States (762), (77, 83), (138, 1), 1, null, null);
-            Table.States (762).Minimal_Complete_Action := (Reduce, 138, 1);
-            Table.States (763).Productions := WisiToken.To_Vector (((136, 0), (138, 0)));
+            Table.States (762).Kernel := To_Vector ((0 => (138, 137, 0, False)));
+            Table.States (762).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 138, 1)));
             Add_Action (Table.States (763), 77, Reduce, (136, 0), 4, case_expression_0'Access, null);
             Add_Action (Table.States (763), 83, 946);
             Add_Error (Table.States (763));
-            Table.States (763).Minimal_Complete_Action := (Reduce, 136, 4);
-            Table.States (764).Productions := WisiToken.To_Vector ((1 => (273, 0)));
+            Table.States (763).Kernel := To_Vector (((136, 138, 0, False), (138, 138, 3, True)));
+            Table.States (763).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 136, 4)));
             Add_Action (Table.States (764), 3, 121);
             Add_Action (Table.States (764), 39, 122);
             Add_Action (Table.States (764), 40, 123);
@@ -9184,26 +9416,27 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (764), 320, 144);
             Add_Goto (Table.States (764), 321, 145);
             Add_Goto (Table.States (764), 330, 146);
-            Table.States (764).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (765).Productions := WisiToken.To_Vector (((221, 0), (221, 1), (221, 2), (221, 3)));
+            Table.States (764).Kernel := To_Vector ((0 => (273, 87, 0, False)));
+            Table.States (764).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (765), 22, 948);
             Add_Action (Table.States (765), 23, 949);
             Add_Action (Table.States (765), 77, Reduce, (221, 3), 4, if_expression_3'Access, null);
             Add_Error (Table.States (765));
             Add_Goto (Table.States (765), 172, 950);
             Add_Goto (Table.States (765), 173, 951);
-            Table.States (765).Minimal_Complete_Action := (Reduce, 221, 4);
-            Table.States (766).Productions := WisiToken.To_Vector ((1 => (117, 0)));
+            Table.States (765).Kernel := To_Vector (((221, 192, 3, False), (221, 192, 1, False), (221, 192, 2, False),
+            (221, 192, 0, False)));
+            Table.States (765).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 221, 4)));
             Add_Action (Table.States (766), 77, 952);
             Add_Error (Table.States (766));
-            Table.States (766).Minimal_Complete_Action := (Shift, 77, 952);
-            Table.States (767).Productions := WisiToken.To_Vector ((1 => (117, 1)));
+            Table.States (766).Kernel := To_Vector ((0 => (117, 54, 1, False)));
+            Table.States (766).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 952)));
             Add_Action (Table.States (767), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (117, 1), 5, aggregate_1'Access,
             null);
-            Table.States (767).Minimal_Complete_Action := (Reduce, 117, 5);
-            Table.States (768).Productions := WisiToken.To_Vector ((1 => (277, 0)));
+            Table.States (767).Kernel := To_Vector ((0 => (117, 77, 0, False)));
+            Table.States (767).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 117, 5)));
             Add_Action (Table.States (768), 3, 121);
             Add_Action (Table.States (768), 39, 122);
             Add_Action (Table.States (768), 40, 123);
@@ -9238,8 +9471,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (768), 320, 144);
             Add_Goto (Table.States (768), 321, 145);
             Add_Goto (Table.States (768), 330, 146);
-            Table.States (768).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (769).Productions := WisiToken.To_Vector ((1 => (140, 0)));
+            Table.States (768).Kernel := To_Vector ((0 => (277, 76, 1, False)));
+            Table.States (768).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (769), 4, 1);
             Add_Action (Table.States (769), 5, 2);
             Add_Action (Table.States (769), 13, Reduce, (132, 1), 0, null, null);
@@ -9296,20 +9529,17 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (769), 303, 101);
             Add_Goto (Table.States (769), 306, 363);
             Add_Goto (Table.States (769), 323, 114);
-            Table.States (769).Minimal_Complete_Action := (Reduce, 300, 0);
-         end Subr_13;
-         procedure Subr_14
-         is begin
-            Table.States (770).Productions := WisiToken.To_Vector ((1 => (139, 0)));
+            Table.States (769).Kernel := To_Vector ((0 => (140, 87, 0, False)));
+            Table.States (769).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (770), 96, 955);
             Add_Error (Table.States (770));
-            Table.States (770).Minimal_Complete_Action := (Shift, 96, 955);
-            Table.States (771).Productions := WisiToken.To_Vector ((1 => (233, 0)));
+            Table.States (770).Kernel := To_Vector ((0 => (139, 15, 1, False)));
+            Table.States (770).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 955)));
             Add_Action (Table.States (771), (10, 20, 21, 22, 23, 35, 37, 43, 53, 68, 74, 75, 77, 79, 83, 87, 96), (233,
             0), 3, null, null);
-            Table.States (771).Minimal_Complete_Action := (Reduce, 233, 3);
-            Table.States (772).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3), (314, 0), (314, 1)));
+            Table.States (771).Kernel := To_Vector ((0 => (233, 234, 0, True)));
+            Table.States (771).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 233, 3)));
+            Table.States (771).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (772), 10, Reduce, (314, 1), 3, subtype_indication_1'Access, null);
             Add_Action (Table.States (772), 21, Reduce, (314, 1), 3, subtype_indication_1'Access, null);
             Add_Action (Table.States (772), 37, Reduce, (314, 1), 3, subtype_indication_1'Access, null);
@@ -9330,11 +9560,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (772), 155, 956);
             Add_Goto (Table.States (772), 224, 621);
             Add_Goto (Table.States (772), 322, 242);
-            Table.States (772).Minimal_Complete_Action := (Reduce, 314, 3);
-            Table.States (773).Productions := WisiToken.To_Vector ((1 => (155, 0)));
+            Table.States (772).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (314, 239, 4, False), (314, 239, 0, False)));
+            Table.States (772).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 314, 3)));
             Add_Action (Table.States (773), (10, 21, 37, 42, 74, 77, 82, 83, 87, 96), (155, 0), 2, null, null);
-            Table.States (773).Minimal_Complete_Action := (Reduce, 155, 2);
-            Table.States (774).Productions := WisiToken.To_Vector (((165, 1), (197, 3), (314, 0), (314, 1)));
+            Table.States (773).Kernel := To_Vector ((0 => (155, 277, 0, False)));
+            Table.States (773).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 155, 2)));
             Add_Action (Table.States (774), 39, 122);
             Add_Action (Table.States (774), 41, 957);
             Add_Action (Table.States (774), 76, 126);
@@ -9349,23 +9581,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (774), 258, 256);
             Add_Goto (Table.States (774), 272, 92);
             Add_Goto (Table.States (774), 293, 97);
-            Table.States (774).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (775).Productions := WisiToken.To_Vector ((1 => (168, 1)));
+            Table.States (774).Kernel := To_Vector (((165, 40, 2, False), (197, 40, 1, False), (314, 40, 6, False),
+            (314, 40, 2, False)));
+            Table.States (774).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (775), (77, 83), (168, 1), 1, null, null);
-            Table.States (775).Minimal_Complete_Action := (Reduce, 168, 1);
-            Table.States (776).Productions := WisiToken.To_Vector (((168, 0), (224, 0)));
+            Table.States (775).Kernel := To_Vector ((0 => (168, 167, 0, False)));
+            Table.States (775).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 168, 1)));
             Add_Action (Table.States (776), 77, 958);
             Add_Action (Table.States (776), 83, 959);
             Add_Error (Table.States (776));
-            Table.States (776).Minimal_Complete_Action := (Shift, 77, 958);
-            Table.States (777).Productions := WisiToken.To_Vector (((165, 2), (167, 1), (278, 1)));
-            Add_Action (Table.States (777), 77, Reduce, (167, 1), 1, null, null, (278, 1), 1, null, null);
+            Table.States (776).Kernel := To_Vector (((168, 168, 2, True), (224, 168, 1, False)));
+            Table.States (776).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 958)));
+            Add_Action (Table.States (777), 77, Reduce, (167, 1), 1, null, null);
+            Add_Conflict (Table.States (777), 77, (278, 1), 1, null, null);
             Add_Action (Table.States (777), 79, Reduce, (165, 2), 1, null, null);
-            Add_Action (Table.States (777), 83, Reduce, (167, 1), 1, null, null, (278, 1), 1, null, null);
+            Add_Action (Table.States (777), 83, Reduce, (167, 1), 1, null, null);
+            Add_Conflict (Table.States (777), 83, (278, 1), 1, null, null);
             Add_Action (Table.States (777), 87, Reduce, (165, 2), 1, null, null);
             Add_Error (Table.States (777));
-            Table.States (777).Minimal_Complete_Action := (Reduce, 165, 1);
-            Table.States (778).Productions := WisiToken.To_Vector ((1 => (230, 0)));
+            Table.States (777).Kernel := To_Vector (((165, 277, 0, False), (167, 277, 0, False), (278, 277, 0,
+            False)));
+            Table.States (777).Minimal_Complete_Actions := To_Vector (((Reduce, 165, 1), (Reduce, 167, 1), (Reduce,
+            278, 1)));
             Add_Action (Table.States (778), 104, 119);
             Add_Action (Table.States (778), 105, 33);
             Add_Action (Table.States (778), 106, 34);
@@ -9374,9 +9611,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (778), 239, 960);
             Add_Goto (Table.States (778), 272, 92);
             Add_Goto (Table.States (778), 293, 97);
-            Table.States (778).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (779).Productions := WisiToken.To_Vector (((128, 0), (230, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (778).Kernel := To_Vector ((0 => (230, 59, 1, False)));
+            Table.States (778).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (779), 37, Reduce, (230, 1), 5, null, null);
             Add_Action (Table.States (779), 76, 235);
             Add_Action (Table.States (779), 84, 237);
@@ -9386,13 +9622,15 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (779));
             Add_Goto (Table.States (779), 115, 241);
             Add_Goto (Table.States (779), 322, 242);
-            Table.States (779).Minimal_Complete_Action := (Reduce, 230, 5);
-            Table.States (780).Productions := WisiToken.To_Vector ((1 => (127, 0)));
+            Table.States (779).Kernel := To_Vector (((128, 239, 2, True), (230, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (779).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 230, 5)));
             Add_Action (Table.States (780), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (127, 0), 6,
             at_clause_0'Access, null);
-            Table.States (780).Minimal_Complete_Action := (Reduce, 127, 6);
-            Table.States (781).Productions := WisiToken.To_Vector ((1 => (235, 0)));
+            Table.States (780).Kernel := To_Vector ((0 => (127, 96, 0, False)));
+            Table.States (780).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 127, 6)));
             Add_Action (Table.States (781), 3, 121);
             Add_Action (Table.States (781), 39, 122);
             Add_Action (Table.States (781), 40, 123);
@@ -9427,24 +9665,25 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (781), 320, 144);
             Add_Goto (Table.States (781), 321, 145);
             Add_Goto (Table.States (781), 330, 146);
-            Table.States (781).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (782).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (781).Kernel := To_Vector ((0 => (235, 38, 1, False)));
+            Table.States (781).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (782), 12, 962);
             Add_Error (Table.States (782));
-            Table.States (782).Minimal_Complete_Action := (Shift, 12, 962);
-            Table.States (783).Productions := WisiToken.To_Vector ((1 => (145, 1)));
+            Table.States (782).Kernel := To_Vector ((0 => (144, 104, 7, False)));
+            Table.States (782).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 12, 962)));
             Add_Action (Table.States (783), (24, 104), (145, 1), 1, null, null);
-            Table.States (783).Minimal_Complete_Action := (Reduce, 145, 1);
-            Table.States (784).Productions := WisiToken.To_Vector (((145, 0), (281, 0)));
+            Table.States (783).Kernel := To_Vector ((0 => (145, 144, 0, False)));
+            Table.States (783).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 145, 1)));
             Add_Action (Table.States (784), 24, 963);
             Add_Action (Table.States (784), 104, 782);
             Add_Error (Table.States (784));
             Add_Goto (Table.States (784), 144, 964);
-            Table.States (784).Minimal_Complete_Action := (Shift, 24, 963);
-            Table.States (785).Productions := WisiToken.To_Vector (((254, 0), (254, 1), (254, 2), (254, 3)));
+            Table.States (784).Kernel := To_Vector (((145, 145, 8, True), (281, 145, 3, False)));
+            Table.States (784).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 963)));
             Add_Action (Table.States (785), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (785), 33, 504);
-            Add_Action (Table.States (785), 40, 386, (236, 3), 0, null, null);
+            Add_Action (Table.States (785), 40, 386);
+            Add_Conflict (Table.States (785), 40, (236, 3), 0, null, null);
             Add_Action (Table.States (785), 45, 505);
             Add_Action (Table.States (785), 104, Reduce, (236, 3), 0, null, null);
             Add_Action (Table.States (785), 105, Reduce, (236, 3), 0, null, null);
@@ -9453,94 +9692,98 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (785), 114, 965);
             Add_Goto (Table.States (785), 236, 966);
             Add_Goto (Table.States (785), 241, 721);
-            Table.States (785).Minimal_Complete_Action := (Reduce, 236, 0);
-            Table.States (786).Productions := WisiToken.To_Vector ((1 => (255, 0)));
+            Table.States (785).Kernel := To_Vector (((254, 118, 2, False), (254, 118, 1, False), (254, 118, 3, False),
+            (254, 118, 2, False)));
+            Table.States (785).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 236, 0)));
             Add_Action (Table.States (786), (77, 96), (255, 0), 3, parameter_specification_list_0'Access, null);
-            Table.States (786).Minimal_Complete_Action := (Reduce, 255, 3);
-            Table.States (787).Productions := WisiToken.To_Vector ((1 => (215, 2)));
+            Table.States (786).Kernel := To_Vector ((0 => (255, 254, 0, True)));
+            Table.States (786).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 255, 3)));
+            Table.States (786).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (787), 96, 967);
             Add_Error (Table.States (787));
-            Table.States (787).Minimal_Complete_Action := (Shift, 96, 967);
-            Table.States (788).Productions := WisiToken.To_Vector ((1 => (215, 0)));
+            Table.States (787).Kernel := To_Vector ((0 => (215, 122, 1, False)));
+            Table.States (787).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 967)));
             Add_Action (Table.States (788), 96, 968);
             Add_Error (Table.States (788));
-            Table.States (788).Minimal_Complete_Action := (Shift, 96, 968);
-            Table.States (789).Productions := WisiToken.To_Vector ((1 => (215, 1)));
+            Table.States (788).Kernel := To_Vector ((0 => (215, 122, 1, False)));
+            Table.States (788).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 968)));
             Add_Action (Table.States (789), 96, 969);
             Add_Error (Table.States (789));
-            Table.States (789).Minimal_Complete_Action := (Shift, 96, 969);
-            Table.States (790).Productions := WisiToken.To_Vector (((109, 0), (109, 1), (109, 2), (111, 0), (111, 1)));
+            Table.States (789).Kernel := To_Vector ((0 => (215, 122, 1, False)));
+            Table.States (789).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 969)));
             Add_Action (Table.States (790), 36, 970);
             Add_Action (Table.States (790), 39, Reduce, (109, 2), 1, null, null);
             Add_Action (Table.States (790), 64, 875);
             Add_Action (Table.States (790), 65, 876);
             Add_Error (Table.States (790));
-            Table.States (790).Minimal_Complete_Action := (Reduce, 109, 1);
-            Table.States (791).Productions := WisiToken.To_Vector (((202, 6), (202, 7)));
+            Table.States (790).Kernel := To_Vector (((109, 6, 1, False), (109, 6, 1, False), (109, 6, 0, False), (111,
+            6, 2, False), (111, 6, 1, False)));
+            Table.States (790).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 109, 1)));
             Add_Action (Table.States (791), 80, 971);
             Add_Error (Table.States (791));
-            Table.States (791).Minimal_Complete_Action := (Shift, 80, 971);
-            Table.States (792).Productions := WisiToken.To_Vector ((1 => (202, 5)));
+            Table.States (791).Kernel := To_Vector (((202, 19, 3, False), (202, 19, 1, False)));
+            Table.States (791).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 971)));
             Add_Action (Table.States (792), 80, 972);
             Add_Error (Table.States (792));
-            Table.States (792).Minimal_Complete_Action := (Shift, 80, 972);
-            Table.States (793).Productions := WisiToken.To_Vector (((109, 3), (111, 4), (228, 0), (228, 4)));
+            Table.States (792).Kernel := To_Vector ((0 => (202, 20, 1, False)));
+            Table.States (792).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 972)));
             Add_Action (Table.States (793), 34, 880);
             Add_Action (Table.States (793), 39, Reduce, (109, 3), 1, null, null);
             Add_Action (Table.States (793), 49, Reduce, (111, 4), 1, null, null);
             Add_Error (Table.States (793));
-            Table.States (793).Minimal_Complete_Action := (Reduce, 109, 1);
-            Table.States (794).Productions := WisiToken.To_Vector ((1 => (202, 4)));
+            Table.States (793).Kernel := To_Vector (((109, 36, 0, False), (111, 36, 0, False), (228, 36, 3, False),
+            (228, 36, 1, False)));
+            Table.States (793).Minimal_Complete_Actions := To_Vector (((Reduce, 109, 1), (Reduce, 111, 1)));
             Add_Action (Table.States (794), 80, 973);
             Add_Error (Table.States (794));
-            Table.States (794).Minimal_Complete_Action := (Shift, 80, 973);
-            Table.States (795).Productions := WisiToken.To_Vector ((1 => (202, 3)));
+            Table.States (794).Kernel := To_Vector ((0 => (202, 38, 1, False)));
+            Table.States (794).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 973)));
             Add_Action (Table.States (795), 80, 974);
             Add_Error (Table.States (795));
-            Table.States (795).Minimal_Complete_Action := (Shift, 80, 974);
-            Table.States (796).Productions := WisiToken.To_Vector (((111, 2), (111, 3), (201, 1)));
+            Table.States (795).Kernel := To_Vector ((0 => (202, 53, 1, False)));
+            Table.States (795).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 974)));
             Add_Action (Table.States (796), 36, 895);
             Add_Action (Table.States (796), 49, Reduce, (111, 3), 1, null, null);
             Add_Action (Table.States (796), 74, 337);
             Add_Action (Table.States (796), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (796));
             Add_Goto (Table.States (796), 122, 975);
-            Table.States (796).Minimal_Complete_Action := (Reduce, 111, 1);
-            Table.States (797).Productions := WisiToken.To_Vector ((1 => (202, 2)));
+            Table.States (796).Kernel := To_Vector (((111, 65, 1, False), (111, 65, 0, False), (201, 65, 1, False)));
+            Table.States (796).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 111, 1)));
             Add_Action (Table.States (797), 80, 976);
             Add_Error (Table.States (797));
-            Table.States (797).Minimal_Complete_Action := (Shift, 80, 976);
-            Table.States (798).Productions := WisiToken.To_Vector (((203, 0), (203, 1)));
+            Table.States (797).Kernel := To_Vector ((0 => (202, 76, 2, False)));
+            Table.States (797).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 976)));
             Add_Action (Table.States (798), 39, 977);
             Add_Error (Table.States (798));
-            Table.States (798).Minimal_Complete_Action := (Shift, 39, 977);
-            Table.States (799).Productions := WisiToken.To_Vector ((1 => (202, 0)));
+            Table.States (798).Kernel := To_Vector (((203, 109, 4, False), (203, 109, 2, False)));
+            Table.States (798).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 39, 977)));
             Add_Action (Table.States (799), 49, 978);
             Add_Error (Table.States (799));
-            Table.States (799).Minimal_Complete_Action := (Shift, 49, 978);
-            Table.States (800).Productions := WisiToken.To_Vector ((1 => (202, 9)));
+            Table.States (799).Kernel := To_Vector ((0 => (202, 111, 1, False)));
+            Table.States (799).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 49, 978)));
             Add_Action (Table.States (800), (74, 96), (202, 9), 1, null, null);
-            Table.States (800).Minimal_Complete_Action := (Reduce, 202, 1);
-            Table.States (801).Productions := WisiToken.To_Vector ((1 => (202, 8)));
+            Table.States (800).Kernel := To_Vector ((0 => (202, 114, 0, False)));
+            Table.States (800).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 1)));
             Add_Action (Table.States (801), (74, 96), (202, 8), 1, null, null);
-            Table.States (801).Minimal_Complete_Action := (Reduce, 202, 1);
-            Table.States (802).Productions := WisiToken.To_Vector ((1 => (201, 0)));
+            Table.States (801).Kernel := To_Vector ((0 => (202, 120, 0, False)));
+            Table.States (801).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 1)));
             Add_Action (Table.States (802), 74, 337);
             Add_Action (Table.States (802), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (802));
             Add_Goto (Table.States (802), 122, 979);
-            Table.States (802).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (803).Productions := WisiToken.To_Vector ((1 => (202, 1)));
+            Table.States (802).Kernel := To_Vector ((0 => (201, 202, 1, False)));
+            Table.States (802).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (803), (74, 96), (202, 1), 1, null, null);
-            Table.States (803).Minimal_Complete_Action := (Reduce, 202, 1);
-            Table.States (804).Productions := WisiToken.To_Vector ((1 => (202, 10)));
+            Table.States (803).Kernel := To_Vector ((0 => (202, 203, 0, False)));
+            Table.States (803).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 1)));
             Add_Action (Table.States (804), (74, 96), (202, 10), 1, null, null);
-            Table.States (804).Minimal_Complete_Action := (Reduce, 202, 1);
-            Table.States (805).Productions := WisiToken.To_Vector ((1 => (201, 2)));
+            Table.States (804).Kernel := To_Vector ((0 => (202, 228, 0, False)));
+            Table.States (804).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 1)));
             Add_Action (Table.States (805), (29, 47, 48, 50, 69, 71, 74, 104), (201, 2), 5,
             formal_type_declaration_2'Access, null);
-            Table.States (805).Minimal_Complete_Action := (Reduce, 201, 5);
-            Table.States (806).Productions := WisiToken.To_Vector ((1 => (204, 0)));
+            Table.States (805).Kernel := To_Vector ((0 => (201, 96, 0, False)));
+            Table.States (805).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 201, 5)));
             Add_Action (Table.States (806), 104, 119);
             Add_Action (Table.States (806), 105, 33);
             Add_Action (Table.States (806), 106, 34);
@@ -9549,22 +9792,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (806), 239, 980);
             Add_Goto (Table.States (806), 272, 92);
             Add_Goto (Table.States (806), 293, 97);
-            Table.States (806).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (807).Productions := WisiToken.To_Vector ((1 => (200, 2)));
+            Table.States (806).Kernel := To_Vector ((0 => (204, 39, 2, False)));
+            Table.States (806).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (807), 96, 981);
             Add_Error (Table.States (807));
-            Table.States (807).Minimal_Complete_Action := (Shift, 96, 981);
-            Table.States (808).Productions := WisiToken.To_Vector ((1 => (200, 0)));
+            Table.States (807).Kernel := To_Vector ((0 => (200, 122, 1, False)));
+            Table.States (807).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 981)));
             Add_Action (Table.States (808), 74, 337);
             Add_Action (Table.States (808), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (808));
             Add_Goto (Table.States (808), 122, 982);
-            Table.States (808).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (809).Productions := WisiToken.To_Vector ((1 => (200, 1)));
+            Table.States (808).Kernel := To_Vector ((0 => (200, 310, 1, False)));
+            Table.States (808).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (809), 96, 983);
             Add_Error (Table.States (809));
-            Table.States (809).Minimal_Complete_Action := (Shift, 96, 983);
-            Table.States (810).Productions := WisiToken.To_Vector ((1 => (198, 1)));
+            Table.States (809).Kernel := To_Vector ((0 => (200, 122, 1, False)));
+            Table.States (809).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 983)));
             Add_Action (Table.States (810), 3, 121);
             Add_Action (Table.States (810), 39, 122);
             Add_Action (Table.States (810), 40, 123);
@@ -9600,13 +9843,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (810), 320, 144);
             Add_Goto (Table.States (810), 321, 145);
             Add_Goto (Table.States (810), 330, 146);
-            Table.States (810).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (811).Productions := WisiToken.To_Vector ((1 => (198, 3)));
+            Table.States (810).Kernel := To_Vector ((0 => (198, 82, 1, False)));
+            Table.States (810).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (811), 96, 985);
             Add_Error (Table.States (811));
-            Table.States (811).Minimal_Complete_Action := (Shift, 96, 985);
-            Table.States (812).Productions := WisiToken.To_Vector (((128, 0), (198, 0), (198, 2), (239, 0), (239, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (811).Kernel := To_Vector ((0 => (198, 122, 1, False)));
+            Table.States (811).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 985)));
             Add_Action (Table.States (812), 74, 337);
             Add_Action (Table.States (812), 76, 235);
             Add_Action (Table.States (812), 82, 986);
@@ -9618,20 +9860,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (812), 115, 241);
             Add_Goto (Table.States (812), 122, 987);
             Add_Goto (Table.States (812), 322, 242);
-            Table.States (812).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (813).Productions := WisiToken.To_Vector ((1 => (222, 1)));
+            Table.States (812).Kernel := To_Vector (((128, 239, 2, True), (198, 239, 2, False), (198, 239, 1, False),
+            (239, 239, 5, True), (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (812).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (813), 24, 988);
             Add_Error (Table.States (813));
-            Table.States (813).Minimal_Complete_Action := (Shift, 24, 988);
-            Table.States (814).Productions := WisiToken.To_Vector ((1 => (174, 0)));
+            Table.States (813).Kernel := To_Vector ((0 => (222, 300, 3, False)));
+            Table.States (813).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 988)));
             Add_Action (Table.States (814), 68, 989);
             Add_Error (Table.States (814));
-            Table.States (814).Minimal_Complete_Action := (Shift, 68, 989);
-            Table.States (815).Productions := WisiToken.To_Vector ((1 => (222, 3)));
+            Table.States (814).Kernel := To_Vector ((0 => (174, 192, 1, False)));
+            Table.States (814).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 68, 989)));
             Add_Action (Table.States (815), 96, 990);
             Add_Error (Table.States (815));
-            Table.States (815).Minimal_Complete_Action := (Shift, 96, 990);
-            Table.States (816).Productions := WisiToken.To_Vector ((1 => (222, 0)));
+            Table.States (815).Kernel := To_Vector ((0 => (222, 32, 1, False)));
+            Table.States (815).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 990)));
             Add_Action (Table.States (816), 4, 1);
             Add_Action (Table.States (816), 5, 2);
             Add_Action (Table.States (816), 13, Reduce, (132, 1), 0, null, null);
@@ -9687,33 +9931,37 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (816), 303, 101);
             Add_Goto (Table.States (816), 306, 363);
             Add_Goto (Table.States (816), 323, 114);
-            Table.States (816).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (817).Productions := WisiToken.To_Vector ((1 => (222, 2)));
+            Table.States (816).Kernel := To_Vector ((0 => (222, 22, 3, False)));
+            Table.States (816).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (817), 32, 992);
             Add_Error (Table.States (817));
-            Table.States (817).Minimal_Complete_Action := (Shift, 32, 992);
-            Table.States (818).Productions := WisiToken.To_Vector ((1 => (175, 0)));
+            Table.States (817).Kernel := To_Vector ((0 => (222, 24, 2, False)));
+            Table.States (817).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 32, 992)));
             Add_Action (Table.States (818), (22, 23, 24), (175, 0), 2, null, null);
-            Table.States (818).Minimal_Complete_Action := (Reduce, 175, 2);
-            Table.States (819).Productions := WisiToken.To_Vector ((1 => (248, 0)));
+            Table.States (818).Kernel := To_Vector ((0 => (175, 174, 0, True)));
+            Table.States (818).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 175, 2)));
+            Table.States (818).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (819), 96, 993);
             Add_Error (Table.States (819));
-            Table.States (819).Minimal_Complete_Action := (Shift, 96, 993);
-            Table.States (820).Productions := WisiToken.To_Vector (((247, 0), (247, 1)));
+            Table.States (819).Kernel := To_Vector ((0 => (248, 122, 1, False)));
+            Table.States (819).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 993)));
             Add_Action (Table.States (820), 13, 994);
             Add_Action (Table.States (820), 24, 995);
             Add_Error (Table.States (820));
-            Table.States (820).Minimal_Complete_Action := (Shift, 24, 995);
-            Table.States (821).Productions := WisiToken.To_Vector ((1 => (213, 0)));
+            Table.States (820).Kernel := To_Vector (((247, 159, 3, False), (247, 159, 2, False)));
+            Table.States (820).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 995)));
+         end Subr_14;
+         procedure Subr_15
+         is begin
             Add_Action (Table.States (821), 96, 996);
             Add_Error (Table.States (821));
-            Table.States (821).Minimal_Complete_Action := (Shift, 96, 996);
-            Table.States (822).Productions := WisiToken.To_Vector ((1 => (250, 0)));
+            Table.States (821).Kernel := To_Vector ((0 => (213, 122, 1, False)));
+            Table.States (821).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 996)));
             Add_Action (Table.States (822), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (250, 0), 6,
             package_renaming_declaration_0'Access, null);
-            Table.States (822).Minimal_Complete_Action := (Reduce, 250, 6);
-            Table.States (823).Productions := WisiToken.To_Vector ((1 => (251, 1)));
+            Table.States (822).Kernel := To_Vector ((0 => (250, 96, 0, False)));
+            Table.States (822).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 250, 6)));
             Add_Action (Table.States (823), 96, Reduce, (240, 1), 0, null, null);
             Add_Action (Table.States (823), 104, 119);
             Add_Action (Table.States (823), 105, 33);
@@ -9724,8 +9972,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (823), 240, 997);
             Add_Goto (Table.States (823), 272, 92);
             Add_Goto (Table.States (823), 293, 97);
-            Table.States (823).Minimal_Complete_Action := (Reduce, 240, 0);
-            Table.States (824).Productions := WisiToken.To_Vector ((1 => (251, 0)));
+            Table.States (823).Kernel := To_Vector ((0 => (251, 24, 0, False)));
+            Table.States (823).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 0)));
             Add_Action (Table.States (824), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (824), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (824), 28, 183);
@@ -9796,49 +10044,50 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (824), 319, 113);
             Add_Goto (Table.States (824), 325, 115);
             Add_Goto (Table.States (824), 331, 116);
-            Table.States (824).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (825).Productions := WisiToken.To_Vector ((1 => (257, 0)));
+            Table.States (824).Kernel := To_Vector ((0 => (251, 49, 1, False)));
+            Table.States (824).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (825), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (257, 0), 6, pragma_g_0'Access, null);
-            Table.States (825).Minimal_Complete_Action := (Reduce, 257, 6);
-            Table.States (826).Productions := WisiToken.To_Vector ((1 => (257, 1)));
+            Table.States (825).Kernel := To_Vector ((0 => (257, 96, 0, False)));
+            Table.States (825).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 257, 6)));
             Add_Action (Table.States (826), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (257, 1), 6, pragma_g_1'Access, null);
-            Table.States (826).Minimal_Complete_Action := (Reduce, 257, 6);
-            Table.States (827).Productions := WisiToken.To_Vector ((1 => (265, 0)));
+            Table.States (826).Kernel := To_Vector ((0 => (257, 96, 0, False)));
+            Table.States (826).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 257, 6)));
             Add_Action (Table.States (827), 96, 999);
             Add_Error (Table.States (827));
-            Table.States (827).Minimal_Complete_Action := (Shift, 96, 999);
-            Table.States (828).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (827).Kernel := To_Vector ((0 => (265, 122, 1, False)));
+            Table.States (827).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 999)));
             Add_Action (Table.States (828), 104, 1000);
             Add_Error (Table.States (828));
-            Table.States (828).Minimal_Complete_Action := (Shift, 104, 1000);
-            Table.States (829).Productions := WisiToken.To_Vector ((1 => (267, 5)));
+            Table.States (828).Kernel := To_Vector ((0 => (176, 25, 6, False)));
+            Table.States (828).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 1000)));
             Add_Action (Table.States (829), (24, 25, 28, 29, 40, 46, 50), (267, 5), 1, null, null);
-            Table.States (829).Minimal_Complete_Action := (Reduce, 267, 1);
-            Table.States (830).Productions := WisiToken.To_Vector ((1 => (267, 2)));
+            Table.States (829).Kernel := To_Vector ((0 => (267, 121, 0, False)));
+            Table.States (829).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 267, 1)));
             Add_Action (Table.States (830), (24, 25, 28, 29, 40, 46, 50), (267, 2), 1, null, null);
-            Table.States (830).Minimal_Complete_Action := (Reduce, 267, 1);
-            Table.States (831).Productions := WisiToken.To_Vector ((1 => (267, 3)));
+            Table.States (830).Kernel := To_Vector ((0 => (267, 176, 0, False)));
+            Table.States (830).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 267, 1)));
             Add_Action (Table.States (831), (24, 25, 28, 29, 40, 46, 50), (267, 3), 1, null, null);
-            Table.States (831).Minimal_Complete_Action := (Reduce, 267, 1);
-            Table.States (832).Productions := WisiToken.To_Vector ((1 => (267, 4)));
+            Table.States (831).Kernel := To_Vector ((0 => (267, 193, 0, False)));
+            Table.States (831).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 267, 1)));
             Add_Action (Table.States (832), (24, 25, 28, 29, 40, 46, 50), (267, 4), 1, null, null);
-            Table.States (832).Minimal_Complete_Action := (Reduce, 267, 1);
-            Table.States (833).Productions := WisiToken.To_Vector (((193, 0), (243, 0), (307, 0), (309, 0)));
+            Table.States (832).Kernel := To_Vector ((0 => (267, 243, 0, False)));
+            Table.States (832).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 267, 1)));
             Add_Action (Table.States (833), 29, 7);
             Add_Action (Table.States (833), 50, 18);
             Add_Error (Table.States (833));
             Add_Goto (Table.States (833), 207, 246);
             Add_Goto (Table.States (833), 262, 247);
             Add_Goto (Table.States (833), 312, 1001);
-            Table.States (833).Minimal_Complete_Action := (Shift, 50, 18);
-            Table.States (834).Productions := WisiToken.To_Vector ((1 => (268, 1)));
+            Table.States (833).Kernel := To_Vector (((193, 246, 7, False), (243, 246, 5, False), (307, 246, 6, False),
+            (309, 246, 3, False)));
+            Table.States (833).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 50, 18)));
             Add_Action (Table.States (834), (24, 25, 28, 29, 40, 46, 50), (268, 1), 1, null, null);
-            Table.States (834).Minimal_Complete_Action := (Reduce, 268, 1);
-            Table.States (835).Productions := WisiToken.To_Vector (((268, 0), (269, 0)));
+            Table.States (834).Kernel := To_Vector ((0 => (268, 267, 0, False)));
+            Table.States (834).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 268, 1)));
             Add_Action (Table.States (835), 24, Reduce, (269, 0), 1, null, null);
             Add_Action (Table.States (835), 25, 828);
             Add_Action (Table.States (835), 28, 183);
@@ -9860,18 +10109,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (835), 281, 94);
             Add_Goto (Table.States (835), 307, 837);
             Add_Goto (Table.States (835), 309, 838);
-            Table.States (835).Minimal_Complete_Action := (Reduce, 269, 1);
-            Table.States (836).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (835).Kernel := To_Vector (((268, 268, 3, True), (269, 268, 0, False)));
+            Table.States (835).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 269, 1)));
             Add_Action (Table.States (836), 24, 1003);
             Add_Error (Table.States (836));
-            Table.States (836).Minimal_Complete_Action := (Shift, 24, 1003);
-            Table.States (837).Productions := WisiToken.To_Vector ((1 => (267, 1)));
+            Table.States (836).Kernel := To_Vector ((0 => (264, 269, 2, False)));
+            Table.States (836).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1003)));
             Add_Action (Table.States (837), (24, 25, 28, 29, 40, 46, 50), (267, 1), 1, null, null);
-            Table.States (837).Minimal_Complete_Action := (Reduce, 267, 1);
-            Table.States (838).Productions := WisiToken.To_Vector ((1 => (267, 0)));
+            Table.States (837).Kernel := To_Vector ((0 => (267, 307, 0, False)));
+            Table.States (837).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 267, 1)));
             Add_Action (Table.States (838), (24, 25, 28, 29, 40, 46, 50), (267, 0), 1, null, null);
-            Table.States (838).Minimal_Complete_Action := (Reduce, 267, 1);
-            Table.States (839).Productions := WisiToken.To_Vector (((271, 0), (271, 1)));
+            Table.States (838).Kernel := To_Vector ((0 => (267, 309, 0, False)));
+            Table.States (838).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 267, 1)));
             Add_Action (Table.States (839), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (839), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (839), 28, 183);
@@ -9945,14 +10194,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (839), 319, 113);
             Add_Goto (Table.States (839), 325, 115);
             Add_Goto (Table.States (839), 331, 116);
-            Table.States (839).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (840).Productions := WisiToken.To_Vector (((227, 0), (304, 0)));
+            Table.States (839).Kernel := To_Vector (((271, 35, 5, False), (271, 35, 2, False)));
+            Table.States (839).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (840), 10, 1006);
             Add_Action (Table.States (840), 74, 1007);
             Add_Error (Table.States (840));
-            Table.States (840).Minimal_Complete_Action := (Shift, 74, 1007);
-            Table.States (841).Productions := WisiToken.To_Vector (((128, 0), (227, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (840).Kernel := To_Vector (((227, 227, 2, True), (304, 227, 3, False)));
+            Table.States (840).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 1007)));
             Add_Action (Table.States (841), 10, Reduce, (227, 1), 1, interface_list_1'Access, null);
             Add_Action (Table.States (841), 74, Reduce, (227, 1), 1, interface_list_1'Access, null);
             Add_Action (Table.States (841), 76, 235);
@@ -9963,14 +10211,16 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (841));
             Add_Goto (Table.States (841), 115, 241);
             Add_Goto (Table.States (841), 322, 242);
-            Table.States (841).Minimal_Complete_Action := (Reduce, 227, 1);
-            Table.States (842).Productions := WisiToken.To_Vector ((1 => (266, 1)));
+            Table.States (841).Kernel := To_Vector (((128, 239, 2, True), (227, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (841).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 227, 1)));
             Add_Action (Table.States (842), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (842), 104, 149);
             Add_Error (Table.States (842));
             Add_Goto (Table.States (842), 220, 1008);
-            Table.States (842).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (843).Productions := WisiToken.To_Vector ((1 => (266, 0)));
+            Table.States (842).Kernel := To_Vector ((0 => (266, 24, 0, False)));
+            Table.States (842).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (843), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (843), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (843), 28, 183);
@@ -10041,34 +10291,31 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (843), 319, 113);
             Add_Goto (Table.States (843), 325, 115);
             Add_Goto (Table.States (843), 331, 116);
-            Table.States (843).Minimal_Complete_Action := (Reduce, 159, 0);
-         end Subr_14;
-         procedure Subr_15
-         is begin
-            Table.States (844).Productions := WisiToken.To_Vector ((1 => (304, 1)));
+            Table.States (843).Kernel := To_Vector ((0 => (266, 49, 1, False)));
+            Table.States (843).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (844), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (304, 1), 6,
             single_protected_declaration_1'Access, single_protected_declaration_1_check'Access);
-            Table.States (844).Minimal_Complete_Action := (Reduce, 304, 6);
-            Table.States (845).Productions := WisiToken.To_Vector ((1 => (292, 1)));
+            Table.States (844).Kernel := To_Vector ((0 => (304, 96, 0, False)));
+            Table.States (844).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 304, 6)));
             Add_Action (Table.States (845), (21, 82, 96), (292, 1), 1, null, null);
-            Table.States (845).Minimal_Complete_Action := (Reduce, 292, 1);
-            Table.States (846).Productions := WisiToken.To_Vector (((194, 0), (194, 1)));
+            Table.States (845).Kernel := To_Vector ((0 => (292, 114, 0, False)));
+            Table.States (845).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 292, 1)));
             Add_Action (Table.States (846), 21, Reduce, (194, 1), 5, extended_return_object_declaration_1'Access,
             null);
             Add_Action (Table.States (846), 82, 1010);
             Add_Action (Table.States (846), 96, Reduce, (194, 1), 5, extended_return_object_declaration_1'Access,
             null);
             Add_Error (Table.States (846));
-            Table.States (846).Minimal_Complete_Action := (Reduce, 194, 5);
-            Table.States (847).Productions := WisiToken.To_Vector ((1 => (292, 0)));
+            Table.States (846).Kernel := To_Vector (((194, 292, 1, False), (194, 292, 0, False)));
+            Table.States (846).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 194, 5)));
             Add_Action (Table.States (847), (21, 82, 96), (292, 0), 1, null, null);
-            Table.States (847).Minimal_Complete_Action := (Reduce, 292, 1);
-            Table.States (848).Productions := WisiToken.To_Vector ((1 => (196, 0)));
+            Table.States (847).Kernel := To_Vector ((0 => (292, 314, 0, False)));
+            Table.States (847).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 292, 1)));
             Add_Action (Table.States (848), 96, 1011);
             Add_Error (Table.States (848));
-            Table.States (848).Minimal_Complete_Action := (Shift, 96, 1011);
-            Table.States (849).Productions := WisiToken.To_Vector (((247, 0), (247, 1)));
+            Table.States (848).Kernel := To_Vector ((0 => (196, 58, 1, False)));
+            Table.States (848).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1011)));
             Add_Action (Table.States (849), 104, 119);
             Add_Action (Table.States (849), 105, 33);
             Add_Action (Table.States (849), 106, 34);
@@ -10077,57 +10324,57 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (849), 239, 1012);
             Add_Goto (Table.States (849), 272, 92);
             Add_Goto (Table.States (849), 293, 97);
-            Table.States (849).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (850).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (849).Kernel := To_Vector (((247, 14, 5, False), (247, 14, 4, False)));
+            Table.States (849).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (850), 104, 1013);
             Add_Error (Table.States (850));
-            Table.States (850).Minimal_Complete_Action := (Shift, 104, 1013);
-            Table.States (851).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (850).Kernel := To_Vector ((0 => (264, 14, 4, False)));
+            Table.States (850).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 1013)));
             Add_Action (Table.States (851), 104, 1014);
             Add_Error (Table.States (851));
-            Table.States (851).Minimal_Complete_Action := (Shift, 104, 1014);
-            Table.States (852).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (851).Kernel := To_Vector ((0 => (316, 14, 5, False)));
+            Table.States (851).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 1014)));
             Add_Action (Table.States (852), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (852), 74, 337);
             Add_Error (Table.States (852));
             Add_Goto (Table.States (852), 122, 1015);
-            Table.States (852).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (853).Productions := WisiToken.To_Vector ((1 => (295, 1)));
+            Table.States (852).Kernel := To_Vector ((0 => (307, 312, 4, False)));
+            Table.States (852).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (853), (22, 24, 43), (295, 1), 5, select_alternative_1'Access, null);
-            Table.States (853).Minimal_Complete_Action := (Reduce, 295, 5);
-            Table.States (854).Productions := WisiToken.To_Vector ((1 => (295, 0)));
+            Table.States (853).Kernel := To_Vector ((0 => (295, 96, 0, False)));
+            Table.States (853).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 295, 5)));
             Add_Action (Table.States (854), (22, 24, 43), (295, 0), 5, select_alternative_0'Access, null);
-            Table.States (854).Minimal_Complete_Action := (Reduce, 295, 5);
-            Table.States (855).Productions := WisiToken.To_Vector ((1 => (152, 0)));
+            Table.States (854).Kernel := To_Vector ((0 => (295, 300, 0, False)));
+            Table.States (854).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 295, 5)));
             Add_Action (Table.States (855), 96, 1016);
             Add_Error (Table.States (855));
-            Table.States (855).Minimal_Complete_Action := (Shift, 96, 1016);
-            Table.States (856).Productions := WisiToken.To_Vector ((1 => (323, 0)));
+            Table.States (855).Kernel := To_Vector ((0 => (152, 61, 1, False)));
+            Table.States (855).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1016)));
             Add_Action (Table.States (856), 96, 1017);
             Add_Error (Table.States (856));
-            Table.States (856).Minimal_Complete_Action := (Shift, 96, 1017);
-            Table.States (857).Productions := WisiToken.To_Vector ((1 => (294, 0)));
+            Table.States (856).Kernel := To_Vector ((0 => (323, 61, 1, False)));
+            Table.States (856).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1017)));
             Add_Action (Table.States (857), 96, 1018);
             Add_Error (Table.States (857));
-            Table.States (857).Minimal_Complete_Action := (Shift, 96, 1018);
-            Table.States (858).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (857).Kernel := To_Vector ((0 => (294, 61, 1, False)));
+            Table.States (857).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1018)));
             Add_Action (Table.States (858), 61, 1019);
             Add_Error (Table.States (858));
-            Table.States (858).Minimal_Complete_Action := (Shift, 61, 1019);
-            Table.States (859).Productions := WisiToken.To_Vector ((1 => (313, 0)));
+            Table.States (858).Kernel := To_Vector ((0 => (126, 24, 2, False)));
+            Table.States (858).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 61, 1019)));
             Add_Action (Table.States (859), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (313, 0), 6,
             subtype_declaration_0'Access, null);
-            Table.States (859).Minimal_Complete_Action := (Reduce, 313, 6);
-            Table.States (860).Productions := WisiToken.To_Vector ((1 => (317, 0)));
+            Table.States (859).Kernel := To_Vector ((0 => (313, 96, 0, False)));
+            Table.States (859).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 313, 6)));
             Add_Action (Table.States (860), 96, 1020);
             Add_Error (Table.States (860));
-            Table.States (860).Minimal_Complete_Action := (Shift, 96, 1020);
-            Table.States (861).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (860).Kernel := To_Vector ((0 => (317, 122, 1, False)));
+            Table.States (860).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1020)));
             Add_Action (Table.States (861), 13, 1021);
             Add_Error (Table.States (861));
-            Table.States (861).Minimal_Complete_Action := (Shift, 13, 1021);
-            Table.States (862).Productions := WisiToken.To_Vector (((319, 0), (319, 1)));
+            Table.States (861).Kernel := To_Vector ((0 => (316, 159, 3, False)));
+            Table.States (861).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 13, 1021)));
             Add_Action (Table.States (862), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (862), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (862), 28, 183);
@@ -10201,18 +10448,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (862), 319, 113);
             Add_Goto (Table.States (862), 325, 115);
             Add_Goto (Table.States (862), 331, 116);
-            Table.States (862).Minimal_Complete_Action := (Reduce, 318, 0);
-            Table.States (863).Productions := WisiToken.To_Vector ((1 => (319, 2)));
+            Table.States (862).Kernel := To_Vector (((319, 35, 5, False), (319, 35, 2, False)));
+            Table.States (862).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 318, 0)));
             Add_Action (Table.States (863), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (319, 2), 6,
             task_type_declaration_2'Access, null);
-            Table.States (863).Minimal_Complete_Action := (Reduce, 319, 6);
-            Table.States (864).Productions := WisiToken.To_Vector (((227, 0), (305, 0)));
+            Table.States (863).Kernel := To_Vector ((0 => (319, 96, 0, False)));
+            Table.States (863).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 319, 6)));
             Add_Action (Table.States (864), 10, 1006);
             Add_Action (Table.States (864), 74, 1024);
             Add_Error (Table.States (864));
-            Table.States (864).Minimal_Complete_Action := (Shift, 74, 1024);
-            Table.States (865).Productions := WisiToken.To_Vector ((1 => (318, 0)));
+            Table.States (864).Kernel := To_Vector (((227, 227, 2, True), (305, 227, 3, False)));
+            Table.States (864).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 1024)));
             Add_Action (Table.States (865), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (865), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (865), 28, 183);
@@ -10283,21 +10530,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (865), 319, 113);
             Add_Goto (Table.States (865), 325, 115);
             Add_Goto (Table.States (865), 331, 116);
-            Table.States (865).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (866).Productions := WisiToken.To_Vector ((1 => (305, 1)));
+            Table.States (865).Kernel := To_Vector ((0 => (318, 49, 0, False)));
+            Table.States (865).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (866), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (866), 104, 149);
             Add_Error (Table.States (866));
             Add_Goto (Table.States (866), 220, 1026);
-            Table.States (866).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (867).Productions := WisiToken.To_Vector ((1 => (171, 0)));
+            Table.States (866).Kernel := To_Vector ((0 => (305, 24, 1, False)));
+            Table.States (866).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (867), (77, 96), (171, 0), 3, null, null);
-            Table.States (867).Minimal_Complete_Action := (Reduce, 171, 3);
-            Table.States (868).Productions := WisiToken.To_Vector (((241, 0), (242, 2), (242, 3)));
+            Table.States (867).Kernel := To_Vector ((0 => (171, 170, 0, True)));
+            Table.States (867).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 171, 3)));
+            Table.States (867).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (868), 41, 1027);
             Add_Error (Table.States (868));
-            Table.States (868).Minimal_Complete_Action := (Shift, 41, 1027);
-            Table.States (869).Productions := WisiToken.To_Vector (((239, 5), (242, 0)));
+            Table.States (868).Kernel := To_Vector (((241, 40, 1, False), (242, 40, 2, False), (242, 40, 4, False)));
+            Table.States (868).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 1027)));
             Add_Action (Table.States (869), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (869), 77, Reduce, (242, 0), 1, null_exclusion_opt_name_type_0'Access, null);
             Add_Action (Table.States (869), 82, Reduce, (242, 0), 1, null_exclusion_opt_name_type_0'Access, null);
@@ -10306,15 +10554,14 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (869), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (869), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (869));
-            Table.States (869).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (870).Productions := WisiToken.To_Vector (((170, 1), (170, 3)));
+            Table.States (869).Kernel := To_Vector (((239, 104, 0, False), (242, 104, 0, False)));
+            Table.States (869).Minimal_Complete_Actions := To_Vector (((Reduce, 239, 1), (Reduce, 242, 1)));
             Add_Action (Table.States (870), 77, Reduce, (170, 3), 3, null, null);
             Add_Action (Table.States (870), 82, 1028);
             Add_Action (Table.States (870), 96, Reduce, (170, 3), 3, null, null);
             Add_Error (Table.States (870));
-            Table.States (870).Minimal_Complete_Action := (Reduce, 170, 3);
-            Table.States (871).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (272, 0), (293, 0),
-            (293, 1), (293, 2), (293, 3)));
+            Table.States (870).Kernel := To_Vector (((170, 114, 1, False), (170, 114, 0, False)));
+            Table.States (870).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 170, 3)));
             Add_Action (Table.States (871), 76, 235);
             Add_Action (Table.States (871), 84, 237);
             Add_Action (Table.States (871), 101, 239);
@@ -10322,13 +10569,17 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (871));
             Add_Goto (Table.States (871), 115, 241);
             Add_Goto (Table.States (871), 322, 242);
-            Table.States (872).Productions := WisiToken.To_Vector (((170, 0), (170, 2)));
+            Table.States (871).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (871).Minimal_Complete_Actions := To_Vector (((Shift, 101, 239), (Shift, 76, 235), (Shift, 84,
+            237)));
+            Table.States (871).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (872), 77, Reduce, (170, 2), 3, null, null);
             Add_Action (Table.States (872), 82, 1029);
             Add_Action (Table.States (872), 96, Reduce, (170, 2), 3, null, null);
             Add_Error (Table.States (872));
-            Table.States (872).Minimal_Complete_Action := (Reduce, 170, 3);
-            Table.States (873).Productions := WisiToken.To_Vector (((239, 2), (242, 1)));
+            Table.States (872).Kernel := To_Vector (((170, 242, 1, False), (170, 242, 0, False)));
+            Table.States (872).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 170, 3)));
             Add_Action (Table.States (873), 76, Reduce, (239, 2), 1, null, name_2_check'Access);
             Add_Action (Table.States (873), 77, Reduce, (242, 1), 1, null_exclusion_opt_name_type_1'Access, null);
             Add_Action (Table.States (873), 82, Reduce, (242, 1), 1, null_exclusion_opt_name_type_1'Access, null);
@@ -10337,22 +10588,24 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (873), 101, Reduce, (239, 2), 1, null, name_2_check'Access);
             Add_Action (Table.States (873), 102, Reduce, (239, 2), 1, null, name_2_check'Access);
             Add_Error (Table.States (873));
-            Table.States (873).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (874).Productions := WisiToken.To_Vector (((109, 0), (110, 0)));
-            Add_Action (Table.States (874), 39, Reduce, (109, 0), 2, null, null, (110, 0), 2, null, null);
+            Table.States (873).Kernel := To_Vector (((239, 293, 0, True), (242, 293, 0, False)));
+            Table.States (873).Minimal_Complete_Actions := To_Vector (((Reduce, 239, 1), (Reduce, 242, 1)));
+            Table.States (873).Minimal_Complete_Actions_Recursive := True;
+            Add_Action (Table.States (874), 39, Reduce, (109, 0), 2, null, null);
+            Add_Conflict (Table.States (874), 39, (110, 0), 2, null, null);
             Add_Error (Table.States (874));
-            Table.States (874).Minimal_Complete_Action := (Reduce, 109, 2);
-            Table.States (875).Productions := WisiToken.To_Vector ((1 => (109, 1)));
+            Table.States (874).Kernel := To_Vector (((109, 36, 0, False), (110, 36, 0, False)));
+            Table.States (874).Minimal_Complete_Actions := To_Vector (((Reduce, 109, 2), (Reduce, 110, 2)));
             Add_Action (Table.States (875), (1 =>  39), (109, 1), 2, null, null);
-            Table.States (875).Minimal_Complete_Action := (Reduce, 109, 2);
-            Table.States (876).Productions := WisiToken.To_Vector (((111, 0), (111, 1)));
+            Table.States (875).Kernel := To_Vector ((0 => (109, 64, 0, False)));
+            Table.States (875).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 109, 2)));
             Add_Action (Table.States (876), 36, 1030);
             Add_Action (Table.States (876), 41, Reduce, (111, 1), 2, null, null);
             Add_Action (Table.States (876), 49, Reduce, (111, 1), 2, null, null);
             Add_Action (Table.States (876), 54, Reduce, (111, 1), 2, null, null);
             Add_Error (Table.States (876));
-            Table.States (876).Minimal_Complete_Action := (Reduce, 111, 2);
-            Table.States (877).Productions := WisiToken.To_Vector (((120, 0), (120, 1)));
+            Table.States (876).Kernel := To_Vector (((111, 65, 1, False), (111, 65, 0, False)));
+            Table.States (876).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 111, 2)));
             Add_Action (Table.States (877), 3, 121);
             Add_Action (Table.States (877), 39, 122);
             Add_Action (Table.States (877), 40, 474);
@@ -10382,66 +10635,69 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (877), 320, 144);
             Add_Goto (Table.States (877), 321, 145);
             Add_Goto (Table.States (877), 330, 146);
-            Table.States (877).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (878).Productions := WisiToken.To_Vector (((326, 4), (326, 5)));
+            Table.States (877).Kernel := To_Vector (((120, 76, 6, False), (120, 76, 6, False)));
+            Table.States (877).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (878), 20, 1035);
             Add_Action (Table.States (878), 53, 1036);
             Add_Action (Table.States (878), 74, Reduce, (279, 1), 0, null, null);
             Add_Action (Table.States (878), 96, Reduce, (279, 1), 0, null, null);
             Add_Error (Table.States (878));
             Add_Goto (Table.States (878), 279, 1037);
-            Table.States (878).Minimal_Complete_Action := (Reduce, 279, 0);
-            Table.States (879).Productions := WisiToken.To_Vector ((1 => (326, 3)));
+            Table.States (878).Kernel := To_Vector (((326, 192, 1, False), (326, 192, 0, False)));
+            Table.States (878).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 279, 0)));
             Add_Action (Table.States (879), 53, 1036);
             Add_Action (Table.States (879), 74, Reduce, (279, 1), 0, null, null);
             Add_Action (Table.States (879), 96, Reduce, (279, 1), 0, null, null);
             Add_Error (Table.States (879));
             Add_Goto (Table.States (879), 279, 1038);
-            Table.States (879).Minimal_Complete_Action := (Reduce, 279, 0);
-            Table.States (880).Productions := WisiToken.To_Vector (((228, 0), (228, 4)));
+            Table.States (879).Kernel := To_Vector ((0 => (326, 192, 0, False)));
+            Table.States (879).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 279, 0)));
             Add_Action (Table.States (880), 10, 1039);
             Add_Action (Table.States (880), 74, Reduce, (228, 4), 2, null, null);
             Add_Action (Table.States (880), 96, Reduce, (228, 4), 2, null, null);
             Add_Error (Table.States (880));
-            Table.States (880).Minimal_Complete_Action := (Reduce, 228, 2);
-            Table.States (881).Productions := WisiToken.To_Vector ((1 => (326, 2)));
+            Table.States (880).Kernel := To_Vector (((228, 34, 2, False), (228, 34, 0, False)));
+            Table.States (880).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 2)));
             Add_Action (Table.States (881), (74, 96), (326, 2), 2, null, null);
-            Table.States (881).Minimal_Complete_Action := (Reduce, 326, 2);
-            Table.States (882).Productions := WisiToken.To_Vector ((1 => (280, 1)));
+            Table.States (881).Kernel := To_Vector ((0 => (326, 192, 0, False)));
+            Table.States (881).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 2)));
             Add_Action (Table.States (882), (74, 96), (280, 1), 2, null, null);
-            Table.States (882).Minimal_Complete_Action := (Reduce, 280, 2);
-            Table.States (883).Productions := WisiToken.To_Vector (((228, 2), (228, 6)));
+            Table.States (882).Kernel := To_Vector ((0 => (280, 54, 0, False)));
+            Table.States (882).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 280, 2)));
             Add_Action (Table.States (883), 10, 1040);
             Add_Action (Table.States (883), 74, Reduce, (228, 6), 2, null, null);
             Add_Action (Table.States (883), 96, Reduce, (228, 6), 2, null, null);
             Add_Error (Table.States (883));
-            Table.States (883).Minimal_Complete_Action := (Reduce, 228, 2);
-            Table.States (884).Productions := WisiToken.To_Vector ((1 => (326, 1)));
+            Table.States (883).Kernel := To_Vector (((228, 34, 2, False), (228, 34, 0, False)));
+            Table.States (883).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 2)));
             Add_Action (Table.States (884), 85, 1041);
             Add_Error (Table.States (884));
-            Table.States (884).Minimal_Complete_Action := (Shift, 85, 1041);
-            Table.States (885).Productions := WisiToken.To_Vector ((1 => (327, 0)));
+            Table.States (884).Kernel := To_Vector ((0 => (326, 301, 2, False)));
+            Table.States (884).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 85, 1041)));
             Add_Action (Table.States (885), 35, Reduce, (164, 1), 0, null, null);
             Add_Action (Table.States (885), 104, 1042);
             Add_Action (Table.States (885), 105, 1043);
             Add_Error (Table.States (885));
             Add_Goto (Table.States (885), 163, 1044);
             Add_Goto (Table.States (885), 164, 1045);
-            Table.States (885).Minimal_Complete_Action := (Reduce, 164, 0);
-            Table.States (886).Productions := WisiToken.To_Vector ((1 => (149, 4)));
+            Table.States (885).Kernel := To_Vector ((0 => (327, 15, 6, False)));
+            Table.States (885).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 164, 0)));
             Add_Action (Table.States (886), 96, 1046);
             Add_Error (Table.States (886));
-            Table.States (886).Minimal_Complete_Action := (Shift, 96, 1046);
-            Table.States (887).Productions := WisiToken.To_Vector ((1 => (148, 1)));
+            Table.States (886).Kernel := To_Vector ((0 => (149, 41, 1, False)));
+            Table.States (886).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1046)));
             Add_Action (Table.States (887), (15, 24, 28, 72, 104), (148, 1), 1, null, null);
-            Table.States (887).Minimal_Complete_Action := (Reduce, 148, 1);
-            Table.States (888).Productions := WisiToken.To_Vector ((1 => (148, 0)));
+            Table.States (887).Kernel := To_Vector ((0 => (148, 121, 0, False)));
+            Table.States (887).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 148, 1)));
             Add_Action (Table.States (888), (15, 24, 28, 72, 104), (148, 0), 1, null, null);
-            Table.States (888).Minimal_Complete_Action := (Reduce, 148, 1);
-            Table.States (889).Productions := WisiToken.To_Vector ((1 => (149, 2)));
+            Table.States (888).Kernel := To_Vector ((0 => (148, 146, 0, False)));
+            Table.States (888).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 148, 1)));
+         end Subr_15;
+         procedure Subr_16
+         is begin
             Add_Action (Table.States (889), (15, 24, 28, 72, 104), (149, 2), 1, null, null);
-            Table.States (889).Minimal_Complete_Action := (Reduce, 149, 1);
-            Table.States (890).Productions := WisiToken.To_Vector (((149, 0), (149, 1), (150, 0)));
+            Table.States (889).Kernel := To_Vector ((0 => (149, 148, 0, False)));
+            Table.States (889).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 149, 1)));
             Add_Action (Table.States (890), 15, 885);
             Add_Action (Table.States (890), 24, Reduce, (150, 0), 1, null, null);
             Add_Action (Table.States (890), 28, 183);
@@ -10456,54 +10712,54 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (890), 219, 892);
             Add_Goto (Table.States (890), 281, 94);
             Add_Goto (Table.States (890), 327, 1048);
-            Table.States (890).Minimal_Complete_Action := (Reduce, 150, 1);
-            Table.States (891).Productions := WisiToken.To_Vector ((1 => (280, 0)));
+            Table.States (890).Kernel := To_Vector (((149, 149, 4, True), (149, 149, 7, True), (150, 149, 0, False)));
+            Table.States (890).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 150, 1)));
             Add_Action (Table.States (891), 24, 1049);
             Add_Error (Table.States (891));
-            Table.States (891).Minimal_Complete_Action := (Shift, 24, 1049);
-            Table.States (892).Productions := WisiToken.To_Vector (((146, 0), (146, 1), (219, 0)));
+            Table.States (891).Kernel := To_Vector ((0 => (280, 150, 2, False)));
+            Table.States (891).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1049)));
             Add_Action (Table.States (892), 81, 1050);
             Add_Action (Table.States (892), 83, 234);
             Add_Error (Table.States (892));
-            Table.States (892).Minimal_Complete_Action := (Shift, 81, 1050);
-            Table.States (893).Productions := WisiToken.To_Vector ((1 => (149, 3)));
+            Table.States (892).Kernel := To_Vector (((146, 219, 4, False), (146, 219, 3, False), (219, 219, 2, True)));
+            Table.States (892).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 81, 1050)));
             Add_Action (Table.States (893), (15, 24, 28, 72, 104), (149, 3), 1, null, null);
-            Table.States (893).Minimal_Complete_Action := (Reduce, 149, 1);
-            Table.States (894).Productions := WisiToken.To_Vector (((228, 3), (228, 7)));
+            Table.States (893).Kernel := To_Vector ((0 => (149, 327, 0, False)));
+            Table.States (893).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 149, 1)));
             Add_Action (Table.States (894), 10, 1051);
             Add_Action (Table.States (894), 74, Reduce, (228, 7), 2, null, null);
             Add_Action (Table.States (894), 96, Reduce, (228, 7), 2, null, null);
             Add_Error (Table.States (894));
-            Table.States (894).Minimal_Complete_Action := (Reduce, 228, 2);
-            Table.States (895).Productions := WisiToken.To_Vector ((1 => (111, 2)));
+            Table.States (894).Kernel := To_Vector (((228, 34, 2, False), (228, 34, 0, False)));
+            Table.States (894).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 2)));
             Add_Action (Table.States (895), (41, 49, 54), (111, 2), 2, null, null);
-            Table.States (895).Minimal_Complete_Action := (Reduce, 111, 2);
-            Table.States (896).Productions := WisiToken.To_Vector ((1 => (223, 0)));
+            Table.States (895).Kernel := To_Vector ((0 => (111, 36, 0, False)));
+            Table.States (895).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 111, 2)));
             Add_Action (Table.States (896), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (223, 0), 6,
             incomplete_type_declaration_0'Access, null);
-            Table.States (896).Minimal_Complete_Action := (Reduce, 223, 6);
-            Table.States (897).Productions := WisiToken.To_Vector (((228, 1), (228, 5)));
+            Table.States (896).Kernel := To_Vector ((0 => (223, 96, 0, False)));
+            Table.States (896).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 223, 6)));
             Add_Action (Table.States (897), 10, 1052);
             Add_Action (Table.States (897), 74, Reduce, (228, 5), 2, null, null);
             Add_Action (Table.States (897), 96, Reduce, (228, 5), 2, null, null);
             Add_Error (Table.States (897));
-            Table.States (897).Minimal_Complete_Action := (Reduce, 228, 2);
-            Table.States (898).Productions := WisiToken.To_Vector ((1 => (180, 0)));
+            Table.States (897).Kernel := To_Vector (((228, 34, 2, False), (228, 34, 0, False)));
+            Table.States (897).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 2)));
             Add_Action (Table.States (898), (77, 83), (180, 0), 1, null, null);
-            Table.States (898).Minimal_Complete_Action := (Reduce, 180, 1);
-            Table.States (899).Productions := WisiToken.To_Vector ((1 => (180, 1)));
+            Table.States (898).Kernel := To_Vector ((0 => (180, 104, 0, False)));
+            Table.States (898).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 180, 1)));
             Add_Action (Table.States (899), (77, 83), (180, 1), 1, null, null);
-            Table.States (899).Minimal_Complete_Action := (Reduce, 180, 1);
-            Table.States (900).Productions := WisiToken.To_Vector ((1 => (181, 1)));
+            Table.States (899).Kernel := To_Vector ((0 => (180, 106, 0, False)));
+            Table.States (899).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 180, 1)));
             Add_Action (Table.States (900), (77, 83), (181, 1), 1, null, null);
-            Table.States (900).Minimal_Complete_Action := (Reduce, 181, 1);
-            Table.States (901).Productions := WisiToken.To_Vector (((181, 0), (183, 0)));
+            Table.States (900).Kernel := To_Vector ((0 => (181, 180, 0, False)));
+            Table.States (900).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 181, 1)));
             Add_Action (Table.States (901), 77, 1053);
             Add_Action (Table.States (901), 83, 1054);
             Add_Error (Table.States (901));
-            Table.States (901).Minimal_Complete_Action := (Shift, 77, 1053);
-            Table.States (902).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (901).Kernel := To_Vector (((181, 181, 2, True), (183, 181, 1, False)));
+            Table.States (901).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1053)));
             Add_Action (Table.States (902), 40, 483);
             Add_Action (Table.States (902), 104, 119);
             Add_Action (Table.States (902), 105, 33);
@@ -10514,8 +10770,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (902), 272, 92);
             Add_Goto (Table.States (902), 293, 97);
             Add_Goto (Table.States (902), 314, 1055);
-            Table.States (902).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (903).Productions := WisiToken.To_Vector (((162, 0), (162, 1)));
+            Table.States (902).Kernel := To_Vector ((0 => (259, 39, 4, False)));
+            Table.States (902).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (903), 104, 119);
             Add_Action (Table.States (903), 105, 33);
             Add_Action (Table.States (903), 106, 34);
@@ -10524,30 +10780,29 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (903), 239, 1056);
             Add_Goto (Table.States (903), 272, 92);
             Add_Goto (Table.States (903), 293, 97);
-            Table.States (903).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (904).Productions := WisiToken.To_Vector ((1 => (260, 0)));
+            Table.States (903).Kernel := To_Vector (((162, 39, 4, False), (162, 39, 1, False)));
+            Table.States (903).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (904), 74, 337);
             Add_Action (Table.States (904), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (904));
             Add_Goto (Table.States (904), 122, 1057);
-            Table.States (904).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (905).Productions := WisiToken.To_Vector ((1 => (326, 7)));
+            Table.States (904).Kernel := To_Vector ((0 => (260, 49, 1, False)));
+            Table.States (904).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (905), (74, 96), (326, 7), 2, null, null);
-            Table.States (905).Minimal_Complete_Action := (Reduce, 326, 2);
-            Table.States (906).Productions := WisiToken.To_Vector ((1 => (206, 0)));
+            Table.States (905).Kernel := To_Vector ((0 => (326, 280, 0, False)));
+            Table.States (905).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 2)));
             Add_Action (Table.States (906), 96, 1058);
             Add_Error (Table.States (906));
-            Table.States (906).Minimal_Complete_Action := (Shift, 96, 1058);
-            Table.States (907).Productions := WisiToken.To_Vector ((1 => (245, 2)));
+            Table.States (906).Kernel := To_Vector ((0 => (206, 122, 1, False)));
+            Table.States (906).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1058)));
             Add_Action (Table.States (907), 96, 1059);
             Add_Error (Table.States (907));
-            Table.States (907).Minimal_Complete_Action := (Shift, 96, 1059);
-            Table.States (908).Productions := WisiToken.To_Vector ((1 => (245, 1)));
+            Table.States (907).Kernel := To_Vector ((0 => (245, 122, 1, False)));
+            Table.States (907).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1059)));
             Add_Action (Table.States (908), 96, 1060);
             Add_Error (Table.States (908));
-            Table.States (908).Minimal_Complete_Action := (Shift, 96, 1060);
-            Table.States (909).Productions := WisiToken.To_Vector (((114, 2), (128, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (908).Kernel := To_Vector ((0 => (245, 122, 1, False)));
+            Table.States (908).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1060)));
             Add_Action (Table.States (909), 21, Reduce, (114, 2), 4, access_definition_2'Access, null);
             Add_Action (Table.States (909), 35, Reduce, (114, 2), 4, access_definition_2'Access, null);
             Add_Action (Table.States (909), 56, Reduce, (114, 2), 4, access_definition_2'Access, null);
@@ -10562,16 +10817,19 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (909));
             Add_Goto (Table.States (909), 115, 241);
             Add_Goto (Table.States (909), 322, 242);
-            Table.States (909).Minimal_Complete_Action := (Reduce, 114, 4);
-            Table.States (910).Productions := WisiToken.To_Vector ((1 => (114, 1)));
+            Table.States (909).Kernel := To_Vector (((114, 239, 0, False), (128, 239, 2, True), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (909).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 114, 4)));
             Add_Action (Table.States (910), 58, 317);
             Add_Action (Table.States (910), 76, 431);
             Add_Error (Table.States (910));
             Add_Goto (Table.States (910), 199, 319);
             Add_Goto (Table.States (910), 252, 1061);
             Add_Goto (Table.States (910), 291, 321);
-            Table.States (910).Minimal_Complete_Action := (Shift, 58, 317);
-            Table.States (911).Productions := WisiToken.To_Vector ((1 => (114, 0)));
+            Table.States (910).Kernel := To_Vector ((0 => (114, 29, 1, True)));
+            Table.States (910).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 58, 317)));
+            Table.States (910).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (911), 21, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (911), 35, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (911), 56, Reduce, (253, 1), 0, null, null);
@@ -10583,9 +10841,8 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (911));
             Add_Goto (Table.States (911), 199, 344);
             Add_Goto (Table.States (911), 253, 1062);
-            Table.States (911).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (912).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (245, 0), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (911).Kernel := To_Vector ((0 => (114, 50, 0, False)));
+            Table.States (911).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (912), 74, 337);
             Add_Action (Table.States (912), 76, 235);
             Add_Action (Table.States (912), 84, 237);
@@ -10596,16 +10853,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (912), 115, 241);
             Add_Goto (Table.States (912), 122, 1063);
             Add_Goto (Table.States (912), 322, 242);
-            Table.States (912).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (913).Productions := WisiToken.To_Vector ((1 => (133, 1)));
+            Table.States (912).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (245, 239, 1, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (912).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (913), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (133, 1), 6, block_statement_1'Access, block_statement_1_check'Access);
-            Table.States (913).Minimal_Complete_Action := (Reduce, 133, 6);
-            Table.States (914).Productions := WisiToken.To_Vector ((1 => (184, 1)));
+            Table.States (913).Kernel := To_Vector ((0 => (133, 96, 0, False)));
+            Table.States (913).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 133, 6)));
             Add_Action (Table.States (914), (79, 87), (184, 1), 1, null, null);
-            Table.States (914).Minimal_Complete_Action := (Reduce, 184, 1);
-            Table.States (915).Productions := WisiToken.To_Vector (((187, 0), (239, 5)));
+            Table.States (914).Kernel := To_Vector ((0 => (184, 44, 0, False)));
+            Table.States (914).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 184, 1)));
             Add_Action (Table.States (915), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (915), 79, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (915), 81, 1064);
@@ -10614,17 +10873,16 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (915), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (915), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (915));
-            Table.States (915).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (916).Productions := WisiToken.To_Vector ((1 => (185, 1)));
+            Table.States (915).Kernel := To_Vector (((187, 104, 3, False), (239, 104, 0, False)));
+            Table.States (915).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 239, 1)));
             Add_Action (Table.States (916), (79, 87), (185, 1), 1, null, null);
-            Table.States (916).Minimal_Complete_Action := (Reduce, 185, 1);
-            Table.States (917).Productions := WisiToken.To_Vector (((185, 0), (187, 1)));
+            Table.States (916).Kernel := To_Vector ((0 => (185, 184, 0, False)));
+            Table.States (916).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 185, 1)));
             Add_Action (Table.States (917), 79, 1065);
             Add_Action (Table.States (917), 87, 1066);
             Add_Error (Table.States (917));
-            Table.States (917).Minimal_Complete_Action := (Shift, 87, 1066);
-            Table.States (918).Productions := WisiToken.To_Vector (((128, 0), (184, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (917).Kernel := To_Vector (((185, 185, 2, True), (187, 185, 1, False)));
+            Table.States (917).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 1066)));
             Add_Action (Table.States (918), 76, 235);
             Add_Action (Table.States (918), 79, Reduce, (184, 0), 1, null, null);
             Add_Action (Table.States (918), 84, 237);
@@ -10634,32 +10892,35 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (918));
             Add_Goto (Table.States (918), 115, 241);
             Add_Goto (Table.States (918), 322, 242);
-            Table.States (918).Minimal_Complete_Action := (Reduce, 184, 1);
-            Table.States (919).Productions := WisiToken.To_Vector ((1 => (188, 0)));
+            Table.States (918).Kernel := To_Vector (((128, 239, 2, True), (184, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (918).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 184, 1)));
             Add_Action (Table.States (919), (24, 72), (188, 0), 2, null, null);
-            Table.States (919).Minimal_Complete_Action := (Reduce, 188, 2);
-            Table.States (920).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (919).Kernel := To_Vector ((0 => (188, 187, 0, True)));
+            Table.States (919).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 188, 2)));
+            Table.States (919).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (920), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (920), 104, 149);
             Add_Error (Table.States (920));
             Add_Goto (Table.States (920), 220, 1067);
-            Table.States (920).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (921).Productions := WisiToken.To_Vector ((1 => (232, 1)));
+            Table.States (920).Kernel := To_Vector ((0 => (133, 24, 1, False)));
+            Table.States (920).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (921), 96, 1068);
             Add_Error (Table.States (921));
-            Table.States (921).Minimal_Complete_Action := (Shift, 96, 1068);
-            Table.States (922).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (921).Kernel := To_Vector ((0 => (232, 220, 1, False)));
+            Table.States (921).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1068)));
             Add_Action (Table.States (922), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (922), 104, 149);
             Add_Error (Table.States (922));
             Add_Goto (Table.States (922), 220, 1069);
-            Table.States (922).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (923).Productions := WisiToken.To_Vector ((1 => (157, 9)));
+            Table.States (922).Kernel := To_Vector ((0 => (232, 37, 1, False)));
+            Table.States (922).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (923), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (157, 9), 6,
             declaration_9'Access, null);
-            Table.States (923).Minimal_Complete_Action := (Reduce, 157, 6);
-            Table.States (924).Productions := WisiToken.To_Vector (((241, 0), (314, 0), (314, 1)));
+            Table.States (923).Kernel := To_Vector ((0 => (157, 96, 0, False)));
+            Table.States (923).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 157, 6)));
             Add_Action (Table.States (924), 7, Reduce, (241, 0), 2, null, null);
             Add_Action (Table.States (924), 104, 119);
             Add_Action (Table.States (924), 105, 33);
@@ -10669,8 +10930,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (924), 239, 772);
             Add_Goto (Table.States (924), 272, 92);
             Add_Goto (Table.States (924), 293, 97);
-            Table.States (924).Minimal_Complete_Action := (Reduce, 241, 2);
-            Table.States (925).Productions := WisiToken.To_Vector ((1 => (244, 1)));
+            Table.States (924).Kernel := To_Vector (((241, 41, 0, False), (314, 41, 5, False), (314, 41, 1, False)));
+            Table.States (924).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 241, 2)));
             Add_Action (Table.States (925), 3, 121);
             Add_Action (Table.States (925), 39, 122);
             Add_Action (Table.States (925), 40, 123);
@@ -10706,12 +10967,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (925), 320, 144);
             Add_Goto (Table.States (925), 321, 145);
             Add_Goto (Table.States (925), 330, 146);
-            Table.States (925).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (926).Productions := WisiToken.To_Vector ((1 => (244, 4)));
+            Table.States (925).Kernel := To_Vector ((0 => (244, 82, 1, False)));
+            Table.States (925).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (926), 96, 1071);
             Add_Error (Table.States (926));
-            Table.States (926).Minimal_Complete_Action := (Shift, 96, 1071);
-            Table.States (927).Productions := WisiToken.To_Vector ((1 => (244, 2)));
+            Table.States (926).Kernel := To_Vector ((0 => (244, 122, 1, False)));
+            Table.States (926).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1071)));
             Add_Action (Table.States (927), 3, 121);
             Add_Action (Table.States (927), 39, 122);
             Add_Action (Table.States (927), 40, 123);
@@ -10747,15 +11008,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (927), 320, 144);
             Add_Goto (Table.States (927), 321, 145);
             Add_Goto (Table.States (927), 330, 146);
-            Table.States (927).Minimal_Complete_Action := (Reduce, 192, 0);
-         end Subr_15;
-         procedure Subr_16
-         is begin
-            Table.States (928).Productions := WisiToken.To_Vector ((1 => (244, 5)));
+            Table.States (927).Kernel := To_Vector ((0 => (244, 82, 1, False)));
+            Table.States (927).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (928), 96, 1073);
             Add_Error (Table.States (928));
-            Table.States (928).Minimal_Complete_Action := (Shift, 96, 1073);
-            Table.States (929).Productions := WisiToken.To_Vector ((1 => (244, 0)));
+            Table.States (928).Kernel := To_Vector ((0 => (244, 122, 1, False)));
+            Table.States (928).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1073)));
             Add_Action (Table.States (929), 3, 121);
             Add_Action (Table.States (929), 39, 122);
             Add_Action (Table.States (929), 40, 123);
@@ -10791,26 +11049,25 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (929), 320, 144);
             Add_Goto (Table.States (929), 321, 145);
             Add_Goto (Table.States (929), 330, 146);
-            Table.States (929).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (930).Productions := WisiToken.To_Vector ((1 => (244, 3)));
+            Table.States (929).Kernel := To_Vector ((0 => (244, 82, 1, False)));
+            Table.States (929).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (930), 96, 1075);
             Add_Error (Table.States (930));
-            Table.States (930).Minimal_Complete_Action := (Shift, 96, 1075);
-            Table.States (931).Productions := WisiToken.To_Vector ((1 => (179, 0)));
+            Table.States (930).Kernel := To_Vector ((0 => (244, 122, 1, False)));
+            Table.States (930).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1075)));
             Add_Action (Table.States (931), 74, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (931), 76, 431);
             Add_Action (Table.States (931), 96, Reduce, (253, 1), 0, null, null);
             Add_Error (Table.States (931));
             Add_Goto (Table.States (931), 199, 344);
             Add_Goto (Table.States (931), 253, 1076);
-            Table.States (931).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (932).Productions := WisiToken.To_Vector ((1 => (179, 1)));
+            Table.States (931).Kernel := To_Vector ((0 => (179, 77, 1, False)));
+            Table.States (931).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (932), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (179, 1), 6,
             entry_declaration_1'Access, null);
-            Table.States (932).Minimal_Complete_Action := (Reduce, 179, 6);
-            Table.States (933).Productions := WisiToken.To_Vector (((128, 0), (213, 2), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (932).Kernel := To_Vector ((0 => (179, 96, 0, False)));
+            Table.States (932).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 179, 6)));
             Add_Action (Table.States (933), 74, 337);
             Add_Action (Table.States (933), 76, 235);
             Add_Action (Table.States (933), 84, 237);
@@ -10821,9 +11078,10 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (933), 115, 241);
             Add_Goto (Table.States (933), 122, 1077);
             Add_Goto (Table.States (933), 322, 242);
-            Table.States (933).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (934).Productions := WisiToken.To_Vector (((128, 0), (213, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (933).Kernel := To_Vector (((128, 239, 2, True), (213, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (933).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (934), 74, 337);
             Add_Action (Table.States (934), 76, 235);
             Add_Action (Table.States (934), 84, 237);
@@ -10834,42 +11092,44 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (934), 115, 241);
             Add_Goto (Table.States (934), 122, 1078);
             Add_Goto (Table.States (934), 322, 242);
-            Table.States (934).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (935).Productions := WisiToken.To_Vector ((1 => (256, 1)));
+            Table.States (934).Kernel := To_Vector (((128, 239, 2, True), (213, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (934).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (935), (74, 96), (256, 1), 3, paren_expression_1'Access, null);
-            Table.States (935).Minimal_Complete_Action := (Reduce, 256, 3);
-            Table.States (936).Productions := WisiToken.To_Vector ((1 => (256, 2)));
+            Table.States (935).Kernel := To_Vector ((0 => (256, 77, 0, False)));
+            Table.States (935).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 256, 3)));
             Add_Action (Table.States (936), (74, 96), (256, 2), 3, paren_expression_2'Access, null);
-            Table.States (936).Minimal_Complete_Action := (Reduce, 256, 3);
-            Table.States (937).Productions := WisiToken.To_Vector ((1 => (256, 0)));
+            Table.States (936).Kernel := To_Vector ((0 => (256, 77, 0, False)));
+            Table.States (936).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 256, 3)));
             Add_Action (Table.States (937), (74, 96), (256, 0), 3, paren_expression_0'Access, null);
-            Table.States (937).Minimal_Complete_Action := (Reduce, 256, 3);
-            Table.States (938).Productions := WisiToken.To_Vector ((1 => (193, 0)));
+            Table.States (937).Kernel := To_Vector ((0 => (256, 77, 0, False)));
+            Table.States (937).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 256, 3)));
             Add_Action (Table.States (938), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (193, 0), 6,
             expression_function_declaration_0'Access, null);
-            Table.States (938).Minimal_Complete_Action := (Reduce, 193, 6);
-            Table.States (939).Productions := WisiToken.To_Vector ((1 => (243, 0)));
+            Table.States (938).Kernel := To_Vector ((0 => (193, 96, 0, False)));
+            Table.States (938).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 193, 6)));
             Add_Action (Table.States (939), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (243, 0), 6,
             null_procedure_declaration_0'Access, null);
-            Table.States (939).Minimal_Complete_Action := (Reduce, 243, 6);
-            Table.States (940).Productions := WisiToken.To_Vector ((1 => (112, 0)));
+            Table.States (939).Kernel := To_Vector ((0 => (243, 96, 0, False)));
+            Table.States (939).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 243, 6)));
             Add_Action (Table.States (940), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (112, 0), 6,
             abstract_subprogram_declaration_0'Access, null);
-            Table.States (940).Minimal_Complete_Action := (Reduce, 112, 6);
-            Table.States (941).Productions := WisiToken.To_Vector ((1 => (308, 0)));
+            Table.States (940).Kernel := To_Vector ((0 => (112, 96, 0, False)));
+            Table.States (940).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 112, 6)));
             Add_Action (Table.States (941), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (308, 0), 6,
             subprogram_body_stub_0'Access, null);
-            Table.States (941).Minimal_Complete_Action := (Reduce, 308, 6);
-            Table.States (942).Productions := WisiToken.To_Vector ((1 => (311, 0)));
+            Table.States (941).Kernel := To_Vector ((0 => (308, 96, 0, False)));
+            Table.States (941).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 308, 6)));
             Add_Action (Table.States (942), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (311, 0), 6,
             subprogram_renaming_declaration_0'Access, null);
-            Table.States (942).Minimal_Complete_Action := (Reduce, 311, 6);
-            Table.States (943).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (942).Kernel := To_Vector ((0 => (311, 96, 0, False)));
+            Table.States (942).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 311, 6)));
             Add_Action (Table.States (943), 4, 1);
             Add_Action (Table.States (943), 5, 2);
             Add_Action (Table.States (943), 13, Reduce, (132, 1), 0, null, null);
@@ -10927,27 +11187,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (943), 303, 101);
             Add_Goto (Table.States (943), 306, 363);
             Add_Goto (Table.States (943), 323, 114);
-            Table.States (943).Minimal_Complete_Action := (Reduce, 218, 0);
-            Table.States (944).Productions := WisiToken.To_Vector ((1 => (113, 0)));
+            Table.States (943).Kernel := To_Vector ((0 => (307, 13, 2, False)));
+            Table.States (943).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (944), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (944), 104, 149);
             Add_Error (Table.States (944));
             Add_Goto (Table.States (944), 220, 1080);
-            Table.States (944).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (945).Productions := WisiToken.To_Vector (((137, 0), (166, 0)));
+            Table.States (944).Kernel := To_Vector ((0 => (113, 24, 1, False)));
+            Table.States (944).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (945), 79, 445);
             Add_Action (Table.States (945), 87, 1081);
             Add_Error (Table.States (945));
-            Table.States (945).Minimal_Complete_Action := (Shift, 87, 1081);
-            Table.States (946).Productions := WisiToken.To_Vector ((1 => (138, 0)));
+            Table.States (945).Kernel := To_Vector (((137, 166, 1, False), (166, 166, 2, True)));
+            Table.States (945).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 1081)));
             Add_Action (Table.States (946), 72, 761);
             Add_Error (Table.States (946));
             Add_Goto (Table.States (946), 137, 1082);
-            Table.States (946).Minimal_Complete_Action := (Shift, 72, 761);
-            Table.States (947).Productions := WisiToken.To_Vector ((1 => (273, 0)));
+            Table.States (946).Kernel := To_Vector ((0 => (138, 83, 2, True)));
+            Table.States (946).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 72, 761)));
+            Table.States (946).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (947), (1 =>  77), (273, 0), 5, quantified_expression_0'Access, null);
-            Table.States (947).Minimal_Complete_Action := (Reduce, 273, 5);
-            Table.States (948).Productions := WisiToken.To_Vector ((1 => (221, 1)));
+            Table.States (947).Kernel := To_Vector ((0 => (273, 192, 0, False)));
+            Table.States (947).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 273, 5)));
             Add_Action (Table.States (948), 3, 121);
             Add_Action (Table.States (948), 39, 122);
             Add_Action (Table.States (948), 40, 123);
@@ -10982,8 +11243,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (948), 320, 144);
             Add_Goto (Table.States (948), 321, 145);
             Add_Goto (Table.States (948), 330, 146);
-            Table.States (948).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (949).Productions := WisiToken.To_Vector ((1 => (172, 0)));
+            Table.States (948).Kernel := To_Vector ((0 => (221, 22, 0, False)));
+            Table.States (948).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (949), 3, 121);
             Add_Action (Table.States (949), 39, 122);
             Add_Action (Table.States (949), 40, 123);
@@ -11018,40 +11279,40 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (949), 320, 144);
             Add_Goto (Table.States (949), 321, 145);
             Add_Goto (Table.States (949), 330, 146);
-            Table.States (949).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (950).Productions := WisiToken.To_Vector ((1 => (173, 1)));
+            Table.States (949).Kernel := To_Vector ((0 => (172, 23, 1, False)));
+            Table.States (949).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (950), (22, 23, 77), (173, 1), 1, null, null);
-            Table.States (950).Minimal_Complete_Action := (Reduce, 173, 1);
-            Table.States (951).Productions := WisiToken.To_Vector (((173, 0), (221, 0), (221, 2)));
+            Table.States (950).Kernel := To_Vector ((0 => (173, 172, 0, False)));
+            Table.States (950).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 173, 1)));
             Add_Action (Table.States (951), 22, 1085);
             Add_Action (Table.States (951), 23, 949);
             Add_Action (Table.States (951), 77, Reduce, (221, 2), 5, if_expression_2'Access, null);
             Add_Error (Table.States (951));
             Add_Goto (Table.States (951), 172, 1086);
-            Table.States (951).Minimal_Complete_Action := (Reduce, 221, 5);
-            Table.States (952).Productions := WisiToken.To_Vector ((1 => (117, 0)));
+            Table.States (951).Kernel := To_Vector (((173, 173, 2, True), (221, 173, 1, False), (221, 173, 0, False)));
+            Table.States (951).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 221, 5)));
             Add_Action (Table.States (952), (4, 5, 10, 13, 15, 17, 18, 20, 21, 22, 23, 27, 28, 31, 32, 33, 35, 37, 38,
             40, 41, 42, 43, 48, 52, 53, 55, 56, 57, 58, 61, 68, 71, 73, 74, 75, 76, 77, 78, 79, 82, 83, 84, 85, 86, 87,
             88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106), (117, 0), 6, aggregate_0'Access,
             null);
-            Table.States (952).Minimal_Complete_Action := (Reduce, 117, 6);
-            Table.States (953).Productions := WisiToken.To_Vector ((1 => (277, 0)));
+            Table.States (952).Kernel := To_Vector ((0 => (117, 77, 0, False)));
+            Table.States (952).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 117, 6)));
             Add_Action (Table.States (953), 77, 1087);
             Add_Error (Table.States (953));
-            Table.States (953).Minimal_Complete_Action := (Shift, 77, 1087);
-            Table.States (954).Productions := WisiToken.To_Vector ((1 => (140, 0)));
+            Table.States (953).Kernel := To_Vector ((0 => (277, 192, 1, False)));
+            Table.States (953).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1087)));
             Add_Action (Table.States (954), (24, 72), (140, 0), 4, case_statement_alternative_0'Access, null);
-            Table.States (954).Minimal_Complete_Action := (Reduce, 140, 4);
-            Table.States (955).Productions := WisiToken.To_Vector ((1 => (139, 0)));
+            Table.States (954).Kernel := To_Vector ((0 => (140, 300, 0, False)));
+            Table.States (954).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 140, 4)));
             Add_Action (Table.States (955), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (139, 0), 7, case_statement_0'Access, null);
-            Table.States (955).Minimal_Complete_Action := (Reduce, 139, 7);
-            Table.States (956).Productions := WisiToken.To_Vector ((1 => (314, 0)));
+            Table.States (955).Kernel := To_Vector ((0 => (139, 96, 0, False)));
+            Table.States (955).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 139, 7)));
             Add_Action (Table.States (956), (10, 21, 37, 42, 74, 77, 82, 83, 87, 96), (314, 0), 4,
             subtype_indication_0'Access, null);
-            Table.States (956).Minimal_Complete_Action := (Reduce, 314, 4);
-            Table.States (957).Productions := WisiToken.To_Vector (((165, 1), (258, 1), (314, 0), (314, 1)));
+            Table.States (956).Kernel := To_Vector ((0 => (314, 155, 0, False)));
+            Table.States (956).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 314, 4)));
             Add_Action (Table.States (957), 10, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (957), 33, Reduce, (258, 1), 1, null, null);
             Add_Action (Table.States (957), 38, Reduce, (258, 1), 1, null, null);
@@ -11083,12 +11344,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (957), 239, 1088);
             Add_Goto (Table.States (957), 272, 92);
             Add_Goto (Table.States (957), 293, 97);
-            Table.States (957).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (958).Productions := WisiToken.To_Vector ((1 => (224, 0)));
+            Table.States (957).Kernel := To_Vector (((165, 41, 1, False), (258, 41, 0, False), (314, 41, 5, False),
+            (314, 41, 1, False)));
+            Table.States (957).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 258, 1)));
             Add_Action (Table.States (958), (10, 21, 37, 42, 74, 77, 82, 83, 87, 96), (224, 0), 3,
             index_constraint_0'Access, null);
-            Table.States (958).Minimal_Complete_Action := (Reduce, 224, 3);
-            Table.States (959).Productions := WisiToken.To_Vector ((1 => (168, 0)));
+            Table.States (958).Kernel := To_Vector ((0 => (224, 77, 0, False)));
+            Table.States (958).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 224, 3)));
             Add_Action (Table.States (959), 3, 121);
             Add_Action (Table.States (959), 39, 122);
             Add_Action (Table.States (959), 40, 474);
@@ -11115,9 +11377,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (959), 320, 144);
             Add_Goto (Table.States (959), 321, 145);
             Add_Goto (Table.States (959), 330, 146);
-            Table.States (959).Minimal_Complete_Action := (Shift, 40, 474);
-            Table.States (960).Productions := WisiToken.To_Vector (((128, 0), (230, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (959).Kernel := To_Vector ((0 => (168, 83, 1, True)));
+            Table.States (959).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (959).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (960), 37, Reduce, (230, 0), 6, null, null);
             Add_Action (Table.States (960), 76, 235);
             Add_Action (Table.States (960), 84, 237);
@@ -11127,12 +11389,17 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (960));
             Add_Goto (Table.States (960), 115, 241);
             Add_Goto (Table.States (960), 322, 242);
-            Table.States (960).Minimal_Complete_Action := (Reduce, 230, 6);
-            Table.States (961).Productions := WisiToken.To_Vector ((1 => (235, 0)));
+            Table.States (960).Kernel := To_Vector (((128, 239, 2, True), (230, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (960).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 230, 6)));
+         end Subr_16;
+         procedure Subr_17
+         is begin
             Add_Action (Table.States (961), 96, 1090);
             Add_Error (Table.States (961));
-            Table.States (961).Minimal_Complete_Action := (Shift, 96, 1090);
-            Table.States (962).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (961).Kernel := To_Vector ((0 => (235, 192, 1, False)));
+            Table.States (961).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1090)));
             Add_Action (Table.States (962), 3, 121);
             Add_Action (Table.States (962), 39, 122);
             Add_Action (Table.States (962), 40, 123);
@@ -11156,70 +11423,71 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (962), 320, 144);
             Add_Goto (Table.States (962), 321, 145);
             Add_Goto (Table.States (962), 330, 146);
-            Table.States (962).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (963).Productions := WisiToken.To_Vector ((1 => (281, 0)));
+            Table.States (962).Kernel := To_Vector ((0 => (144, 12, 6, False)));
+            Table.States (962).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (963), 54, 1092);
             Add_Error (Table.States (963));
-            Table.States (963).Minimal_Complete_Action := (Shift, 54, 1092);
-            Table.States (964).Productions := WisiToken.To_Vector ((1 => (145, 0)));
+            Table.States (963).Kernel := To_Vector ((0 => (281, 24, 2, False)));
+            Table.States (963).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 54, 1092)));
             Add_Action (Table.States (964), (24, 104), (145, 0), 2, null, null);
-            Table.States (964).Minimal_Complete_Action := (Reduce, 145, 2);
-            Table.States (965).Productions := WisiToken.To_Vector (((254, 2), (254, 3)));
+            Table.States (964).Kernel := To_Vector ((0 => (145, 144, 0, True)));
+            Table.States (964).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 145, 2)));
+            Table.States (964).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (965), 77, Reduce, (254, 3), 4, parameter_specification_3'Access, null);
             Add_Action (Table.States (965), 82, 1093);
             Add_Action (Table.States (965), 96, Reduce, (254, 3), 4, parameter_specification_3'Access, null);
             Add_Error (Table.States (965));
-            Table.States (965).Minimal_Complete_Action := (Reduce, 254, 4);
-            Table.States (966).Productions := WisiToken.To_Vector (((254, 0), (254, 1)));
+            Table.States (965).Kernel := To_Vector (((254, 114, 1, False), (254, 114, 0, False)));
+            Table.States (965).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 254, 4)));
             Add_Action (Table.States (966), 40, 386);
             Add_Action (Table.States (966), 104, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (966), 105, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (966), 106, Reduce, (241, 1), 0, null, null);
             Add_Error (Table.States (966));
             Add_Goto (Table.States (966), 241, 1094);
-            Table.States (966).Minimal_Complete_Action := (Reduce, 241, 0);
-            Table.States (967).Productions := WisiToken.To_Vector ((1 => (215, 2)));
+            Table.States (966).Kernel := To_Vector (((254, 236, 2, False), (254, 236, 1, False)));
+            Table.States (966).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 241, 0)));
             Add_Action (Table.States (967), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (215, 2), 7,
             generic_renaming_declaration_2'Access, null);
-            Table.States (967).Minimal_Complete_Action := (Reduce, 215, 7);
-            Table.States (968).Productions := WisiToken.To_Vector ((1 => (215, 0)));
+            Table.States (967).Kernel := To_Vector ((0 => (215, 96, 0, False)));
+            Table.States (967).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 215, 7)));
             Add_Action (Table.States (968), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (215, 0), 7,
             generic_renaming_declaration_0'Access, null);
-            Table.States (968).Minimal_Complete_Action := (Reduce, 215, 7);
-            Table.States (969).Productions := WisiToken.To_Vector ((1 => (215, 1)));
+            Table.States (968).Kernel := To_Vector ((0 => (215, 96, 0, False)));
+            Table.States (968).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 215, 7)));
             Add_Action (Table.States (969), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (215, 1), 7,
             generic_renaming_declaration_1'Access, null);
-            Table.States (969).Minimal_Complete_Action := (Reduce, 215, 7);
-            Table.States (970).Productions := WisiToken.To_Vector ((1 => (109, 0)));
+            Table.States (969).Kernel := To_Vector ((0 => (215, 96, 0, False)));
+            Table.States (969).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 215, 7)));
             Add_Action (Table.States (970), (1 =>  39), (109, 0), 2, null, null);
-            Table.States (970).Minimal_Complete_Action := (Reduce, 109, 2);
-            Table.States (971).Productions := WisiToken.To_Vector (((202, 6), (202, 7)));
+            Table.States (970).Kernel := To_Vector ((0 => (109, 36, 0, False)));
+            Table.States (970).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 109, 2)));
             Add_Action (Table.States (971), 20, 1095);
             Add_Action (Table.States (971), 74, Reduce, (202, 7), 2, null, null);
             Add_Action (Table.States (971), 96, Reduce, (202, 7), 2, null, null);
             Add_Error (Table.States (971));
-            Table.States (971).Minimal_Complete_Action := (Reduce, 202, 2);
-            Table.States (972).Productions := WisiToken.To_Vector ((1 => (202, 5)));
+            Table.States (971).Kernel := To_Vector (((202, 80, 2, False), (202, 80, 0, False)));
+            Table.States (971).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 2)));
             Add_Action (Table.States (972), (74, 96), (202, 5), 2, null, null);
-            Table.States (972).Minimal_Complete_Action := (Reduce, 202, 2);
-            Table.States (973).Productions := WisiToken.To_Vector ((1 => (202, 4)));
+            Table.States (972).Kernel := To_Vector ((0 => (202, 80, 0, False)));
+            Table.States (972).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 2)));
             Add_Action (Table.States (973), (74, 96), (202, 4), 2, null, null);
-            Table.States (973).Minimal_Complete_Action := (Reduce, 202, 2);
-            Table.States (974).Productions := WisiToken.To_Vector ((1 => (202, 3)));
+            Table.States (973).Kernel := To_Vector ((0 => (202, 80, 0, False)));
+            Table.States (973).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 2)));
             Add_Action (Table.States (974), (74, 96), (202, 3), 2, null, null);
-            Table.States (974).Minimal_Complete_Action := (Reduce, 202, 2);
-            Table.States (975).Productions := WisiToken.To_Vector ((1 => (201, 1)));
+            Table.States (974).Kernel := To_Vector ((0 => (202, 80, 0, False)));
+            Table.States (974).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 2)));
             Add_Action (Table.States (975), 96, 1096);
             Add_Error (Table.States (975));
-            Table.States (975).Minimal_Complete_Action := (Shift, 96, 1096);
-            Table.States (976).Productions := WisiToken.To_Vector ((1 => (202, 2)));
+            Table.States (975).Kernel := To_Vector ((0 => (201, 122, 1, False)));
+            Table.States (975).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1096)));
             Add_Action (Table.States (976), 77, 1097);
             Add_Error (Table.States (976));
-            Table.States (976).Minimal_Complete_Action := (Shift, 77, 1097);
-            Table.States (977).Productions := WisiToken.To_Vector (((203, 0), (203, 1)));
+            Table.States (976).Kernel := To_Vector ((0 => (202, 80, 1, False)));
+            Table.States (976).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1097)));
             Add_Action (Table.States (977), 104, 119);
             Add_Action (Table.States (977), 105, 33);
             Add_Action (Table.States (977), 106, 34);
@@ -11228,16 +11496,15 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (977), 239, 1098);
             Add_Goto (Table.States (977), 272, 92);
             Add_Goto (Table.States (977), 293, 97);
-            Table.States (977).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (978).Productions := WisiToken.To_Vector ((1 => (202, 0)));
+            Table.States (977).Kernel := To_Vector (((203, 39, 3, False), (203, 39, 1, False)));
+            Table.States (977).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (978), (74, 96), (202, 0), 2, null, null);
-            Table.States (978).Minimal_Complete_Action := (Reduce, 202, 2);
-            Table.States (979).Productions := WisiToken.To_Vector ((1 => (201, 0)));
+            Table.States (978).Kernel := To_Vector ((0 => (202, 49, 0, False)));
+            Table.States (978).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 2)));
             Add_Action (Table.States (979), 96, 1099);
             Add_Error (Table.States (979));
-            Table.States (979).Minimal_Complete_Action := (Shift, 96, 1099);
-            Table.States (980).Productions := WisiToken.To_Vector (((128, 0), (204, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (979).Kernel := To_Vector ((0 => (201, 122, 1, False)));
+            Table.States (979).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1099)));
             Add_Action (Table.States (980), 74, Reduce, (205, 1), 0, null, null);
             Add_Action (Table.States (980), 76, 1100);
             Add_Action (Table.States (980), 84, 237);
@@ -11248,30 +11515,32 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (980), 115, 241);
             Add_Goto (Table.States (980), 205, 1101);
             Add_Goto (Table.States (980), 322, 242);
-            Table.States (980).Minimal_Complete_Action := (Reduce, 205, 0);
-            Table.States (981).Productions := WisiToken.To_Vector ((1 => (200, 2)));
+            Table.States (980).Kernel := To_Vector (((128, 239, 2, True), (204, 239, 1, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (980).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 205, 0)));
             Add_Action (Table.States (981), (29, 47, 48, 50, 69, 71, 74, 104), (200, 2), 6,
             formal_subprogram_declaration_2'Access, null);
-            Table.States (981).Minimal_Complete_Action := (Reduce, 200, 6);
-            Table.States (982).Productions := WisiToken.To_Vector ((1 => (200, 0)));
+            Table.States (981).Kernel := To_Vector ((0 => (200, 96, 0, False)));
+            Table.States (981).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 200, 6)));
             Add_Action (Table.States (982), 96, 1102);
             Add_Error (Table.States (982));
-            Table.States (982).Minimal_Complete_Action := (Shift, 96, 1102);
-            Table.States (983).Productions := WisiToken.To_Vector ((1 => (200, 1)));
+            Table.States (982).Kernel := To_Vector ((0 => (200, 122, 1, False)));
+            Table.States (982).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1102)));
             Add_Action (Table.States (983), (29, 47, 48, 50, 69, 71, 74, 104), (200, 1), 6,
             formal_subprogram_declaration_1'Access, null);
-            Table.States (983).Minimal_Complete_Action := (Reduce, 200, 6);
-            Table.States (984).Productions := WisiToken.To_Vector ((1 => (198, 1)));
+            Table.States (983).Kernel := To_Vector ((0 => (200, 96, 0, False)));
+            Table.States (983).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 200, 6)));
             Add_Action (Table.States (984), 74, 337);
             Add_Action (Table.States (984), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (984));
             Add_Goto (Table.States (984), 122, 1103);
-            Table.States (984).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (985).Productions := WisiToken.To_Vector ((1 => (198, 3)));
+            Table.States (984).Kernel := To_Vector ((0 => (198, 192, 1, False)));
+            Table.States (984).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (985), (29, 47, 48, 50, 69, 71, 74, 104), (198, 3), 6,
             formal_object_declaration_3'Access, null);
-            Table.States (985).Minimal_Complete_Action := (Reduce, 198, 6);
-            Table.States (986).Productions := WisiToken.To_Vector ((1 => (198, 0)));
+            Table.States (985).Kernel := To_Vector ((0 => (198, 96, 0, False)));
+            Table.States (985).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 198, 6)));
             Add_Action (Table.States (986), 3, 121);
             Add_Action (Table.States (986), 39, 122);
             Add_Action (Table.States (986), 40, 123);
@@ -11307,16 +11576,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (986), 320, 144);
             Add_Goto (Table.States (986), 321, 145);
             Add_Goto (Table.States (986), 330, 146);
-            Table.States (986).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (987).Productions := WisiToken.To_Vector ((1 => (198, 2)));
+            Table.States (986).Kernel := To_Vector ((0 => (198, 82, 1, False)));
+            Table.States (986).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (987), 96, 1105);
             Add_Error (Table.States (987));
-            Table.States (987).Minimal_Complete_Action := (Shift, 96, 1105);
-            Table.States (988).Productions := WisiToken.To_Vector ((1 => (222, 1)));
+            Table.States (987).Kernel := To_Vector ((0 => (198, 122, 1, False)));
+            Table.States (987).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1105)));
             Add_Action (Table.States (988), 32, 1106);
             Add_Error (Table.States (988));
-            Table.States (988).Minimal_Complete_Action := (Shift, 32, 1106);
-            Table.States (989).Productions := WisiToken.To_Vector ((1 => (174, 0)));
+            Table.States (988).Kernel := To_Vector ((0 => (222, 24, 2, False)));
+            Table.States (988).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 32, 1106)));
             Add_Action (Table.States (989), 4, 1);
             Add_Action (Table.States (989), 5, 2);
             Add_Action (Table.States (989), 13, Reduce, (132, 1), 0, null, null);
@@ -11374,26 +11643,26 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (989), 303, 101);
             Add_Goto (Table.States (989), 306, 363);
             Add_Goto (Table.States (989), 323, 114);
-            Table.States (989).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (990).Productions := WisiToken.To_Vector ((1 => (222, 3)));
+            Table.States (989).Kernel := To_Vector ((0 => (174, 68, 0, False)));
+            Table.States (989).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (990), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (222, 3), 7, if_statement_3'Access, null);
-            Table.States (990).Minimal_Complete_Action := (Reduce, 222, 7);
-            Table.States (991).Productions := WisiToken.To_Vector ((1 => (222, 0)));
+            Table.States (990).Kernel := To_Vector ((0 => (222, 96, 0, False)));
+            Table.States (990).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 222, 7)));
             Add_Action (Table.States (991), 24, 1108);
             Add_Error (Table.States (991));
-            Table.States (991).Minimal_Complete_Action := (Shift, 24, 1108);
-            Table.States (992).Productions := WisiToken.To_Vector ((1 => (222, 2)));
+            Table.States (991).Kernel := To_Vector ((0 => (222, 300, 3, False)));
+            Table.States (991).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1108)));
             Add_Action (Table.States (992), 96, 1109);
             Add_Error (Table.States (992));
-            Table.States (992).Minimal_Complete_Action := (Shift, 96, 1109);
-            Table.States (993).Productions := WisiToken.To_Vector ((1 => (248, 0)));
+            Table.States (992).Kernel := To_Vector ((0 => (222, 32, 1, False)));
+            Table.States (992).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1109)));
             Add_Action (Table.States (993), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (248, 0), 7,
             package_body_stub_0'Access, null);
-            Table.States (993).Minimal_Complete_Action := (Reduce, 248, 7);
-            Table.States (994).Productions := WisiToken.To_Vector ((1 => (247, 0)));
+            Table.States (993).Kernel := To_Vector ((0 => (248, 96, 0, False)));
+            Table.States (993).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 248, 7)));
             Add_Action (Table.States (994), 4, 1);
             Add_Action (Table.States (994), 5, 2);
             Add_Action (Table.States (994), 13, Reduce, (132, 1), 0, null, null);
@@ -11451,11 +11720,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (994), 303, 101);
             Add_Goto (Table.States (994), 306, 363);
             Add_Goto (Table.States (994), 323, 114);
-            Table.States (994).Minimal_Complete_Action := (Reduce, 218, 0);
-         end Subr_16;
-         procedure Subr_17
-         is begin
-            Table.States (995).Productions := WisiToken.To_Vector ((1 => (247, 1)));
+            Table.States (994).Kernel := To_Vector ((0 => (247, 13, 2, False)));
+            Table.States (994).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (995), 96, Reduce, (240, 1), 0, null, null);
             Add_Action (Table.States (995), 104, 119);
             Add_Action (Table.States (995), 105, 33);
@@ -11466,50 +11732,51 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (995), 240, 1111);
             Add_Goto (Table.States (995), 272, 92);
             Add_Goto (Table.States (995), 293, 97);
-            Table.States (995).Minimal_Complete_Action := (Reduce, 240, 0);
-            Table.States (996).Productions := WisiToken.To_Vector ((1 => (213, 0)));
+            Table.States (995).Kernel := To_Vector ((0 => (247, 24, 1, False)));
+            Table.States (995).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 0)));
             Add_Action (Table.States (996), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (213, 0), 7,
             generic_instantiation_0'Access, null);
-            Table.States (996).Minimal_Complete_Action := (Reduce, 213, 7);
-            Table.States (997).Productions := WisiToken.To_Vector ((1 => (251, 1)));
+            Table.States (996).Kernel := To_Vector ((0 => (213, 96, 0, False)));
+            Table.States (996).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 213, 7)));
             Add_Action (Table.States (997), (1 =>  96), (251, 1), 7, package_specification_1'Access,
             package_specification_1_check'Access);
-            Table.States (997).Minimal_Complete_Action := (Reduce, 251, 7);
-            Table.States (998).Productions := WisiToken.To_Vector ((1 => (251, 0)));
+            Table.States (997).Kernel := To_Vector ((0 => (251, 240, 0, False)));
+            Table.States (997).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 251, 7)));
             Add_Action (Table.States (998), 24, 1112);
             Add_Error (Table.States (998));
-            Table.States (998).Minimal_Complete_Action := (Shift, 24, 1112);
-            Table.States (999).Productions := WisiToken.To_Vector ((1 => (265, 0)));
+            Table.States (998).Kernel := To_Vector ((0 => (251, 159, 1, False)));
+            Table.States (998).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1112)));
             Add_Action (Table.States (999), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (265, 0), 7,
             protected_body_stub_0'Access, null);
-            Table.States (999).Minimal_Complete_Action := (Reduce, 265, 7);
-            Table.States (1000).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (999).Kernel := To_Vector ((0 => (265, 96, 0, False)));
+            Table.States (999).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 265, 7)));
             Add_Action (Table.States (1000), 72, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (1000), 76, 1113);
             Add_Error (Table.States (1000));
             Add_Goto (Table.States (1000), 177, 1114);
             Add_Goto (Table.States (1000), 199, 344);
             Add_Goto (Table.States (1000), 253, 1115);
-            Table.States (1000).Minimal_Complete_Action := (Reduce, 177, 0);
-            Table.States (1001).Productions := WisiToken.To_Vector (((307, 0), (309, 0)));
+            Table.States (1000).Kernel := To_Vector ((0 => (176, 104, 5, False)));
+            Table.States (1000).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 177, 0)));
             Add_Action (Table.States (1001), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (1001), 74, 337);
             Add_Action (Table.States (1001), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1001));
             Add_Goto (Table.States (1001), 122, 430);
-            Table.States (1001).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1002).Productions := WisiToken.To_Vector ((1 => (268, 0)));
+            Table.States (1001).Kernel := To_Vector (((307, 312, 4, False), (309, 312, 1, False)));
+            Table.States (1001).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1002), (24, 25, 28, 29, 40, 46, 50), (268, 0), 2, null, null);
-            Table.States (1002).Minimal_Complete_Action := (Reduce, 268, 2);
-            Table.States (1003).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (1002).Kernel := To_Vector ((0 => (268, 267, 0, True)));
+            Table.States (1002).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 268, 2)));
+            Table.States (1002).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1003), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1003), 104, 149);
             Add_Error (Table.States (1003));
             Add_Goto (Table.States (1003), 220, 1116);
-            Table.States (1003).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1004).Productions := WisiToken.To_Vector ((1 => (271, 0)));
+            Table.States (1003).Kernel := To_Vector ((0 => (264, 24, 1, False)));
+            Table.States (1003).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1004), 104, 119);
             Add_Action (Table.States (1004), 105, 33);
             Add_Action (Table.States (1004), 106, 34);
@@ -11519,12 +11786,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1004), 239, 841);
             Add_Goto (Table.States (1004), 272, 92);
             Add_Goto (Table.States (1004), 293, 97);
-            Table.States (1004).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1005).Productions := WisiToken.To_Vector ((1 => (271, 1)));
+            Table.States (1004).Kernel := To_Vector ((0 => (271, 39, 4, False)));
+            Table.States (1004).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1005), 96, 1118);
             Add_Error (Table.States (1005));
-            Table.States (1005).Minimal_Complete_Action := (Shift, 96, 1118);
-            Table.States (1006).Productions := WisiToken.To_Vector ((1 => (227, 0)));
+            Table.States (1005).Kernel := To_Vector ((0 => (271, 266, 1, False)));
+            Table.States (1005).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1118)));
             Add_Action (Table.States (1006), 104, 119);
             Add_Action (Table.States (1006), 105, 33);
             Add_Action (Table.States (1006), 106, 34);
@@ -11533,8 +11800,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1006), 239, 1119);
             Add_Goto (Table.States (1006), 272, 92);
             Add_Goto (Table.States (1006), 293, 97);
-            Table.States (1006).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1007).Productions := WisiToken.To_Vector ((1 => (304, 0)));
+            Table.States (1006).Kernel := To_Vector ((0 => (227, 10, 1, True)));
+            Table.States (1006).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (1006).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1007), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (1007), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (1007), 28, 183);
@@ -11607,16 +11875,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1007), 319, 113);
             Add_Goto (Table.States (1007), 325, 115);
             Add_Goto (Table.States (1007), 331, 116);
-            Table.States (1007).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (1008).Productions := WisiToken.To_Vector ((1 => (266, 1)));
+            Table.States (1007).Kernel := To_Vector ((0 => (304, 74, 2, False)));
+            Table.States (1007).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (1008), (1 =>  96), (266, 1), 3, protected_definition_1'Access,
             protected_definition_1_check'Access);
-            Table.States (1008).Minimal_Complete_Action := (Reduce, 266, 3);
-            Table.States (1009).Productions := WisiToken.To_Vector ((1 => (266, 0)));
+            Table.States (1008).Kernel := To_Vector ((0 => (266, 220, 0, False)));
+            Table.States (1008).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 266, 3)));
             Add_Action (Table.States (1009), 24, 1121);
             Add_Error (Table.States (1009));
-            Table.States (1009).Minimal_Complete_Action := (Shift, 24, 1121);
-            Table.States (1010).Productions := WisiToken.To_Vector ((1 => (194, 0)));
+            Table.States (1009).Kernel := To_Vector ((0 => (266, 159, 1, False)));
+            Table.States (1009).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1121)));
             Add_Action (Table.States (1010), 3, 121);
             Add_Action (Table.States (1010), 21, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (1010), 39, 122);
@@ -11652,14 +11920,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1010), 320, 144);
             Add_Goto (Table.States (1010), 321, 145);
             Add_Goto (Table.States (1010), 330, 146);
-            Table.States (1010).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1011).Productions := WisiToken.To_Vector ((1 => (196, 0)));
+            Table.States (1010).Kernel := To_Vector ((0 => (194, 82, 0, False)));
+            Table.States (1010).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1011), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (196, 0), 7, extended_return_statement_0'Access, null);
-            Table.States (1011).Minimal_Complete_Action := (Reduce, 196, 7);
-            Table.States (1012).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (247, 0), (247, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (1011).Kernel := To_Vector ((0 => (196, 96, 0, False)));
+            Table.States (1011).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 196, 7)));
             Add_Action (Table.States (1012), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (1012), 74, 337);
             Add_Action (Table.States (1012), 76, 235);
@@ -11670,48 +11937,50 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1012), 115, 241);
             Add_Goto (Table.States (1012), 122, 511);
             Add_Goto (Table.States (1012), 322, 242);
-            Table.States (1012).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1013).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (1012).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (247, 239, 4, False), (247, 239, 3, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (1012).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1013), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (1013), 74, 337);
             Add_Error (Table.States (1013));
             Add_Goto (Table.States (1013), 122, 520);
-            Table.States (1013).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1014).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (1013).Kernel := To_Vector ((0 => (264, 104, 3, False)));
+            Table.States (1013).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1014), 35, Reduce, (122, 1), 0, null, null);
             Add_Action (Table.States (1014), 74, 337);
             Add_Error (Table.States (1014));
             Add_Goto (Table.States (1014), 122, 540);
-            Table.States (1014).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1015).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (1014).Kernel := To_Vector ((0 => (316, 104, 4, False)));
+            Table.States (1014).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1015), 35, 585);
             Add_Error (Table.States (1015));
-            Table.States (1015).Minimal_Complete_Action := (Shift, 35, 585);
-            Table.States (1016).Productions := WisiToken.To_Vector ((1 => (152, 0)));
+            Table.States (1015).Kernel := To_Vector ((0 => (307, 122, 4, False)));
+            Table.States (1015).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 585)));
             Add_Action (Table.States (1016), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (152, 0), 7, conditional_entry_call_0'Access, null);
-            Table.States (1016).Minimal_Complete_Action := (Reduce, 152, 7);
-            Table.States (1017).Productions := WisiToken.To_Vector ((1 => (323, 0)));
+            Table.States (1016).Kernel := To_Vector ((0 => (152, 96, 0, False)));
+            Table.States (1016).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 152, 7)));
             Add_Action (Table.States (1017), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (323, 0), 7, timed_entry_call_0'Access, null);
-            Table.States (1017).Minimal_Complete_Action := (Reduce, 323, 7);
-            Table.States (1018).Productions := WisiToken.To_Vector ((1 => (294, 0)));
+            Table.States (1017).Kernel := To_Vector ((0 => (323, 96, 0, False)));
+            Table.States (1017).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 323, 7)));
             Add_Action (Table.States (1018), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (294, 0), 7, selective_accept_0'Access, null);
-            Table.States (1018).Minimal_Complete_Action := (Reduce, 294, 7);
-            Table.States (1019).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (1018).Kernel := To_Vector ((0 => (294, 96, 0, False)));
+            Table.States (1018).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 294, 7)));
             Add_Action (Table.States (1019), 96, 1123);
             Add_Error (Table.States (1019));
-            Table.States (1019).Minimal_Complete_Action := (Shift, 96, 1123);
-            Table.States (1020).Productions := WisiToken.To_Vector ((1 => (317, 0)));
+            Table.States (1019).Kernel := To_Vector ((0 => (126, 61, 1, False)));
+            Table.States (1019).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1123)));
             Add_Action (Table.States (1020), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (317, 0), 7,
             task_body_stub_0'Access, null);
-            Table.States (1020).Minimal_Complete_Action := (Reduce, 317, 7);
-            Table.States (1021).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (1020).Kernel := To_Vector ((0 => (317, 96, 0, False)));
+            Table.States (1020).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 317, 7)));
             Add_Action (Table.States (1021), 4, 1);
             Add_Action (Table.States (1021), 5, 2);
             Add_Action (Table.States (1021), 13, Reduce, (132, 1), 0, null, null);
@@ -11769,8 +12038,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1021), 303, 101);
             Add_Goto (Table.States (1021), 306, 363);
             Add_Goto (Table.States (1021), 323, 114);
-            Table.States (1021).Minimal_Complete_Action := (Reduce, 218, 0);
-            Table.States (1022).Productions := WisiToken.To_Vector ((1 => (319, 0)));
+            Table.States (1021).Kernel := To_Vector ((0 => (316, 13, 2, False)));
+            Table.States (1021).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (1022), 104, 119);
             Add_Action (Table.States (1022), 105, 33);
             Add_Action (Table.States (1022), 106, 34);
@@ -11780,12 +12049,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1022), 239, 841);
             Add_Goto (Table.States (1022), 272, 92);
             Add_Goto (Table.States (1022), 293, 97);
-            Table.States (1022).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1023).Productions := WisiToken.To_Vector ((1 => (319, 1)));
+            Table.States (1022).Kernel := To_Vector ((0 => (319, 39, 4, False)));
+            Table.States (1022).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1023), 24, 1126);
             Add_Error (Table.States (1023));
-            Table.States (1023).Minimal_Complete_Action := (Shift, 24, 1126);
-            Table.States (1024).Productions := WisiToken.To_Vector ((1 => (305, 0)));
+            Table.States (1023).Kernel := To_Vector ((0 => (319, 318, 2, False)));
+            Table.States (1023).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1126)));
             Add_Action (Table.States (1024), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (1024), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (1024), 28, 183);
@@ -11858,15 +12127,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1024), 319, 113);
             Add_Goto (Table.States (1024), 325, 115);
             Add_Goto (Table.States (1024), 331, 116);
-            Table.States (1024).Minimal_Complete_Action := (Reduce, 318, 0);
-            Table.States (1025).Productions := WisiToken.To_Vector ((1 => (318, 0)));
+            Table.States (1024).Kernel := To_Vector ((0 => (305, 74, 2, False)));
+            Table.States (1024).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 318, 0)));
+         end Subr_17;
+         procedure Subr_18
+         is begin
             Add_Action (Table.States (1025), (1 =>  24), (318, 0), 3, task_definition_0'Access, null);
-            Table.States (1025).Minimal_Complete_Action := (Reduce, 318, 3);
-            Table.States (1026).Productions := WisiToken.To_Vector ((1 => (305, 1)));
+            Table.States (1025).Kernel := To_Vector ((0 => (318, 159, 0, False)));
+            Table.States (1025).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 318, 3)));
             Add_Action (Table.States (1026), 96, 1128);
             Add_Error (Table.States (1026));
-            Table.States (1026).Minimal_Complete_Action := (Shift, 96, 1128);
-            Table.States (1027).Productions := WisiToken.To_Vector (((241, 0), (242, 2), (242, 3)));
+            Table.States (1026).Kernel := To_Vector ((0 => (305, 220, 1, False)));
+            Table.States (1026).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1128)));
             Add_Action (Table.States (1027), 7, Reduce, (241, 0), 2, null, null);
             Add_Action (Table.States (1027), 104, 1129);
             Add_Action (Table.States (1027), 105, 33);
@@ -11876,8 +12148,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1027), 239, 871);
             Add_Goto (Table.States (1027), 272, 92);
             Add_Goto (Table.States (1027), 293, 1130);
-            Table.States (1027).Minimal_Complete_Action := (Reduce, 241, 2);
-            Table.States (1028).Productions := WisiToken.To_Vector ((1 => (170, 1)));
+            Table.States (1027).Kernel := To_Vector (((241, 41, 0, False), (242, 41, 1, False), (242, 41, 3, False)));
+            Table.States (1027).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 241, 2)));
             Add_Action (Table.States (1028), 3, 121);
             Add_Action (Table.States (1028), 39, 122);
             Add_Action (Table.States (1028), 40, 123);
@@ -11913,8 +12185,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1028), 320, 144);
             Add_Goto (Table.States (1028), 321, 145);
             Add_Goto (Table.States (1028), 330, 146);
-            Table.States (1028).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1029).Productions := WisiToken.To_Vector ((1 => (170, 0)));
+            Table.States (1028).Kernel := To_Vector ((0 => (170, 82, 0, False)));
+            Table.States (1028).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1029), 3, 121);
             Add_Action (Table.States (1029), 39, 122);
             Add_Action (Table.States (1029), 40, 123);
@@ -11950,25 +12222,24 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1029), 320, 144);
             Add_Goto (Table.States (1029), 321, 145);
             Add_Goto (Table.States (1029), 330, 146);
-            Table.States (1029).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1030).Productions := WisiToken.To_Vector ((1 => (111, 0)));
+            Table.States (1029).Kernel := To_Vector ((0 => (170, 82, 0, False)));
+            Table.States (1029).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1030), (41, 49, 54), (111, 0), 3, null, null);
-            Table.States (1030).Minimal_Complete_Action := (Reduce, 111, 3);
-            Table.States (1031).Productions := WisiToken.To_Vector (((120, 1), (168, 0)));
+            Table.States (1030).Kernel := To_Vector ((0 => (111, 36, 0, False)));
+            Table.States (1030).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 111, 3)));
             Add_Action (Table.States (1031), 77, 1133);
             Add_Action (Table.States (1031), 83, 959);
             Add_Error (Table.States (1031));
-            Table.States (1031).Minimal_Complete_Action := (Shift, 77, 1133);
-            Table.States (1032).Productions := WisiToken.To_Vector ((1 => (226, 1)));
+            Table.States (1031).Kernel := To_Vector (((120, 168, 3, False), (168, 168, 2, True)));
+            Table.States (1031).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1133)));
             Add_Action (Table.States (1032), (77, 83), (226, 1), 1, null, null);
-            Table.States (1032).Minimal_Complete_Action := (Reduce, 226, 1);
-            Table.States (1033).Productions := WisiToken.To_Vector (((120, 0), (226, 0)));
+            Table.States (1032).Kernel := To_Vector ((0 => (226, 225, 0, False)));
+            Table.States (1032).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 226, 1)));
             Add_Action (Table.States (1033), 77, 1134);
             Add_Action (Table.States (1033), 83, 1135);
             Add_Error (Table.States (1033));
-            Table.States (1033).Minimal_Complete_Action := (Shift, 77, 1134);
-            Table.States (1034).Productions := WisiToken.To_Vector (((128, 0), (225, 0), (239, 0), (239, 1), (258, 3),
-            (272, 0), (277, 0), (277, 1), (293, 0), (293, 1), (293, 2), (293, 3), (314, 2), (314, 3)));
+            Table.States (1033).Kernel := To_Vector (((120, 226, 3, False), (226, 226, 4, True)));
+            Table.States (1033).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1134)));
             Add_Action (Table.States (1034), 38, Reduce, (258, 3), 1, null, null);
             Add_Action (Table.States (1034), 53, 1136);
             Add_Action (Table.States (1034), 55, Reduce, (258, 3), 1, null, null);
@@ -11990,8 +12261,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1034), 155, 620);
             Add_Goto (Table.States (1034), 224, 621);
             Add_Goto (Table.States (1034), 322, 448);
-            Table.States (1034).Minimal_Complete_Action := (Reduce, 258, 1);
-            Table.States (1035).Productions := WisiToken.To_Vector ((1 => (326, 4)));
+            Table.States (1034).Kernel := To_Vector (((128, 239, 2, True), (225, 239, 2, False), (239, 239, 5, True),
+            (239, 239, 2, True), (258, 239, 0, False), (272, 239, 3, True), (277, 239, 4, False), (277, 239, 2, False),
+            (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True), (314, 239, 4, False),
+            (314, 239, 0, False)));
+            Table.States (1034).Minimal_Complete_Actions := To_Vector (((Reduce, 258, 1), (Reduce, 314, 1)));
             Add_Action (Table.States (1035), 3, 121);
             Add_Action (Table.States (1035), 39, 122);
             Add_Action (Table.States (1035), 40, 123);
@@ -12028,8 +12302,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1035), 320, 144);
             Add_Goto (Table.States (1035), 321, 145);
             Add_Goto (Table.States (1035), 330, 146);
-            Table.States (1035).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1036).Productions := WisiToken.To_Vector ((1 => (279, 0)));
+            Table.States (1035).Kernel := To_Vector ((0 => (326, 20, 0, False)));
+            Table.States (1035).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1036), 3, 121);
             Add_Action (Table.States (1036), 39, 122);
             Add_Action (Table.States (1036), 40, 123);
@@ -12053,14 +12327,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1036), 320, 144);
             Add_Goto (Table.States (1036), 321, 145);
             Add_Goto (Table.States (1036), 330, 146);
-            Table.States (1036).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (1037).Productions := WisiToken.To_Vector ((1 => (326, 5)));
+            Table.States (1036).Kernel := To_Vector ((0 => (279, 53, 3, False)));
+            Table.States (1036).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (1037), (74, 96), (326, 5), 3, null, null);
-            Table.States (1037).Minimal_Complete_Action := (Reduce, 326, 3);
-            Table.States (1038).Productions := WisiToken.To_Vector ((1 => (326, 3)));
+            Table.States (1037).Kernel := To_Vector ((0 => (326, 279, 0, False)));
+            Table.States (1037).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 3)));
             Add_Action (Table.States (1038), (74, 96), (326, 3), 3, null, null);
-            Table.States (1038).Minimal_Complete_Action := (Reduce, 326, 3);
-            Table.States (1039).Productions := WisiToken.To_Vector ((1 => (228, 0)));
+            Table.States (1038).Kernel := To_Vector ((0 => (326, 279, 0, False)));
+            Table.States (1038).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 3)));
             Add_Action (Table.States (1039), 104, 119);
             Add_Action (Table.States (1039), 105, 33);
             Add_Action (Table.States (1039), 106, 34);
@@ -12070,8 +12344,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1039), 239, 841);
             Add_Goto (Table.States (1039), 272, 92);
             Add_Goto (Table.States (1039), 293, 97);
-            Table.States (1039).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1040).Productions := WisiToken.To_Vector ((1 => (228, 2)));
+            Table.States (1039).Kernel := To_Vector ((0 => (228, 10, 1, False)));
+            Table.States (1039).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1040), 104, 119);
             Add_Action (Table.States (1040), 105, 33);
             Add_Action (Table.States (1040), 106, 34);
@@ -12081,8 +12355,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1040), 239, 841);
             Add_Goto (Table.States (1040), 272, 92);
             Add_Goto (Table.States (1040), 293, 97);
-            Table.States (1040).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1041).Productions := WisiToken.To_Vector ((1 => (326, 1)));
+            Table.States (1040).Kernel := To_Vector ((0 => (228, 10, 1, False)));
+            Table.States (1040).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1041), 3, 121);
             Add_Action (Table.States (1041), 39, 122);
             Add_Action (Table.States (1041), 40, 123);
@@ -12106,34 +12380,36 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1041), 320, 144);
             Add_Goto (Table.States (1041), 321, 145);
             Add_Goto (Table.States (1041), 330, 146);
-            Table.States (1041).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (1042).Productions := WisiToken.To_Vector ((1 => (163, 0)));
+            Table.States (1041).Kernel := To_Vector ((0 => (326, 85, 1, False)));
+            Table.States (1041).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (1042), (1 =>  35), (163, 0), 1, null, null);
-            Table.States (1042).Minimal_Complete_Action := (Reduce, 163, 1);
-            Table.States (1043).Productions := WisiToken.To_Vector ((1 => (163, 1)));
+            Table.States (1042).Kernel := To_Vector ((0 => (163, 104, 0, False)));
+            Table.States (1042).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 163, 1)));
             Add_Action (Table.States (1043), (1 =>  35), (163, 1), 1, null, null);
-            Table.States (1043).Minimal_Complete_Action := (Reduce, 163, 1);
-            Table.States (1044).Productions := WisiToken.To_Vector ((1 => (164, 0)));
+            Table.States (1043).Kernel := To_Vector ((0 => (163, 105, 0, False)));
+            Table.States (1043).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 163, 1)));
             Add_Action (Table.States (1044), (1 =>  35), (164, 0), 1, null, null);
-            Table.States (1044).Minimal_Complete_Action := (Reduce, 164, 1);
-            Table.States (1045).Productions := WisiToken.To_Vector ((1 => (327, 0)));
+            Table.States (1044).Kernel := To_Vector ((0 => (164, 163, 0, False)));
+            Table.States (1044).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 164, 1)));
             Add_Action (Table.States (1045), 35, 1142);
             Add_Error (Table.States (1045));
-            Table.States (1045).Minimal_Complete_Action := (Shift, 35, 1142);
-            Table.States (1046).Productions := WisiToken.To_Vector ((1 => (149, 4)));
+            Table.States (1045).Kernel := To_Vector ((0 => (327, 164, 6, False)));
+            Table.States (1045).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 1142)));
             Add_Action (Table.States (1046), (15, 24, 28, 72, 104), (149, 4), 2, component_list_4'Access, null);
-            Table.States (1046).Minimal_Complete_Action := (Reduce, 149, 2);
-            Table.States (1047).Productions := WisiToken.To_Vector ((1 => (149, 0)));
+            Table.States (1046).Kernel := To_Vector ((0 => (149, 96, 0, False)));
+            Table.States (1046).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 149, 2)));
             Add_Action (Table.States (1047), (15, 24, 28, 72, 104), (149, 0), 2, null, null);
-            Table.States (1047).Minimal_Complete_Action := (Reduce, 149, 2);
-            Table.States (1048).Productions := WisiToken.To_Vector ((1 => (149, 1)));
+            Table.States (1047).Kernel := To_Vector ((0 => (149, 148, 0, True)));
+            Table.States (1047).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 149, 2)));
+            Table.States (1047).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1048), (15, 24, 28, 72, 104), (149, 1), 2, null, null);
-            Table.States (1048).Minimal_Complete_Action := (Reduce, 149, 2);
-            Table.States (1049).Productions := WisiToken.To_Vector ((1 => (280, 0)));
+            Table.States (1048).Kernel := To_Vector ((0 => (149, 327, 0, True)));
+            Table.States (1048).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 149, 2)));
+            Table.States (1048).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1049), 54, 1143);
             Add_Error (Table.States (1049));
-            Table.States (1049).Minimal_Complete_Action := (Shift, 54, 1143);
-            Table.States (1050).Productions := WisiToken.To_Vector (((146, 0), (146, 1)));
+            Table.States (1049).Kernel := To_Vector ((0 => (280, 24, 1, False)));
+            Table.States (1049).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 54, 1143)));
             Add_Action (Table.States (1050), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (1050), 8, 1144);
             Add_Action (Table.States (1050), 40, 742);
@@ -12149,8 +12425,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1050), 272, 92);
             Add_Goto (Table.States (1050), 293, 97);
             Add_Goto (Table.States (1050), 314, 1147);
-            Table.States (1050).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1051).Productions := WisiToken.To_Vector ((1 => (228, 3)));
+            Table.States (1050).Kernel := To_Vector (((146, 81, 3, False), (146, 81, 2, False)));
+            Table.States (1050).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1051), 104, 119);
             Add_Action (Table.States (1051), 105, 33);
             Add_Action (Table.States (1051), 106, 34);
@@ -12160,8 +12436,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1051), 239, 841);
             Add_Goto (Table.States (1051), 272, 92);
             Add_Goto (Table.States (1051), 293, 97);
-            Table.States (1051).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1052).Productions := WisiToken.To_Vector ((1 => (228, 1)));
+            Table.States (1051).Kernel := To_Vector ((0 => (228, 10, 1, False)));
+            Table.States (1051).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1052), 104, 119);
             Add_Action (Table.States (1052), 105, 33);
             Add_Action (Table.States (1052), 106, 34);
@@ -12171,30 +12447,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1052), 239, 841);
             Add_Goto (Table.States (1052), 272, 92);
             Add_Goto (Table.States (1052), 293, 97);
-            Table.States (1052).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1053).Productions := WisiToken.To_Vector ((1 => (183, 0)));
+            Table.States (1052).Kernel := To_Vector ((0 => (228, 10, 1, False)));
+            Table.States (1052).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1053), (74, 96), (183, 0), 3, enumeration_type_definition_0'Access, null);
-            Table.States (1053).Minimal_Complete_Action := (Reduce, 183, 3);
-            Table.States (1054).Productions := WisiToken.To_Vector ((1 => (181, 0)));
+            Table.States (1053).Kernel := To_Vector ((0 => (183, 77, 0, False)));
+            Table.States (1053).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 183, 3)));
             Add_Action (Table.States (1054), 104, 898);
             Add_Action (Table.States (1054), 106, 899);
             Add_Error (Table.States (1054));
             Add_Goto (Table.States (1054), 180, 1150);
-            Table.States (1054).Minimal_Complete_Action := (Shift, 104, 898);
-         end Subr_17;
-         procedure Subr_18
-         is begin
-            Table.States (1055).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (1054).Kernel := To_Vector ((0 => (181, 83, 1, True)));
+            Table.States (1054).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 898)));
+            Table.States (1054).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1055), 10, 1151);
             Add_Action (Table.States (1055), 74, Reduce, (119, 1), 0, null, null);
             Add_Error (Table.States (1055));
             Add_Goto (Table.States (1055), 119, 1152);
-            Table.States (1055).Minimal_Complete_Action := (Reduce, 119, 0);
-            Table.States (1056).Productions := WisiToken.To_Vector (((128, 0), (162, 0), (162, 1), (239, 0), (239, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (1055).Kernel := To_Vector ((0 => (259, 314, 3, False)));
+            Table.States (1055).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 119, 0)));
             Add_Action (Table.States (1056), 10, 1151);
             Add_Action (Table.States (1056), 53, 618);
-            Add_Action (Table.States (1056), 74, Reduce, (119, 1), 0, null, null, (156, 1), 0, null, null);
+            Add_Action (Table.States (1056), 74, Reduce, (119, 1), 0, null, null);
+            Add_Conflict (Table.States (1056), 74, (156, 1), 0, null, null);
             Add_Action (Table.States (1056), 76, 619);
             Add_Action (Table.States (1056), 84, 237);
             Add_Action (Table.States (1056), 96, Reduce, (156, 1), 0, null, null);
@@ -12207,39 +12481,42 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1056), 156, 1155);
             Add_Goto (Table.States (1056), 224, 621);
             Add_Goto (Table.States (1056), 322, 242);
-            Table.States (1056).Minimal_Complete_Action := (Reduce, 156, 0);
-            Table.States (1057).Productions := WisiToken.To_Vector ((1 => (260, 0)));
+            Table.States (1056).Kernel := To_Vector (((128, 239, 2, True), (162, 239, 3, False), (162, 239, 0, False),
+            (239, 239, 5, True), (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (1056).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 156, 0)));
             Add_Action (Table.States (1057), 96, 1156);
             Add_Error (Table.States (1057));
-            Table.States (1057).Minimal_Complete_Action := (Shift, 96, 1156);
-            Table.States (1058).Productions := WisiToken.To_Vector ((1 => (206, 0)));
+            Table.States (1057).Kernel := To_Vector ((0 => (260, 122, 1, False)));
+            Table.States (1057).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1156)));
             Add_Action (Table.States (1058), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (206, 0), 7,
             full_type_declaration_0'Access, null);
-            Table.States (1058).Minimal_Complete_Action := (Reduce, 206, 7);
-            Table.States (1059).Productions := WisiToken.To_Vector ((1 => (245, 2)));
+            Table.States (1058).Kernel := To_Vector ((0 => (206, 96, 0, False)));
+            Table.States (1058).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 206, 7)));
             Add_Action (Table.States (1059), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (245, 2), 7,
             object_renaming_declaration_2'Access, null);
-            Table.States (1059).Minimal_Complete_Action := (Reduce, 245, 7);
-            Table.States (1060).Productions := WisiToken.To_Vector ((1 => (245, 1)));
+            Table.States (1059).Kernel := To_Vector ((0 => (245, 96, 0, False)));
+            Table.States (1059).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 245, 7)));
             Add_Action (Table.States (1060), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (245, 1), 7,
             object_renaming_declaration_1'Access, null);
-            Table.States (1060).Minimal_Complete_Action := (Reduce, 245, 7);
-            Table.States (1061).Productions := WisiToken.To_Vector ((1 => (114, 1)));
+            Table.States (1060).Kernel := To_Vector ((0 => (245, 96, 0, False)));
+            Table.States (1060).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 245, 7)));
             Add_Action (Table.States (1061), (21, 35, 56, 74, 77, 82, 96), (114, 1), 5, access_definition_1'Access,
             null);
-            Table.States (1061).Minimal_Complete_Action := (Reduce, 114, 5);
-            Table.States (1062).Productions := WisiToken.To_Vector ((1 => (114, 0)));
+            Table.States (1061).Kernel := To_Vector ((0 => (114, 252, 0, True)));
+            Table.States (1061).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 114, 5)));
+            Table.States (1061).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1062), (21, 35, 56, 74, 77, 82, 96), (114, 0), 5, access_definition_0'Access,
             null);
-            Table.States (1062).Minimal_Complete_Action := (Reduce, 114, 5);
-            Table.States (1063).Productions := WisiToken.To_Vector ((1 => (245, 0)));
+            Table.States (1062).Kernel := To_Vector ((0 => (114, 253, 0, False)));
+            Table.States (1062).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 114, 5)));
             Add_Action (Table.States (1063), 96, 1157);
             Add_Error (Table.States (1063));
-            Table.States (1063).Minimal_Complete_Action := (Shift, 96, 1157);
-            Table.States (1064).Productions := WisiToken.To_Vector ((1 => (187, 0)));
+            Table.States (1063).Kernel := To_Vector ((0 => (245, 122, 1, False)));
+            Table.States (1063).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1157)));
             Add_Action (Table.States (1064), 44, 914);
             Add_Action (Table.States (1064), 104, 119);
             Add_Action (Table.States (1064), 105, 33);
@@ -12251,8 +12528,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1064), 239, 918);
             Add_Goto (Table.States (1064), 272, 92);
             Add_Goto (Table.States (1064), 293, 97);
-            Table.States (1064).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1065).Productions := WisiToken.To_Vector ((1 => (185, 0)));
+            Table.States (1064).Kernel := To_Vector ((0 => (187, 81, 2, False)));
+            Table.States (1064).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1065), 44, 914);
             Add_Action (Table.States (1065), 104, 119);
             Add_Action (Table.States (1065), 105, 33);
@@ -12263,8 +12540,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1065), 239, 918);
             Add_Goto (Table.States (1065), 272, 92);
             Add_Goto (Table.States (1065), 293, 97);
-            Table.States (1065).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1066).Productions := WisiToken.To_Vector ((1 => (187, 1)));
+            Table.States (1065).Kernel := To_Vector ((0 => (185, 79, 1, True)));
+            Table.States (1065).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (1065).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1066), 4, 1);
             Add_Action (Table.States (1066), 5, 2);
             Add_Action (Table.States (1066), 13, Reduce, (132, 1), 0, null, null);
@@ -12321,76 +12599,76 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1066), 303, 101);
             Add_Goto (Table.States (1066), 306, 363);
             Add_Goto (Table.States (1066), 323, 114);
-            Table.States (1066).Minimal_Complete_Action := (Reduce, 300, 0);
-            Table.States (1067).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (1066).Kernel := To_Vector ((0 => (187, 87, 0, False)));
+            Table.States (1066).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (1067), 96, 1161);
             Add_Error (Table.States (1067));
-            Table.States (1067).Minimal_Complete_Action := (Shift, 96, 1161);
-            Table.States (1068).Productions := WisiToken.To_Vector ((1 => (232, 1)));
+            Table.States (1067).Kernel := To_Vector ((0 => (133, 220, 1, False)));
+            Table.States (1067).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1161)));
             Add_Action (Table.States (1068), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (232, 1), 7, loop_statement_1'Access, loop_statement_1_check'Access);
-            Table.States (1068).Minimal_Complete_Action := (Reduce, 232, 7);
-            Table.States (1069).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (1068).Kernel := To_Vector ((0 => (232, 96, 0, False)));
+            Table.States (1068).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 232, 7)));
             Add_Action (Table.States (1069), 96, 1162);
             Add_Error (Table.States (1069));
-            Table.States (1069).Minimal_Complete_Action := (Shift, 96, 1162);
-            Table.States (1070).Productions := WisiToken.To_Vector ((1 => (244, 1)));
+            Table.States (1069).Kernel := To_Vector ((0 => (232, 220, 1, False)));
+            Table.States (1069).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1162)));
             Add_Action (Table.States (1070), 74, 337);
             Add_Action (Table.States (1070), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1070));
             Add_Goto (Table.States (1070), 122, 1163);
-            Table.States (1070).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1071).Productions := WisiToken.To_Vector ((1 => (244, 4)));
+            Table.States (1070).Kernel := To_Vector ((0 => (244, 192, 1, False)));
+            Table.States (1070).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1071), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 4), 7,
             object_declaration_4'Access, null);
-            Table.States (1071).Minimal_Complete_Action := (Reduce, 244, 7);
-            Table.States (1072).Productions := WisiToken.To_Vector ((1 => (244, 2)));
+            Table.States (1071).Kernel := To_Vector ((0 => (244, 96, 0, False)));
+            Table.States (1071).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 7)));
             Add_Action (Table.States (1072), 74, 337);
             Add_Action (Table.States (1072), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1072));
             Add_Goto (Table.States (1072), 122, 1164);
-            Table.States (1072).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1073).Productions := WisiToken.To_Vector ((1 => (244, 5)));
+            Table.States (1072).Kernel := To_Vector ((0 => (244, 192, 1, False)));
+            Table.States (1072).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1073), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 5), 7,
             object_declaration_5'Access, null);
-            Table.States (1073).Minimal_Complete_Action := (Reduce, 244, 7);
-            Table.States (1074).Productions := WisiToken.To_Vector ((1 => (244, 0)));
+            Table.States (1073).Kernel := To_Vector ((0 => (244, 96, 0, False)));
+            Table.States (1073).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 7)));
             Add_Action (Table.States (1074), 74, 337);
             Add_Action (Table.States (1074), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1074));
             Add_Goto (Table.States (1074), 122, 1165);
-            Table.States (1074).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1075).Productions := WisiToken.To_Vector ((1 => (244, 3)));
+            Table.States (1074).Kernel := To_Vector ((0 => (244, 192, 1, False)));
+            Table.States (1074).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1075), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 3), 7,
             object_declaration_3'Access, null);
-            Table.States (1075).Minimal_Complete_Action := (Reduce, 244, 7);
-            Table.States (1076).Productions := WisiToken.To_Vector ((1 => (179, 0)));
+            Table.States (1075).Kernel := To_Vector ((0 => (244, 96, 0, False)));
+            Table.States (1075).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 7)));
             Add_Action (Table.States (1076), 74, 337);
             Add_Action (Table.States (1076), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1076));
             Add_Goto (Table.States (1076), 122, 1166);
-            Table.States (1076).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1077).Productions := WisiToken.To_Vector ((1 => (213, 2)));
+            Table.States (1076).Kernel := To_Vector ((0 => (179, 253, 1, False)));
+            Table.States (1076).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1077), 96, 1167);
             Add_Error (Table.States (1077));
-            Table.States (1077).Minimal_Complete_Action := (Shift, 96, 1167);
-            Table.States (1078).Productions := WisiToken.To_Vector ((1 => (213, 1)));
+            Table.States (1077).Kernel := To_Vector ((0 => (213, 122, 1, False)));
+            Table.States (1077).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1167)));
             Add_Action (Table.States (1078), 96, 1168);
             Add_Error (Table.States (1078));
-            Table.States (1078).Minimal_Complete_Action := (Shift, 96, 1168);
-            Table.States (1079).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (1078).Kernel := To_Vector ((0 => (213, 122, 1, False)));
+            Table.States (1078).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1168)));
             Add_Action (Table.States (1079), 24, 1169);
             Add_Error (Table.States (1079));
-            Table.States (1079).Minimal_Complete_Action := (Shift, 24, 1169);
-            Table.States (1080).Productions := WisiToken.To_Vector ((1 => (113, 0)));
+            Table.States (1079).Kernel := To_Vector ((0 => (307, 218, 2, False)));
+            Table.States (1079).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1169)));
             Add_Action (Table.States (1080), 96, 1170);
             Add_Error (Table.States (1080));
-            Table.States (1080).Minimal_Complete_Action := (Shift, 96, 1170);
-            Table.States (1081).Productions := WisiToken.To_Vector ((1 => (137, 0)));
+            Table.States (1080).Kernel := To_Vector ((0 => (113, 220, 1, False)));
+            Table.States (1080).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1170)));
             Add_Action (Table.States (1081), 3, 121);
             Add_Action (Table.States (1081), 39, 122);
             Add_Action (Table.States (1081), 40, 123);
@@ -12426,18 +12704,19 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1081), 320, 144);
             Add_Goto (Table.States (1081), 321, 145);
             Add_Goto (Table.States (1081), 330, 146);
-            Table.States (1081).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1082).Productions := WisiToken.To_Vector ((1 => (138, 0)));
+            Table.States (1081).Kernel := To_Vector ((0 => (137, 87, 0, False)));
+            Table.States (1081).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1082), (77, 83), (138, 0), 3, case_expression_alternative_list_0'Access, null);
-            Table.States (1082).Minimal_Complete_Action := (Reduce, 138, 3);
-            Table.States (1083).Productions := WisiToken.To_Vector ((1 => (221, 1)));
+            Table.States (1082).Kernel := To_Vector ((0 => (138, 137, 0, True)));
+            Table.States (1082).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 138, 3)));
+            Table.States (1082).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1083), (1 =>  77), (221, 1), 6, if_expression_1'Access, null);
-            Table.States (1083).Minimal_Complete_Action := (Reduce, 221, 6);
-            Table.States (1084).Productions := WisiToken.To_Vector ((1 => (172, 0)));
+            Table.States (1083).Kernel := To_Vector ((0 => (221, 192, 0, False)));
+            Table.States (1083).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 221, 6)));
             Add_Action (Table.States (1084), 68, 1172);
             Add_Error (Table.States (1084));
-            Table.States (1084).Minimal_Complete_Action := (Shift, 68, 1172);
-            Table.States (1085).Productions := WisiToken.To_Vector ((1 => (221, 0)));
+            Table.States (1084).Kernel := To_Vector ((0 => (172, 192, 1, False)));
+            Table.States (1084).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 68, 1172)));
             Add_Action (Table.States (1085), 3, 121);
             Add_Action (Table.States (1085), 39, 122);
             Add_Action (Table.States (1085), 40, 123);
@@ -12472,16 +12751,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1085), 320, 144);
             Add_Goto (Table.States (1085), 321, 145);
             Add_Goto (Table.States (1085), 330, 146);
-            Table.States (1085).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1086).Productions := WisiToken.To_Vector ((1 => (173, 0)));
+            Table.States (1085).Kernel := To_Vector ((0 => (221, 22, 0, False)));
+            Table.States (1085).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1086), (22, 23, 77), (173, 0), 2, null, null);
-            Table.States (1086).Minimal_Complete_Action := (Reduce, 173, 2);
-            Table.States (1087).Productions := WisiToken.To_Vector ((1 => (277, 0)));
+            Table.States (1086).Kernel := To_Vector ((0 => (173, 172, 0, True)));
+            Table.States (1086).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 173, 2)));
+            Table.States (1086).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1087), (10, 20, 21, 22, 23, 35, 37, 42, 43, 53, 68, 74, 75, 77, 79, 82, 83, 87,
             96), (277, 0), 6, range_g_0'Access, null);
-            Table.States (1087).Minimal_Complete_Action := (Reduce, 277, 6);
-            Table.States (1088).Productions := WisiToken.To_Vector (((128, 0), (165, 1), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3), (314, 0), (314, 1)));
+            Table.States (1087).Kernel := To_Vector ((0 => (277, 77, 0, False)));
+            Table.States (1087).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 277, 6)));
             Add_Action (Table.States (1088), 53, 618);
             Add_Action (Table.States (1088), 76, 619);
             Add_Action (Table.States (1088), 77, Reduce, (314, 1), 3, subtype_indication_1'Access, null);
@@ -12496,22 +12775,25 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1088), 155, 956);
             Add_Goto (Table.States (1088), 224, 621);
             Add_Goto (Table.States (1088), 322, 242);
-            Table.States (1088).Minimal_Complete_Action := (Reduce, 165, 3);
-            Table.States (1089).Productions := WisiToken.To_Vector ((1 => (168, 0)));
+            Table.States (1088).Kernel := To_Vector (((128, 239, 2, True), (165, 239, 0, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (314, 239, 4, False), (314, 239, 0, False)));
+            Table.States (1088).Minimal_Complete_Actions := To_Vector (((Reduce, 165, 3), (Reduce, 314, 3)));
             Add_Action (Table.States (1089), (77, 83), (168, 0), 3, null, null);
-            Table.States (1089).Minimal_Complete_Action := (Reduce, 168, 3);
-            Table.States (1090).Productions := WisiToken.To_Vector ((1 => (235, 0)));
+            Table.States (1089).Kernel := To_Vector ((0 => (168, 167, 0, True)));
+            Table.States (1089).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 168, 3)));
+            Table.States (1089).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1090), (1 =>  104), (235, 0), 4, null, null);
-            Table.States (1090).Minimal_Complete_Action := (Reduce, 235, 4);
-            Table.States (1091).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (1090).Kernel := To_Vector ((0 => (235, 96, 0, False)));
+            Table.States (1090).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 235, 4)));
             Add_Action (Table.States (1091), 53, 1174);
             Add_Error (Table.States (1091));
-            Table.States (1091).Minimal_Complete_Action := (Shift, 53, 1174);
-            Table.States (1092).Productions := WisiToken.To_Vector ((1 => (281, 0)));
+            Table.States (1091).Kernel := To_Vector ((0 => (144, 301, 5, False)));
+            Table.States (1091).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 53, 1174)));
             Add_Action (Table.States (1092), 96, 1175);
             Add_Error (Table.States (1092));
-            Table.States (1092).Minimal_Complete_Action := (Shift, 96, 1175);
-            Table.States (1093).Productions := WisiToken.To_Vector ((1 => (254, 2)));
+            Table.States (1092).Kernel := To_Vector ((0 => (281, 54, 1, False)));
+            Table.States (1092).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1175)));
             Add_Action (Table.States (1093), 3, 121);
             Add_Action (Table.States (1093), 39, 122);
             Add_Action (Table.States (1093), 40, 123);
@@ -12547,8 +12829,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1093), 320, 144);
             Add_Goto (Table.States (1093), 321, 145);
             Add_Goto (Table.States (1093), 330, 146);
-            Table.States (1093).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1094).Productions := WisiToken.To_Vector (((254, 0), (254, 1)));
+            Table.States (1093).Kernel := To_Vector ((0 => (254, 82, 0, False)));
+            Table.States (1093).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1094), 104, 119);
             Add_Action (Table.States (1094), 105, 33);
             Add_Action (Table.States (1094), 106, 34);
@@ -12557,20 +12839,22 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1094), 239, 1177);
             Add_Goto (Table.States (1094), 272, 92);
             Add_Goto (Table.States (1094), 293, 97);
-            Table.States (1094).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1095).Productions := WisiToken.To_Vector ((1 => (202, 6)));
+            Table.States (1094).Kernel := To_Vector (((254, 241, 2, False), (254, 241, 1, False)));
+            Table.States (1094).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+         end Subr_18;
+         procedure Subr_19
+         is begin
             Add_Action (Table.States (1095), 80, 1178);
             Add_Error (Table.States (1095));
-            Table.States (1095).Minimal_Complete_Action := (Shift, 80, 1178);
-            Table.States (1096).Productions := WisiToken.To_Vector ((1 => (201, 1)));
+            Table.States (1095).Kernel := To_Vector ((0 => (202, 20, 1, False)));
+            Table.States (1095).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 1178)));
             Add_Action (Table.States (1096), (29, 47, 48, 50, 69, 71, 74, 104), (201, 1), 7,
             formal_type_declaration_1'Access, null);
-            Table.States (1096).Minimal_Complete_Action := (Reduce, 201, 7);
-            Table.States (1097).Productions := WisiToken.To_Vector ((1 => (202, 2)));
+            Table.States (1096).Kernel := To_Vector ((0 => (201, 96, 0, False)));
+            Table.States (1096).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 201, 7)));
             Add_Action (Table.States (1097), (74, 96), (202, 2), 3, null, null);
-            Table.States (1097).Minimal_Complete_Action := (Reduce, 202, 3);
-            Table.States (1098).Productions := WisiToken.To_Vector (((128, 0), (203, 0), (203, 1), (239, 0), (239, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (1097).Kernel := To_Vector ((0 => (202, 77, 0, False)));
+            Table.States (1097).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 3)));
             Add_Action (Table.States (1098), 10, 1151);
             Add_Action (Table.States (1098), 74, Reduce, (119, 1), 0, null, null);
             Add_Action (Table.States (1098), 76, 235);
@@ -12582,12 +12866,14 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1098), 115, 241);
             Add_Goto (Table.States (1098), 119, 1179);
             Add_Goto (Table.States (1098), 322, 242);
-            Table.States (1098).Minimal_Complete_Action := (Reduce, 119, 0);
-            Table.States (1099).Productions := WisiToken.To_Vector ((1 => (201, 0)));
+            Table.States (1098).Kernel := To_Vector (((128, 239, 2, True), (203, 239, 2, False), (203, 239, 0, False),
+            (239, 239, 5, True), (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (1098).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 119, 0)));
             Add_Action (Table.States (1099), (29, 47, 48, 50, 69, 71, 74, 104), (201, 0), 7,
             formal_type_declaration_0'Access, null);
-            Table.States (1099).Minimal_Complete_Action := (Reduce, 201, 7);
-            Table.States (1100).Productions := WisiToken.To_Vector (((115, 0), (115, 1), (205, 0), (239, 0)));
+            Table.States (1099).Kernel := To_Vector ((0 => (201, 96, 0, False)));
+            Table.States (1099).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 201, 7)));
             Add_Action (Table.States (1100), 3, 121);
             Add_Action (Table.States (1100), 15, 258);
             Add_Action (Table.States (1100), 28, 259);
@@ -12639,56 +12925,58 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1100), 320, 144);
             Add_Goto (Table.States (1100), 321, 145);
             Add_Goto (Table.States (1100), 330, 146);
-            Table.States (1100).Minimal_Complete_Action := (Reduce, 125, 0);
-            Table.States (1101).Productions := WisiToken.To_Vector ((1 => (204, 0)));
+            Table.States (1100).Kernel := To_Vector (((115, 76, 1, False), (115, 76, 3, False), (205, 76, 2, False),
+            (239, 76, 4, True)));
+            Table.States (1100).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 125, 0)));
+            Table.States (1100).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1101), 74, 337);
             Add_Action (Table.States (1101), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1101));
             Add_Goto (Table.States (1101), 122, 1181);
-            Table.States (1101).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1102).Productions := WisiToken.To_Vector ((1 => (200, 0)));
+            Table.States (1101).Kernel := To_Vector ((0 => (204, 205, 1, False)));
+            Table.States (1101).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1102), (29, 47, 48, 50, 69, 71, 74, 104), (200, 0), 7,
             formal_subprogram_declaration_0'Access, null);
-            Table.States (1102).Minimal_Complete_Action := (Reduce, 200, 7);
-            Table.States (1103).Productions := WisiToken.To_Vector ((1 => (198, 1)));
+            Table.States (1102).Kernel := To_Vector ((0 => (200, 96, 0, False)));
+            Table.States (1102).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 200, 7)));
             Add_Action (Table.States (1103), 96, 1182);
             Add_Error (Table.States (1103));
-            Table.States (1103).Minimal_Complete_Action := (Shift, 96, 1182);
-            Table.States (1104).Productions := WisiToken.To_Vector ((1 => (198, 0)));
+            Table.States (1103).Kernel := To_Vector ((0 => (198, 122, 1, False)));
+            Table.States (1103).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1182)));
             Add_Action (Table.States (1104), 74, 337);
             Add_Action (Table.States (1104), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1104));
             Add_Goto (Table.States (1104), 122, 1183);
-            Table.States (1104).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1105).Productions := WisiToken.To_Vector ((1 => (198, 2)));
+            Table.States (1104).Kernel := To_Vector ((0 => (198, 192, 1, False)));
+            Table.States (1104).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1105), (29, 47, 48, 50, 69, 71, 74, 104), (198, 2), 7,
             formal_object_declaration_2'Access, null);
-            Table.States (1105).Minimal_Complete_Action := (Reduce, 198, 7);
-            Table.States (1106).Productions := WisiToken.To_Vector ((1 => (222, 1)));
+            Table.States (1105).Kernel := To_Vector ((0 => (198, 96, 0, False)));
+            Table.States (1105).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 198, 7)));
             Add_Action (Table.States (1106), 96, 1184);
             Add_Error (Table.States (1106));
-            Table.States (1106).Minimal_Complete_Action := (Shift, 96, 1184);
-            Table.States (1107).Productions := WisiToken.To_Vector ((1 => (174, 0)));
+            Table.States (1106).Kernel := To_Vector ((0 => (222, 32, 1, False)));
+            Table.States (1106).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1184)));
             Add_Action (Table.States (1107), (22, 23, 24), (174, 0), 4, elsif_statement_item_0'Access, null);
-            Table.States (1107).Minimal_Complete_Action := (Reduce, 174, 4);
-            Table.States (1108).Productions := WisiToken.To_Vector ((1 => (222, 0)));
+            Table.States (1107).Kernel := To_Vector ((0 => (174, 300, 0, False)));
+            Table.States (1107).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 174, 4)));
             Add_Action (Table.States (1108), 32, 1185);
             Add_Error (Table.States (1108));
-            Table.States (1108).Minimal_Complete_Action := (Shift, 32, 1185);
-            Table.States (1109).Productions := WisiToken.To_Vector ((1 => (222, 2)));
+            Table.States (1108).Kernel := To_Vector ((0 => (222, 24, 2, False)));
+            Table.States (1108).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 32, 1185)));
             Add_Action (Table.States (1109), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (222, 2), 8, if_statement_2'Access, null);
-            Table.States (1109).Minimal_Complete_Action := (Reduce, 222, 8);
-            Table.States (1110).Productions := WisiToken.To_Vector ((1 => (247, 0)));
+            Table.States (1109).Kernel := To_Vector ((0 => (222, 96, 0, False)));
+            Table.States (1109).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 222, 8)));
             Add_Action (Table.States (1110), 24, 1186);
             Add_Error (Table.States (1110));
-            Table.States (1110).Minimal_Complete_Action := (Shift, 24, 1186);
-            Table.States (1111).Productions := WisiToken.To_Vector ((1 => (247, 1)));
+            Table.States (1110).Kernel := To_Vector ((0 => (247, 218, 2, False)));
+            Table.States (1110).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1186)));
             Add_Action (Table.States (1111), 96, 1187);
             Add_Error (Table.States (1111));
-            Table.States (1111).Minimal_Complete_Action := (Shift, 96, 1187);
-            Table.States (1112).Productions := WisiToken.To_Vector ((1 => (251, 0)));
+            Table.States (1111).Kernel := To_Vector ((0 => (247, 240, 1, False)));
+            Table.States (1111).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1187)));
             Add_Action (Table.States (1112), 96, Reduce, (240, 1), 0, null, null);
             Add_Action (Table.States (1112), 104, 119);
             Add_Action (Table.States (1112), 105, 33);
@@ -12699,8 +12987,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1112), 240, 1188);
             Add_Goto (Table.States (1112), 272, 92);
             Add_Goto (Table.States (1112), 293, 97);
-            Table.States (1112).Minimal_Complete_Action := (Reduce, 240, 0);
-            Table.States (1113).Productions := WisiToken.To_Vector (((177, 0), (199, 0)));
+            Table.States (1112).Kernel := To_Vector ((0 => (251, 24, 0, False)));
+            Table.States (1112).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 0)));
             Add_Action (Table.States (1113), 28, 1189);
             Add_Action (Table.States (1113), 77, Reduce, (254, 4), 0, null, null);
             Add_Action (Table.States (1113), 96, Reduce, (254, 4), 0, null, null);
@@ -12709,30 +12997,29 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1113), 219, 493);
             Add_Goto (Table.States (1113), 254, 494);
             Add_Goto (Table.States (1113), 255, 495);
-            Table.States (1113).Minimal_Complete_Action := (Reduce, 255, 0);
-            Table.States (1114).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1113).Kernel := To_Vector (((177, 76, 5, False), (199, 76, 1, False)));
+            Table.States (1113).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 255, 0)));
             Add_Action (Table.States (1114), 72, 1190);
             Add_Error (Table.States (1114));
-            Table.States (1114).Minimal_Complete_Action := (Shift, 72, 1190);
-            Table.States (1115).Productions := WisiToken.To_Vector ((1 => (177, 1)));
+            Table.States (1114).Kernel := To_Vector ((0 => (176, 177, 5, False)));
+            Table.States (1114).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 72, 1190)));
             Add_Action (Table.States (1115), (1 =>  72), (177, 1), 1, null, null);
-            Table.States (1115).Minimal_Complete_Action := (Reduce, 177, 1);
-            Table.States (1116).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (1115).Kernel := To_Vector ((0 => (177, 253, 0, False)));
+            Table.States (1115).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 177, 1)));
             Add_Action (Table.States (1116), 96, 1191);
             Add_Error (Table.States (1116));
-            Table.States (1116).Minimal_Complete_Action := (Shift, 96, 1191);
-            Table.States (1117).Productions := WisiToken.To_Vector (((227, 0), (271, 0)));
+            Table.States (1116).Kernel := To_Vector ((0 => (264, 220, 1, False)));
+            Table.States (1116).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1191)));
             Add_Action (Table.States (1117), 10, 1006);
             Add_Action (Table.States (1117), 74, 1192);
             Add_Error (Table.States (1117));
-            Table.States (1117).Minimal_Complete_Action := (Shift, 74, 1192);
-            Table.States (1118).Productions := WisiToken.To_Vector ((1 => (271, 1)));
+            Table.States (1117).Kernel := To_Vector (((227, 227, 2, True), (271, 227, 3, False)));
+            Table.States (1117).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 1192)));
             Add_Action (Table.States (1118), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (271, 1), 8,
             protected_type_declaration_1'Access, protected_type_declaration_1_check'Access);
-            Table.States (1118).Minimal_Complete_Action := (Reduce, 271, 8);
-            Table.States (1119).Productions := WisiToken.To_Vector (((128, 0), (227, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (1118).Kernel := To_Vector ((0 => (271, 96, 0, False)));
+            Table.States (1118).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 271, 8)));
             Add_Action (Table.States (1119), 10, Reduce, (227, 0), 3, interface_list_0'Access, null);
             Add_Action (Table.States (1119), 74, Reduce, (227, 0), 3, interface_list_0'Access, null);
             Add_Action (Table.States (1119), 76, 235);
@@ -12743,50 +13030,53 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (1119));
             Add_Goto (Table.States (1119), 115, 241);
             Add_Goto (Table.States (1119), 322, 242);
-            Table.States (1119).Minimal_Complete_Action := (Reduce, 227, 3);
-            Table.States (1120).Productions := WisiToken.To_Vector ((1 => (304, 0)));
+            Table.States (1119).Kernel := To_Vector (((128, 239, 2, True), (227, 239, 0, True), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (1119).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 227, 3)));
+            Table.States (1119).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1120), 96, 1193);
             Add_Error (Table.States (1120));
-            Table.States (1120).Minimal_Complete_Action := (Shift, 96, 1193);
-            Table.States (1121).Productions := WisiToken.To_Vector ((1 => (266, 0)));
+            Table.States (1120).Kernel := To_Vector ((0 => (304, 266, 1, False)));
+            Table.States (1120).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1193)));
             Add_Action (Table.States (1121), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1121), 104, 149);
             Add_Error (Table.States (1121));
             Add_Goto (Table.States (1121), 220, 1194);
-            Table.States (1121).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1122).Productions := WisiToken.To_Vector ((1 => (194, 0)));
+            Table.States (1121).Kernel := To_Vector ((0 => (266, 24, 0, False)));
+            Table.States (1121).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1122), (21, 96), (194, 0), 7, extended_return_object_declaration_0'Access, null);
-            Table.States (1122).Minimal_Complete_Action := (Reduce, 194, 7);
-            Table.States (1123).Productions := WisiToken.To_Vector ((1 => (126, 0)));
+            Table.States (1122).Kernel := To_Vector ((0 => (194, 192, 0, False)));
+            Table.States (1122).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 194, 7)));
             Add_Action (Table.States (1123), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (126, 0), 8, asynchronous_select_0'Access, null);
-            Table.States (1123).Minimal_Complete_Action := (Reduce, 126, 8);
-            Table.States (1124).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (1123).Kernel := To_Vector ((0 => (126, 96, 0, False)));
+            Table.States (1123).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 126, 8)));
             Add_Action (Table.States (1124), 24, 1195);
             Add_Error (Table.States (1124));
-            Table.States (1124).Minimal_Complete_Action := (Shift, 24, 1195);
-            Table.States (1125).Productions := WisiToken.To_Vector (((227, 0), (319, 0)));
+            Table.States (1124).Kernel := To_Vector ((0 => (316, 218, 2, False)));
+            Table.States (1124).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1195)));
             Add_Action (Table.States (1125), 10, 1006);
             Add_Action (Table.States (1125), 74, 1196);
             Add_Error (Table.States (1125));
-            Table.States (1125).Minimal_Complete_Action := (Shift, 74, 1196);
-            Table.States (1126).Productions := WisiToken.To_Vector ((1 => (319, 1)));
+            Table.States (1125).Kernel := To_Vector (((227, 227, 2, True), (319, 227, 3, False)));
+            Table.States (1125).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 1196)));
             Add_Action (Table.States (1126), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1126), 104, 149);
             Add_Error (Table.States (1126));
             Add_Goto (Table.States (1126), 220, 1197);
-            Table.States (1126).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1127).Productions := WisiToken.To_Vector ((1 => (305, 0)));
+            Table.States (1126).Kernel := To_Vector ((0 => (319, 24, 1, False)));
+            Table.States (1126).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1127), 24, 1198);
             Add_Error (Table.States (1127));
-            Table.States (1127).Minimal_Complete_Action := (Shift, 24, 1198);
-            Table.States (1128).Productions := WisiToken.To_Vector ((1 => (305, 1)));
+            Table.States (1127).Kernel := To_Vector ((0 => (305, 318, 2, False)));
+            Table.States (1127).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1198)));
             Add_Action (Table.States (1128), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (305, 1), 8,
             single_task_declaration_1'Access, single_task_declaration_1_check'Access);
-            Table.States (1128).Minimal_Complete_Action := (Reduce, 305, 8);
-            Table.States (1129).Productions := WisiToken.To_Vector (((239, 5), (242, 2)));
+            Table.States (1128).Kernel := To_Vector ((0 => (305, 96, 0, False)));
+            Table.States (1128).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 305, 8)));
             Add_Action (Table.States (1129), 76, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (1129), 77, Reduce, (242, 2), 3, null_exclusion_opt_name_type_2'Access, null);
             Add_Action (Table.States (1129), 82, Reduce, (242, 2), 3, null_exclusion_opt_name_type_2'Access, null);
@@ -12795,8 +13085,8 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (1129), 101, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Action (Table.States (1129), 102, Reduce, (239, 5), 1, name_5'Access, name_5_check'Access);
             Add_Error (Table.States (1129));
-            Table.States (1129).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (1130).Productions := WisiToken.To_Vector (((239, 2), (242, 3)));
+            Table.States (1129).Kernel := To_Vector (((239, 104, 0, False), (242, 104, 0, False)));
+            Table.States (1129).Minimal_Complete_Actions := To_Vector (((Reduce, 239, 1), (Reduce, 242, 3)));
             Add_Action (Table.States (1130), 76, Reduce, (239, 2), 1, null, name_2_check'Access);
             Add_Action (Table.States (1130), 77, Reduce, (242, 3), 3, null_exclusion_opt_name_type_3'Access, null);
             Add_Action (Table.States (1130), 82, Reduce, (242, 3), 3, null_exclusion_opt_name_type_3'Access, null);
@@ -12805,22 +13095,23 @@ package body Ada_Process_LALR_Main is
             Add_Action (Table.States (1130), 101, Reduce, (239, 2), 1, null, name_2_check'Access);
             Add_Action (Table.States (1130), 102, Reduce, (239, 2), 1, null, name_2_check'Access);
             Add_Error (Table.States (1130));
-            Table.States (1130).Minimal_Complete_Action := (Reduce, 239, 1);
-            Table.States (1131).Productions := WisiToken.To_Vector ((1 => (170, 1)));
+            Table.States (1130).Kernel := To_Vector (((239, 293, 0, True), (242, 293, 0, False)));
+            Table.States (1130).Minimal_Complete_Actions := To_Vector (((Reduce, 239, 1), (Reduce, 242, 3)));
+            Table.States (1130).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1131), (77, 96), (170, 1), 5, null, null);
-            Table.States (1131).Minimal_Complete_Action := (Reduce, 170, 5);
-            Table.States (1132).Productions := WisiToken.To_Vector ((1 => (170, 0)));
+            Table.States (1131).Kernel := To_Vector ((0 => (170, 192, 0, False)));
+            Table.States (1131).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 170, 5)));
             Add_Action (Table.States (1132), (77, 96), (170, 0), 5, null, null);
-            Table.States (1132).Minimal_Complete_Action := (Reduce, 170, 5);
-            Table.States (1133).Productions := WisiToken.To_Vector ((1 => (120, 1)));
+            Table.States (1132).Kernel := To_Vector ((0 => (170, 192, 0, False)));
+            Table.States (1132).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 170, 5)));
             Add_Action (Table.States (1133), 42, 1199);
             Add_Error (Table.States (1133));
-            Table.States (1133).Minimal_Complete_Action := (Shift, 42, 1199);
-            Table.States (1134).Productions := WisiToken.To_Vector ((1 => (120, 0)));
+            Table.States (1133).Kernel := To_Vector ((0 => (120, 77, 2, False)));
+            Table.States (1133).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 42, 1199)));
             Add_Action (Table.States (1134), 42, 1200);
             Add_Error (Table.States (1134));
-            Table.States (1134).Minimal_Complete_Action := (Shift, 42, 1200);
-            Table.States (1135).Productions := WisiToken.To_Vector ((1 => (226, 0)));
+            Table.States (1134).Kernel := To_Vector ((0 => (120, 77, 2, False)));
+            Table.States (1134).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 42, 1200)));
             Add_Action (Table.States (1135), 104, 119);
             Add_Action (Table.States (1135), 105, 33);
             Add_Action (Table.States (1135), 106, 34);
@@ -12830,8 +13121,9 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1135), 239, 1202);
             Add_Goto (Table.States (1135), 272, 92);
             Add_Goto (Table.States (1135), 293, 97);
-            Table.States (1135).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1136).Productions := WisiToken.To_Vector (((155, 0), (225, 0)));
+            Table.States (1135).Kernel := To_Vector ((0 => (226, 83, 3, True)));
+            Table.States (1135).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
+            Table.States (1135).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1136), 3, 121);
             Add_Action (Table.States (1136), 39, 122);
             Add_Action (Table.States (1136), 40, 123);
@@ -12857,46 +13149,43 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1136), 320, 144);
             Add_Goto (Table.States (1136), 321, 145);
             Add_Goto (Table.States (1136), 330, 146);
-            Table.States (1136).Minimal_Complete_Action := (Shift, 80, 1203);
-            Table.States (1137).Productions := WisiToken.To_Vector ((1 => (326, 4)));
+            Table.States (1136).Kernel := To_Vector (((155, 53, 3, False), (225, 53, 1, False)));
+            Table.States (1136).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 1203)));
             Add_Action (Table.States (1137), 53, 1036);
             Add_Action (Table.States (1137), 74, Reduce, (279, 1), 0, null, null);
             Add_Action (Table.States (1137), 96, Reduce, (279, 1), 0, null, null);
             Add_Error (Table.States (1137));
             Add_Goto (Table.States (1137), 279, 1204);
-            Table.States (1137).Minimal_Complete_Action := (Reduce, 279, 0);
-            Table.States (1138).Productions := WisiToken.To_Vector ((1 => (279, 0)));
+            Table.States (1137).Kernel := To_Vector ((0 => (326, 192, 0, False)));
+            Table.States (1137).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 279, 0)));
             Add_Action (Table.States (1138), 85, 1205);
             Add_Error (Table.States (1138));
-            Table.States (1138).Minimal_Complete_Action := (Shift, 85, 1205);
-            Table.States (1139).Productions := WisiToken.To_Vector (((227, 0), (228, 0)));
+            Table.States (1138).Kernel := To_Vector ((0 => (279, 301, 2, False)));
+            Table.States (1138).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 85, 1205)));
             Add_Action (Table.States (1139), 10, 1006);
             Add_Action (Table.States (1139), 74, Reduce, (228, 0), 4, null, null);
             Add_Action (Table.States (1139), 96, Reduce, (228, 0), 4, null, null);
             Add_Error (Table.States (1139));
-            Table.States (1139).Minimal_Complete_Action := (Reduce, 228, 4);
-            Table.States (1140).Productions := WisiToken.To_Vector (((227, 0), (228, 2)));
+            Table.States (1139).Kernel := To_Vector (((227, 227, 2, True), (228, 227, 0, False)));
+            Table.States (1139).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 4)));
             Add_Action (Table.States (1140), 10, 1006);
             Add_Action (Table.States (1140), 74, Reduce, (228, 2), 4, null, null);
             Add_Action (Table.States (1140), 96, Reduce, (228, 2), 4, null, null);
             Add_Error (Table.States (1140));
-            Table.States (1140).Minimal_Complete_Action := (Reduce, 228, 4);
-         end Subr_18;
-         procedure Subr_19
-         is begin
-            Table.States (1141).Productions := WisiToken.To_Vector ((1 => (326, 1)));
+            Table.States (1140).Kernel := To_Vector (((227, 227, 2, True), (228, 227, 0, False)));
+            Table.States (1140).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 4)));
             Add_Action (Table.States (1141), (74, 96), (326, 1), 4, null, null);
-            Table.States (1141).Minimal_Complete_Action := (Reduce, 326, 4);
-            Table.States (1142).Productions := WisiToken.To_Vector ((1 => (327, 0)));
+            Table.States (1141).Kernel := To_Vector ((0 => (326, 301, 0, False)));
+            Table.States (1141).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 4)));
             Add_Action (Table.States (1142), 72, 1206);
             Add_Error (Table.States (1142));
             Add_Goto (Table.States (1142), 328, 1207);
             Add_Goto (Table.States (1142), 329, 1208);
-            Table.States (1142).Minimal_Complete_Action := (Shift, 72, 1206);
-            Table.States (1143).Productions := WisiToken.To_Vector ((1 => (280, 0)));
+            Table.States (1142).Kernel := To_Vector ((0 => (327, 35, 5, False)));
+            Table.States (1142).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 72, 1206)));
             Add_Action (Table.States (1143), (74, 96), (280, 0), 4, record_definition_0'Access, null);
-            Table.States (1143).Minimal_Complete_Action := (Reduce, 280, 4);
-            Table.States (1144).Productions := WisiToken.To_Vector (((147, 0), (147, 2)));
+            Table.States (1143).Kernel := To_Vector ((0 => (280, 54, 0, False)));
+            Table.States (1143).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 280, 4)));
             Add_Action (Table.States (1144), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (1144), 40, 742);
             Add_Action (Table.States (1144), 104, 119);
@@ -12910,36 +13199,37 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1144), 272, 92);
             Add_Goto (Table.States (1144), 293, 97);
             Add_Goto (Table.States (1144), 314, 1210);
-            Table.States (1144).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1145).Productions := WisiToken.To_Vector ((1 => (147, 3)));
+            Table.States (1144).Kernel := To_Vector (((147, 8, 1, False), (147, 8, 2, False)));
+            Table.States (1144).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1145), (74, 82, 96), (147, 3), 1, null, null);
-            Table.States (1145).Minimal_Complete_Action := (Reduce, 147, 1);
-            Table.States (1146).Productions := WisiToken.To_Vector (((146, 0), (146, 1)));
+            Table.States (1145).Kernel := To_Vector ((0 => (147, 114, 0, False)));
+            Table.States (1145).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 147, 1)));
             Add_Action (Table.States (1146), 74, 337);
             Add_Action (Table.States (1146), 82, 1211);
             Add_Action (Table.States (1146), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1146));
             Add_Goto (Table.States (1146), 122, 1212);
-            Table.States (1146).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1147).Productions := WisiToken.To_Vector ((1 => (147, 1)));
+            Table.States (1146).Kernel := To_Vector (((146, 147, 2, False), (146, 147, 1, False)));
+            Table.States (1146).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1147), (74, 82, 96), (147, 1), 1, null, null);
-            Table.States (1147).Minimal_Complete_Action := (Reduce, 147, 1);
-            Table.States (1148).Productions := WisiToken.To_Vector (((227, 0), (228, 3)));
+            Table.States (1147).Kernel := To_Vector ((0 => (147, 314, 0, False)));
+            Table.States (1147).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 147, 1)));
             Add_Action (Table.States (1148), 10, 1006);
             Add_Action (Table.States (1148), 74, Reduce, (228, 3), 4, null, null);
             Add_Action (Table.States (1148), 96, Reduce, (228, 3), 4, null, null);
             Add_Error (Table.States (1148));
-            Table.States (1148).Minimal_Complete_Action := (Reduce, 228, 4);
-            Table.States (1149).Productions := WisiToken.To_Vector (((227, 0), (228, 1)));
+            Table.States (1148).Kernel := To_Vector (((227, 227, 2, True), (228, 227, 0, False)));
+            Table.States (1148).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 4)));
             Add_Action (Table.States (1149), 10, 1006);
             Add_Action (Table.States (1149), 74, Reduce, (228, 1), 4, null, null);
             Add_Action (Table.States (1149), 96, Reduce, (228, 1), 4, null, null);
             Add_Error (Table.States (1149));
-            Table.States (1149).Minimal_Complete_Action := (Reduce, 228, 4);
-            Table.States (1150).Productions := WisiToken.To_Vector ((1 => (181, 0)));
+            Table.States (1149).Kernel := To_Vector (((227, 227, 2, True), (228, 227, 0, False)));
+            Table.States (1149).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 228, 4)));
             Add_Action (Table.States (1150), (77, 83), (181, 0), 3, null, null);
-            Table.States (1150).Minimal_Complete_Action := (Reduce, 181, 3);
-            Table.States (1151).Productions := WisiToken.To_Vector ((1 => (119, 0)));
+            Table.States (1150).Kernel := To_Vector ((0 => (181, 180, 0, True)));
+            Table.States (1150).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 181, 3)));
+            Table.States (1150).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1151), 104, 119);
             Add_Action (Table.States (1151), 105, 33);
             Add_Action (Table.States (1151), 106, 34);
@@ -12949,79 +13239,80 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1151), 239, 841);
             Add_Goto (Table.States (1151), 272, 92);
             Add_Goto (Table.States (1151), 293, 97);
-            Table.States (1151).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1152).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (1151).Kernel := To_Vector ((0 => (119, 10, 1, False)));
+            Table.States (1151).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1152), 74, 1214);
             Add_Error (Table.States (1152));
-            Table.States (1152).Minimal_Complete_Action := (Shift, 74, 1214);
-            Table.States (1153).Productions := WisiToken.To_Vector ((1 => (162, 0)));
+            Table.States (1152).Kernel := To_Vector ((0 => (259, 119, 3, False)));
+            Table.States (1152).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 1214)));
             Add_Action (Table.States (1153), 74, 1215);
             Add_Error (Table.States (1153));
-            Table.States (1153).Minimal_Complete_Action := (Shift, 74, 1215);
-            Table.States (1154).Productions := WisiToken.To_Vector ((1 => (156, 0)));
+            Table.States (1153).Kernel := To_Vector ((0 => (162, 119, 3, False)));
+            Table.States (1153).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 74, 1215)));
             Add_Action (Table.States (1154), (74, 96), (156, 0), 1, null, null);
-            Table.States (1154).Minimal_Complete_Action := (Reduce, 156, 1);
-            Table.States (1155).Productions := WisiToken.To_Vector ((1 => (162, 1)));
+            Table.States (1154).Kernel := To_Vector ((0 => (156, 155, 0, False)));
+            Table.States (1154).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 156, 1)));
             Add_Action (Table.States (1155), (74, 96), (162, 1), 4, derived_type_definition_1'Access, null);
-            Table.States (1155).Minimal_Complete_Action := (Reduce, 162, 4);
-            Table.States (1156).Productions := WisiToken.To_Vector ((1 => (260, 0)));
+            Table.States (1155).Kernel := To_Vector ((0 => (162, 156, 0, False)));
+            Table.States (1155).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 162, 4)));
             Add_Action (Table.States (1156), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (260, 0), 8,
             private_type_declaration_0'Access, null);
-            Table.States (1156).Minimal_Complete_Action := (Reduce, 260, 8);
-            Table.States (1157).Productions := WisiToken.To_Vector ((1 => (245, 0)));
+            Table.States (1156).Kernel := To_Vector ((0 => (260, 96, 0, False)));
+            Table.States (1156).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 260, 8)));
             Add_Action (Table.States (1157), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (245, 0), 8,
             object_renaming_declaration_0'Access, null);
-            Table.States (1157).Minimal_Complete_Action := (Reduce, 245, 8);
-            Table.States (1158).Productions := WisiToken.To_Vector (((185, 0), (187, 0)));
+            Table.States (1157).Kernel := To_Vector ((0 => (245, 96, 0, False)));
+            Table.States (1157).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 245, 8)));
             Add_Action (Table.States (1158), 79, 1065);
             Add_Action (Table.States (1158), 87, 1216);
             Add_Error (Table.States (1158));
-            Table.States (1158).Minimal_Complete_Action := (Shift, 87, 1216);
-            Table.States (1159).Productions := WisiToken.To_Vector ((1 => (185, 0)));
+            Table.States (1158).Kernel := To_Vector (((185, 185, 2, True), (187, 185, 1, False)));
+            Table.States (1158).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 1216)));
             Add_Action (Table.States (1159), (79, 87), (185, 0), 3, null, null);
-            Table.States (1159).Minimal_Complete_Action := (Reduce, 185, 3);
-            Table.States (1160).Productions := WisiToken.To_Vector ((1 => (187, 1)));
+            Table.States (1159).Kernel := To_Vector ((0 => (185, 184, 0, True)));
+            Table.States (1159).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 185, 3)));
+            Table.States (1159).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1160), (24, 72), (187, 1), 4, exception_handler_1'Access, null);
-            Table.States (1160).Minimal_Complete_Action := (Reduce, 187, 4);
-            Table.States (1161).Productions := WisiToken.To_Vector ((1 => (133, 0)));
+            Table.States (1160).Kernel := To_Vector ((0 => (187, 300, 0, False)));
+            Table.States (1160).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 187, 4)));
             Add_Action (Table.States (1161), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (133, 0), 8, block_statement_0'Access, block_statement_0_check'Access);
-            Table.States (1161).Minimal_Complete_Action := (Reduce, 133, 8);
-            Table.States (1162).Productions := WisiToken.To_Vector ((1 => (232, 0)));
+            Table.States (1161).Kernel := To_Vector ((0 => (133, 96, 0, False)));
+            Table.States (1161).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 133, 8)));
             Add_Action (Table.States (1162), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (232, 0), 8, loop_statement_0'Access, loop_statement_0_check'Access);
-            Table.States (1162).Minimal_Complete_Action := (Reduce, 232, 8);
-            Table.States (1163).Productions := WisiToken.To_Vector ((1 => (244, 1)));
+            Table.States (1162).Kernel := To_Vector ((0 => (232, 96, 0, False)));
+            Table.States (1162).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 232, 8)));
             Add_Action (Table.States (1163), 96, 1217);
             Add_Error (Table.States (1163));
-            Table.States (1163).Minimal_Complete_Action := (Shift, 96, 1217);
-            Table.States (1164).Productions := WisiToken.To_Vector ((1 => (244, 2)));
+            Table.States (1163).Kernel := To_Vector ((0 => (244, 122, 1, False)));
+            Table.States (1163).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1217)));
             Add_Action (Table.States (1164), 96, 1218);
             Add_Error (Table.States (1164));
-            Table.States (1164).Minimal_Complete_Action := (Shift, 96, 1218);
-            Table.States (1165).Productions := WisiToken.To_Vector ((1 => (244, 0)));
+            Table.States (1164).Kernel := To_Vector ((0 => (244, 122, 1, False)));
+            Table.States (1164).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1218)));
             Add_Action (Table.States (1165), 96, 1219);
             Add_Error (Table.States (1165));
-            Table.States (1165).Minimal_Complete_Action := (Shift, 96, 1219);
-            Table.States (1166).Productions := WisiToken.To_Vector ((1 => (179, 0)));
+            Table.States (1165).Kernel := To_Vector ((0 => (244, 122, 1, False)));
+            Table.States (1165).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1219)));
             Add_Action (Table.States (1166), 96, 1220);
             Add_Error (Table.States (1166));
-            Table.States (1166).Minimal_Complete_Action := (Shift, 96, 1220);
-            Table.States (1167).Productions := WisiToken.To_Vector ((1 => (213, 2)));
+            Table.States (1166).Kernel := To_Vector ((0 => (179, 122, 1, False)));
+            Table.States (1166).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1220)));
             Add_Action (Table.States (1167), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (213, 2), 8,
             generic_instantiation_2'Access, null);
-            Table.States (1167).Minimal_Complete_Action := (Reduce, 213, 8);
-            Table.States (1168).Productions := WisiToken.To_Vector ((1 => (213, 1)));
+            Table.States (1167).Kernel := To_Vector ((0 => (213, 96, 0, False)));
+            Table.States (1167).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 213, 8)));
             Add_Action (Table.States (1168), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (213, 1), 8,
             generic_instantiation_1'Access, null);
-            Table.States (1168).Minimal_Complete_Action := (Reduce, 213, 8);
-            Table.States (1169).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (1168).Kernel := To_Vector ((0 => (213, 96, 0, False)));
+            Table.States (1168).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 213, 8)));
             Add_Action (Table.States (1169), 96, Reduce, (240, 1), 0, null, null);
             Add_Action (Table.States (1169), 104, 119);
             Add_Action (Table.States (1169), 105, 33);
@@ -13032,16 +13323,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1169), 240, 1221);
             Add_Goto (Table.States (1169), 272, 92);
             Add_Goto (Table.States (1169), 293, 97);
-            Table.States (1169).Minimal_Complete_Action := (Reduce, 240, 0);
-            Table.States (1170).Productions := WisiToken.To_Vector ((1 => (113, 0)));
+            Table.States (1169).Kernel := To_Vector ((0 => (307, 24, 1, False)));
+            Table.States (1169).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 0)));
             Add_Action (Table.States (1170), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (113, 0), 9, accept_statement_0'Access, accept_statement_0_check'Access);
-            Table.States (1170).Minimal_Complete_Action := (Reduce, 113, 9);
-            Table.States (1171).Productions := WisiToken.To_Vector ((1 => (137, 0)));
+            Table.States (1170).Kernel := To_Vector ((0 => (113, 96, 0, False)));
+            Table.States (1170).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 113, 9)));
             Add_Action (Table.States (1171), (77, 83), (137, 0), 4, case_expression_alternative_0'Access, null);
-            Table.States (1171).Minimal_Complete_Action := (Reduce, 137, 4);
-            Table.States (1172).Productions := WisiToken.To_Vector ((1 => (172, 0)));
+            Table.States (1171).Kernel := To_Vector ((0 => (137, 192, 0, False)));
+            Table.States (1171).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 137, 4)));
             Add_Action (Table.States (1172), 3, 121);
             Add_Action (Table.States (1172), 22, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (1172), 23, Reduce, (192, 1), 0, null, null);
@@ -13078,11 +13369,11 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1172), 320, 144);
             Add_Goto (Table.States (1172), 321, 145);
             Add_Goto (Table.States (1172), 330, 146);
-            Table.States (1172).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1173).Productions := WisiToken.To_Vector ((1 => (221, 0)));
+            Table.States (1172).Kernel := To_Vector ((0 => (172, 68, 0, False)));
+            Table.States (1172).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1173), (1 =>  77), (221, 0), 7, if_expression_0'Access, null);
-            Table.States (1173).Minimal_Complete_Action := (Reduce, 221, 7);
-            Table.States (1174).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (1173).Kernel := To_Vector ((0 => (221, 192, 0, False)));
+            Table.States (1173).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 221, 7)));
             Add_Action (Table.States (1174), 3, 121);
             Add_Action (Table.States (1174), 39, 122);
             Add_Action (Table.States (1174), 40, 123);
@@ -13106,17 +13397,16 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1174), 320, 144);
             Add_Goto (Table.States (1174), 321, 145);
             Add_Goto (Table.States (1174), 330, 146);
-            Table.States (1174).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (1175).Productions := WisiToken.To_Vector ((1 => (281, 0)));
+            Table.States (1174).Kernel := To_Vector ((0 => (144, 53, 4, False)));
+            Table.States (1174).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (1175), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 72, 73, 74, 93, 104, 105, 106, 107), (281, 0), 9,
             record_representation_clause_0'Access, null);
-            Table.States (1175).Minimal_Complete_Action := (Reduce, 281, 9);
-            Table.States (1176).Productions := WisiToken.To_Vector ((1 => (254, 2)));
+            Table.States (1175).Kernel := To_Vector ((0 => (281, 96, 0, False)));
+            Table.States (1175).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 281, 9)));
             Add_Action (Table.States (1176), (77, 96), (254, 2), 6, parameter_specification_2'Access, null);
-            Table.States (1176).Minimal_Complete_Action := (Reduce, 254, 6);
-            Table.States (1177).Productions := WisiToken.To_Vector (((128, 0), (239, 0), (239, 1), (254, 0), (254, 1),
-            (272, 0), (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (1176).Kernel := To_Vector ((0 => (254, 192, 0, False)));
+            Table.States (1176).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 254, 6)));
             Add_Action (Table.States (1177), 76, 235);
             Add_Action (Table.States (1177), 77, Reduce, (254, 1), 6, parameter_specification_1'Access, null);
             Add_Action (Table.States (1177), 82, 1224);
@@ -13127,41 +13417,44 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (1177));
             Add_Goto (Table.States (1177), 115, 241);
             Add_Goto (Table.States (1177), 322, 242);
-            Table.States (1177).Minimal_Complete_Action := (Reduce, 254, 6);
-            Table.States (1178).Productions := WisiToken.To_Vector ((1 => (202, 6)));
+            Table.States (1177).Kernel := To_Vector (((128, 239, 2, True), (239, 239, 5, True), (239, 239, 2, True),
+            (254, 239, 1, False), (254, 239, 0, False), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True), (293, 239, 2, True)));
+            Table.States (1177).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 254, 6)));
             Add_Action (Table.States (1178), (74, 96), (202, 6), 4, null, null);
-            Table.States (1178).Minimal_Complete_Action := (Reduce, 202, 4);
-            Table.States (1179).Productions := WisiToken.To_Vector (((203, 0), (203, 1)));
-            Add_Action (Table.States (1179), 74, 1225, (203, 1), 4, formal_derived_type_definition_1'Access, null);
+            Table.States (1178).Kernel := To_Vector ((0 => (202, 80, 0, False)));
+            Table.States (1178).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 202, 4)));
+            Add_Action (Table.States (1179), 74, 1225);
+            Add_Conflict (Table.States (1179), 74, (203, 1), 4, formal_derived_type_definition_1'Access, null);
             Add_Action (Table.States (1179), 96, Reduce, (203, 1), 4, formal_derived_type_definition_1'Access, null);
             Add_Error (Table.States (1179));
-            Table.States (1179).Minimal_Complete_Action := (Reduce, 203, 4);
-            Table.States (1180).Productions := WisiToken.To_Vector ((1 => (205, 0)));
+            Table.States (1179).Kernel := To_Vector (((203, 119, 2, False), (203, 119, 0, False)));
+            Table.States (1179).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 203, 4)));
             Add_Action (Table.States (1180), 77, 1226);
             Add_Error (Table.States (1180));
-            Table.States (1180).Minimal_Complete_Action := (Shift, 77, 1226);
-            Table.States (1181).Productions := WisiToken.To_Vector ((1 => (204, 0)));
+            Table.States (1180).Kernel := To_Vector ((0 => (205, 80, 1, False)));
+            Table.States (1180).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1226)));
             Add_Action (Table.States (1181), 96, 1227);
             Add_Error (Table.States (1181));
-            Table.States (1181).Minimal_Complete_Action := (Shift, 96, 1227);
-            Table.States (1182).Productions := WisiToken.To_Vector ((1 => (198, 1)));
+            Table.States (1181).Kernel := To_Vector ((0 => (204, 122, 1, False)));
+            Table.States (1181).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1227)));
             Add_Action (Table.States (1182), (29, 47, 48, 50, 69, 71, 74, 104), (198, 1), 8,
             formal_object_declaration_1'Access, null);
-            Table.States (1182).Minimal_Complete_Action := (Reduce, 198, 8);
-            Table.States (1183).Productions := WisiToken.To_Vector ((1 => (198, 0)));
+            Table.States (1182).Kernel := To_Vector ((0 => (198, 96, 0, False)));
+            Table.States (1182).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 198, 8)));
             Add_Action (Table.States (1183), 96, 1228);
             Add_Error (Table.States (1183));
-            Table.States (1183).Minimal_Complete_Action := (Shift, 96, 1228);
-            Table.States (1184).Productions := WisiToken.To_Vector ((1 => (222, 1)));
+            Table.States (1183).Kernel := To_Vector ((0 => (198, 122, 1, False)));
+            Table.States (1183).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1228)));
             Add_Action (Table.States (1184), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (222, 1), 9, if_statement_1'Access, null);
-            Table.States (1184).Minimal_Complete_Action := (Reduce, 222, 9);
-            Table.States (1185).Productions := WisiToken.To_Vector ((1 => (222, 0)));
+            Table.States (1184).Kernel := To_Vector ((0 => (222, 96, 0, False)));
+            Table.States (1184).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 222, 9)));
             Add_Action (Table.States (1185), 96, 1229);
             Add_Error (Table.States (1185));
-            Table.States (1185).Minimal_Complete_Action := (Shift, 96, 1229);
-            Table.States (1186).Productions := WisiToken.To_Vector ((1 => (247, 0)));
+            Table.States (1185).Kernel := To_Vector ((0 => (222, 32, 1, False)));
+            Table.States (1185).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1229)));
             Add_Action (Table.States (1186), 96, Reduce, (240, 1), 0, null, null);
             Add_Action (Table.States (1186), 104, 119);
             Add_Action (Table.States (1186), 105, 33);
@@ -13172,21 +13465,21 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1186), 240, 1230);
             Add_Goto (Table.States (1186), 272, 92);
             Add_Goto (Table.States (1186), 293, 97);
-            Table.States (1186).Minimal_Complete_Action := (Reduce, 240, 0);
-            Table.States (1187).Productions := WisiToken.To_Vector ((1 => (247, 1)));
+            Table.States (1186).Kernel := To_Vector ((0 => (247, 24, 1, False)));
+            Table.States (1186).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 240, 0)));
             Add_Action (Table.States (1187), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (247, 1), 9,
             package_body_1'Access, package_body_1_check'Access);
-            Table.States (1187).Minimal_Complete_Action := (Reduce, 247, 9);
-            Table.States (1188).Productions := WisiToken.To_Vector ((1 => (251, 0)));
+            Table.States (1187).Kernel := To_Vector ((0 => (247, 96, 0, False)));
+            Table.States (1187).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 247, 9)));
             Add_Action (Table.States (1188), (1 =>  96), (251, 0), 9, package_specification_0'Access,
             package_specification_0_check'Access);
-            Table.States (1188).Minimal_Complete_Action := (Reduce, 251, 9);
-            Table.States (1189).Productions := WisiToken.To_Vector ((1 => (177, 0)));
+            Table.States (1188).Kernel := To_Vector ((0 => (251, 240, 0, False)));
+            Table.States (1188).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 251, 9)));
             Add_Action (Table.States (1189), 104, 1231);
             Add_Error (Table.States (1189));
-            Table.States (1189).Minimal_Complete_Action := (Shift, 104, 1231);
-            Table.States (1190).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1189).Kernel := To_Vector ((0 => (177, 28, 4, False)));
+            Table.States (1189).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 1231)));
             Add_Action (Table.States (1190), 3, 121);
             Add_Action (Table.States (1190), 35, Reduce, (192, 1), 0, null, null);
             Add_Action (Table.States (1190), 39, 122);
@@ -13221,13 +13514,13 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1190), 320, 144);
             Add_Goto (Table.States (1190), 321, 145);
             Add_Goto (Table.States (1190), 330, 146);
-            Table.States (1190).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1191).Productions := WisiToken.To_Vector ((1 => (264, 0)));
+            Table.States (1190).Kernel := To_Vector ((0 => (176, 72, 4, False)));
+            Table.States (1190).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1191), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (264, 0), 9,
             protected_body_0'Access, protected_body_0_check'Access);
-            Table.States (1191).Minimal_Complete_Action := (Reduce, 264, 9);
-            Table.States (1192).Productions := WisiToken.To_Vector ((1 => (271, 0)));
+            Table.States (1191).Kernel := To_Vector ((0 => (264, 96, 0, False)));
+            Table.States (1191).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 264, 9)));
             Add_Action (Table.States (1192), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (1192), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (1192), 28, 183);
@@ -13300,23 +13593,26 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1192), 319, 113);
             Add_Goto (Table.States (1192), 325, 115);
             Add_Goto (Table.States (1192), 331, 116);
-            Table.States (1192).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (1193).Productions := WisiToken.To_Vector ((1 => (304, 0)));
+            Table.States (1192).Kernel := To_Vector ((0 => (271, 74, 2, False)));
+            Table.States (1192).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
+         end Subr_19;
+         procedure Subr_20
+         is begin
             Add_Action (Table.States (1193), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (304, 0), 9,
             single_protected_declaration_0'Access, single_protected_declaration_0_check'Access);
-            Table.States (1193).Minimal_Complete_Action := (Reduce, 304, 9);
-            Table.States (1194).Productions := WisiToken.To_Vector ((1 => (266, 0)));
+            Table.States (1193).Kernel := To_Vector ((0 => (304, 96, 0, False)));
+            Table.States (1193).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 304, 9)));
             Add_Action (Table.States (1194), (1 =>  96), (266, 0), 5, protected_definition_0'Access,
             protected_definition_0_check'Access);
-            Table.States (1194).Minimal_Complete_Action := (Reduce, 266, 5);
-            Table.States (1195).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (1194).Kernel := To_Vector ((0 => (266, 220, 0, False)));
+            Table.States (1194).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 266, 5)));
             Add_Action (Table.States (1195), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1195), 104, 149);
             Add_Error (Table.States (1195));
             Add_Goto (Table.States (1195), 220, 1234);
-            Table.States (1195).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1196).Productions := WisiToken.To_Vector ((1 => (319, 0)));
+            Table.States (1195).Kernel := To_Vector ((0 => (316, 24, 1, False)));
+            Table.States (1195).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1196), 24, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (1196), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (1196), 28, 183);
@@ -13389,18 +13685,18 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1196), 319, 113);
             Add_Goto (Table.States (1196), 325, 115);
             Add_Goto (Table.States (1196), 331, 116);
-            Table.States (1196).Minimal_Complete_Action := (Reduce, 318, 0);
-            Table.States (1197).Productions := WisiToken.To_Vector ((1 => (319, 1)));
+            Table.States (1196).Kernel := To_Vector ((0 => (319, 74, 2, False)));
+            Table.States (1196).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 318, 0)));
             Add_Action (Table.States (1197), 96, 1236);
             Add_Error (Table.States (1197));
-            Table.States (1197).Minimal_Complete_Action := (Shift, 96, 1236);
-            Table.States (1198).Productions := WisiToken.To_Vector ((1 => (305, 0)));
+            Table.States (1197).Kernel := To_Vector ((0 => (319, 220, 1, False)));
+            Table.States (1197).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1236)));
             Add_Action (Table.States (1198), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1198), 104, 149);
             Add_Error (Table.States (1198));
             Add_Goto (Table.States (1198), 220, 1237);
-            Table.States (1198).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1199).Productions := WisiToken.To_Vector ((1 => (120, 1)));
+            Table.States (1198).Kernel := To_Vector ((0 => (305, 24, 1, False)));
+            Table.States (1198).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1199), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (1199), 8, 1144);
             Add_Action (Table.States (1199), 40, 742);
@@ -13416,8 +13712,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1199), 272, 92);
             Add_Goto (Table.States (1199), 293, 97);
             Add_Goto (Table.States (1199), 314, 1147);
-            Table.States (1199).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1200).Productions := WisiToken.To_Vector ((1 => (120, 0)));
+            Table.States (1199).Kernel := To_Vector ((0 => (120, 42, 1, False)));
+            Table.States (1199).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1200), 7, Reduce, (241, 1), 0, null, null);
             Add_Action (Table.States (1200), 8, 1144);
             Add_Action (Table.States (1200), 40, 742);
@@ -13433,12 +13729,12 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1200), 272, 92);
             Add_Goto (Table.States (1200), 293, 97);
             Add_Goto (Table.States (1200), 314, 1147);
-            Table.States (1200).Minimal_Complete_Action := (Shift, 104, 119);
-            Table.States (1201).Productions := WisiToken.To_Vector ((1 => (226, 0)));
+            Table.States (1200).Kernel := To_Vector ((0 => (120, 42, 1, False)));
+            Table.States (1200).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1201), (77, 83), (226, 0), 3, null, null);
-            Table.States (1201).Minimal_Complete_Action := (Reduce, 226, 3);
-            Table.States (1202).Productions := WisiToken.To_Vector (((128, 0), (225, 0), (239, 0), (239, 1), (272, 0),
-            (293, 0), (293, 1), (293, 2), (293, 3)));
+            Table.States (1201).Kernel := To_Vector ((0 => (226, 225, 0, True)));
+            Table.States (1201).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 226, 3)));
+            Table.States (1201).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1202), 53, 1240);
             Add_Action (Table.States (1202), 76, 235);
             Add_Action (Table.States (1202), 84, 237);
@@ -13447,14 +13743,16 @@ package body Ada_Process_LALR_Main is
             Add_Error (Table.States (1202));
             Add_Goto (Table.States (1202), 115, 241);
             Add_Goto (Table.States (1202), 322, 242);
-            Table.States (1202).Minimal_Complete_Action := (Shift, 53, 1240);
-            Table.States (1203).Productions := WisiToken.To_Vector ((1 => (225, 0)));
+            Table.States (1202).Kernel := To_Vector (((128, 239, 2, True), (225, 239, 2, False), (239, 239, 5, True),
+            (239, 239, 2, True), (272, 239, 3, True), (293, 239, 2, True), (293, 239, 2, True), (293, 239, 2, True),
+            (293, 239, 2, True)));
+            Table.States (1202).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 53, 1240)));
             Add_Action (Table.States (1203), (77, 83), (225, 0), 3, null, null);
-            Table.States (1203).Minimal_Complete_Action := (Reduce, 225, 3);
-            Table.States (1204).Productions := WisiToken.To_Vector ((1 => (326, 4)));
+            Table.States (1203).Kernel := To_Vector ((0 => (225, 80, 0, False)));
+            Table.States (1203).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 225, 3)));
             Add_Action (Table.States (1204), (74, 96), (326, 4), 5, null, null);
-            Table.States (1204).Minimal_Complete_Action := (Reduce, 326, 5);
-            Table.States (1205).Productions := WisiToken.To_Vector ((1 => (279, 0)));
+            Table.States (1204).Kernel := To_Vector ((0 => (326, 279, 0, False)));
+            Table.States (1204).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 326, 5)));
             Add_Action (Table.States (1205), 3, 121);
             Add_Action (Table.States (1205), 39, 122);
             Add_Action (Table.States (1205), 40, 123);
@@ -13478,8 +13776,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1205), 320, 144);
             Add_Goto (Table.States (1205), 321, 145);
             Add_Goto (Table.States (1205), 330, 146);
-            Table.States (1205).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (1206).Productions := WisiToken.To_Vector ((1 => (329, 0)));
+            Table.States (1205).Kernel := To_Vector ((0 => (279, 85, 1, False)));
+            Table.States (1205).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (1206), 3, 121);
             Add_Action (Table.States (1206), 39, 122);
             Add_Action (Table.States (1206), 40, 261);
@@ -13518,23 +13816,23 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1206), 320, 144);
             Add_Goto (Table.States (1206), 321, 145);
             Add_Goto (Table.States (1206), 330, 146);
-            Table.States (1206).Minimal_Complete_Action := (Reduce, 166, 0);
-            Table.States (1207).Productions := WisiToken.To_Vector (((327, 0), (328, 0)));
+            Table.States (1206).Kernel := To_Vector ((0 => (329, 72, 1, False)));
+            Table.States (1206).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 166, 0)));
             Add_Action (Table.States (1207), 24, 1243);
             Add_Action (Table.States (1207), 72, 1206);
             Add_Error (Table.States (1207));
             Add_Goto (Table.States (1207), 329, 1244);
-            Table.States (1207).Minimal_Complete_Action := (Shift, 24, 1243);
-            Table.States (1208).Productions := WisiToken.To_Vector ((1 => (328, 1)));
+            Table.States (1207).Kernel := To_Vector (((327, 328, 3, False), (328, 328, 2, True)));
+            Table.States (1207).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1243)));
             Add_Action (Table.States (1208), (24, 72), (328, 1), 1, null, null);
-            Table.States (1208).Minimal_Complete_Action := (Reduce, 328, 1);
-            Table.States (1209).Productions := WisiToken.To_Vector ((1 => (147, 2)));
+            Table.States (1208).Kernel := To_Vector ((0 => (328, 329, 0, False)));
+            Table.States (1208).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 328, 1)));
             Add_Action (Table.States (1209), (74, 82, 96), (147, 2), 2, null, null);
-            Table.States (1209).Minimal_Complete_Action := (Reduce, 147, 2);
-            Table.States (1210).Productions := WisiToken.To_Vector ((1 => (147, 0)));
+            Table.States (1209).Kernel := To_Vector ((0 => (147, 114, 0, False)));
+            Table.States (1209).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 147, 2)));
             Add_Action (Table.States (1210), (74, 82, 96), (147, 0), 2, null, null);
-            Table.States (1210).Minimal_Complete_Action := (Reduce, 147, 2);
-            Table.States (1211).Productions := WisiToken.To_Vector ((1 => (146, 0)));
+            Table.States (1210).Kernel := To_Vector ((0 => (147, 314, 0, False)));
+            Table.States (1210).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 147, 2)));
             Add_Action (Table.States (1211), 3, 121);
             Add_Action (Table.States (1211), 39, 122);
             Add_Action (Table.States (1211), 40, 123);
@@ -13570,28 +13868,28 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1211), 320, 144);
             Add_Goto (Table.States (1211), 321, 145);
             Add_Goto (Table.States (1211), 330, 146);
-            Table.States (1211).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1212).Productions := WisiToken.To_Vector ((1 => (146, 1)));
+            Table.States (1211).Kernel := To_Vector ((0 => (146, 82, 1, False)));
+            Table.States (1211).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1212), 96, 1246);
             Add_Error (Table.States (1212));
-            Table.States (1212).Minimal_Complete_Action := (Shift, 96, 1246);
-            Table.States (1213).Productions := WisiToken.To_Vector (((119, 0), (227, 0)));
+            Table.States (1212).Kernel := To_Vector ((0 => (146, 122, 1, False)));
+            Table.States (1212).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1246)));
             Add_Action (Table.States (1213), 10, 1006);
             Add_Action (Table.States (1213), 74, Reduce, (119, 0), 2, null, null);
             Add_Action (Table.States (1213), 96, Reduce, (119, 0), 2, null, null);
             Add_Error (Table.States (1213));
-            Table.States (1213).Minimal_Complete_Action := (Reduce, 119, 2);
-            Table.States (1214).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (1213).Kernel := To_Vector (((119, 227, 0, False), (227, 227, 2, True)));
+            Table.States (1213).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 119, 2)));
             Add_Action (Table.States (1214), 49, 1247);
             Add_Error (Table.States (1214));
-            Table.States (1214).Minimal_Complete_Action := (Shift, 49, 1247);
-            Table.States (1215).Productions := WisiToken.To_Vector ((1 => (162, 0)));
+            Table.States (1214).Kernel := To_Vector ((0 => (259, 74, 2, False)));
+            Table.States (1214).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 49, 1247)));
             Add_Action (Table.States (1215), 41, 705);
             Add_Action (Table.States (1215), 54, 708);
             Add_Error (Table.States (1215));
             Add_Goto (Table.States (1215), 280, 1248);
-            Table.States (1215).Minimal_Complete_Action := (Shift, 41, 705);
-            Table.States (1216).Productions := WisiToken.To_Vector ((1 => (187, 0)));
+            Table.States (1215).Kernel := To_Vector ((0 => (162, 74, 2, False)));
+            Table.States (1215).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 41, 705)));
             Add_Action (Table.States (1216), 4, 1);
             Add_Action (Table.States (1216), 5, 2);
             Add_Action (Table.States (1216), 13, Reduce, (132, 1), 0, null, null);
@@ -13648,42 +13946,39 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1216), 303, 101);
             Add_Goto (Table.States (1216), 306, 363);
             Add_Goto (Table.States (1216), 323, 114);
-            Table.States (1216).Minimal_Complete_Action := (Reduce, 300, 0);
-         end Subr_19;
-         procedure Subr_20
-         is begin
-            Table.States (1217).Productions := WisiToken.To_Vector ((1 => (244, 1)));
+            Table.States (1216).Kernel := To_Vector ((0 => (187, 87, 0, False)));
+            Table.States (1216).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 300, 0)));
             Add_Action (Table.States (1217), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 1), 9,
             object_declaration_1'Access, null);
-            Table.States (1217).Minimal_Complete_Action := (Reduce, 244, 9);
-            Table.States (1218).Productions := WisiToken.To_Vector ((1 => (244, 2)));
+            Table.States (1217).Kernel := To_Vector ((0 => (244, 96, 0, False)));
+            Table.States (1217).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 9)));
             Add_Action (Table.States (1218), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 2), 9,
             object_declaration_2'Access, null);
-            Table.States (1218).Minimal_Complete_Action := (Reduce, 244, 9);
-            Table.States (1219).Productions := WisiToken.To_Vector ((1 => (244, 0)));
+            Table.States (1218).Kernel := To_Vector ((0 => (244, 96, 0, False)));
+            Table.States (1218).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 9)));
             Add_Action (Table.States (1219), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (244, 0), 9,
             object_declaration_0'Access, null);
-            Table.States (1219).Minimal_Complete_Action := (Reduce, 244, 9);
-            Table.States (1220).Productions := WisiToken.To_Vector ((1 => (179, 0)));
+            Table.States (1219).Kernel := To_Vector ((0 => (244, 96, 0, False)));
+            Table.States (1219).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 244, 9)));
             Add_Action (Table.States (1220), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (179, 0), 9,
             entry_declaration_0'Access, null);
-            Table.States (1220).Minimal_Complete_Action := (Reduce, 179, 9);
-            Table.States (1221).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (1220).Kernel := To_Vector ((0 => (179, 96, 0, False)));
+            Table.States (1220).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 179, 9)));
             Add_Action (Table.States (1221), 96, 1250);
             Add_Error (Table.States (1221));
-            Table.States (1221).Minimal_Complete_Action := (Shift, 96, 1250);
-            Table.States (1222).Productions := WisiToken.To_Vector ((1 => (172, 0)));
+            Table.States (1221).Kernel := To_Vector ((0 => (307, 240, 1, False)));
+            Table.States (1221).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1250)));
             Add_Action (Table.States (1222), (22, 23, 77), (172, 0), 4, elsif_expression_item_0'Access, null);
-            Table.States (1222).Minimal_Complete_Action := (Reduce, 172, 4);
-            Table.States (1223).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (1222).Kernel := To_Vector ((0 => (172, 192, 0, False)));
+            Table.States (1222).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 172, 4)));
             Add_Action (Table.States (1223), 85, 1251);
             Add_Error (Table.States (1223));
-            Table.States (1223).Minimal_Complete_Action := (Shift, 85, 1251);
-            Table.States (1224).Productions := WisiToken.To_Vector ((1 => (254, 0)));
+            Table.States (1223).Kernel := To_Vector ((0 => (144, 301, 3, False)));
+            Table.States (1223).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 85, 1251)));
             Add_Action (Table.States (1224), 3, 121);
             Add_Action (Table.States (1224), 39, 122);
             Add_Action (Table.States (1224), 40, 123);
@@ -13719,112 +14014,113 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1224), 320, 144);
             Add_Goto (Table.States (1224), 321, 145);
             Add_Goto (Table.States (1224), 330, 146);
-            Table.States (1224).Minimal_Complete_Action := (Reduce, 192, 0);
-            Table.States (1225).Productions := WisiToken.To_Vector ((1 => (203, 0)));
+            Table.States (1224).Kernel := To_Vector ((0 => (254, 82, 0, False)));
+            Table.States (1224).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 192, 0)));
             Add_Action (Table.States (1225), 49, 1253);
             Add_Error (Table.States (1225));
-            Table.States (1225).Minimal_Complete_Action := (Shift, 49, 1253);
-            Table.States (1226).Productions := WisiToken.To_Vector ((1 => (205, 0)));
+            Table.States (1225).Kernel := To_Vector ((0 => (203, 74, 1, False)));
+            Table.States (1225).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 49, 1253)));
             Add_Action (Table.States (1226), (74, 96), (205, 0), 3, null, null);
-            Table.States (1226).Minimal_Complete_Action := (Reduce, 205, 3);
-            Table.States (1227).Productions := WisiToken.To_Vector ((1 => (204, 0)));
+            Table.States (1226).Kernel := To_Vector ((0 => (205, 77, 0, False)));
+            Table.States (1226).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 205, 3)));
             Add_Action (Table.States (1227), (29, 47, 48, 50, 69, 71, 74, 104), (204, 0), 9,
             formal_package_declaration_0'Access, null);
-            Table.States (1227).Minimal_Complete_Action := (Reduce, 204, 9);
-            Table.States (1228).Productions := WisiToken.To_Vector ((1 => (198, 0)));
+            Table.States (1227).Kernel := To_Vector ((0 => (204, 96, 0, False)));
+            Table.States (1227).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 204, 9)));
             Add_Action (Table.States (1228), (29, 47, 48, 50, 69, 71, 74, 104), (198, 0), 9,
             formal_object_declaration_0'Access, null);
-            Table.States (1228).Minimal_Complete_Action := (Reduce, 198, 9);
-            Table.States (1229).Productions := WisiToken.To_Vector ((1 => (222, 0)));
+            Table.States (1228).Kernel := To_Vector ((0 => (198, 96, 0, False)));
+            Table.States (1228).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 198, 9)));
             Add_Action (Table.States (1229), (4, 5, 13, 15, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 36, 37,
             40, 41, 43, 46, 47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 68, 69, 71, 72, 73, 74, 93, 104, 105, 106,
             107), (222, 0), 10, if_statement_0'Access, null);
-            Table.States (1229).Minimal_Complete_Action := (Reduce, 222, 10);
-            Table.States (1230).Productions := WisiToken.To_Vector ((1 => (247, 0)));
+            Table.States (1229).Kernel := To_Vector ((0 => (222, 96, 0, False)));
+            Table.States (1229).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 222, 10)));
             Add_Action (Table.States (1230), 96, 1254);
             Add_Error (Table.States (1230));
-            Table.States (1230).Minimal_Complete_Action := (Shift, 96, 1254);
-            Table.States (1231).Productions := WisiToken.To_Vector ((1 => (177, 0)));
+            Table.States (1230).Kernel := To_Vector ((0 => (247, 240, 1, False)));
+            Table.States (1230).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1254)));
             Add_Action (Table.States (1231), 33, 1255);
             Add_Error (Table.States (1231));
-            Table.States (1231).Minimal_Complete_Action := (Shift, 33, 1255);
-            Table.States (1232).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1231).Kernel := To_Vector ((0 => (177, 104, 3, False)));
+            Table.States (1231).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 33, 1255)));
             Add_Action (Table.States (1232), 35, 1256);
             Add_Error (Table.States (1232));
-            Table.States (1232).Minimal_Complete_Action := (Shift, 35, 1256);
-            Table.States (1233).Productions := WisiToken.To_Vector ((1 => (271, 0)));
+            Table.States (1232).Kernel := To_Vector ((0 => (176, 192, 4, False)));
+            Table.States (1232).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 35, 1256)));
             Add_Action (Table.States (1233), 96, 1257);
             Add_Error (Table.States (1233));
-            Table.States (1233).Minimal_Complete_Action := (Shift, 96, 1257);
-            Table.States (1234).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (1233).Kernel := To_Vector ((0 => (271, 266, 1, False)));
+            Table.States (1233).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1257)));
             Add_Action (Table.States (1234), 96, 1258);
             Add_Error (Table.States (1234));
-            Table.States (1234).Minimal_Complete_Action := (Shift, 96, 1258);
-            Table.States (1235).Productions := WisiToken.To_Vector ((1 => (319, 0)));
+            Table.States (1234).Kernel := To_Vector ((0 => (316, 220, 1, False)));
+            Table.States (1234).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1258)));
             Add_Action (Table.States (1235), 24, 1259);
             Add_Error (Table.States (1235));
-            Table.States (1235).Minimal_Complete_Action := (Shift, 24, 1259);
-            Table.States (1236).Productions := WisiToken.To_Vector ((1 => (319, 1)));
+            Table.States (1235).Kernel := To_Vector ((0 => (319, 318, 2, False)));
+            Table.States (1235).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1259)));
             Add_Action (Table.States (1236), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (319, 1), 10,
             task_type_declaration_1'Access, task_type_declaration_1_check'Access);
-            Table.States (1236).Minimal_Complete_Action := (Reduce, 319, 10);
-            Table.States (1237).Productions := WisiToken.To_Vector ((1 => (305, 0)));
+            Table.States (1236).Kernel := To_Vector ((0 => (319, 96, 0, False)));
+            Table.States (1236).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 319, 10)));
             Add_Action (Table.States (1237), 96, 1260);
             Add_Error (Table.States (1237));
-            Table.States (1237).Minimal_Complete_Action := (Shift, 96, 1260);
-            Table.States (1238).Productions := WisiToken.To_Vector ((1 => (120, 1)));
+            Table.States (1237).Kernel := To_Vector ((0 => (305, 220, 1, False)));
+            Table.States (1237).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1260)));
             Add_Action (Table.States (1238), (74, 82, 96), (120, 1), 6, array_type_definition_1'Access, null);
-            Table.States (1238).Minimal_Complete_Action := (Reduce, 120, 6);
-            Table.States (1239).Productions := WisiToken.To_Vector ((1 => (120, 0)));
+            Table.States (1238).Kernel := To_Vector ((0 => (120, 147, 0, False)));
+            Table.States (1238).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 120, 6)));
             Add_Action (Table.States (1239), (74, 82, 96), (120, 0), 6, array_type_definition_0'Access, null);
-            Table.States (1239).Minimal_Complete_Action := (Reduce, 120, 6);
-            Table.States (1240).Productions := WisiToken.To_Vector ((1 => (225, 0)));
+            Table.States (1239).Kernel := To_Vector ((0 => (120, 147, 0, False)));
+            Table.States (1239).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 120, 6)));
             Add_Action (Table.States (1240), 80, 1203);
             Add_Error (Table.States (1240));
-            Table.States (1240).Minimal_Complete_Action := (Shift, 80, 1203);
-            Table.States (1241).Productions := WisiToken.To_Vector ((1 => (279, 0)));
+            Table.States (1240).Kernel := To_Vector ((0 => (225, 53, 1, False)));
+            Table.States (1240).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 80, 1203)));
             Add_Action (Table.States (1241), (74, 96), (279, 0), 4, null, null);
-            Table.States (1241).Minimal_Complete_Action := (Reduce, 279, 4);
-            Table.States (1242).Productions := WisiToken.To_Vector (((166, 0), (329, 0)));
+            Table.States (1241).Kernel := To_Vector ((0 => (279, 301, 0, False)));
+            Table.States (1241).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 279, 4)));
             Add_Action (Table.States (1242), 79, 445);
             Add_Action (Table.States (1242), 87, 1261);
             Add_Error (Table.States (1242));
-            Table.States (1242).Minimal_Complete_Action := (Shift, 87, 1261);
-            Table.States (1243).Productions := WisiToken.To_Vector ((1 => (327, 0)));
+            Table.States (1242).Kernel := To_Vector (((166, 166, 2, True), (329, 166, 1, False)));
+            Table.States (1242).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 87, 1261)));
             Add_Action (Table.States (1243), 15, 1262);
             Add_Error (Table.States (1243));
-            Table.States (1243).Minimal_Complete_Action := (Shift, 15, 1262);
-            Table.States (1244).Productions := WisiToken.To_Vector ((1 => (328, 0)));
+            Table.States (1243).Kernel := To_Vector ((0 => (327, 24, 2, False)));
+            Table.States (1243).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 15, 1262)));
             Add_Action (Table.States (1244), (24, 72), (328, 0), 2, null, null);
-            Table.States (1244).Minimal_Complete_Action := (Reduce, 328, 2);
-            Table.States (1245).Productions := WisiToken.To_Vector ((1 => (146, 0)));
+            Table.States (1244).Kernel := To_Vector ((0 => (328, 329, 0, True)));
+            Table.States (1244).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 328, 2)));
+            Table.States (1244).Minimal_Complete_Actions_Recursive := True;
             Add_Action (Table.States (1245), 74, 337);
             Add_Action (Table.States (1245), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1245));
             Add_Goto (Table.States (1245), 122, 1263);
-            Table.States (1245).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1246).Productions := WisiToken.To_Vector ((1 => (146, 1)));
+            Table.States (1245).Kernel := To_Vector ((0 => (146, 192, 1, False)));
+            Table.States (1245).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1246), (15, 24, 28, 72, 104), (146, 1), 5, component_declaration_1'Access, null);
-            Table.States (1246).Minimal_Complete_Action := (Reduce, 146, 5);
-            Table.States (1247).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (1246).Kernel := To_Vector ((0 => (146, 96, 0, False)));
+            Table.States (1246).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 146, 5)));
             Add_Action (Table.States (1247), 74, 337);
             Add_Action (Table.States (1247), 96, Reduce, (122, 1), 0, null, null);
             Add_Error (Table.States (1247));
             Add_Goto (Table.States (1247), 122, 1264);
-            Table.States (1247).Minimal_Complete_Action := (Reduce, 122, 0);
-            Table.States (1248).Productions := WisiToken.To_Vector ((1 => (162, 0)));
+            Table.States (1247).Kernel := To_Vector ((0 => (259, 49, 1, False)));
+            Table.States (1247).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 122, 0)));
             Add_Action (Table.States (1248), (74, 96), (162, 0), 6, derived_type_definition_0'Access, null);
-            Table.States (1248).Minimal_Complete_Action := (Reduce, 162, 6);
-            Table.States (1249).Productions := WisiToken.To_Vector ((1 => (187, 0)));
+            Table.States (1248).Kernel := To_Vector ((0 => (162, 280, 0, False)));
+            Table.States (1248).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 162, 6)));
             Add_Action (Table.States (1249), (24, 72), (187, 0), 6, exception_handler_0'Access, null);
-            Table.States (1249).Minimal_Complete_Action := (Reduce, 187, 6);
-            Table.States (1250).Productions := WisiToken.To_Vector ((1 => (307, 0)));
+            Table.States (1249).Kernel := To_Vector ((0 => (187, 300, 0, False)));
+            Table.States (1249).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 187, 6)));
             Add_Action (Table.States (1250), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (307, 0), 10,
             subprogram_body_0'Access, subprogram_body_0_check'Access);
-            Table.States (1250).Minimal_Complete_Action := (Reduce, 307, 10);
-            Table.States (1251).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (1250).Kernel := To_Vector ((0 => (307, 96, 0, False)));
+            Table.States (1250).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 307, 10)));
             Add_Action (Table.States (1251), 3, 121);
             Add_Action (Table.States (1251), 39, 122);
             Add_Action (Table.States (1251), 40, 123);
@@ -13848,19 +14144,19 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1251), 320, 144);
             Add_Goto (Table.States (1251), 321, 145);
             Add_Goto (Table.States (1251), 330, 146);
-            Table.States (1251).Minimal_Complete_Action := (Shift, 103, 129);
-            Table.States (1252).Productions := WisiToken.To_Vector ((1 => (254, 0)));
+            Table.States (1251).Kernel := To_Vector ((0 => (144, 85, 2, False)));
+            Table.States (1251).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 103, 129)));
             Add_Action (Table.States (1252), (77, 96), (254, 0), 8, parameter_specification_0'Access, null);
-            Table.States (1252).Minimal_Complete_Action := (Reduce, 254, 8);
-            Table.States (1253).Productions := WisiToken.To_Vector ((1 => (203, 0)));
+            Table.States (1252).Kernel := To_Vector ((0 => (254, 192, 0, False)));
+            Table.States (1252).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 254, 8)));
             Add_Action (Table.States (1253), (74, 96), (203, 0), 6, formal_derived_type_definition_0'Access, null);
-            Table.States (1253).Minimal_Complete_Action := (Reduce, 203, 6);
-            Table.States (1254).Productions := WisiToken.To_Vector ((1 => (247, 0)));
+            Table.States (1253).Kernel := To_Vector ((0 => (203, 49, 0, False)));
+            Table.States (1253).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 203, 6)));
             Add_Action (Table.States (1254), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (247, 0), 11,
             package_body_0'Access, package_body_0_check'Access);
-            Table.States (1254).Minimal_Complete_Action := (Reduce, 247, 11);
-            Table.States (1255).Productions := WisiToken.To_Vector ((1 => (177, 0)));
+            Table.States (1254).Kernel := To_Vector ((0 => (247, 96, 0, False)));
+            Table.States (1254).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 247, 11)));
             Add_Action (Table.States (1255), 3, 121);
             Add_Action (Table.States (1255), 39, 122);
             Add_Action (Table.States (1255), 40, 474);
@@ -13887,8 +14183,8 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1255), 320, 144);
             Add_Goto (Table.States (1255), 321, 145);
             Add_Goto (Table.States (1255), 330, 146);
-            Table.States (1255).Minimal_Complete_Action := (Shift, 40, 474);
-            Table.States (1256).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1255).Kernel := To_Vector ((0 => (177, 33, 2, False)));
+            Table.States (1255).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 104, 119)));
             Add_Action (Table.States (1256), 13, Reduce, (159, 1), 0, null, null);
             Add_Action (Table.States (1256), 25, Reduce, (246, 2), 0, null, null);
             Add_Action (Table.States (1256), 28, 183);
@@ -13959,29 +14255,29 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1256), 319, 113);
             Add_Goto (Table.States (1256), 325, 115);
             Add_Goto (Table.States (1256), 331, 116);
-            Table.States (1256).Minimal_Complete_Action := (Reduce, 159, 0);
-            Table.States (1257).Productions := WisiToken.To_Vector ((1 => (271, 0)));
+            Table.States (1256).Kernel := To_Vector ((0 => (176, 35, 3, False)));
+            Table.States (1256).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 159, 0)));
             Add_Action (Table.States (1257), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (271, 0), 11,
             protected_type_declaration_0'Access, protected_type_declaration_0_check'Access);
-            Table.States (1257).Minimal_Complete_Action := (Reduce, 271, 11);
-            Table.States (1258).Productions := WisiToken.To_Vector ((1 => (316, 0)));
+            Table.States (1257).Kernel := To_Vector ((0 => (271, 96, 0, False)));
+            Table.States (1257).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 271, 11)));
             Add_Action (Table.States (1258), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (316, 0), 11,
             task_body_0'Access, task_body_0_check'Access);
-            Table.States (1258).Minimal_Complete_Action := (Reduce, 316, 11);
-            Table.States (1259).Productions := WisiToken.To_Vector ((1 => (319, 0)));
+            Table.States (1258).Kernel := To_Vector ((0 => (316, 96, 0, False)));
+            Table.States (1258).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 316, 11)));
             Add_Action (Table.States (1259), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1259), 104, 149);
             Add_Error (Table.States (1259));
             Add_Goto (Table.States (1259), 220, 1268);
-            Table.States (1259).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1260).Productions := WisiToken.To_Vector ((1 => (305, 0)));
+            Table.States (1259).Kernel := To_Vector ((0 => (319, 24, 1, False)));
+            Table.States (1259).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1260), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (305, 0), 11,
             single_task_declaration_0'Access, single_task_declaration_0_check'Access);
-            Table.States (1260).Minimal_Complete_Action := (Reduce, 305, 11);
-            Table.States (1261).Productions := WisiToken.To_Vector ((1 => (329, 0)));
+            Table.States (1260).Kernel := To_Vector ((0 => (305, 96, 0, False)));
+            Table.States (1260).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 305, 11)));
             Add_Action (Table.States (1261), 15, 885);
             Add_Action (Table.States (1261), 24, Reduce, (150, 1), 0, null, null);
             Add_Action (Table.States (1261), 28, 183);
@@ -13999,60 +14295,63 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1261), 219, 892);
             Add_Goto (Table.States (1261), 281, 94);
             Add_Goto (Table.States (1261), 327, 893);
-            Table.States (1261).Minimal_Complete_Action := (Reduce, 150, 0);
-            Table.States (1262).Productions := WisiToken.To_Vector ((1 => (327, 0)));
+            Table.States (1261).Kernel := To_Vector ((0 => (329, 87, 0, False)));
+            Table.States (1261).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 150, 0)));
             Add_Action (Table.States (1262), 96, 1270);
             Add_Error (Table.States (1262));
-            Table.States (1262).Minimal_Complete_Action := (Shift, 96, 1270);
-            Table.States (1263).Productions := WisiToken.To_Vector ((1 => (146, 0)));
+            Table.States (1262).Kernel := To_Vector ((0 => (327, 15, 1, False)));
+            Table.States (1262).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1270)));
             Add_Action (Table.States (1263), 96, 1271);
             Add_Error (Table.States (1263));
-            Table.States (1263).Minimal_Complete_Action := (Shift, 96, 1271);
-            Table.States (1264).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (1263).Kernel := To_Vector ((0 => (146, 122, 1, False)));
+            Table.States (1263).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1271)));
             Add_Action (Table.States (1264), 96, 1272);
             Add_Error (Table.States (1264));
-            Table.States (1264).Minimal_Complete_Action := (Shift, 96, 1272);
-            Table.States (1265).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (1264).Kernel := To_Vector ((0 => (259, 122, 1, False)));
+            Table.States (1264).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1272)));
             Add_Action (Table.States (1265), 96, 1273);
             Add_Error (Table.States (1265));
-            Table.States (1265).Minimal_Complete_Action := (Shift, 96, 1273);
-            Table.States (1266).Productions := WisiToken.To_Vector ((1 => (177, 0)));
+            Table.States (1265).Kernel := To_Vector ((0 => (144, 301, 1, False)));
+            Table.States (1265).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1273)));
             Add_Action (Table.States (1266), 77, 1274);
             Add_Error (Table.States (1266));
-            Table.States (1266).Minimal_Complete_Action := (Shift, 77, 1274);
-            Table.States (1267).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1266).Kernel := To_Vector ((0 => (177, 167, 1, False)));
+            Table.States (1266).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 77, 1274)));
             Add_Action (Table.States (1267), 13, 1275);
             Add_Error (Table.States (1267));
-            Table.States (1267).Minimal_Complete_Action := (Shift, 13, 1275);
-            Table.States (1268).Productions := WisiToken.To_Vector ((1 => (319, 0)));
+            Table.States (1267).Kernel := To_Vector ((0 => (176, 159, 3, False)));
+            Table.States (1267).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 13, 1275)));
             Add_Action (Table.States (1268), 96, 1276);
             Add_Error (Table.States (1268));
-            Table.States (1268).Minimal_Complete_Action := (Shift, 96, 1276);
-            Table.States (1269).Productions := WisiToken.To_Vector ((1 => (329, 0)));
+            Table.States (1268).Kernel := To_Vector ((0 => (319, 220, 1, False)));
+            Table.States (1268).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1276)));
+         end Subr_20;
+         procedure Subr_21
+         is begin
             Add_Action (Table.States (1269), (24, 72), (329, 0), 4, variant_0'Access, null);
-            Table.States (1269).Minimal_Complete_Action := (Reduce, 329, 4);
-            Table.States (1270).Productions := WisiToken.To_Vector ((1 => (327, 0)));
+            Table.States (1269).Kernel := To_Vector ((0 => (329, 150, 0, False)));
+            Table.States (1269).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 329, 4)));
             Add_Action (Table.States (1270), (15, 24, 28, 72, 104), (327, 0), 7, variant_part_0'Access, null);
-            Table.States (1270).Minimal_Complete_Action := (Reduce, 327, 7);
-            Table.States (1271).Productions := WisiToken.To_Vector ((1 => (146, 0)));
+            Table.States (1270).Kernel := To_Vector ((0 => (327, 96, 0, False)));
+            Table.States (1270).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 327, 7)));
             Add_Action (Table.States (1271), (15, 24, 28, 72, 104), (146, 0), 7, component_declaration_0'Access, null);
-            Table.States (1271).Minimal_Complete_Action := (Reduce, 146, 7);
-            Table.States (1272).Productions := WisiToken.To_Vector ((1 => (259, 0)));
+            Table.States (1271).Kernel := To_Vector ((0 => (146, 96, 0, False)));
+            Table.States (1271).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 146, 7)));
             Add_Action (Table.States (1272), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (259, 0), 12,
             private_extension_declaration_0'Access, null);
-            Table.States (1272).Minimal_Complete_Action := (Reduce, 259, 12);
-            Table.States (1273).Productions := WisiToken.To_Vector ((1 => (144, 0)));
+            Table.States (1272).Kernel := To_Vector ((0 => (259, 96, 0, False)));
+            Table.States (1272).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 259, 12)));
             Add_Action (Table.States (1273), (24, 104), (144, 0), 8, component_clause_0'Access, null);
-            Table.States (1273).Minimal_Complete_Action := (Reduce, 144, 8);
-            Table.States (1274).Productions := WisiToken.To_Vector ((1 => (177, 0)));
+            Table.States (1273).Kernel := To_Vector ((0 => (144, 96, 0, False)));
+            Table.States (1273).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 144, 8)));
             Add_Action (Table.States (1274), 72, Reduce, (253, 1), 0, null, null);
             Add_Action (Table.States (1274), 76, 431);
             Add_Error (Table.States (1274));
             Add_Goto (Table.States (1274), 199, 344);
             Add_Goto (Table.States (1274), 253, 1277);
-            Table.States (1274).Minimal_Complete_Action := (Reduce, 253, 0);
-            Table.States (1275).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1274).Kernel := To_Vector ((0 => (177, 77, 0, False)));
+            Table.States (1274).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 253, 0)));
             Add_Action (Table.States (1275), 4, 1);
             Add_Action (Table.States (1275), 5, 2);
             Add_Action (Table.States (1275), 13, Reduce, (132, 1), 0, null, null);
@@ -14110,34 +14409,35 @@ package body Ada_Process_LALR_Main is
             Add_Goto (Table.States (1275), 303, 101);
             Add_Goto (Table.States (1275), 306, 363);
             Add_Goto (Table.States (1275), 323, 114);
-            Table.States (1275).Minimal_Complete_Action := (Reduce, 218, 0);
-            Table.States (1276).Productions := WisiToken.To_Vector ((1 => (319, 0)));
+            Table.States (1275).Kernel := To_Vector ((0 => (176, 13, 2, False)));
+            Table.States (1275).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 218, 0)));
             Add_Action (Table.States (1276), (4, 5, 13, 15, 17, 18, 24, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46,
             47, 48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 93, 104, 105, 106, 107), (319, 0), 13,
             task_type_declaration_0'Access, task_type_declaration_0_check'Access);
-            Table.States (1276).Minimal_Complete_Action := (Reduce, 319, 13);
-            Table.States (1277).Productions := WisiToken.To_Vector ((1 => (177, 0)));
+            Table.States (1276).Kernel := To_Vector ((0 => (319, 96, 0, False)));
+            Table.States (1276).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 319, 13)));
             Add_Action (Table.States (1277), (1 =>  72), (177, 0), 7, entry_body_formal_part_0'Access, null);
-            Table.States (1277).Minimal_Complete_Action := (Reduce, 177, 7);
-            Table.States (1278).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1277).Kernel := To_Vector ((0 => (177, 253, 0, False)));
+            Table.States (1277).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 177, 7)));
             Add_Action (Table.States (1278), 24, 1279);
             Add_Error (Table.States (1278));
-            Table.States (1278).Minimal_Complete_Action := (Shift, 24, 1279);
-            Table.States (1279).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1278).Kernel := To_Vector ((0 => (176, 218, 2, False)));
+            Table.States (1278).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 24, 1279)));
             Add_Action (Table.States (1279), 96, Reduce, (220, 1), 0, null, null);
             Add_Action (Table.States (1279), 104, 149);
             Add_Error (Table.States (1279));
             Add_Goto (Table.States (1279), 220, 1280);
-            Table.States (1279).Minimal_Complete_Action := (Reduce, 220, 0);
-            Table.States (1280).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1279).Kernel := To_Vector ((0 => (176, 24, 1, False)));
+            Table.States (1279).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 220, 0)));
             Add_Action (Table.States (1280), 96, 1281);
             Add_Error (Table.States (1280));
-            Table.States (1280).Minimal_Complete_Action := (Shift, 96, 1281);
-            Table.States (1281).Productions := WisiToken.To_Vector ((1 => (176, 0)));
+            Table.States (1280).Kernel := To_Vector ((0 => (176, 220, 1, False)));
+            Table.States (1280).Minimal_Complete_Actions := To_Vector ((0 => (Shift, 96, 1281)));
             Add_Action (Table.States (1281), (24, 25, 28, 29, 40, 46, 50), (176, 0), 12, entry_body_0'Access,
             entry_body_0_check'Access);
-            Table.States (1281).Minimal_Complete_Action := (Reduce, 176, 12);
-         end Subr_20;
+            Table.States (1281).Kernel := To_Vector ((0 => (176, 96, 0, False)));
+            Table.States (1281).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, 176, 12)));
+         end Subr_21;
       begin
          Subr_1;
          Subr_2;
@@ -14159,6 +14459,7 @@ package body Ada_Process_LALR_Main is
          Subr_18;
          Subr_19;
          Subr_20;
+         Subr_21;
       end;
 
       WisiToken.Parse.LR.Parser.New_Parser
@@ -14167,7 +14468,7 @@ package body Ada_Process_LALR_Main is
          Lexer.New_Lexer (Trace.Descriptor),
          Table,
          Language_Fixes,
-         Language_Use_Minimal_Complete_Actions,
+         Language_Matching_Begin_Tokens,
          Language_String_ID_Set,
          User_Data,
          Max_Parallel         => 15,

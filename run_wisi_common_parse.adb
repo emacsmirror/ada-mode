@@ -47,9 +47,6 @@ package body Run_Wisi_Common_Parse is
       Put_Line ("   2 - add each parser cycle, error recovery enqueue/check");
       Put_Line ("   3 - parse stack in each cycle, error recovery parse actions");
       Put_Line ("   4 - add lexer debug");
-      Put_Line ("--cost_limit n   : set error recover cost limit" &
-                  (if Parser.Table = null then ""
-                   else "; default" & Integer'Image (Parser.Table.McKenzie_Param.Cost_Limit)));
       Put_Line ("--check_limit n  : set error recover token check limit" &
                   (if Parser.Table = null then ""
                    else "; default" & WisiToken.Token_Index'Image (Parser.Table.McKenzie_Param.Check_Limit)));
@@ -116,10 +113,6 @@ package body Run_Wisi_Common_Parse is
                WisiToken.Trace_McKenzie := Integer'Value (Argument (Arg + 2));
                WisiToken.Trace_Action   := Integer'Value (Argument (Arg + 3));
                Arg                      := Arg + 4;
-
-            elsif Argument (Arg) = "--cost_limit" then
-               Parser.Table.McKenzie_Param.Cost_Limit := Integer'Value (Argument (Arg + 1));
-               Arg := Arg + 2;
 
             elsif Argument (Arg) = "--check_limit" then
                Parser.Table.McKenzie_Param.Check_Limit := Token_Index'Value (Argument (Arg + 1));

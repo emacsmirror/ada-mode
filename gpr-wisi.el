@@ -31,6 +31,10 @@
 (require 'wisi-elisp-lexer)
 (require 'wisi-process-parse)
 
+(defconst gpr-wisi-language-protocol-version "1"
+  "Defines language-specific parser parameters.
+Must match wisi-gpr.ads Language_Protocol_Version.")
+
 (defun gpr-wisi-which-function ()
   "For `gpr-which-function'."
   (wisi-validate-cache (point-min) (point) nil 'navigate)
@@ -118,6 +122,7 @@
      (wisi-process-parse-get
       (make-gpr-wisi-parser
       :label "gpr"
+      :language-protocol-version gpr-wisi-language-protocol-version
       :exec-file gpr-process-parse-exec
       :face-table gpr-process-face-table
       :token-table gpr-process-token-table

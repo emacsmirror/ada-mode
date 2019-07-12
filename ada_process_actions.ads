@@ -23,21 +23,17 @@ with WisiToken.Semantic_Checks;
 package Ada_Process_Actions is
 
    Descriptor : aliased WisiToken.Descriptor :=
-     (First_Terminal                => 3,
-      Last_Terminal                 => 107,
-      First_Nonterminal             => 108,
-      Last_Nonterminal              => 332,
-      EOI_ID                        => 107,
-      Accept_ID                     => 108,
-      Case_Insensitive              => True,
-      New_Line_ID                   => 1,
-      Comment_ID                    => 2,
-      Left_Paren_ID                 => 76,
-      Right_Paren_ID                => 77,
-      String_1_ID                   => 106,
-      String_2_ID                   => 105,
-      Embedded_Quote_Escape_Doubled => True,
-      Image                         =>
+     (First_Terminal    => 3,
+      Last_Terminal     => 107,
+      First_Nonterminal => 108,
+      Last_Nonterminal  => 332,
+      EOI_ID            => 107,
+      Accept_ID         => 108,
+      Case_Insensitive  => True,
+      New_Line_ID       => 1,
+      String_1_ID       => 106,
+      String_2_ID       => 105,
+      Image             =>
         (new String'("WHITESPACE"),
          new String'("NEW_LINE"),
          new String'("COMMENT"),
@@ -1179,6 +1175,11 @@ package Ada_Process_Actions is
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
      Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
    procedure identifier_list_0
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array);
+   procedure identifier_list_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;

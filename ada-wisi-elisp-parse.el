@@ -26,7 +26,7 @@
 
 (defun ada-indent-aggregate ()
   ;; Not ada-wisi-elisp-parse--indent-aggregate to match existing grammar files
-  "Return indent for an aggregate (0 or -1)."
+  "Return indent for an aggregate (nil or -1)."
   ;; In our grammar, 'aggregate' can be an Ada aggregate, or a
   ;; parenthesized expression.
   ;;
@@ -49,7 +49,7 @@
 	  ;;             and then C)
 	  ;;            or else
 	  ;;            (D
-	  0)
+	  nil)
 
 	 (t ;; if_expression
 	  (- ada-indent-broken ada-indent))
@@ -73,7 +73,7 @@
 	  ;; test/ada_mode-long_paren.adb
 	  ;; RX_Enable                     =>
 	  ;;   (RX_Torque_Subaddress |
-	  0)
+	  nil)
 	 ))
 
       (THEN
@@ -84,14 +84,14 @@
 	  ;; test/ada_mode-parens.adb
 	  ;;             and then
 	  ;;             (C)
-	  0)
+	  nil)
 
 	 (t
 	  ;; in elsif_expression_item or if_expression
 	  (- ada-indent-broken ada-indent))))
 
       (t
-       0))
+       nil))
     ))
 
 (defun ada-wisi-elisp-parse--indent-hanging (tok delta1 delta2 option no-accumulate)

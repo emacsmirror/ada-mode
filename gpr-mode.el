@@ -1,6 +1,6 @@
 ;; gpr-mode --- Major mode for editing GNAT project files  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2004, 2007, 2008, 2012-2015, 2017, 2018  Free Software Foundation, Inc.
+;; Copyright (C) 2004, 2007, 2008, 2012-2015, 2017, 2018, 2019  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -142,6 +142,7 @@ Function is called with no arguments.")
   '(
     "abstract"
     "aggregate"
+    "at"
     "case"
     "configuration"
     "end"

@@ -29,22 +29,22 @@ with Wisi;
 generic
    type Parse_Data_Type  is new Wisi.Parse_Data_Type with private;
 
-   Name                                  : in String; --  for Usage, error messages. "_wisi_parse" will be appended
-   Descriptor                            : in WisiToken.Descriptor;
-   Partial_Parse_Active                  : in out Boolean;
-   Language_Fixes                        : in WisiToken.Parse.LR.Parser.Language_Fixes_Access;
-   Language_Use_Minimal_Complete_Actions : in WisiToken.Parse.LR.Parser.Language_Use_Minimal_Complete_Actions_Access;
-   Language_String_ID_Set                : in WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
-   Text_Rep_File_Name                    : in String;
+   Name                           : in String; --  for Usage, error messages. "_wisi_parse" will be appended
+   Language_Protocol_Version      : in String; --  Defines language-specific parse parameters.
+   Descriptor                     : in WisiToken.Descriptor;
+   Partial_Parse_Active           : in out Boolean;
+   Language_Fixes                 : in WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+   Language_Matching_Begin_Tokens : in WisiToken.Parse.LR.Parser.Language_Matching_Begin_Tokens_Access;
+   Language_String_ID_Set         : in WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
+   Text_Rep_File_Name             : in String;
 
    with procedure Create_Parser
-     (Parser                       :    out          WisiToken.Parse.LR.Parser.Parser;
-      Language_Fixes               : in              WisiToken.Parse.LR.Parser.Language_Fixes_Access;
-      Language_Use_Minimal_Complete_Actions : in
-        WisiToken.Parse.LR.Parser.Language_Use_Minimal_Complete_Actions_Access;
-      Language_String_ID_Set       : in              WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
-      Trace                        : not null access WisiToken.Trace'Class;
-      User_Data                    : in              WisiToken.Syntax_Trees.User_Data_Access;
-      Text_Rep_File_Name           : in              String);
+     (Parser                         :    out          WisiToken.Parse.LR.Parser.Parser;
+      Language_Fixes                 : in              WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+      Language_Matching_Begin_Tokens : in              WisiToken.Parse.LR.Parser.Language_Matching_Begin_Tokens_Access;
+      Language_String_ID_Set         : in              WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
+      Trace                          : not null access WisiToken.Trace'Class;
+      User_Data                      : in              WisiToken.Syntax_Trees.User_Data_Access;
+      Text_Rep_File_Name             : in              String);
 
 procedure Gen_Emacs_Wisi_LR_Text_Rep_Parse;

@@ -30,10 +30,10 @@ is
    Params : constant Process_Start_Params := Get_Process_Start_Params;
 begin
    Create_Parser
-     (Parser, Language_Fixes, Language_Use_Minimal_Complete_Actions, Language_String_ID_Set,
+     (Parser, Language_Fixes, Language_Matching_Begin_Tokens, Language_String_ID_Set,
       Trace'Unrestricted_Access,
       Parse_Data'Unchecked_Access);
 
-   Parse_Stream (Name, Partial_Parse_Active, Params, Parser, Parse_Data, Descriptor);
+   Parse_Stream (Name, Language_Protocol_Version, Partial_Parse_Active, Params, Parser, Parse_Data, Descriptor);
 
 end Gen_Emacs_Wisi_LR_Parse;

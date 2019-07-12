@@ -22,11 +22,10 @@ with WisiToken.Parse.LR.Parser;
 package Gpr_Process_LR1_Main is
 
    procedure Create_Parser
-     (Parser                       :    out WisiToken.Parse.LR.Parser.Parser;
-      Language_Fixes               : in     WisiToken.Parse.LR.Parser.Language_Fixes_Access;
-      Language_Use_Minimal_Complete_Actions : in
-     WisiToken.Parse.LR.Parser.Language_Use_Minimal_Complete_Actions_Access;
-      Language_String_ID_Set       : in     WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
+     (Parser                         :    out WisiToken.Parse.LR.Parser.Parser;
+      Language_Fixes                 : in     WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+      Language_Matching_Begin_Tokens : in     WisiToken.Parse.LR.Parser.Language_Matching_Begin_Tokens_Access;
+      Language_String_ID_Set         : in     WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
       Trace                        : not null access WisiToken.Trace'Class;
       User_Data                    : in     WisiToken.Syntax_Trees.User_Data_Access);
 

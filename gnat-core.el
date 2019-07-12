@@ -443,6 +443,7 @@ list."
     ("a-direct" . "Ada.Directories")
     ("a-except" . "Ada.Exceptions")
     ("a-ioexce" . "Ada.IO_Exceptions")
+    ("a-finali" . "Ada.Finalization")
     ("a-numeri" . "Ada.Numerics")
     ("a-stream" . "Ada.Streams")
     ("a-string" . "Ada.Strings")
