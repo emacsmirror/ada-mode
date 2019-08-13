@@ -20,7 +20,7 @@ pragma License (GPL);
 
 with Gen_Emacs_Wisi_LR_Parse;
 with Gpr_Process_Actions;
-with Gpr_Process_LR1_Main;
+with Gpr_Process_Main;
 with Wisi.Gpr;
 procedure Gpr_Mode_Wisi_Parse is new Gen_Emacs_Wisi_LR_Parse
   (Parse_Data_Type                => Wisi.Gpr.Parse_Data_Type,
@@ -31,4 +31,4 @@ procedure Gpr_Mode_Wisi_Parse is new Gen_Emacs_Wisi_LR_Parse
    Language_Fixes                 => null,
    Language_Matching_Begin_Tokens => null,
    Language_String_ID_Set         => null,
-   Create_Parser                  => Gpr_Process_LR1_Main.Create_Parser);
+   Create_Parser                  => Gpr_Process_Main.Create_Parser);

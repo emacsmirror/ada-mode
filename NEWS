@@ -1,13 +1,35 @@
 GNU Emacs Ada mode NEWS -- history of user-visible changes.
 
-Copyright (C) 2018 Free Software Foundation, Inc.
-See the end of the file for license conditions.
+Copyright (C) 2019 Free Software Foundation, Inc.
 
 Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
-* Ada Mode
+* Ada Mode 6.2.1
+
+** parser Ada language protocol version 2
+
+** The elisp parser is deleted; only the Ada process parser is
+   supported.
+
+** New Ada menu entry "Refactor" supports converting between
+   Object.Method (...) and Method (Object, ...), and between Object
+   (Index) and Element (Object, Index). The same commands are on a
+   menu shown by `ada-refactor-menu-popup', which may be bound to a
+   keystroke or mouseclick.
+
+** Ada mode now provides a project.el backend, in ada-project.el.
+   `project-find-file' does file name completion on files in the
+   current project, using the `uniquify-files' completion style. To
+   use this backend with an existing Ada mode project file:
+
+   (setq ada-project-current (make-ada-project :ada-prj-file <exising-file.prj>))
+   (add-to-list 'project-find-functions #'ada-project-current)
+
+   You may want to define other functions for project-find-functions.
+
+* Ada Mode 6.1.1
 11 Jul 2019
 
 ** parser Ada language protocol version 1

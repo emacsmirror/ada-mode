@@ -1,7 +1,7 @@
 ;;; ada-fix-error.el --- utilities for automatically fixing  -*- lexical-binding:t -*-
 ;; errors reported by the compiler.
 
-;; Copyright (C) 1999-2009, 2012-2015, 2017, 2018 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2009, 2012-2015, 2017-2019 Free Software Foundation, Inc.
 
 ;; Author     : Stephen Leake      <Stephen_Leake@stephe-leake.org>
 ;; Maintainer : Stephen Leake      <Stephen_Leake@stephe-leake.org>
@@ -202,6 +202,7 @@ point and return nil.")
   "Get compilation message at line beginning."
   (get-text-property (line-beginning-position) 'compilation-message))
 
+;;;###autoload
 (defun ada-fix-compiler-error ()
   "Attempt to fix the current compiler error. Leave point at fixed code."
   (interactive)

@@ -1,9 +1,8 @@
 \input texinfo  @c -*-texinfo-*-
-@setfilename ../../info/gpr-mode
 @settitle gpr Mode
 
 @copying
-Copyright @copyright{} 2013  Free Software Foundation, Inc.
+Copyright @copyright{} 2013, 2019  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -19,7 +18,7 @@ developing GNU and promoting software freedom.''
 @end quotation
 @end copying
 
-@dircategory Emacs editing modes
+@dircategory Emacs
 @direntry
 * gpr mode: (gpr-mode).         Emacs mode for editing and navigating gpr files (gnat project files).
 @end direntry
@@ -37,10 +36,8 @@ developing GNU and promoting software freedom.''
 
 @contents
 
-@node Top, Overview, (dir), (dir)
-
 @ifnottex
-@insertcopying
+@node Top, Overview, (dir), (dir)
 @end ifnottex
 
 @menu

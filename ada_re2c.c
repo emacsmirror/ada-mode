@@ -5004,13 +5004,11 @@ yy196:
 	case 0x01:
 	case 0x02:
 	case 0x03:
-	case 0x04:
 	case 0x05:
 	case 0x06:
 	case 0x07:
 	case 0x08:
 	case '\t':
-	case '\n':
 	case '\v':
 	case '\f':
 	case '\r':
@@ -5127,6 +5125,8 @@ yy196:
 	case '|':
 	case '~':
 	case 0x7F:	goto yy195;
+	case 0x04:
+	case '\n':
 	case '}':	goto yy197;
 	case 0xC2:
 	case 0xC3:

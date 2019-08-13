@@ -24,11 +24,10 @@
 ;;;;
 
 (require 'cl-lib)
-(require 'gpr-lalr-elisp)
 (require 'gpr-indent-user-options)
 (require 'gpr-mode)
+(require 'gpr-process)
 (require 'wisi)
-(require 'wisi-elisp-lexer)
 (require 'wisi-process-parse)
 
 (defconst gpr-wisi-language-protocol-version "1"
@@ -83,8 +82,7 @@ Must match wisi-gpr.ads Language_Protocol_Version.")
        )
 
       (when done
-	(wisi-forward-token); keyword
-	(wisi-token-text (wisi-forward-token))); name
+	(wisi-next-name))
 
       )))
 
@@ -110,30 +108,15 @@ Must match wisi-gpr.ads Language_Protocol_Version.")
    :indent-calculate nil
    :post-indent-fail nil
    :parser
-   (cond
-    ((or (null gpr-parser)
-	 (eq 'elisp gpr-parser))
-     (wisi-make-elisp-parser
-      gpr-lalr-elisp-parse-table
-      #'wisi-forward-token))
-
-    ((eq 'process gpr-parser)
-     (require 'gpr-process)
-     (wisi-process-parse-get
-      (make-gpr-wisi-parser
-      :label "gpr"
-      :language-protocol-version gpr-wisi-language-protocol-version
-      :exec-file gpr-process-parse-exec
-      :face-table gpr-process-face-table
-      :token-table gpr-process-token-table
-      )))
-    )
-
-   :lexer (wisi-make-elisp-lexer
-	   :token-table-raw gpr-lalr-elisp-token-table-raw
-	   :keyword-table-raw gpr-lalr-elisp-keyword-table-raw
-	   :string-quote-escape-doubled nil
-	   :string-quote-escape nil))
+   (wisi-process-parse-get
+    (make-gpr-wisi-parser
+     :label "gpr"
+     :language-protocol-version gpr-wisi-language-protocol-version
+     :exec-file gpr-process-parse-exec
+     :face-table gpr-process-face-table
+     :token-table gpr-process-token-table
+     :repair-image gpr-process-repair-image
+     )))
 
   (setq gpr-indent-statement 'wisi-indent-statement)
   (set (make-local-variable 'comment-indent-function) 'wisi-comment-indent)

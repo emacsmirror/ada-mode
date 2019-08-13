@@ -1,7 +1,7 @@
 ;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
 ;; Ada projects without 'make' or similar tool
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2017  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017, 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -256,6 +256,7 @@ user confirmation of the command, using PROMPT."
 
     (compile (ada-build-replace-vars cmd))))
 
+;;;###autoload
 (defun ada-build-check (&optional confirm)
   "Run the check_cmd project variable.
 By default, this checks the current file for syntax errors.
@@ -263,6 +264,7 @@ If CONFIRM is non-nil, prompt for user confirmation of the command."
   (interactive "P")
   (ada-build-run-cmd 'check_cmd confirm "check command"))
 
+;;;###autoload
 (defun ada-build-make (&optional confirm)
   "Run the make_cmd project variable.
 By default, this compiles and links the main program.
@@ -270,6 +272,7 @@ If CONFIRM is non-nil, prompt for user confirmation of the command."
   (interactive "P")
   (ada-build-run-cmd 'make_cmd confirm "make command"))
 
+;;;###autoload
 (defun ada-build-set-make (&optional confirm)
   "Set the main project variable to the current file, then run the make_cmd project variable.
 By default, this compiles and links the new main program.
@@ -278,6 +281,7 @@ If CONFIRM is non-nil, prompt for user confirmation of the command."
   (ada-prj-put 'main (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
   (ada-build-run-cmd 'make_cmd confirm "make command"))
 
+;;;###autoload
 (defun ada-build-run (&optional confirm)
   "Run the run_cmd project variable.
 By default, this runs the main program.

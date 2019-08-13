@@ -1,6 +1,6 @@
 ;;; ada-skel.el --- Extension to Ada mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 1987, 1993, 1994, 1996-2018  Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1993, 1994, 1996-2019  Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -93,21 +93,15 @@ This could end in a token recognized by `ada-skel-expand'."
   ()
   "--  Copyright (C) " (format-time-string "%Y ") user-full-name " All Rights Reserved.\n"
   "--\n"
-  "--  This program is free software; you can redistribute it and/or\n"
-  "--  modify it under terms of the GNU General Public License as\n"
-  "--  published by the Free Software Foundation; either version 3, or (at\n"
-  "--  your option) any later version. This program is distributed in the\n"
-  "--  hope that it will be useful, but WITHOUT ANY WARRANTY; without even\n"
-  "--  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n"
-  "--  PURPOSE. See the GNU General Public License for more details. You\n"
-  "--  should have received a copy of the GNU General Public License\n"
-  "--  distributed with this program; see file COPYING. If not, write to\n"
-  "--  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston,\n"
-  "--  MA 02110-1335, USA.\n"
+  "--  This library is free software;  you can redistribute it and/or modify it\n"
+  "--  under terms of the  GNU General Public License  as published by the Free\n"
+  "--  Software  Foundation;  either version 3,  or (at your  option) any later\n"
+  "--  version. This library is distributed in the hope that it will be useful,\n"
+  "--  but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN-\n"
+  "--  TABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
   "\n"
   "pragma License (GPL);\n"
-
-)
+  )
 
 (define-skeleton ada-skel-modified-gpl
   "Modified GPLv3 copyright/license skeleton, with automatic year and owner."
@@ -281,6 +275,12 @@ See `ada-find-other-file' to create library level package body from spec."
   "else\n"
   "end select;")
 
+(define-skeleton ada-skel-separate
+  "Insert a subunit body."
+  ()
+  "separate (" _ ")\n"
+  "{proper_body}\n")
+
 (define-skeleton ada-skel-task-body
   "Insert a task body with name from `str'."
   ()
@@ -334,12 +334,18 @@ See `ada-find-other-file' to create library level package body from spec."
     ("procedure"
      ("body" . ada-skel-procedure-body)
      ("spec" . ada-skel-procedure-spec))
+    ("proper_body"
+     ("function" . ada-skel-function-body)
+     ("procedure" . ada-skel-procedure-body)
+     ("task" . ada-skel-task-body)
+     ("protected" . ada-skel-protected-body))
     ("protected"
      ("body" . ada-skel-protected-body)
      ("spec" . ada-skel-protected-spec))
     ("record" . ada-skel-record)
     ("return" . ada-skel-return)
     ("select" . ada-skel-select)
+    ("separate" . ada-skel-separate)
     ("task"
      ("body" . ada-skel-task-body)
      ("spec" . ada-skel-task-spec))

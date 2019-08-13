@@ -19,7 +19,7 @@
 
 with WisiToken.Syntax_Trees;
 with WisiToken.Parse.LR.Parser;
-package Gpr_Process_LR1_Main is
+package Gpr_Process_Main is
 
    procedure Create_Parser
      (Parser                         :    out WisiToken.Parse.LR.Parser.Parser;
@@ -29,4 +29,4 @@ package Gpr_Process_LR1_Main is
       Trace                        : not null access WisiToken.Trace'Class;
       User_Data                    : in     WisiToken.Syntax_Trees.User_Data_Access);
 
-end Gpr_Process_LR1_Main;
+end Gpr_Process_Main;

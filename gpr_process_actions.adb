@@ -53,6 +53,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (5, Statement_End)));
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 0)));
       when Indent =>
@@ -73,6 +74,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (8, Statement_End)));
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 0)));
       when Indent =>
@@ -94,6 +96,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (10, Statement_End)));
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 0)));
       when Indent =>
@@ -137,7 +140,6 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (7, Statement_End)));
-         Containing_Action (Parse_Data, Tree, Nonterm, Tokens, 1, 4);
       when Face =>
          null;
       when Indent =>
@@ -208,7 +210,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (7, Statement_End)));
-         Containing_Action (Parse_Data, Tree, Nonterm, Tokens, 1, 4);
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (6, 1, 0)));
       when Indent =>
@@ -241,7 +243,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (9, Statement_End)));
-         Containing_Action (Parse_Data, Tree, Nonterm, Tokens, 1, 6);
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (8, 1, 0)));
       when Indent =>
@@ -293,7 +295,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (9, Statement_End)));
-         Containing_Action (Parse_Data, Tree, Nonterm, Tokens, 1, 6);
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (8, 1, 0)));
       when Indent =>
@@ -384,7 +386,7 @@ package body Gpr_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (7, Statement_End)));
-         Containing_Action (Parse_Data, Tree, Nonterm, Tokens, 1, 4);
+         Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (6, 1, 0)));
       when Indent =>

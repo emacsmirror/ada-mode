@@ -77,7 +77,7 @@ package body Ada_Process_LR1_Main is
          Task_Count  => 0,
          Check_Limit => 4,
          Check_Delta_Limit => 100,
-         Enqueue_Limit => 45000);
+         Enqueue_Limit => 58000);
 
       function Actions return WisiToken.Parse.LR.Semantic_Action_Array_Arrays.Vector
       is begin
@@ -136,6 +136,8 @@ package body Ada_Process_LR1_Main is
             Acts (139)(0) := (case_statement_0'Access, null);
             Acts (140).Set_First_Last (0, 0);
             Acts (140)(0) := (case_statement_alternative_0'Access, null);
+            Acts (141).Set_First_Last (0, 1);
+            Acts (141)(0) := (case_statement_alternative_list_0'Access, null);
             Acts (142).Set_First_Last (0, 4);
             Acts (142)(2) := (compilation_unit_2'Access, null);
             Acts (143).Set_First_Last (0, 1);
@@ -162,8 +164,12 @@ package body Ada_Process_LR1_Main is
             Acts (169)(1) := (discriminant_part_opt_1'Access, null);
             Acts (172).Set_First_Last (0, 0);
             Acts (172)(0) := (elsif_expression_item_0'Access, null);
+            Acts (173).Set_First_Last (0, 1);
+            Acts (173)(0) := (elsif_expression_list_0'Access, null);
             Acts (174).Set_First_Last (0, 0);
             Acts (174)(0) := (elsif_statement_item_0'Access, null);
+            Acts (175).Set_First_Last (0, 1);
+            Acts (175)(0) := (elsif_statement_list_0'Access, null);
             Acts (176).Set_First_Last (0, 0);
             Acts (176)(0) := (entry_body_0'Access, entry_body_0_check'Access);
             Acts (177).Set_First_Last (0, 1);
@@ -180,6 +186,8 @@ package body Ada_Process_LR1_Main is
             Acts (187).Set_First_Last (0, 1);
             Acts (187)(0) := (exception_handler_0'Access, null);
             Acts (187)(1) := (exception_handler_1'Access, null);
+            Acts (188).Set_First_Last (0, 2);
+            Acts (188)(0) := (exception_handler_list_0'Access, null);
             Acts (190).Set_First_Last (0, 1);
             Acts (190)(0) := (exit_statement_0'Access, null);
             Acts (190)(1) := (exit_statement_1'Access, null);
@@ -320,12 +328,8 @@ package body Ada_Process_LR1_Main is
             Acts (254)(1) := (parameter_specification_1'Access, null);
             Acts (254)(2) := (parameter_specification_2'Access, null);
             Acts (254)(3) := (parameter_specification_3'Access, null);
-            Acts (255).Set_First_Last (0, 1);
-            Acts (255)(0) := (parameter_specification_list_0'Access, null);
-            Acts (256).Set_First_Last (0, 2);
+            Acts (256).Set_First_Last (0, 1);
             Acts (256)(0) := (paren_expression_0'Access, null);
-            Acts (256)(1) := (paren_expression_1'Access, null);
-            Acts (256)(2) := (paren_expression_2'Access, null);
             Acts (257).Set_First_Last (0, 2);
             Acts (257)(0) := (pragma_g_0'Access, null);
             Acts (257)(1) := (pragma_g_1'Access, null);
@@ -440,6 +444,8 @@ package body Ada_Process_LR1_Main is
             Acts (323)(0) := (timed_entry_call_0'Access, null);
             Acts (327).Set_First_Last (0, 0);
             Acts (327)(0) := (variant_part_0'Access, null);
+            Acts (328).Set_First_Last (0, 1);
+            Acts (328)(0) := (variant_list_0'Access, null);
             Acts (329).Set_First_Last (0, 0);
             Acts (329)(0) := (variant_0'Access, null);
             Acts (331).Set_First_Last (0, 2);

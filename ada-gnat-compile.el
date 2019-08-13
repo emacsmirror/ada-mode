@@ -149,31 +149,40 @@ Prompt user if more than one."
   ;; wisi-output.adb:115:42: possible misspelling of "Production"
   ;;
   ;; column number can vary, so only check the line number
+  (save-excursion
+    (let ((line (progn (beginning-of-line) (nth 1 (compilation--message->loc (ada-get-compilation-message)))))
+	  done choices)
+      (while (not done)
+	(forward-line 1)
+	(setq done (or (not (ada-get-compilation-message))
+		       (not (equal line (nth 1 (compilation--message->loc (ada-get-compilation-message)))))))
+	(when (and (not done)
+		   (progn
+		     (skip-syntax-forward "^-")
+		     (forward-char 1)
+		     (looking-at (concat "possible misspelling of " ada-gnat-quoted-name-regexp))))
+	  (push (match-string 1) choices)))
 
-  (let ((line (progn (beginning-of-line) (nth 1 (compilation--message->loc (ada-get-compilation-message)))))
-	done choices)
-    (while (not done)
-      (forward-line 1)
-      (setq done (or (not (ada-get-compilation-message))
-		     (not (equal line (nth 1 (compilation--message->loc (ada-get-compilation-message)))))))
-      (when (and (not done)
-		 (progn
-		   (skip-syntax-forward "^-")
-		   (forward-char 1)
-		   (looking-at (concat "possible misspelling of " ada-gnat-quoted-name-regexp))))
-	(push (match-string 1) choices)))
+      ;; return correct spelling
+      (cond
+       ((= 0 (length choices))
+	nil)
 
-    ;; return correct spelling
-    (cond
-     ((= 0 (length choices))
-      nil)
+       ((= 1 (length choices))
+	(car choices))
 
-     ((= 1 (length choices))
-      (car choices))
+       (t ;; multiple choices
+	(completing-read "correct spelling: " choices))
+       ))))
 
-     (t ;; multiple choices
-      (completing-read "correct spelling: " choices))
-     )))
+(defun ada-gnat-qualified ()
+  "Return qualified name from current compiler error, if there is one offered."
+  (save-excursion
+    (forward-line 1)
+    (skip-syntax-forward "^ ")
+    (looking-at " use fully qualified name starting with \\([a-zA-Z0-9_]+\\) to make")
+    (match-string 1)
+    ))
 
 (defun ada-gnat-fix-error (_msg source-buffer _source-window)
   "For `ada-gnat-fix-error-hook'."
@@ -301,18 +310,25 @@ Prompt user if more than one."
 	  ((looking-at (concat ada-gnat-quoted-name-regexp " not declared in " ada-gnat-quoted-name-regexp))
 	   (save-excursion
 	     (let ((child-name (match-string 1))
-		   (correct-spelling (ada-gnat-misspelling)))
-	       (if correct-spelling
-		   (progn
-		     (setq correct-spelling (match-string 1))
-		     (pop-to-buffer source-buffer)
-		     (search-forward child-name)
-		     (replace-match correct-spelling))
+		   (correct-spelling (ada-gnat-misspelling))
+		   (qualified (ada-gnat-qualified)))
+	       (cond
+		(correct-spelling
+		 (pop-to-buffer source-buffer)
+		 (search-forward child-name)
+		 (replace-match correct-spelling))
 
+		(qualified
+		 (pop-to-buffer source-buffer)
+		 (search-forward child-name)
+		 (skip-syntax-backward "w_.")
+		 (insert qualified "."))
+
+		(t
 		 ;; else guess that "child" is a child package, and extend the with_clause
 		 (pop-to-buffer source-buffer)
 		 (ada-fix-extend-with-clause child-name))))
-	   t)
+	   t))
 
 	  ((looking-at (concat ada-gnat-quoted-punctuation-regexp
 			       " should be "

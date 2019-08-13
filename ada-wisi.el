@@ -23,17 +23,25 @@
 ;;
 ;;;;
 
-(require 'ada-lalr-elisp)
 (require 'ada-fix-error)
 (require 'ada-indent-user-options)
+(require 'ada-process)
 (require 'cl-lib)
 (require 'wisi)
-(require 'wisi-elisp-lexer)
 (require 'wisi-process-parse)
 
-(defconst ada-wisi-language-protocol-version "1"
+(defconst ada-wisi-language-protocol-version "2"
   "Defines language-specific parser parameters.
 Must match wisi-ada.ads Language_Protocol_Version.")
+
+;; Refactor actions; must match wisi-ada.adb Refactor
+(defconst ada-refactor-method-object-to-object-method 1)
+(defconst ada-refactor-object-method-to-method-object 2)
+
+(defconst ada-refactor-element-object-to-object-index 3)
+(defconst ada-refactor-object-index-to-element-object 4)
+
+(defconst ada-refactor-format-paramlist 5)
 
 (defun ada-wisi-comment-gnat (indent after)
   "Modify INDENT to match gnat rules. Return new indent.
@@ -230,7 +238,7 @@ For `wisi-indent-calculate-functions'.
     ;; Used by ada-align; we know we are in a paren.
     (ada-goto-open-paren 1)
     (while (forward-comment 1))
-    (eq (wisi-tok-token (wisi-forward-token)) 'CASE)))
+    (looking-at "case")))
 
 (defun ada-wisi-goto-subunit-name ()
   "For `ada-goto-subunit-name'."
@@ -259,7 +267,8 @@ Also return cache at start."
 
 (defun ada-wisi-goto-declaration-start-1 (include-type)
   "Subroutine of `ada-wisi-goto-declaration-start'."
-  (let ((cache (wisi-get-cache (point)))
+  (let ((start (point))
+	(cache (wisi-get-cache (point)))
 	(done nil))
     (unless cache
       (setq cache (wisi-backward-cache)))
@@ -297,6 +306,9 @@ Also return cache at start."
 		     (eq (wisi-cache-token cache) 'TASK))
 
 		    ))
+	    (unless (< start (wisi-cache-end cache))
+	      ;; found declaration does not include start; find containing one.
+	      (setq done nil))
 	    (unless done
 	      (setq cache (wisi-goto-containing cache nil))))
 	(setq done t))
@@ -333,26 +345,36 @@ Also return cache at start."
 		     (< (point) start-pos))
 		 (ada-wisi-declarative-region-start-p cache))
 	    (progn
-	      (wisi-forward-token)
+	      (forward-word);; past 'is'
 	      (setq done t))
 	  (cl-case (wisi-cache-class cache)
 	    (motion
-	     (goto-char (wisi-cache-prev cache))
-	     (setq cache (wisi-get-cache (point))))
+	     (setq cache (wisi-goto-containing cache)));; statement-start
 
 	    (statement-end
-	     (goto-char (wisi-cache-containing cache));; statement-start
-	     (goto-char (wisi-cache-containing (wisi-get-cache (point))));; containing scope
-	     (setq cache (wisi-get-cache (point))))
+	     (setq cache (wisi-goto-containing cache)) ;; statement-start
+	     (cl-case (wisi-cache-nonterm cache)
+	       ((generic_package_declaration
+		 package_declaration
+		 entry_body package_body package_declaration protected_body subprogram_body task_body
+		 protected_type_declaration single_protected_declaration single_task_declaration task_type_declaration)
+		;; This is a block scope before the starting point; we want the containing scope
+		(setq cache (wisi-goto-containing cache)))
+
+	       (t
+		nil)
+	       ))
 
 	    (statement-start
 	     (cl-case (wisi-cache-nonterm cache)
+	       (generic_package_declaration
+		(setq in-package-spec t)
+		(setq cache (wisi-next-statement-cache cache)) ;; 'package'
+		(setq cache (wisi-next-statement-cache cache))) ;; 'is'
+
 	       (package_declaration
 		(setq in-package-spec t)
-		(wisi-goto-end-1 cache)
-		(setq cache (wisi-get-cache (point)))
-		(while (not (memq (wisi-cache-token cache) '(IS PRIVATE)))
-		  (setq cache (wisi-prev-statement-cache cache))))
+		(setq cache (wisi-next-statement-cache cache))) ;; 'is'
 
 	       ((entry_body package_body package_declaration protected_body subprogram_body task_body)
 		(while (not (eq 'IS (wisi-cache-token cache)))
@@ -361,7 +383,7 @@ Also return cache at start."
 	       ((protected_type_declaration single_protected_declaration single_task_declaration task_type_declaration)
 		(while (not (eq 'IS (wisi-cache-token cache)))
 		  (setq cache (wisi-next-statement-cache cache)))
-		(when (save-excursion (eq 'NEW (wisi-tok-token (wisi-forward-token))))
+		(when (looking-at "\<new\>")
 		  (while (not (eq 'WITH (wisi-cache-token cache)))
 		    (setq cache (wisi-next-statement-cache cache)))))
 
@@ -391,6 +413,45 @@ Also return cache at start."
 	 (eq 'formal_part (wisi-cache-nonterm cache)))
     ))
 
+(defun ada-wisi-refactor (action)
+  (wisi-validate-cache (line-end-position -7) (line-end-position 7) t 'navigate)
+  (save-excursion
+    (skip-syntax-backward "w_.\"")
+    (let* ((edit-begin (point))
+	   (cache (wisi-goto-statement-start))
+	   (parse-begin (point))
+	   (parse-end (wisi-cache-end cache)))
+      (if parse-end
+	  (setq parse-end (+ parse-end (wisi-cache-last (wisi-get-cache (wisi-cache-end cache)))))
+	;; else there is a syntax error; missing end of statement
+	(setq parse-end (point-max)))
+      (wisi-refactor wisi--parser action parse-begin parse-end edit-begin)
+      )))
+
+(defun ada-wisi-refactor-1 ()
+  "Refactor Method (Object) => Object.Method.
+Point must be in Method."
+  (interactive)
+  (ada-wisi-refactor ada-refactor-method-object-to-object-method))
+
+(defun ada-wisi-refactor-2 ()
+  "Refactor Object.Method => Method (Object).
+Point must be in Object.Method."
+  (interactive)
+  (ada-wisi-refactor ada-refactor-object-method-to-method-object))
+
+(defun ada-wisi-refactor-3 ()
+  "Refactor Element (Object, Index) => Object (Index).
+Point must be in Element"
+  (interactive)
+  (ada-wisi-refactor ada-refactor-element-object-to-object-index))
+
+(defun ada-wisi-refactor-4 ()
+  "Refactor Object (Index) => Element (Object, Index).
+Point must be in Object"
+  (interactive)
+  (ada-wisi-refactor ada-refactor-object-index-to-element-object))
+
 (defun ada-wisi-make-subprogram-body ()
   "For `ada-make-subprogram-body'."
   ;; point is at start of subprogram specification;
@@ -412,117 +473,6 @@ Also return cache at start."
     (forward-line -2)
     (back-to-indentation)
     ))
-
-(defun ada-wisi-scan-paramlist (begin end)
-  "For `ada-scan-paramlist'."
-  ;; IMPROVEME: define mini grammar that does this
-  ;;
-  ;; BEGIN is at (, end at ). We need to parse the entire
-  ;; subprogram_specification, so start back two tokens.
-  (goto-char begin)
-  (wisi-backward-token)
-  (wisi-backward-token)
-  (wisi-validate-cache (point) end t 'navigate)
-
-  (goto-char begin)
-
-  (let (tok
-	token
-	text
-	identifiers
-	(aliased-p nil)
-	(in-p nil)
-	(out-p nil)
-	(not-null-p nil)
-	(access-p nil)
-	(constant-p nil)
-	(protected-p nil)
-	(type nil)
-	type-begin
-	type-end
-	(default nil)
-	(default-begin nil)
-	param
-	paramlist
-	(done nil))
-    (while (not done)
-      (forward-comment 1)
-      (setq tok (wisi-forward-token))
-      (setq token (wisi-tok-token tok))
-      (setq text  (wisi-token-text tok))
-      (cond
-       ((equal token 'COMMA) nil);; multiple identifiers
-
-       ((equal token 'COLON)
-	;; identifiers done. find type-begin; there may be no mode
-	(setq type-begin (point))
-	(save-excursion
-	  (while (member (wisi-tok-token (wisi-forward-token)) '(ALIASED IN OUT NOT NULL ACCESS CONSTANT PROTECTED))
-	    (setq type-begin (point)))))
-
-       ((equal token 'ALIASED) (setq aliased-p t))
-       ((equal token 'IN) (setq in-p t))
-       ((equal token 'OUT) (setq out-p t))
-       ((and (not type-end)
-	     (member token '(NOT NULL)))
-	;; "not", "null" could be part of the default expression
-	(setq not-null-p t))
-       ((equal token 'ACCESS) (setq access-p t))
-       ((equal token 'CONSTANT) (setq constant-p t))
-       ((equal token 'PROTECTED) (setq protected-p t))
-
-       ((equal token 'COLON_EQUAL)
-	(setq type-end (save-excursion (goto-char (car (wisi-tok-region tok))) (skip-syntax-backward " ") (point)))
-	(setq default-begin (point))
-	(if (wisi-forward-find-token 'SEMICOLON end t)
-	    (wisi-backward-token)
-	;; else at end of param-list; point is before closing paren.
-	  ))
-
-       ((equal token 'LEFT_PAREN)
-	;; anonymous access procedure type, aggregate initial value
-	(goto-char (scan-sexps (1- (point)) 1)))
-
-       ((member token '(SEMICOLON RIGHT_PAREN))
-	(if (not type-begin)
-	    ;; Right paren immediately following semicolon; allowed by
-	    ;; our Ada grammar.
-	    (setq done t)
-
-	  (when (not type-end)
-	    (setq type-end (save-excursion (goto-char (car (wisi-tok-region tok))) (skip-syntax-backward " ") (point))))
-
-	  (setq type (buffer-substring-no-properties type-begin type-end))
-
-	  (when default-begin
-	    (setq default (buffer-substring-no-properties default-begin (car (wisi-tok-region tok)))))
-
-	  (when (equal token 'RIGHT_PAREN)
-	    (setq done t))
-
-	  (setq param (list (reverse identifiers)
-			    aliased-p in-p out-p not-null-p access-p constant-p protected-p
-			    type default))
-          (cl-pushnew param paramlist :test #'equal)
-	  (setq identifiers nil
-		aliased-p nil
-		in-p nil
-		out-p nil
-		not-null-p nil
-		access-p nil
-		constant-p nil
-		protected-p nil
-		type nil
-		type-begin nil
-		type-end nil
-		default nil
-		default-begin nil)))
-
-       (t
-	(when (not type-begin)
-          (push text identifiers)))
-       ))
-    paramlist))
 
 (defun ada-wisi-which-function-1 (keyword add-body)
   "Used in `ada-wisi-which-function'."
@@ -546,152 +496,68 @@ Also return cache at start."
   ;; which-function-mode.
   (let ((parse-begin (max (point-min) (- (point) (/ ada-which-func-parse-size 2))))
 	(parse-end   (min (point-max) (+ (point) (/ ada-which-func-parse-size 2)))))
-    (wisi-validate-cache parse-begin parse-end nil 'navigate)
-    (when (wisi-cache-covers-region parse-begin parse-end 'navigate)
-      (save-excursion
-	(condition-case-unless-debug nil
-	    (let ((result nil)
-		  (cache (ada-wisi-goto-declaration-start-1 include-type)))
-	      (if (null cache)
-		  ;; bob or failed parse
-		  (setq result "")
+    (save-excursion
+      (condition-case nil
+	  ;; Throwing an error here disables which-function-mode, so don't do it.
+	  (progn
+	    (wisi-validate-cache parse-begin parse-end nil 'navigate)
+	    (when (wisi-cache-covers-region parse-begin parse-end 'navigate)
+	      (let ((result nil)
+		    (cache (ada-wisi-goto-declaration-start-1 include-type)))
+		(if (null cache)
+		    ;; bob or failed parse
+		    (setq result "")
 
-		(when (memq (wisi-cache-nonterm cache)
-			    '(generic_package_declaration generic_subprogram_declaration))
-		  ;; name is after next statement keyword
-		  (wisi-next-statement-cache cache)
-		  (setq cache (wisi-get-cache (point))))
+		  (when (memq (wisi-cache-nonterm cache)
+			      '(generic_package_declaration generic_subprogram_declaration))
+		    ;; name is after next statement keyword
+		    (setq cache (wisi-next-statement-cache cache)))
 
-		;; add or delete 'body' as needed
-		(cl-ecase (wisi-cache-nonterm cache)
-		  ((entry_body entry_declaration)
-		   (setq result (ada-wisi-which-function-1 "entry" nil)))
+		  ;; add or delete 'body' as needed
+		  (cl-ecase (wisi-cache-nonterm cache)
+		    ((entry_body entry_declaration)
+		     (setq result (ada-wisi-which-function-1 "entry" nil)))
 
-		  (full_type_declaration
-		   (setq result (ada-wisi-which-function-1 "type" nil)))
+		    (full_type_declaration
+		     (setq result (ada-wisi-which-function-1 "type" nil)))
 
-		  (package_body
-		   (setq result (ada-wisi-which-function-1 "package" nil)))
+		    (package_body
+		     (setq result (ada-wisi-which-function-1 "package" nil)))
 
-		  ((package_declaration
-		    generic_package_declaration) ;; after 'generic'
-		   (setq result (ada-wisi-which-function-1 "package" t)))
+		    ((package_declaration
+		      package_specification) ;; after 'generic'
+		     (setq result (ada-wisi-which-function-1 "package" t)))
 
-		  (protected_body
-		   (setq result (ada-wisi-which-function-1 "protected" nil)))
+		    (protected_body
+		     (setq result (ada-wisi-which-function-1 "protected" nil)))
 
-		  ((protected_type_declaration single_protected_declaration)
-		   (setq result (ada-wisi-which-function-1 "protected" t)))
+		    ((protected_type_declaration single_protected_declaration)
+		     (setq result (ada-wisi-which-function-1 "protected" t)))
 
-		  ((abstract_subprogram_declaration
-		    expression_function_declaration
-		    subprogram_declaration
-		    subprogram_renaming_declaration
-		    generic_subprogram_declaration ;; after 'generic'
-		    null_procedure_declaration)
-		   (setq result (ada-wisi-which-function-1
-				 (wisi-token-text (wisi-forward-find-token '(FUNCTION PROCEDURE) (point-max)))
-				 nil))) ;; no 'body' keyword in subprogram bodies
+		    ((abstract_subprogram_declaration
+		      expression_function_declaration
+		      subprogram_declaration
+		      subprogram_renaming_declaration
+		      generic_subprogram_declaration ;; after 'generic'
+		      null_procedure_declaration)
+		     (setq result (ada-wisi-which-function-1
+				   (progn (search-forward-regexp "function\\|procedure")(match-string 0))
+				   nil))) ;; no 'body' keyword in subprogram bodies
 
-		  (subprogram_body
-		   (setq result (ada-wisi-which-function-1
-				 (wisi-token-text (wisi-forward-find-token '(FUNCTION PROCEDURE) (point-max)))
-				 nil)))
+		    (subprogram_body
+		     (setq result (ada-wisi-which-function-1
+				   (progn (search-forward-regexp "function\\|procedure")(match-string 0))
+				   nil)))
 
-		  ((single_task_declaration task_type_declaration)
-		   (setq result (ada-wisi-which-function-1 "task" t)))
+		    ((single_task_declaration task_type_declaration)
+		     (setq result (ada-wisi-which-function-1 "task" t)))
 
 
-		  (task_body
-		   (setq result (ada-wisi-which-function-1 "task" nil)))
-		  ))
-	      result)
-	  (error "")))
-      )))
-
-(defun ada-wisi-number-p (token-text)
-  "Return t if TOKEN-TEXT plus text after point matches the
-syntax for a numeric literal; otherwise nil. point is after
-TOKEN-TEXT; move point to just past token."
-  ;; test in test/wisi/ada-number-literal.input
-  ;;
-  ;; starts with a simple integer
-  (let ((end (point)))
-    ;; this first test must be very fast; it is executed for every token
-    (when (and (memq (aref token-text 0) '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9))
-	       (string-match "^[0-9_]+$" token-text))
-      (cond
-       ((= (char-after) ?#)
-	;; based number
-	(forward-char 1)
-	(if (not (looking-at "[0-9a-fA-F_]+"))
-	    (progn (goto-char end) nil)
-
-	  (goto-char (match-end 0))
-	  (cond
-	   ((= (char-after) ?#)
-	    ;; based integer
-	    (forward-char 1)
-	    t)
-
-	   ((= (char-after) ?.)
-	    ;; based real?
-	    (forward-char 1)
-	    (if (not (looking-at "[0-9a-fA-F]+"))
-		(progn (goto-char end) nil)
-
-	      (goto-char (match-end 0))
-
-	      (if (not (= (char-after) ?#))
-		  (progn (goto-char end) nil)
-
-		(forward-char 1)
-		(setq end (point))
-
-		(if (not (memq (char-after) '(?e ?E)))
-		    ;; based real, no exponent
-		    t
-
-		  ;; exponent?
-		  (forward-char 1)
-		  (if (not (looking-at "[+-]?[0-9]+"))
-		      (progn (goto-char end) t)
-
-		    (goto-char (match-end 0))
-		    t
-		)))))
-
-	   (t
-	    ;; missing trailing #
-	    (goto-char end) nil)
-	   )))
-
-       ((= (char-after) ?.)
-	;; decimal real number?
-	(forward-char 1)
-	(if (not (looking-at "[0-9_]+"))
-	    ;; decimal integer
-	    (progn (goto-char end) t)
-
-	  (setq end (goto-char (match-end 0)))
-
-	  (if (not (memq (char-after) '(?e ?E)))
-	      ;; decimal real, no exponent
-	      t
-
-	    ;; exponent?
-	    (forward-char 1)
-	    (if (not (looking-at "[+-]?[0-9]+"))
-		(progn (goto-char end) t)
-
-	      (goto-char (match-end 0))
-	      t
-	      ))))
-
-       (t
-	;; just an integer
-	t)
-       ))
+		    (task_body
+		     (setq result (ada-wisi-which-function-1 "task" nil)))
+		    ))
+		result)))
+	(error "")))
     ))
 
 (cl-defstruct (ada-wisi-parser (:include wisi-process--parser))
@@ -754,9 +620,9 @@ TOKEN-TEXT; move point to just past token."
   (cond
    ((wisi-search-backward-skip
      ada-wisi-partial-begin-regexp
-     (lambda ()
-       (or (ada-in-string-or-comment-p)
-	   (eq 'ACCESS (wisi-tok-token (save-excursion (wisi-backward-token)))))))
+     (lambda () (or (ada-in-string-or-comment-p)
+		    (looking-back "access " (line-beginning-position)))))
+     ;; "access" rejects subprobram access parameters; test/ada_mode-recover_partial_20.adb
 
     (let ((found (match-string 0))
 	  cache)
@@ -832,7 +698,7 @@ Point must have been set by `ada-wisi-find-begin'."
       (if (search-forward-regexp end-regexp nil t)
 	  (progn
 	    (while (and (ada-in-string-or-comment-p)
-			(search-forward-regexp end-regexp)))
+			(search-forward-regexp end-regexp nil t)))
 	    (point))
 
 	;; matching end not found
@@ -877,61 +743,24 @@ Point must have been set by `ada-wisi-find-begin'."
    ))
 
 (defvar ada-parser nil) ;; declared, set in ada-mode.el for parser detection
-(defvar ada-process-token-table nil) ;; ada-process.el
-(defvar ada-process-face-table nil) ;; ada-process.el
-
-(defvar wisi-elisp-parse-indent-hanging-function nil); wisi-elisp-parse.el
-
-(declare-function wisi-make-elisp-parser "wisi-elisp-parse") ;; autoloaded
-(declare-function ada-wisi-elisp-parse--indent-hanging "ada-wisi-elisp-parse")
 
 (defun ada-wisi-setup ()
   "Set up a buffer for parsing Ada files with wisi."
-  (let ((parser
-	 (cond
-	  ((or (null ada-parser)
-	       (eq 'elisp ada-parser))
+  (add-hook 'ada-fix-error-hook #'ada-wisi-fix-error)
 
-	   (require 'ada-wisi-elisp-parse)
-
-	   (setq wisi-elisp-parse-indent-hanging-function #'ada-wisi-elisp-parse--indent-hanging)
-
-	   (wisi-make-elisp-parser
-	    ada-lalr-elisp-parse-table
-	    #'wisi-forward-token)
-	   )
-
-	  ((eq 'process ada-parser)
-	   (require 'ada-process)
-	   (wisi-process-parse-get
-	    (make-ada-wisi-parser
-	     :label "Ada"
-	     :language-protocol-version ada-wisi-language-protocol-version
-	     :exec-file ada-process-parse-exec
-	     :exec-opts ada-process-parse-exec-opts
-	     :face-table ada-process-face-table
-	     :token-table ada-process-token-table)))
-	  ))
-
-	(lexer
-	 ;; The process parser has its own lexer, but we still need
-	 ;; the elisp lexer for ada-wisi-scan-paramlist,
-	 ;; ada-wisi-which-function, etc.
-	 (wisi-make-elisp-lexer
-	  :token-table-raw ada-lalr-elisp-token-table-raw
-	  :keyword-table-raw ada-lalr-elisp-keyword-table-raw
-	  :string-quote-escape-doubled t
-	  :string-quote-escape nil))
-	)
-
-    (add-hook 'ada-fix-error-hook #'ada-wisi-fix-error)
-
-    (wisi-setup
-     :indent-calculate '(ada-wisi-comment)
-     :post-indent-fail 'ada-wisi-post-parse-fail
-     :parser parser
-     :lexer lexer)
-    )
+  (wisi-setup
+   :indent-calculate '(ada-wisi-comment)
+   :post-indent-fail 'ada-wisi-post-parse-fail
+   :parser
+   (wisi-process-parse-get
+    (make-ada-wisi-parser
+     :label "Ada"
+     :language-protocol-version ada-wisi-language-protocol-version
+     :exec-file ada-process-parse-exec
+     :exec-opts ada-process-parse-exec-opts
+     :face-table ada-process-face-table
+     :token-table ada-process-token-table
+     :repair-image ada-process-repair-image)))
 
   (set (make-local-variable 'comment-indent-function) 'wisi-comment-indent)
 
@@ -959,7 +788,6 @@ Point must have been set by `ada-wisi-find-begin'."
 (setq ada-make-subprogram-body 'ada-wisi-make-subprogram-body)
 (setq ada-on-context-clause 'ada-wisi-on-context-clause)
 (setq ada-reset-parser 'wisi-reset-parser)
-(setq ada-scan-paramlist 'ada-wisi-scan-paramlist)
 (setq ada-show-parse-error 'wisi-show-parse-error)
 (setq ada-which-function 'ada-wisi-which-function)
 

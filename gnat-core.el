@@ -446,6 +446,7 @@ list."
     ("a-finali" . "Ada.Finalization")
     ("a-numeri" . "Ada.Numerics")
     ("a-stream" . "Ada.Streams")
+    ("a-ststio" . "Ada.Streams.Stream_IO")
     ("a-string" . "Ada.Strings")
     ("a-strmap" . "Ada.Strings.Maps")
     ("a-strunb" . "Ada.Strings.Unbounded")
