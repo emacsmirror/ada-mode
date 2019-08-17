@@ -445,6 +445,7 @@ list."
     ("a-ioexce" . "Ada.IO_Exceptions")
     ("a-finali" . "Ada.Finalization")
     ("a-numeri" . "Ada.Numerics")
+    ("a-nuflra" . "Ada.Numerics.Float_Random")
     ("a-stream" . "Ada.Streams")
     ("a-ststio" . "Ada.Streams.Stream_IO")
     ("a-string" . "Ada.Strings")

@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 6.2.0
-;; package-requires: ((uniquify-files "1.0") (wisi "2.2.0") (emacs "25.0"))
+;; Version: 6.2.1
+;; package-requires: ((uniquify-files "1.0.1") (wisi "2.2.1") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -167,7 +167,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "6.2.0"))
+  (let ((version-string "6.2.1"))
     ;; must match:
     ;; ada-mode.texi
     ;; README-ada-mode

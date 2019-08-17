@@ -7,6 +7,12 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 
 
 * Ada Mode 6.2.1
+17 Aug 2019
+
+** fix packaging bugs
+
+* Ada Mode 6.2.0
+13 Aug 2019
 
 ** parser Ada language protocol version 2
 

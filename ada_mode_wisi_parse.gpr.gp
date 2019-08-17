@@ -16,7 +16,11 @@
 --  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston,
 --  MA 02110-1335, USA.
 
+#if ELPA="yes"
+with "wisi";
+#else
 with "wisitoken";
+#end if;
 with "standard_common";
 #if HAVE_LIBADALANG="yes"
 with "libadalang";
