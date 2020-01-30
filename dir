@@ -16,11 +16,7 @@ File: dir,	Node: Top	This is the top of the INFO tree
 
 Emacs
 * Ada mode: (ada-mode).         Emacs mode for editing and navigating Ada code.
-* Wisi: (wisi).                 Package providing error-correcting LR parsers.
-* gpr mode: (gpr-mode).         Emacs mode for editing and navigating gpr 
-                                  files (gnat project files).
-
-Emacs editing modes
-* Ada mode: (ada-mode).         Emacs mode for editing and navigating Ada code.
+* Wisi: (wisi).                 Error-correcting LR parsers and project 
+                                  integration.
 * gpr mode: (gpr-mode).         Emacs mode for editing and navigating gpr 
                                   files (gnat project files).

@@ -1,11 +1,11 @@
 --  Abstract :
 --
---  Ada implementation of:
+--  Ada language specific indent options and functions
 --
---  [1] ada-wisi-elisp-parse.el
+--  [1] ada.wy
 --  [2] ada-indent-user-options.el
 --
---  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2020 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -22,10 +22,10 @@ pragma License (Modified_GPL);
 
 package Wisi.Ada is
 
-   Language_Protocol_Version : constant String := "2";
+   Language_Protocol_Version : constant String := "3";
    --  Defines the data passed to Initialize in Params.
    --
-   --  This value must match ada-wisi.el
+   --  This value must match ada-mode.el
    --  ada-wisi-language-protocol-version.
    --
    --  Only changes once per ada-mode release. Increment as soon as
@@ -81,7 +81,6 @@ package Wisi.Ada is
       Option            : in     Boolean;
       Accumulate        : in     Boolean)
      return Delta_Type;
-   --  [1] ada-wisi-elisp-parse--indent-hanging
 
    overriding
    procedure Refactor

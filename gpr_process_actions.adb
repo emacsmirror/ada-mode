@@ -55,7 +55,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (5, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Gpr_Indent_Broken))), (False,
@@ -76,7 +76,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (8, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, Gpr_Indent_Broken - 1))), (False, (Simple, (Int,
@@ -98,7 +98,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (10, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, Gpr_Indent_Broken - 1))), (False, (Simple, (Int,
@@ -212,7 +212,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (7, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (6, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 2, 0), (6, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, 0))), (True, (Simple, (Int, Gpr_Indent)), (Simple, (Int,
@@ -245,7 +245,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (9, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (8, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 2, 0), (8, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Gpr_Indent_Broken))), (False,
@@ -278,7 +278,7 @@ package body Gpr_Process_Actions is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (5, Statement_End)));
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (4, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 2, 0), (4, 2, 0)));
       when Indent =>
          null;
       end case;
@@ -297,7 +297,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (9, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (8, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, 2, 1), (2, 2, 0), (8, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, 0))), (False, (Simple, (Int, Gpr_Indent_Broken))), (False,
@@ -388,7 +388,7 @@ package body Gpr_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Statement_Start), (7, Statement_End)));
          Name_Action (Parse_Data, Tree, Nonterm, Tokens, 2);
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 0), (6, 1, 0)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, 2, 1), (2, 2, 0), (6, 2, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (False, (Simple, (Int,
          Gpr_Indent_Broken))), (False, (Simple, (Int, 0))), (True, (Simple, (Int, Gpr_Indent)), (Simple, (Int,

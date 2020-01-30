@@ -1,6 +1,6 @@
 ;;; ada-imenu.el - Ada mode interface to imenu for Ada Mode  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2012, 2013, 2015  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015, 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Simon Wright <simon@pushface.org>
 ;; Contributors: see ada-mode.el, and specifically Christian Egli
@@ -24,7 +24,7 @@
 ;;; History: see ada_mode.el
 ;;
 
-(require 'ada-mode)
+(require 'ada-core)
 (require 'imenu)
 
 (defconst ada--imenu-comment-re "\\([ \t]*--.*\\)?")

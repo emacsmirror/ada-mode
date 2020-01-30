@@ -101,6 +101,7 @@
 ;; LR1 gives better error correction performance.
 
 %elisp_face font-lock-function-name-face
+%elisp_face font-lock-keyword-face
 %elisp_face nil
 
 %mckenzie_cost_default 4 4 2 2
@@ -151,6 +152,7 @@ attribute_declaration
 ;; (info "(gprbuild_ug)Attributes")
 attribute_prefix
   : PROJECT
+  ;; not a keyword; no face
   | name
   ;
 
@@ -294,7 +296,7 @@ project_extension
     %((progn
         (wisi-statement-action [1 statement-start 9 statement-end])
         (wisi-name-action 2)
-        (wisi-face-apply-action [2 nil font-lock-function-name-face 8 nil font-lock-function-name-face])
+        (wisi-face-apply-action [1 nil font-lock-keyword-face 2 nil font-lock-function-name-face 8 nil font-lock-function-name-face])
         (wisi-indent-action [0 gpr-indent-broken 0 gpr-indent-broken 0 [gpr-indent gpr-indent] 0 0 0])))%
     %((wisi-match-names 2 8))%
   ;
@@ -331,7 +333,9 @@ simple_project_declaration
     %((progn
         (wisi-statement-action [1 statement-start 7 statement-end])
         (wisi-name-action 2)
-        (wisi-face-apply-action [2 nil font-lock-function-name-face 6 nil font-lock-function-name-face])
+        (wisi-face-apply-action [1 nil font-lock-keyword-face
+                                   2 nil font-lock-function-name-face
+                                   6 nil font-lock-function-name-face])
         (wisi-indent-action [0 gpr-indent-broken 0 [gpr-indent gpr-indent] 0 0 0])))%
     %((wisi-match-names 2 6))%
   ;

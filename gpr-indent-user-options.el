@@ -1,6 +1,6 @@
 ;; user options shared by gpr mode indentation engines  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2017  Free Software Foundation, Inc.
+;; Copyright (C) 2017, 2019  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;;
@@ -22,7 +22,7 @@
 ;;;; code
 
 (defgroup gpr-indentation nil
-  "Indentation options for Ada source."
+  "Indentation options for gpr source."
   :group 'gpr)
 
 (defcustom gpr-indent 3
@@ -35,13 +35,13 @@
   "Indentation for the continuation of a broken line."
   :type 'integer
   :safe #'integerp)
-(make-variable-buffer-local 'ada-indent-broken)
+(make-variable-buffer-local 'gpr-indent-broken)
 
 (defcustom gpr-indent-when 3
   "Indentation for `when' relative to `case'."
   :type  'integer
   :safe  #'integerp)
-(make-variable-buffer-local 'ada-indent-when)
+(make-variable-buffer-local 'gpr-indent-when)
 
 (provide 'gpr-indent-user-options)
 

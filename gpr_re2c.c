@@ -55,7 +55,7 @@ wisi_lexer* gpr_new_lexer
    result->buffer_last       = input + length - 1;
    result->cursor            = input;
    result->byte_token_start  = input;
-   result->char_pos          = 1;
+   result->char_pos          = 1; /* match WisiToken.Buffer_Region */
    result->char_token_start  = 1;
    result->line              = (*result->cursor == 0x0A) ? 2 : 1;
    result->line_token_start  = result->line;
@@ -93,16 +93,22 @@ static void debug(wisi_lexer* lexer, int state, unsigned char ch)
 
 #define YYPEEK() (lexer->cursor <= lexer->buffer_last) ? *lexer->cursor : 4
 
-#define DO_COUNT ((*lexer->cursor & 0xC0) != 0xC0) && (*lexer->cursor != 0x0D)
-
 static void skip(wisi_lexer* lexer)
 {
    if (lexer->cursor <= lexer->buffer_last)
-   {
       ++lexer->cursor;
-      if (DO_COUNT) ++lexer->char_pos;
-      if (lexer->cursor <= lexer->buffer_last)
-         if (*lexer->cursor == 0x0A) ++lexer->line;
+   if (lexer->cursor <= lexer->buffer_last)
+   {
+      /* UFT-8 encoding: https://en.wikipedia.org/wiki/UTF-8#Description */
+      if (*lexer->cursor == 0x0A && lexer->cursor > lexer->buffer && *(lexer->cursor - 1) == 0x0D)
+        {/* second byte of DOS line ending */
+        }
+      else if ((*lexer->cursor & 0x80) == 0x80 && (*lexer->cursor & 0xC0) != 0xC0)
+        {/* byte 2, 3 or 4 of multi-byte UTF-8 char */
+        }
+      else
+        ++lexer->char_pos;
+      if (*lexer->cursor == 0x0A) ++lexer->line;
    }
 }
 #define YYSKIP() skip(lexer)
@@ -143,7 +149,7 @@ int gpr_next_token
    while (*id == -1 && status == 0)
    {
 
-#line 147 "../gpr_re2c.c"
+#line 153 "../gpr_re2c.c"
 {
 	YYCTYPE yych;
 	unsigned int yyaccept = 0;
@@ -287,21 +293,21 @@ yy2:
 	YYSKIP ();
 yy3:
 	YYDEBUG(3, YYPEEK ());
-#line 235 "../gpr.re2c"
+#line 241 "../gpr.re2c"
 	{status = ERROR_unrecognized_character; continue;}
-#line 293 "../gpr_re2c.c"
+#line 299 "../gpr_re2c.c"
 yy4:
 	YYDEBUG(4, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(5, YYPEEK ());
-#line 233 "../gpr.re2c"
+#line 239 "../gpr.re2c"
 	{*id =  39; continue;}
-#line 300 "../gpr_re2c.c"
+#line 306 "../gpr_re2c.c"
 yy6:
 	YYDEBUG(6, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(7, YYPEEK ());
-#line 188 "../gpr.re2c"
+#line 194 "../gpr.re2c"
 	{ lexer->byte_token_start = lexer->cursor;
           lexer->char_token_start = lexer->char_pos;
           if (*lexer->cursor == 0x0A)
@@ -309,14 +315,14 @@ yy6:
           else
              lexer->line_token_start = lexer->line;
           continue; }
-#line 313 "../gpr_re2c.c"
+#line 319 "../gpr_re2c.c"
 yy8:
 	YYDEBUG(8, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(9, YYPEEK ());
-#line 195 "../gpr.re2c"
+#line 201 "../gpr.re2c"
 	{*id =  1; continue;}
-#line 320 "../gpr_re2c.c"
+#line 326 "../gpr_re2c.c"
 yy10:
 	YYDEBUG(10, YYPEEK ());
 	YYSKIP ();
@@ -485,37 +491,37 @@ yy12:
 	YYDEBUG(12, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(13, YYPEEK ());
-#line 221 "../gpr.re2c"
+#line 227 "../gpr.re2c"
 	{*id =  27; continue;}
-#line 491 "../gpr_re2c.c"
+#line 497 "../gpr_re2c.c"
 yy14:
 	YYDEBUG(14, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(15, YYPEEK ());
-#line 227 "../gpr.re2c"
+#line 233 "../gpr.re2c"
 	{*id =  33; continue;}
-#line 498 "../gpr_re2c.c"
+#line 504 "../gpr_re2c.c"
 yy16:
 	YYDEBUG(16, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(17, YYPEEK ());
-#line 208 "../gpr.re2c"
+#line 214 "../gpr.re2c"
 	{*id =  14; continue;}
-#line 505 "../gpr_re2c.c"
+#line 511 "../gpr_re2c.c"
 yy18:
 	YYDEBUG(18, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(19, YYPEEK ());
-#line 215 "../gpr.re2c"
+#line 221 "../gpr.re2c"
 	{*id =  21; continue;}
-#line 512 "../gpr_re2c.c"
+#line 518 "../gpr_re2c.c"
 yy20:
 	YYDEBUG(20, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(21, YYPEEK ());
-#line 224 "../gpr.re2c"
+#line 230 "../gpr.re2c"
 	{*id =  30; continue;}
-#line 519 "../gpr_re2c.c"
+#line 525 "../gpr_re2c.c"
 yy22:
 	YYDEBUG(22, YYPEEK ());
 	YYSKIP ();
@@ -528,9 +534,9 @@ yy23:
 	YYDEBUG(23, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(24, YYPEEK ());
-#line 225 "../gpr.re2c"
+#line 231 "../gpr.re2c"
 	{*id =  31; continue;}
-#line 534 "../gpr_re2c.c"
+#line 540 "../gpr_re2c.c"
 yy25:
 	YYDEBUG(25, YYPEEK ());
 	YYSKIP ();
@@ -551,9 +557,9 @@ yy25:
 	}
 yy27:
 	YYDEBUG(27, YYPEEK ());
-#line 230 "../gpr.re2c"
+#line 236 "../gpr.re2c"
 	{*id =  36; continue;}
-#line 557 "../gpr_re2c.c"
+#line 563 "../gpr_re2c.c"
 yy28:
 	YYDEBUG(28, YYPEEK ());
 	YYSKIP ();
@@ -564,16 +570,16 @@ yy28:
 	}
 yy29:
 	YYDEBUG(29, YYPEEK ());
-#line 222 "../gpr.re2c"
+#line 228 "../gpr.re2c"
 	{*id =  28; continue;}
-#line 570 "../gpr_re2c.c"
+#line 576 "../gpr_re2c.c"
 yy30:
 	YYDEBUG(30, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(31, YYPEEK ());
-#line 228 "../gpr.re2c"
+#line 234 "../gpr.re2c"
 	{*id =  34; continue;}
-#line 577 "../gpr_re2c.c"
+#line 583 "../gpr_re2c.c"
 yy32:
 	YYDEBUG(32, YYPEEK ());
 	YYSKIP ();
@@ -599,9 +605,9 @@ yy33:
 	}
 yy34:
 	YYDEBUG(34, YYPEEK ());
-#line 231 "../gpr.re2c"
+#line 237 "../gpr.re2c"
 	{*id =  37; continue;}
-#line 605 "../gpr_re2c.c"
+#line 611 "../gpr_re2c.c"
 yy35:
 	YYDEBUG(35, YYPEEK ());
 	yyaccept = 1;
@@ -882,9 +888,9 @@ yy50:
 	YYDEBUG(50, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(51, YYPEEK ());
-#line 229 "../gpr.re2c"
+#line 235 "../gpr.re2c"
 	{*id =  35; continue;}
-#line 888 "../gpr_re2c.c"
+#line 894 "../gpr_re2c.c"
 yy52:
 	YYDEBUG(52, YYPEEK ());
 	YYSKIP ();
@@ -1424,9 +1430,9 @@ yy61:
 	}
 yy62:
 	YYDEBUG(62, YYPEEK ());
-#line 232 "../gpr.re2c"
+#line 238 "../gpr.re2c"
 	{*id =  38; continue;}
-#line 1430 "../gpr_re2c.c"
+#line 1436 "../gpr_re2c.c"
 yy63:
 	YYDEBUG(63, YYPEEK ());
 	YYSKIP ();
@@ -1947,23 +1953,23 @@ yy69:
 	}
 yy71:
 	YYDEBUG(71, YYPEEK ());
-#line 196 "../gpr.re2c"
+#line 202 "../gpr.re2c"
 	{*id =  2; continue;}
-#line 1953 "../gpr_re2c.c"
+#line 1959 "../gpr_re2c.c"
 yy72:
 	YYDEBUG(72, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(73, YYPEEK ());
-#line 223 "../gpr.re2c"
+#line 229 "../gpr.re2c"
 	{*id =  29; continue;}
-#line 1960 "../gpr_re2c.c"
+#line 1966 "../gpr_re2c.c"
 yy74:
 	YYDEBUG(74, YYPEEK ());
 	YYSKIP ();
 	YYDEBUG(75, YYPEEK ());
-#line 226 "../gpr.re2c"
+#line 232 "../gpr.re2c"
 	{*id =  32; continue;}
-#line 1967 "../gpr_re2c.c"
+#line 1973 "../gpr_re2c.c"
 yy76:
 	YYDEBUG(76, YYPEEK ());
 	yyaccept = 1;
@@ -2111,9 +2117,9 @@ yy78:
 	}
 yy79:
 	YYDEBUG(79, YYPEEK ());
-#line 198 "../gpr.re2c"
+#line 204 "../gpr.re2c"
 	{*id =  4; continue;}
-#line 2117 "../gpr_re2c.c"
+#line 2123 "../gpr_re2c.c"
 yy80:
 	YYDEBUG(80, YYPEEK ());
 	YYSKIP ();
@@ -2624,9 +2630,9 @@ yy91:
 	}
 yy92:
 	YYDEBUG(92, YYPEEK ());
-#line 207 "../gpr.re2c"
+#line 213 "../gpr.re2c"
 	{*id =  13; continue;}
-#line 2630 "../gpr_re2c.c"
+#line 2636 "../gpr_re2c.c"
 yy93:
 	YYDEBUG(93, YYPEEK ());
 	yyaccept = 1;
@@ -3247,9 +3253,9 @@ yy114:
 	}
 yy115:
 	YYDEBUG(115, YYPEEK ());
-#line 202 "../gpr.re2c"
+#line 208 "../gpr.re2c"
 	{*id =  8; continue;}
-#line 3253 "../gpr_re2c.c"
+#line 3259 "../gpr_re2c.c"
 yy116:
 	YYDEBUG(116, YYPEEK ());
 	yyaccept = 1;
@@ -3386,9 +3392,9 @@ yy117:
 	}
 yy118:
 	YYDEBUG(118, YYPEEK ());
-#line 206 "../gpr.re2c"
+#line 212 "../gpr.re2c"
 	{*id =  12; continue;}
-#line 3392 "../gpr_re2c.c"
+#line 3398 "../gpr_re2c.c"
 yy119:
 	YYDEBUG(119, YYPEEK ());
 	yyaccept = 1;
@@ -3602,9 +3608,9 @@ yy127:
 	}
 yy128:
 	YYDEBUG(128, YYPEEK ());
-#line 218 "../gpr.re2c"
+#line 224 "../gpr.re2c"
 	{*id =  24; continue;}
-#line 3608 "../gpr_re2c.c"
+#line 3614 "../gpr_re2c.c"
 yy129:
 	YYDEBUG(129, YYPEEK ());
 	yyaccept = 1;
@@ -3774,9 +3780,9 @@ yy133:
 	}
 yy134:
 	YYDEBUG(134, YYPEEK ());
-#line 200 "../gpr.re2c"
+#line 206 "../gpr.re2c"
 	{*id =  6; continue;}
-#line 3780 "../gpr_re2c.c"
+#line 3786 "../gpr_re2c.c"
 yy135:
 	YYDEBUG(135, YYPEEK ());
 	yyaccept = 1;
@@ -3937,9 +3943,9 @@ yy138:
 	}
 yy139:
 	YYDEBUG(139, YYPEEK ());
-#line 210 "../gpr.re2c"
+#line 216 "../gpr.re2c"
 	{*id =  16; continue;}
-#line 3943 "../gpr_re2c.c"
+#line 3949 "../gpr_re2c.c"
 yy140:
 	YYDEBUG(140, YYPEEK ());
 	yyaccept = 1;
@@ -4120,9 +4126,9 @@ yy145:
 	}
 yy146:
 	YYDEBUG(146, YYPEEK ());
-#line 217 "../gpr.re2c"
+#line 223 "../gpr.re2c"
 	{*id =  23; continue;}
-#line 4126 "../gpr_re2c.c"
+#line 4132 "../gpr_re2c.c"
 yy147:
 	YYDEBUG(147, YYPEEK ());
 	yyaccept = 12;
@@ -4248,9 +4254,9 @@ yy147:
 	}
 yy148:
 	YYDEBUG(148, YYPEEK ());
-#line 219 "../gpr.re2c"
+#line 225 "../gpr.re2c"
 	{*id =  25; continue;}
-#line 4254 "../gpr_re2c.c"
+#line 4260 "../gpr_re2c.c"
 yy149:
 	YYDEBUG(149, YYPEEK ());
 	yyaccept = 13;
@@ -4376,9 +4382,9 @@ yy149:
 	}
 yy150:
 	YYDEBUG(150, YYPEEK ());
-#line 220 "../gpr.re2c"
+#line 226 "../gpr.re2c"
 	{*id =  26; continue;}
-#line 4382 "../gpr_re2c.c"
+#line 4388 "../gpr_re2c.c"
 yy151:
 	YYDEBUG(151, YYPEEK ());
 	yyaccept = 1;
@@ -4691,9 +4697,9 @@ yy168:
 	}
 yy169:
 	YYDEBUG(169, YYPEEK ());
-#line 211 "../gpr.re2c"
+#line 217 "../gpr.re2c"
 	{*id =  17; continue;}
-#line 4697 "../gpr_re2c.c"
+#line 4703 "../gpr_re2c.c"
 yy170:
 	YYDEBUG(170, YYPEEK ());
 	yyaccept = 1;
@@ -4896,9 +4902,9 @@ yy177:
 	}
 yy178:
 	YYDEBUG(178, YYPEEK ());
-#line 203 "../gpr.re2c"
+#line 209 "../gpr.re2c"
 	{*id =  9; continue;}
-#line 4902 "../gpr_re2c.c"
+#line 4908 "../gpr_re2c.c"
 yy179:
 	YYDEBUG(179, YYPEEK ());
 	yyaccept = 1;
@@ -5035,9 +5041,9 @@ yy180:
 	}
 yy181:
 	YYDEBUG(181, YYPEEK ());
-#line 209 "../gpr.re2c"
+#line 215 "../gpr.re2c"
 	{*id =  15; continue;}
-#line 5041 "../gpr_re2c.c"
+#line 5047 "../gpr_re2c.c"
 yy182:
 	YYDEBUG(182, YYPEEK ());
 	yyaccept = 17;
@@ -5163,9 +5169,9 @@ yy182:
 	}
 yy183:
 	YYDEBUG(183, YYPEEK ());
-#line 212 "../gpr.re2c"
+#line 218 "../gpr.re2c"
 	{*id =  18; continue;}
-#line 5169 "../gpr_re2c.c"
+#line 5175 "../gpr_re2c.c"
 yy184:
 	YYDEBUG(184, YYPEEK ());
 	yyaccept = 18;
@@ -5291,9 +5297,9 @@ yy184:
 	}
 yy185:
 	YYDEBUG(185, YYPEEK ());
-#line 213 "../gpr.re2c"
+#line 219 "../gpr.re2c"
 	{*id =  19; continue;}
-#line 5297 "../gpr_re2c.c"
+#line 5303 "../gpr_re2c.c"
 yy186:
 	YYDEBUG(186, YYPEEK ());
 	yyaccept = 19;
@@ -5419,9 +5425,9 @@ yy186:
 	}
 yy187:
 	YYDEBUG(187, YYPEEK ());
-#line 214 "../gpr.re2c"
+#line 220 "../gpr.re2c"
 	{*id =  20; continue;}
-#line 5425 "../gpr_re2c.c"
+#line 5431 "../gpr_re2c.c"
 yy188:
 	YYDEBUG(188, YYPEEK ());
 	yyaccept = 1;
@@ -5558,9 +5564,9 @@ yy189:
 	}
 yy190:
 	YYDEBUG(190, YYPEEK ());
-#line 197 "../gpr.re2c"
+#line 203 "../gpr.re2c"
 	{*id =  3; continue;}
-#line 5564 "../gpr_re2c.c"
+#line 5570 "../gpr_re2c.c"
 yy191:
 	YYDEBUG(191, YYPEEK ());
 	yyaccept = 1;
@@ -5708,9 +5714,9 @@ yy193:
 	}
 yy194:
 	YYDEBUG(194, YYPEEK ());
-#line 204 "../gpr.re2c"
+#line 210 "../gpr.re2c"
 	{*id =  10; continue;}
-#line 5714 "../gpr_re2c.c"
+#line 5720 "../gpr_re2c.c"
 yy195:
 	YYDEBUG(195, YYPEEK ());
 	yyaccept = 22;
@@ -5836,9 +5842,9 @@ yy195:
 	}
 yy196:
 	YYDEBUG(196, YYPEEK ());
-#line 216 "../gpr.re2c"
+#line 222 "../gpr.re2c"
 	{*id =  22; continue;}
-#line 5842 "../gpr_re2c.c"
+#line 5848 "../gpr_re2c.c"
 yy197:
 	YYDEBUG(197, YYPEEK ());
 	yyaccept = 23;
@@ -5964,9 +5970,9 @@ yy197:
 	}
 yy198:
 	YYDEBUG(198, YYPEEK ());
-#line 199 "../gpr.re2c"
+#line 205 "../gpr.re2c"
 	{*id =  5; continue;}
-#line 5970 "../gpr_re2c.c"
+#line 5976 "../gpr_re2c.c"
 yy199:
 	YYDEBUG(199, YYPEEK ());
 	yyaccept = 1;
@@ -6179,9 +6185,9 @@ yy207:
 	}
 yy208:
 	YYDEBUG(208, YYPEEK ());
-#line 201 "../gpr.re2c"
+#line 207 "../gpr.re2c"
 	{*id =  7; continue;}
-#line 6185 "../gpr_re2c.c"
+#line 6191 "../gpr_re2c.c"
 yy209:
 	YYDEBUG(209, YYPEEK ());
 	yyaccept = 1;
@@ -6340,20 +6346,18 @@ yy212:
 	}
 yy213:
 	YYDEBUG(213, YYPEEK ());
-#line 205 "../gpr.re2c"
+#line 211 "../gpr.re2c"
 	{*id =  11; continue;}
-#line 6346 "../gpr_re2c.c"
+#line 6352 "../gpr_re2c.c"
 }
-#line 236 "../gpr.re2c"
+#line 242 "../gpr.re2c"
 
-      }
+   }
+   /* lexer->cursor and lexer ->char_pos are one char past end of token */
    *byte_position = lexer->byte_token_start - lexer->buffer + 1;
    *byte_length   = lexer->cursor - lexer->byte_token_start;
    *char_position = lexer->char_token_start;
-   if (DO_COUNT)
-      *char_length = lexer->char_pos - lexer->char_token_start;
-   else
-      *char_length = lexer->char_pos - lexer->char_token_start + 1;
-   *line_start     = lexer->line_token_start;
+   *char_length   = lexer->char_pos - lexer->char_token_start;
+   *line_start    = lexer->line_token_start;
    return status;
    }

@@ -2,7 +2,7 @@
 @settitle Ada Mode
 
 @copying
-Copyright @copyright{} 1999 - 2019  Free Software Foundation, Inc.
+Copyright @copyright{} 1999 - 2020  Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -25,7 +25,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 6.2.1
+@title Ada Mode Version 7.0.1
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -37,7 +37,7 @@ developing GNU and promoting software freedom.''
 @node Top, Overview, (dir), (dir)
 @top Top
 
-Ada Mode Version 6.2.1
+Ada Mode Version 7.0.1
 @end ifnottex
 
 @menu
@@ -56,7 +56,6 @@ Ada Mode Version 6.2.1
 * Key summary::
 * Developer overview::
 * GNU Free Documentation License::
-* Index::
 
 @detailmenu
  --- The Detailed Node Listing ---
@@ -68,13 +67,12 @@ Overview
 Installation
 
 * Ada Reference Manual::
-* gpr_query::
-* process parser::
+* Ada executables::
 
-gpr_query
+Ada executables
 
 * Building GNATCOLL 2019::
-* Building @file{gpr_query}::
+* Building the executables::
 
 Customizing Ada mode
 
@@ -95,7 +93,7 @@ Compiling Examples
 * No project files::            Just menus
 * Set compiler options::        A basic Ada mode project file
 * Set source search path::      Source in multiple directories
-* Use GNAT project file::
+* Use wisi project file::
 * Use multiple GNAT project files::
 * Use a Makefile::
 
@@ -107,17 +105,9 @@ Project files
 Developer overview
 
 * Directory structure::
-* Package organization::
 * ELPA::
 * Savannah::
 * ada-france::
-
-Package organization
-
-* Ada mode::
-* gpr mode::
-* GNAT core::
-* Wisi::
 
 @end detailmenu
 @end menu
@@ -162,19 +152,30 @@ information on debugging.
 @section Why not LSP?
 The Language Server Protocol (LSP, @url{https://langserver.org})
 supports an external language parser, as Ada mode does, and it is
-supported by the GNU ELPA package eglot. We do not use LSP, because it
-does not support indentation and fontification.
+supported by the GNU ELPA package eglot. Ada mode does not use LSP mostly for
+historical reasons; the Ada mode parser was first developed before LSP
+was started. In addition, LSP does not support some of the navigation
+information provided by the Ada mode parser (although that could be
+provided as a custom command).
+
+We may investigate supporting an LSP parser in the future. In
+particular, the AdaCore Gnat Studio editor uses an LSP parser for
+several functions; Emacs Ada mode could use that as a backend if it
+supports LSP.
 
 @node Installation, Customization, Overview, Top
 @chapter Installation
 
 Ada mode requires Emacs 25.0 or greater. Compiling the Ada code for
 the external process parser requires GNAT GPL 2017 or later; tested
-with GNAT Community Edition 2018 and GNAT Pro 19.
+with GNAT Community Edition 2019 and GNAT Pro 19.
 
 Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via @code{M-x list-packages} (@pxref{Packages,,,emacs,Emacs
-User Guide}). In Emacs < 27 you must first enable packages in your
+User Guide}). Note that it requires the @code{wisi} and
+@code{uniquify-files} packages as dependencies.
+
+In Emacs < 27 you must first enable packages in your
 @file{~/.emacs}, @emph{after} customizing
 @code{Info-default-directory-list} (if you do that):
 
@@ -182,31 +183,26 @@ User Guide}). In Emacs < 27 you must first enable packages in your
 (package-initialize)
 @end example
 
-Ada mode is also available as a separate distribution, from the Emacs
-Ada mode website
-@uref{http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html}.
-
-For installing the separate distribution, see the @file{README} file
-in the distribution.
-
 To see what version of Ada mode you have installed, invoke @kbd{M-x
 ada-mode-version}.
 
-You may also want to install additional utilities:
+You must also install the associated Ada executables (for the language
+parser). You may want to install the Ada Reference Manual.
 
 @menu
 * Ada Reference Manual::
-* gpr_query::
-* process parser::
+* Ada executables::
 @end menu
 
-@node Ada Reference Manual, gpr_query, Installation, Installation
+@node Ada Reference Manual
 @section Ada Reference Manual
 The ELPA package ada-ref-man includes the Ada Reference Manual and
 Annotated Ada Reference Manual in info format.
 
-@node gpr_query, , Ada Reference Manual, Installation
-@section gpr_query
+@node Ada executables
+@section Ada executables
+
+Ada mode requires the external parser, which must be compiled.
 
 Ada mode has support for an external cross reference tool
 @file{gpr_query}, which uses compiler-generated information. In the
@@ -219,13 +215,30 @@ not available in FSF GCC.
 @file{gpr_query} is an Ada program, which is distributed as source and
 must be built. Its source code is in the @code{ada-mode} Gnu ELPA package.
 
-@file{gpr_query} requires the @code{GNATCOLL} library provided by
-AdaCore, distributed with GNAT GPL 2017 or later, and also available
-at Github (@url{https://github.com/AdaCore/gnatcoll}). The notes below
-assume that the compiler is installed at @file{$prefix},
+@file{gpr_query} is similar to the AdaCore utility @code{gnatxref},
+but supports additional queries.
+
+Both the parser and @file{gpr_query} require the @code{GNATCOLL}
+library provided by AdaCore, distributed with GNAT GPL 2017 or later,
+and also available at Github
+(@url{https://github.com/AdaCore/gnatcoll}). The notes below assume
+that the compiler is installed at @file{$prefix},
 e.g. @file{/usr/local/gnat-2019}, and that @file{$prefix/bin} is first
 on the @code{PATH}. If you are running Windows, use mingw64
 @code{bash} to run these commands.
+
+On linux, some versions of the @code{GNATCOLL.iconv} package (used by
+@code{gpr_query}, but not the parser) explicity
+require the @file{libiconv.so} library. GNAT provides the
+@file{libiconv.so} library in @file{<gnat>/lib64/libiconv.so}. On
+Debian, that directory is not in the standard load path, and iconv is
+provided by glibc, so @file{libiconv.so} is not found on the standard
+load path. So you must set @var{LD_LIBRARY_PATH}, but only when
+running @code{gpr-query}:
+
+@example
+(setq gpr-query-env '("LD_LIBRARY_PATH=/Projects/gnat/pro_19.2/lib64")
+@end example
 
 In general, @file{gpr_query} should be compiled with the compiler
 version that is used to generate the user project @file{.ali} files;
@@ -240,7 +253,7 @@ does not include the xref package, which is required by
 
 @menu
 * Building GNATCOLL 2019::
-* Building @file{gpr_query}::
+* Building the executables::
 @end menu
 
 @node Building GNATCOLL 2019
@@ -263,28 +276,29 @@ make -C xref
 make -C xref install
 @end example
 
-@node Building @file{gpr_query}
-@subsection Building @file{gpr_query}
+@node Building the executables
+@subsection Building the executables
 
-To build and install @file{gpr_query}, assuming the
+@file{gpr_query} requires the @code{pthread} library. On Windows, this
+is available in Mingw64 as package
+@code{mingw64/mingw-w64-x86_64-winpthreads-git}.
+
+To build and install @file{gpr_query} and the parser, assuming the
 @code{ada-mode-6.0.xx} GNU ELPA package is installed:
 
 @example
 cd ~/.emacs.d/elpa/ada-mode-6.0.xx
 ./build.sh
+./install.sh
 @end example
 
-@code{ada-mode} will use @file{gpr_query} for cross reference
-functions if @file{gpr_query} is found in @code{PATH}.
+By default, @file{install.sh} installs the executables in the same
+directory as the GNAT executable (using @file{gprinstall}). If you
+don't have write privileges there, or if you want to install somewhere
+else, use @code{install.sh --prefix=<dir>}.
 
-@node process parser, , ,
-@section process parser
-The process parser is built and installed by the same @code{build.sh}
-script as @xref{gpr_query}. ada-mode will automatically use it if it
-is available.
-
-To override the automatic choice of parser, set @var{ada-parser} to
-either @code{'elisp} or @code{'parser}.
+@code{ada-mode} will use @file{gpr_query} and the parser if they are
+found in @code{PATH}.
 
 @node Customization, Compiling Executing, Installation, Top
 @chapter Customizing Ada mode
@@ -305,15 +319,15 @@ the tutorial (@kbd{C-h t}).
 @node Slow response
 @section Slow response
 
-In large files, parsing is slow, so it gets in the way of interactive
-typing due to immediate fontification triggering a parse.
+In large files, parsing takes a noticable amount of time, so it gets
+in the way of interactive typing due to immediate fontification
+triggering a parse.
 
 There are three ways to deal with this:
 
 @enumerate
-@item Install the process parser (@xref{process parser}), and set
-@code{wisi-partial-parse-threshold} appropriately in your
-@file{~./emacs}:
+@item Set @code{wisi-partial-parse-threshold}
+In your @file{~./emacs}:
 
 @example
 (setq wisi-partial-parse-threshold 100001)
@@ -323,17 +337,15 @@ The default value (100001) may already be appropriate; it depends on
 how fast your machine is, and what your tolerance for slow response
 is.
 
-Files larger than @code{wisi-partial-parse-threshold} will be parsed
-partially; only the part of the buffer needed for the current task
-will be parsed. For fontification, that is the visible part. For indent,
-it is approximately the current subprogram or package. For navigation,
-it is always the entire file, which will still be slow; that is the
-only way to ensure useful results.
+Files larger than @code{wisi-partial-parse-threshold} (in characters)
+will be parsed partially; only the part of the buffer needed for the
+current task will be parsed. For fontification, that is the visible
+part. For indent, it is approximately the current subprogram or
+package. For navigation, it is always the entire file, which will
+still be slow; that is the only way to ensure useful results.
 
 With this setting, indentation may not be correct; the Ada menu entry
-``Edit | Indent lines in file'' (or ``Edit | Indent current
-statement'', if point is on a keyword of a large enough enclosing
-statement) will parse the entire file and indent correctly.
+``Edit | Indent containing statement'' will indent correctly.
 
 @item Delay fontification by setting @code{jit-lock-defer-time} in your
 @file{~./emacs}:
@@ -371,7 +383,8 @@ corresponding spec and back.
 
 Emacs and Ada mode support ways to use alternative file extensions for
 specs and bodies. Note that you must also tell the compiler about
-these extensions; doing that is beyond the scope of this manual.
+these extensions in a GNAT project file Naming package; doing that is
+beyond the scope of this manual.
 
 For instance, if your spec and bodies files are called
 @file{@var{unit}_s.ada} and @file{@var{unit}_b.ada}, respectively, you
@@ -408,20 +421,20 @@ the scope of this manual; see the current definitions in
 
 @node Other compiler, Other cross-reference, Non-standard file names, Customization
 @section Other compiler
-The project variable @code{ada_compiler} (default elisp variable
-@code{ada-compiler}) is used to index several variables that point to
-the compiler-specific functions for corresponding Ada mode operations.
+The wisi project variable @code{ada_compoiler} (default elisp variable
+@code{ada-compiler}) (default @code{'gnat}) controls dispatching in
+compiler-specific functions for corresponding Ada mode operations.
 
 To use a compiler other than GNAT, you must write Emacs lisp code that
 provides the interface to the compiler, and set @code{ada-compiler} and
 the indirection variables.
 
-See @file{ada-gnat-compile.el} for an example.
+See @file{ada-compiler-gnat.el} for an example.
 
 @node Other cross-reference, Other customization, Other compiler, Customization
 @section Other cross-reference
-The project variable @code{ada_xref} (default elisp variable
-@code{ada-xref-tool}) is used to index several variables that point to
+The wisi project variable @code{xref_tool} (default elisp variable
+@code{ada-xref-tool}) controls dispatching in
 the cross-reference-tool-specific functions for corresponding Ada mode
 operations.
 
@@ -438,9 +451,9 @@ See @file{ada-gnat-xref.el} and @file{gpr-query.el} for examples.
 @node Other customization,  , Other cross-reference, Customization
 @section Other customization
 
-All user-settable Ada mode variables can be set via the menu
-@samp{Ada | Customize}.  Click on the @samp{Help} button there for help
-on using customize.
+All user-settable Ada mode variables can be set via the menu @samp{Ada
+| Customize}; some can also be set in wisi project files
+(@pxref{Project files}).
 
 To modify a specific variable, you can directly call the function
 @code{customize-variable}; just type @kbd{M-x customize-variable
@@ -449,11 +462,13 @@ To modify a specific variable, you can directly call the function
 Alternately, you can specify variable settings in the Emacs
 configuration file, @file{~/.emacs}. This file is coded in Emacs lisp,
 and the syntax to set a variable is the following:
+
 @example
 (setq variable-name value)
 @end example
 
 Some general Emacs settings that are useful for Ada files:
+
 @table @code
 @item context menu
 By default, the context menu is bound to @key{C-down-mouse-3},
@@ -466,6 +481,19 @@ Ada mode does not provide any @code{other-frame} or
 recommended to use the Gnu ELPA package @code{other-frame-window}.
 @item delete-trailing-whitespace
 Deletes space, tab at end of line and blank lines at end of buffer.
+@item xref configuration
+@table @code
+@item xref-prompt-for-identifier
+Set to @code{nil} to be prompted less when finding definitions or
+references.
+@item xref-show-xrefs-function
+Determine placement of the window where references are shown.
+@item xref-show-definitions-function
+Determine placement of the window where definitions are shown.
+@item xref--transient-buffer-mode-map
+keymap used in some xref windows; you may want to disable the
+@key{RET} binding there.
+@end table
 @item untabify
 Deletes tab characters that have crept into the file.
 @item indent-tabs-mode
@@ -476,12 +504,12 @@ year.
 @item electric-pair-mode
 Insert a matching right paren when you type a left paren.
 @item hippie-expand
-Bind @code{hippie-expand} to a key; it expands the word before point, using
-words from current buffer, other buffers, file names, etc; see
+Bind @code{hippie-expand} to a key; it expands the word before point,
+using words from current buffer, other buffers, file names, etc; see
 @code{hippie-expand-try-functions-list}. You can also add
-@code{ada-skel-hippie-try} to that list. Note that @code{ada-expand},
-which defaults to @code{ada-skel-expand}, is bound to @key{C-c C-e}
-(@pxref{Statement skeletons}).
+@code{wisi-skel-hippie-try} to that list. Note that
+@code{wisi-skel-expand} is bound to @key{C-c C-e} (@pxref{Statement
+skeletons}).
 @item imenu
 Navigate to subprograms and types by name, from a minibuffer menu.
 @item speedbar
@@ -499,10 +527,15 @@ first.
 
 @example
 (setq-default indent-tabs-mode nil)
+(define-key xref--transient-buffer-mode-map (kbd "RET") 'xref-goto-xref)
+(setq xref-prompt-for-identifier nil) ;; only prompt on C-u
+(setq xref-show-xrefs-function #'xref--show-defs-buffer-at-bottom)
+(setq xref-show-definitions-function #'xref--show-defs-buffer-at-bottom)
+
 (electric-pair-mode 1)
 (require 'imenu) ;; also enables speedbar
 (require 'ada-mode)
-(add-to-list 'hippie-expand-try-functions-list 'ada-skel-hippie-try)
+(add-to-list 'hippie-expand-try-functions-list 'wisi-skel-hippie-try)
 (define-key ada-mode-map "\C-e"     'hippie-expand)
 (define-key ada-mode-map [down-mouse-3] 'ada-popup-menu)
 (add-hook 'ada-mode-hook
@@ -524,8 +557,8 @@ the GNAT compiler for simple projects (single files, or several files
 in a single directory).
 
 For complex projects, you will want to use @code{make} or some other
-build tool; in that case, you will need an Emacs Ada mode project file
-to tell Emacs about the project directory tree and other settings.
+build tool; in that case, you may need a wisi project file to tell
+Emacs about the project directory tree and other settings.
 
 @menu
 * Compile commands::
@@ -537,7 +570,7 @@ to tell Emacs about the project directory tree and other settings.
 @section Compile commands
 
 Here are the commands for building an Ada project and running the main
-program.
+program; they are all on the @code{Ada | Build} menu.
 
 In multi-file projects, there must be one file that is the main
 program. That is given by the @code{main} project file variable;
@@ -565,7 +598,7 @@ Sets @code{main} to the current file, then executes the Build
 command.
 
 @item Show main
-Display @code{main} in the message buffer.
+Displays @code{main} in the message buffer.
 
 @item Build
 Compiles all obsolete units of the current @code{main}, and links
@@ -587,7 +620,7 @@ This command is not available for a cross-compilation toolchain.
 It is important when using these commands to understand how
 @code{main} is used and changed.
 
-Build runs 'gnatmake' on the main unit. During a typical edit/compile
+Build runs 'gprbuild' on the main unit. During a typical edit/compile
 session, this is the only command you need to invoke, which is why it
 is bound to @kbd{C-c C-c}. It will compile all files needed by the
 main unit, and display compilation errors in any of them.
@@ -630,7 +663,7 @@ website mentioned in @xref{Installation}.
 * No project files::            Just menus
 * Set compiler options::        A basic Ada mode project file
 * Set source search path::      Source in multiple directories
-* Use GNAT project file::
+* Use wisi project file::
 * Use multiple GNAT project files::
 * Use a Makefile::
 @end menu
@@ -644,14 +677,14 @@ First, create a directory @file{Example_1}, containing:
 @file{hello.adb}:
 
 @example
-with Ada.Text_IO;
+with Ada.Text_Io;
 procedure Hello
 is begin
    Put_Line("Hello from hello.adb");
 end Hello;
 @end example
 
-Yes, this is missing ``use Ada.Text_IO;'' - we want to demonstrate
+Yes, this is missing ``use Ada.Text_Io;'' - we want to demonstrate
 compiler error handling.
 
 @file{hello_2.adb} has no errors:
@@ -675,19 +708,18 @@ end Hello_Pkg;
 @file{hello_pkg.adb}:
 
 @example
-with Ada.Text_IO;
+with Ada.Text_Io;
 package Hello_Pkg is
    procedure Say_Hello
    is begin
-      Ada.Text_IO.Put_Line ("Hello from hello_pkg.adb");
+      Ada.Text_Io.Put_Line ("Hello from hello_pkg.adb");
    end Say_Hello;
 end Hello_Pkg;
 @end example
 
 Yes, this is missing the keyword @code{body}; another compiler error
 example. However, note that the indentation engine parser accepts this
-code with no errors, making it easier to indent slightly illegal Ada
-code.
+code, making it possible to indent illegal Ada code.
 
 In buffer @file{hello.adb}, invoke the menu entry @samp{Ada | Build |
 Check syntax}. You should get a @code{*compilation*} buffer containing
@@ -697,12 +729,14 @@ something like (the directory paths will be different):
 -*- mode: compilation; default-directory: "c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_1/" -*-
 Compilation started at Fri Oct 18 04:23:54
 
-gnatmake -u -c -gnatc  c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_1/hello.adb -cargs
-gcc -c -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_1/ -gnatc -I- c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_1/hello.adb
+gprbuild  -u -c -gnatc  c:/Projects/org.emacs.ada-mode/test/Example_1/hello.adb
+using project file D:\Apps\GNAT-gpl_2019\share\gpr\_default.gpr
+Compile
+   [Ada]          hello.adb
 hello.adb:4:04: "Put_Line" is not visible
 hello.adb:4:04: non-visible declaration at a-textio.ads:263
 hello.adb:4:04: non-visible declaration at a-textio.ads:259
-gnatmake: "c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_1/hello.adb" compilation error
+gprbuild: *** compilation phase failed
 
 Compilation exited abnormally with code 4 at Fri Oct 18 04:23:54
 @end example
@@ -712,9 +746,9 @@ highlighted, with the file name in red.
 
 Now invoke @samp{Ada | Build | Next compilation error}.  Or you can
 click the middle mouse button on the first error line, or use the key
-binding shown on the menu.  The compilation buffer scrolls to put the
-first error on the top line, and point is put at the place of the
-error in the @file{hello.adb} buffer.
+binding shown on the menu.  In the compilation buffer, a triangle is
+placed in the left fringe on the first error line, and point is put at
+the place of the error in the @file{hello.adb} buffer.
 
 To fix the error, invoke @samp{Ada | Build | Fix compilation error};
 this adds ``Ada.Text_Io.'' to the line:
@@ -733,10 +767,15 @@ compilation buffer is displayed again, containing:
 -*- mode: compilation; default-directory: "c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_1/" -*-
 Compilation started at Fri Oct 18 20:39:33
 
-gnatmake -o hello hello  -cargs  -bargs  -largs
-gcc -c hello.adb
-gnatbind -x hello.ali
-gnatlink hello.ali -o hello.exe
+gprbuild  hello
+using project file D:\Apps\GNAT-gpl_2019\share\gpr\_default.gpr
+Compile
+   [Ada]          hello.adb
+Bind
+   [gprbind]      hello.bexch
+   [Ada]          hello.ali
+Link
+   [link]         hello.adb
 
 Compilation finished at Fri Oct 18 20:39:34
 @end example
@@ -767,11 +806,10 @@ Build}. This finds an error in @file{hello_pkg.adb}:
 hello_pkg.adb:2:08: keyword "body" expected here [see file name]
 @end example
 
-This demonstrates that gnatmake finds the files needed by the main
+This demonstrates that gprbuild finds the files needed by the main
 program. However, it cannot find files in a different directory,
-unless you use an Emacs Ada mode project file or a GNAT project file
-to specify the other directories; @xref{Set source search path},
-@ref{Use GNAT project file}.
+unless you use a GNAT project file to specify the other directories;
+@ref{Set source search path}.
 
 Invoke @samp{Ada | Build | Show main}; this displays @file{Ada mode
 main: hello_2}.
@@ -783,7 +821,7 @@ package body Hello_Pkg is
 @end example
 
 Now, while still in @file{hello_pkg.adb}, invoke @samp{Ada | Build |
-Build}.  gnatmake successfully builds @file{hello_2}. This
+Build}.  gprbuild successfully builds @file{hello_2}. This
 demonstrates that Emacs has remembered the main file, in the project
 variable @code{main}, and used it for the Build command.
 
@@ -812,7 +850,7 @@ specifies @code{main}.
 @node Set compiler options, Set source search path, No project files, Compiling Examples
 @subsection Set compiler options
 
-This example illustrates using an Emacs Ada mode project file to set a
+This example illustrates using a gnat project file to set a
 compiler option.
 
 If you have files from @file{Example_1} open in Emacs, you should
@@ -824,7 +862,7 @@ In directory @file{Example_2}, create these files:
 @file{hello.adb}:
 
 @example
-with Ada.Text_IO;
+with Ada.Text_Io;
 procedure Hello
 is begin
    Put_Line("Hello from hello.adb");
@@ -832,50 +870,53 @@ end Hello;
 @end example
 
 This is the same as @file{hello.adb} from @file{Example_1}. It has two
-errors; missing ``use Ada.Text_IO;'', and no space between
+errors; missing ``use Ada.Text_Io;'', and no space between
 @code{Put_Line} and its argument list.
 
-@file{hello.adp}:
+@file{hello.gpr}:
 
 @example
-comp_opt=-gnatyt
+project Hello is
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnatyt");
+   end Compiler;
+end Hello;
 @end example
 
 This tells the GNAT compiler to check for token spacing; in
 particular, there must be a space preceding a parenthesis.
 
 In buffer @file{hello.adb}, invoke @samp{Ada | Build | Set main and
-Build}. This finds the project file @file{hello.adp}, uses it to set
+Build}. This finds the project file @file{hello.gpr}, uses it to set
 the compiler options, and builds the project. You should get a
 @code{*compilation*} buffer containing something like (the directory
 paths will be different):
 
 @example
-cd c:/Examples/Example_2/
-gnatmake -o hello hello -g -cargs -gnatyt  -bargs  -largs
-gcc -c -g -gnatyt hello.adb
+gprbuild -Phello.gpr hello
+Compile
+   [Ada]          hello.adb
 hello.adb:4:04: "Put_Line" is not visible
-hello.adb:4:04: non-visible declaration at a-textio.ads:264
-hello.adb:4:04: non-visible declaration at a-textio.ads:260
+hello.adb:4:04: non-visible declaration at a-textio.ads:508
+hello.adb:4:04: non-visible declaration at a-textio.ads:498
 hello.adb:4:12: (style) space required
-gnatmake: "hello.adb" compilation error
+gprbuild: *** compilation phase failed
 @end example
 
 Compare this to the compiler output in @ref{No project files}; the
-gnatmake option @code{-cargs} has been replaced by @code{-cargs
--gnaty}, and an additional error is reported in @file{hello.adb} on
-line 4. This shows that @file{hello.adp} is being used to set the
-compiler options.
+compiler-provided default gpr file has been replaced by
+@code{hello.gpr}, and an additional error is reported in
+@file{hello.adb} on line 4. This shows that @file{hello.gpr} is being
+used to set the compiler options.
 
-Fixing the error, linking and running the code proceed as in @ref{No
-project files}.
+Use @kbd{C-x`}, @kbd{C-c M-`} to fix the errors, then @samp{Ada |
+Build | Build} and @samp{Ada | Build | Run} to build and run.
 
-@node Set source search path, Use GNAT project file, Set compiler options, Compiling Examples
+@node Set source search path
 @subsection Set source search path
 
 In this example, we show how to deal with files in more than one
-directory, using an Emacs Ada mode project file to set the search
-path.
+directory, setting the source search path in the gpr file.
 
 Create the directory @file{Example_3}, containing:
 
@@ -890,11 +931,11 @@ end Hello_Pkg;
 @file{hello_pkg.adb}:
 
 @example
-with Ada.Text_IO;
+with Ada.Text_Io;
 package Hello_Pkg is
    procedure Say_Hello
    is begin
-      Ada.Text_IO.Put_Line ("Hello from hello_pkg.adb");
+      Ada.Text_Io.Put_Line ("Hello from hello_pkg.adb");
    end Say_Hello;
 end Hello_Pkg;
 @end example
@@ -902,13 +943,21 @@ end Hello_Pkg;
 These are the same files from example 1; @file{hello_pkg.adb} has an
 error on line 2.
 
-In addition, create a directory @file{Example_3/Other}, containing these files:
+@file{other.gpr}:
+
+@example
+project Other is
+   for Source_Dirs use (".", "Other");
+end Other;
+@end example
+
+In addition, create a directory @file{Example_3/Other}, containing this file:
 
 @file{Other/hello_3.adb}:
 
 @example
 with Hello_Pkg;
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_Io; use Ada.Text_Io;
 procedure Hello_3
 is begin
    Hello_Pkg.Say_Hello;
@@ -918,19 +967,11 @@ end Hello_3;
 
 There are no errors in this file.
 
-@file{Other/other.adp}:
-
-@example
-src_dir=..
-@end example
-
-Note that there must be no trailing spaces.
-
 In buffer @file{hello_3.adb}, invoke @samp{Ada | Project files | Find and
-set project...}, and select @file{Example_3/Other/other.adp}. This
+select project...}, and select @file{Example_3/other.gpr}. This
 tells Emacs Ada mode to stop using the project file from
 @file{Example_2}, and use the one for @file{Example_3}. Also note that
-since this project file is not named @file{hello_3.adp}, it would not
+since this project file is not named @file{hello_3.gpr}, it would not
 be found by default.
 
 Then, again in @file{hello_3.adb}, invoke @samp{Ada | Set main and
@@ -938,30 +979,34 @@ Build}. You should get a @code{*compilation*} buffer containing
 something like (the directory paths will be different):
 
 @example
-cd c:/Examples/Example_3/Other/
-gnatmake -o hello_3 hello_3 -g -cargs -I.. -bargs  -largs
-gcc -c -g -I.. hello_3.adb
-gcc -c -I./ -g -I.. -I- C:\Examples\Example_3\hello_pkg.adb
+gprbuild -Pother.gpr hello_3
+Compile
+   [Ada]          hello_3.adb
+   [Ada]          hello_pkg.adb
 hello_pkg.adb:2:08: keyword "body" expected here [see file name]
-gnatmake: "C:\Examples\Example_3\hello_pkg.adb" compilation error
+gprbuild: "C:\Examples\Example_3\hello_pkg.adb" compilation error
 @end example
 
-Compare the @code{-cargs} option to the compiler output in @ref{Set
-compiler options}; this shows that @file{other.adp} is being used to
-set the compiler options.
-
 Move to the error with @kbd{C-x `}. Ada mode searches the list of
-directories given by @code{src_dir} for the file mentioned in the
+directories given by @code{Source_Dirs} for the file mentioned in the
 compiler error message.
 
-Fixing the error, linking and running the code proceed as in @ref{No
-project files}.
+Use @kbd{C-x`}, @kbd{C-c M-`} to fix the errors, then @samp{Ada |
+Build | Build} and @samp{Ada | Build | Run} to build and run.
 
-@node Use GNAT project file, Use multiple GNAT project files, Set source search path, Compiling Examples
-@subsection Use GNAT project file
+@node Use wisi project file, Use multiple GNAT project files, Set source search path, Compiling Examples
+@subsection Use wisi project file
 
-In this example, we show how to use a GNAT project file, with no Ada
-mode project file.
+In this example, we show how to use a wisi project file to set some
+options that cannot be set in a gpr project file. In addition, we
+change a setting so you are prompted for a project file, rather than
+using a default one.
+
+Change the setting:
+
+@example
+M-x set-variable ada-build-prompt-prj search-prompt
+@end example
 
 Create the directory @file{Example_4}, containing:
 
@@ -976,26 +1021,61 @@ end Hello_Pkg;
 @file{hello_pkg.adb}:
 
 @example
-with Ada.Text_IO;
-package Hello_Pkg is
+with Ada.Text_Io;
+package body Hello_Pkg is
    procedure Say_Hello
    is begin
-      Ada.Text_IO.Put_Line ("Hello from hello_pkg.adb");
+      Put_Line ("Hello from hello_pkg.adb");
    end Say_Hello;
 end Hello_Pkg;
 @end example
 
-These are the same files from example 1; @file{hello_pkg.adb} has an
-error on line 2.
+These two files are the similar to files from example 1;
+@file{hello_pkg.adb} has an error on line 5 (missing
+``Ada.Text_IO.'').
 
-In addition, create a directory @file{Example_4/Gnat_Project},
+@file{example_4.prj}:
+
+@example
+-- Wisi project file
+
+gpr_project_path=More
+
+gpr_file=example_4.gpr
+
+casing=example_4.casing
+@end example
+
+@file{example_4.prj} is a wisi project file; it specifies the
+@code{gpr_project_path}, telling @code{gprbuild} where to search for
+gpr files, and specifies the gpr file to use. Finally it specifies a
+casing exception file:
+
+@file{example_4.casing}:
+
+@example
+Text_IO
+@end example
+
+The default auto casing rules in ada-mode state that the Ada package
+``Ada.Text_IO'' should be capitalized as ``Ada.Text_Io'', which does
+not match the Ada Reference Manual.  @file{example_4.casing} specifies
+that instead ``Text_IO'' should be capitalized as shown.
+
+You can create a casing exception by editing the file directly, or via
+the @code{Ada | Casing} menu.
+
+@code{gpr_project_path} and @code{casing} are list variables; each
+occurence in a wisi project file adds an entry to the list.
+
+In addition, create a directory @file{Example_4/More},
 containing these files:
 
-@file{Gnat_Project/hello_4.adb}:
+@file{more/hello_4.adb}:
 
 @example
 with Hello_Pkg;
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_Io; use Ada.Text_Io;
 procedure Hello_4
 is begin
    Hello_Pkg.Say_Hello;
@@ -1003,50 +1083,60 @@ is begin
 end Hello_4;
 @end example
 
-There are no errors in this file.
+There are no errors in this file, except for the casing in ``Ada.Text_Io''.
 
-@file{Gnat_Project/hello_4.gpr}:
+@file{More/example_4.gpr}:
 
 @example
-project Hello_4 is
+project Example_4 is
    for Source_Dirs use (".", "..");
-end Hello_4;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnatyknpr");
+   end Compiler;
+end Example_4;
 @end example
 
-In buffer @file{hello_4.adb}, invoke @samp{Ada | Project | Load...}, and
-select @file{Example_4/Gnat_Project/hello_4.gpr}.
+The compiler switch checks all casing; we will get errors for ``Ada.Text_Io''.
 
-Then, again in @file{hello_4.adb}, invoke @samp{Ada | Set main and
-Build}. You should get a @code{*compilation*} buffer containing
+Then, in @file{hello_4.adb}, invoke @samp{Ada | Set main and
+Build}. ada-mode looks for a project file @file{hello_4.prj} or
+@file{hello_4.gpr}; since neither is found, you are prompted to find a
+project file.  Select @file{Example_4/example_4.prj}; that is parsed
+and selected, and the build continues.
+
+You should get a @code{*compilation*} buffer containing
 something like (the directory paths will be different):
 
 @example
--*- mode: compilation; default-directory: "c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4/Gnat_Project/" -*-
-Compilation started at Mon Oct 21 11:28:31
-
-gnatmake -Pc:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4/Gnat_Project/hello_4.gpr -o hello_4 hello_4  -cargs -I. -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4/Gnat_Project -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4 -Ic:/Apps/GNAT-7.1.2/lib/gcc/i686-pc-mingw32/4.7.3/adainclude  -bargs  -largs
-gcc -c -I. -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4/Gnat_Project -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4 -Ic:/Apps/GNAT-7.1.2/lib/gcc/i686-pc-mingw32/4.7.3/adainclude -I- -gnatA C:\Projects\org.emacs.ada-mode.stephe-1\test\Example_4\hello_pkg.adb
-hello_pkg.adb:2:08: keyword "body" expected here [see file name]
-gnatmake: "C:\Projects\org.emacs.ada-mode.stephe-1\test\Example_4\hello_pkg.adb" compilation error
-
-Compilation exited abnormally with code 4 at Mon Oct 21 11:28:31
+gprbuild -Pexample_4.gpr hello_4
+Compile
+   [Ada]          hello_pkg.adb
+hello_pkg.adb:1:16: (style) bad casing of "Text_IO" declared at a-textio.ads:57
+hello_pkg.adb:5:07: "Put_Line" is not visible
+hello_pkg.adb:5:07: non-visible declaration at a-textio.ads:508
+hello_pkg.adb:5:07: non-visible declaration at a-textio.ads:498
+gprbuild: *** compilation phase failed
 @end example
 
-Compare the @code{gcc} options to the compiler output in @ref{Set
-compiler options}; this shows that @file{hello_4.gpr} is being used to
-set the compiler options.
+When you fix the errors, note that @kbd{C-c M-`} inserts the correct
+case for ``Ada.Text_IO'', and corrects the case where it is
+incorrect. The case is also corrected as you type; you can type
+``ada.text_io.'' and the case will be corrected when you type each
+``.'' or ``_''.
 
-Fixing the error, linking and running the code proceed as in @ref{No
-project files}.
-
-@node Use multiple GNAT project files, Use a Makefile, Use GNAT project file, Compiling Examples
+@node Use multiple GNAT project files
 @subsection Use multiple GNAT project files
 
 In this example, we show how to use multiple GNAT project files,
-specifying the GNAT project search path in an Ada mode project file.
+specifying the GNAT project search path in an Ada mode project
+file. This also requires explicitly setting
+@code{project-find-functions}.
 
-Create the directory @file{Example_4} as specified in @ref{Use GNAT
-project file}.
+If you haven't already, create the directory @file{Example_4} as
+specified in @ref{Use wisi project file}. If you've already created it
+and run the tutorial, restore the compilation error in hello_pkg.adb;
+delete @code{Ada.Text_IO.} in front of @code{Put_Line}.
 
 Create the directory @file{Example_5}, containing:
 
@@ -1064,49 +1154,107 @@ end Hello_5;
 
 There are no errors in this file.
 
-@file{hello_5.adp}:
+@file{hello_5.prj}:
 
 @example
-ada_project_path=../Example_4/Gnat_Project
+gpr_project_path=../Example_4/More
 gpr_file=hello_5.gpr
+
+casing=../Example_4/example_4.casing
 @end example
 
 @file{hello_5.gpr}:
 
 @example
-with "hello_4";
+with "example_4";
 project Hello_5 is
    for Source_Dirs use (".");
    package Compiler is
-      for Default_Switches ("Ada") use ("-g", "-gnatyt");
+      for Default_Switches ("Ada") use ("-g", "-gnatyknprt");
    end Compiler;
 end Hello_5;
 @end example
 
 In buffer @file{hello_5.adb}, invoke @samp{Ada | Project | Find and
-select project...}, and select @file{Example_5/hello_5.adp}. This
+select project...}, and select @file{Example_5/hello_5.prj}. This
 would also be found by default if no previous project file had been
-selected.
+selected. Note that if @file{example_5.gpr} were named
+@file{hello_5.gpr}, the project file search would find more than one
+match, causing an error.
 
 Then, again in @file{hello_5.adb}, invoke @samp{Ada | Build | Set main
 and Build}. You should get a @code{*compilation*} buffer containing
 something like (the directory paths will be different):
 
 @example
--*- mode: compilation; default-directory: "c:/Projects/org.emacs.ada-mode.stephe-1/test/Example_5/" -*-
+-*- mode: compilation; default-directory: "c:/Projects/org.emacs.ada-mode/test/Example_5/" -*-
 Compilation started at Mon Oct 21 11:32:05
 
-gnatmake -Pc:/Projects/org.emacs.ada-mode.stephe-1/test/Example_5/hello_5.gpr -o hello_5 hello_5  -cargs -I. -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_5 -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4/Gnat_Project -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4 -Ic:/Apps/GNAT-7.1.2/lib/gcc/i686-pc-mingw32/4.7.3/adainclude  -bargs  -largs
-gcc -c -I. -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_5 -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4/Gnat_Project -Ic:/Projects/org.emacs.ada-mode.stephe-1/test/Example_4 -Ic:/Apps/GNAT-7.1.2/lib/gcc/i686-pc-mingw32/4.7.3/adainclude -I- -gnatA C:\Projects\org.emacs.ada-mode.stephe-1\test\Example_4\hello_pkg.adb
-hello_pkg.adb:2:08: keyword "body" expected here [see file name]
-gnatmake: "C:\Projects\org.emacs.ada-mode.stephe-1\test\Example_4\hello_pkg.adb" compilation error
-
-Compilation exited abnormally with code 4 at Mon Oct 21 11:32:05
+gprbuild -Pexample_5.gpr hello_5
+Compile
+   [Ada]          hello_5.adb
+   [Ada]          hello_pkg.adb
+hello_pkg.adb:5:07: "Put_Line" is not visible
+hello_pkg.adb:5:07: non-visible declaration at a-textio.ads:508
+hello_pkg.adb:5:07: non-visible declaration at a-textio.ads:498
+gprbuild: *** compilation phase failed
 @end example
 
-Now type @kbd{C-x `}. @file{Example_4/hello_pkg.adb} is shown,
+Now type @kbd{C-x `}; @file{Example_4/hello_pkg.adb} is shown,
 demonstrating that @file{hello_5.gpr} and @file{hello_4.gpr} are being
 used to set the compilation search path.
+
+Now, in buffer @file{hello_pkg.adb} invoke the menu @code{Ada |
+Navigate | Find file in project} (which calls
+@code{ada-find-file}) to get back to the @file{hello_5.adb}
+buffer. If you have not selected any project files previously in this
+emacs session, this gives an unexpected prompt for a ``project
+directory''. Kill that with @kbd{C-g}. Otherwise, enter @kbd{hel <tab>
+5 <tab>}; it will say ``no match''.
+
+The problem here the way Emacs projects work. To find the current
+project, the functions in @code{project-find-functions} are run; one
+should return a project. The ada-mode build functions add
+@code{wisi-prj-find-dominating-cached} to
+@code{project-find-functions}; that looks in the current directory
+tree for a project file with the same name as one that was previously
+selected.
+
+If @file{Example_5} is the only project in the current emacs session,
+@code{wisi-prj-find-dominating-cached} finds no project file (because
+@file{Example_4} is not a child directory of @file{Example_5}, so the
+default strategy of ``ask the user'' is used, giving the prompt for a
+directory.
+
+If @file{Example_4} is also a project in the current emacs session,
+@code{wisi-prj-find-dominating-cached} finds that; since it does not
+contain @file{hello_5.adb}, @code{ada-find-file} cannot find it.
+
+Any time you have a main project that depends on other projects that
+are not in the same directory tree, you will have this problem.
+
+The fix is to use a different function in
+@code{project-find-functions}; @code{wisi-prj-current-cached}. This
+uses a global variable to indicate what the current project is. wisi
+provides four different functions for @code{project-find-functions}. @xref{Selecting projects, Selecting projects, Selecting projects, wisi}.
+
+To change @code{project-find-functions}, execute:
+
+@example
+M-: (remove-hook 'project-find-functions 'wisi-prj-find-dominating-cached)
+M-: (add-hook 'project-find-functions 'wisi-prj-current-cached)
+@end example
+
+Normally, you must set @code{project-find-functions} in your
+@file{~/.emacs}, using the @code{add-hook} function. The ada-mode
+Build menu functions set it for you to make things simpler for
+novices, but they do not change it if you have put one of the wisi
+functions on it.
+
+Now set the current project; invoke @samp{Ada | Project | Find and
+select project...}, and select @file{Example_5/hello_5.prj}. Then in
+@file{hello_pkg.adb}, invoke @code{Ada |
+Navigate | Find file in project}; now we can find @file{hello_5.adb}.
 
 @node Use a Makefile,  , Use multiple GNAT project files, Compiling Examples
 @subsection Use a Makefile
@@ -1114,8 +1262,8 @@ used to set the compilation search path.
 In this example, we show how to use a Makefile to build an Ada project
 with GNAT, run the result, and clean the build directories.
 
-Create the directories @file{Example_4, Example_5} as specified in @ref{Use GNAT
-project file},  @ref{Use multiple GNAT project files}.
+Create the directories @file{Example_4, Example_5} as specified in
+@ref{Use wisi project file}, @ref{Use multiple GNAT project files}.
 
 In @file{Example_5}, add the file:
 
@@ -1129,31 +1277,38 @@ all : build run
 .PHONY : force
 
 build : force
-        gprbuild -Phello_5.gpr hello_5
+        gprbuild -PExample_5.gpr hello_5
 
 run :
         ./hello_5
 
 clean :
-        gnatclean -r -Phello_5
-
-export GPR_PROJECT_PATH = ../Example_4/Gnat_Project
+        gnatclean -r -PExample_5
 
 # Local Variables:
-# eval:(ada-parse-prj-file "hello_5.adp")
-# eval:(ada-select-prj-file "hello_5.adp")
+# eval:(unless (wisi-prj-find-function-set-p)(add-hook 'project-find-functions 'wisi-prj-current-cached))
+# eval:(wisi-prj-dtrt-parse-file "hello_5.prj" (ada-prj-default "hello_5 # main") "Makefile")
 # End:
 @end example
 
+Tell Emacs to allow @code{eval} in @code{Local Variables}:
+@example
+M-: (setq enable-local-eval t)
+@end example
+
 Close and re-open @file{Makefile}; the @samp{Local Variables} section
-sets the project file to @file{hello_5.adp} when the @file{Makefile}
-is opened. You can also use @key{C-x C-e} to execute the select line
-after the @file{Makefile} is opened, to change the project file back
-to @file{hello_5.adp}.
+sets the project file to @file{hello_5.prj} when the @file{Makefile}
+is opened.
+
+If you have set @code{project-find-functions} in your @file{~/.emacs},
+you can leave out the first @code{eval} line. Note that
+@code{wisi-prj-dtrt-parse-file} does the right thing depending on
+which wisi function is in @code{project-find-functions}.
 
 In @file{Makefile}, invoke @samp{Tools | Compile...}, and accept the
 default make command. This runs the @samp{all} target, which builds
-@file{hello_5} and runs it.
+@file{hello_5} and runs it (you may have to fix source errors first,
+depending on how fresh the Example_4 directory is).
 
 @node Compiler errors,  , Compiling Examples, Compiling Executing
 @section Compiler errors
@@ -1177,23 +1332,25 @@ references are accessed via @kbd{C-c `}.
 @node Project files, Moving Through Ada Code, Compiling Executing, Top
 @chapter Project files
 
-An Emacs Ada mode project file specifies what directories hold sources
-for your project, and allows you to customize the compilation commands
-and other things on a per-project basis.
+Ada mode uses wisi project files; @ref{wisi, Project files, Project files, wisi}.
 
-The default file extension for Ada mode project files is @file{*.adp}
+A wisi project file specifies what directories hold sources for your
+project, and allows you to customize the compilation commands and
+other things on a per-project basis.
+
+The default file extension for wisi project files is @file{*.adp}
 or @file{*.prj}. You can use a different extension by adding it to
 @code{ada-prj-file-extensions}, and a different syntax by adding a
 parser function to @code{ada-prj-parser-alist}.
 
-Note that Ada mode project files @file{*.adp} are different than GNAT
-compiler project files @samp{*.gpr}. However, Emacs Ada mode can use a
+Note that wisi project files are different than GNAT
+compiler project files (@samp{*.gpr}). However, Emacs Ada mode can use a
 GNAT project file to specify the project directories. If no
 other customization is needed, a GNAT project file can be used without
-an Emacs Ada mode project file.
+a wisi project file.
 
-If no Emacs Ada mode project file is specified, some Ada mode
-functions are not available.
+If no wisi project file is specified, some Ada mode functions are not
+available.
 
 @menu
 * Project file overview::
@@ -1203,121 +1360,68 @@ functions are not available.
 @node Project file overview, Project file variables, Project files, Project files
 @section Project file overview
 
-Project files have a simple syntax; they may be edited directly. Each
-line specifies a project variable name and its value, separated by
-``='' (spaces not allowed):
-@example
-src_dir=/Projects/my_project/src_1
-src_dir=/Projects/my_project/src_2
-@end example
-
-Any line that does not have an ``='' is a comment.
-
-Some variables (like @code{src_dir}) are lists; multiple occurrences
-are concatenated.
-
-There must be no space between the variable name and ``='', and no
-trailing spaces after the value.
-
-The current project file is given by the lisp variable
-@code{ada-prj-default-project-file}, and shown by the menu command
+The current project file is shown by the menu command
 @key{Ada | Project Files | Show project}.
 
-To set the project file, use the menu command @samp{Ada | Set Project
-...}, or the elisp functions @code{ada-parse-prj-file,
-ada-select-prj-file}. The latter can be added to a Makefile:
+To set the project file, use the menu command @key{Ada | Project Files | Find and
+select Project ...}, or one of the elisp functions described in
+@ref{wisi, Selecting Projects, Selecting Projects, wisi}.
 
-@example
-# Local Variables:
-# eval: (ada-parse-prj-file "ada-mode.prj")
-# eval: (ada-select-prj-file ada-mode.prj")
-# End:
-@end example
-
-You specify either a GNAT project file or an Emacs Ada mode project
-file; if the file extension is @code{.gpr}, the file is treated as a
-GNAT project file. Extensions given by @code{ada-prj-file-extensions}
-(default @file{.adp, .prj}) are treated as an Emacs Ada mode
-project file.
-
-After a project file is parsed, you can make it current again with
-just @code{ada-select-prj-file}, or by selecting it from the menu.
+The project file may also be a GNAT project file (with file extension
+is @code{.gpr}).
 
 @node Project file variables,  , Project file overview, Project files
 @section Project file variables
 
-To set a project variable that is a list, specify each element of the
-list on a separate line in the project file. The value on the last
-line is the last element in the list.
-
-A variable name that starts with @code{$} is set as a process
-environment variable, for processes launched from Emacs for the
-project.
-
-In variable values, process environment variables can be referenced
-using the normal @code{$var} syntax.
-
-Most project variables have defaults that can be changed by setting
+Some project variables have defaults that can be changed by setting
 elisp variables; the table below identifies the elisp variable for each
 project variable. Elisp variables corresponding to project variables
 that are lists are elisp lists.
 
-In general, project variables are evaluated when referenced in Emacs
-Ada mode commands. Relative file paths are expanded relative to the
-directory containing the project file.
+wisi defines some project variables, Ada mode defines some, others are
+defined by the compiler and the cross reference tool.
 
-Ada mode defines some project variables; others are defined by the
-compiler.
-
-Here is the list of variables valid for all compilers. In the default
-values, the current directory @code{"."} is the directory containing
-the project file.
+Here is the list of variables valid defined by wisi and Ada mode. In
+the default values, the current directory @code{"."} is the directory
+containing the project file.
 
 @table @asis
-@c These are the names that appear in the .adp file, which are the
-@c same as the symbols used with ada-prj-get
+@c These are the names that appear in the .prj file.
 @c
-@c defined in ada-mode.el ada-prj-parse-file-1; alphabetical order
+@c defined in wisi-prj.el and ada-mode.el wisi-prj-parse-one.
 @c defaults defined in ada-mode.el ada-prj-default
 
 @item @code{ada_compiler}   [default: @code{ada-compiler, gnat}]
-Ada compiler for this project. It must occur in the project file
-before any compiler-specific project variable.
+Ada compiler for this project.
 
-@item @code{auto_case}      [default: @code{ada-auto-case, t}]
-Non-nil means automatically change case of preceding word while typing.
+Setting this in the project file reinitializes all options for the
+xref tool, so it must occur before any compiler-specific project
+variable.
 
-@item @code{case_identifier}   [default: @code{ada-case-identifier, mixed-case}]
-Indicates how to adjust the case of an Ada identifier.
+@item @code{casing}
+List of files containing casing exceptions. @xref{Automatic casing,
+Automatic casing, wisi.info}.
 
-@item @code{case_keyword}   [default: @code{ada-case-keyword, lower-case}]
-Indicates how to adjust the case of an Ada keyword.
+@item @code{gnat-stub-args}
+List of strings passed to @code{gnat stub} when it is run.
 
-@item @code{case_strict}    [default: @code{ada-case-strict, t}]
-If non-nil, @code{ada-mixed-case} forces @code{Mixed_Case} for identifiers.
-Otherwise, @code{ada-mixed-case} allows @code{UPPERCASE} for identifiers.
+@item @code{gnat-stub-cargs}
+List of strings passed to @code{gnat stub} after @code{-cargs}.
 
-@item @code{casing}         [default: @code{ada-case-exception-file, nil}]
-List of files containing casing exceptions. @xref{Automatic casing}.
-
-@item @code{el_file}        [default: ]
-The value is a file name, which is loaded as an elisp file when the
-project file is parsed or selected. This allows setting Ada mode indentation
-variables, and any arbitrary elisp code used to customize the project.
-
-@item @code{obj_dir}        [default: @code{"."}]
+@item @code{obj_dir}
 A list of directories to search for object and cross-reference
 files. Only needed if you are not using GPR files.
 
-@item @code{path_sep}       [default: @code{path-separator}]
-Separator character used in compiler search paths.
-
-@item @code{src_dir}        [default: @code{"."}]
+@item @code{src_dir}
 A list of directories to search for source files. Added to the source
-directories from a GPR file.
+directories from a gpr file (if any).
 
 @item @code{xref_tool}      [default: @code{ada-xref-tool}]
 Cross reference tool for this project.
+
+Setting this in the project file reinitializes all options for the
+xref tool, so it must occur in the project file before any other
+settings that affect the xref tool.
 
 If @file{gpr_query} is found in @code{PATH}, @code{ada-xref-tool}
 defaults to @code{'gpr_query}. Otherwise, it defaults to @code{'gnat},
@@ -1325,48 +1429,40 @@ which uses @code{gnat find}.
 
 @end table
 
-The following variables are valid with the GNAT compiler:
+The following project file variables are defined by the GNAT compiler:
 
 @table @asis
-@item @code{ada_project_path}   [default: @code{""}]
-@c ada-prj-get 'prj_dir, 'proc_env
-A list of directories to search for GNAT project files.
+@c defined in gnat-core.el wisi-compiler-parse-one.
+@item @code{ada_project_path}   [default: ]
+Same as @code{gpr_project_path}; see below.
 
-If set, the @code{GPR_PROJECT_PATH} process environment variable is
-set to this value in the child process that runs GNAT tools. If not
-set, @code{GPR_PROJECT_PATH} in the child process is inherited from
-the Emacs process.
-
-If you have the @code{GPR_PROJECT_PATH} or @code{ADA_PROJECT_PATH}
-environment variable set in the Emacs process correctly for all of
-your projects, you do not need to set this project variable.
-
-The project search path can also be set in GNAT aggregate
-projects. However, the gnat tools do not make that path available to
-Emacs, so you must duplicate it in an Emacs Ada project file.
-
-@item @code{gpr_file}   [default: @code{""}]
-The GNAT project file.
+@item @code{gpr_file}   [default: ]
+The GNAT project file for the project.
 
 If set, the source and project directories specified in the GNAT
 project file are appended to @code{src_dir} and
-@code{ada_project_path}. This allows specifying Ada source directories
+@code{gpr_project_path}. This allows specifying Ada source directories
 with a GNAT project file, and other source directories with the Emacs
 project file.
 
-@item @code{gpr_project_path}   [default: @code{""}]
-Same as @code{ada_project_path}.
+@item @code{gpr_project_path}   [default: ]
+A list of directories to
+search for GNAT project files. The list is passed to tools via the
+@code{GPR_PROJECT_PATH} process environment variable in the process
+used to run the @code{gnat} and @code{gpr_query} tools.
 
-@item @code{runtime} [default: @code{nil}]
-@c used in gnat-run-gnat
+If not set, @code{GPR_PROJECT_PATH} in the child process is inherited
+from the Emacs process.
+
+@item @code{runtime} [default: ]
+@c slot gnat-compiler-runtime
 If set, the name of the runtime, used as the value of the @code{RTS}
-command line option.
+command line option for tools.
 
 @item @code{target} [default: @code{nil}]
-@c used in gnat-run-gnat, ada-gnat-xref-all
+@c slot gnat-compiler-target
 If set, the name of the cross-compilation target, prepended to the
 @code{gnat} executable name.
-
 
 @end table
 
@@ -1400,29 +1496,33 @@ compiler, but others can be added (@pxref{Other cross-reference}).
 
 @table @kbd
 @item C-c C-d
-@findex ada-goto-declaration
 Move from any use of an identifier to its declaration, for from a declaration to
 its body (if there is one).
 
+This runs @code{xref-find-definitions}, which has a default global
+binding of @key{M-.}
+
 @item C-c M-d
-@findex ada-goto-declaration-parent
 Move from a child type declaration to the parent type declaration;
 display a list of references if there is more than one parent.
 
 @item C-c C-n
-@findex ada-next-statement-keyword
 Move to the next keyword in the current statement.
 
 For example, if point is on @samp{if}, move to @samp{then}.
 
+This runs @code{forward-sexp}, which has a default global binding of
+@kbd{C-M-f}.
+
 @item C-c C-p
-@findex ada-prev-statement-keyword
 Move to the previous keyword in the current statement.
 
 For example, if point is on @samp{then}, move to @samp{if}.
 
+This runs @code{backward-sexp}, which has a default global binding of
+@kbd{C-M-b}.
+
 @item C-c C-o
-@findex ada-find-other-file
 Switch between corresponding spec and body. There are several special
 cases:
 
@@ -1452,19 +1552,16 @@ corresponding declaration.
 @end itemize
 
 @item C-c C-r
-@findex ada-show-references
 Show all references to the identifier surrounding point. Use
 @kbd{C-x `} (@code{next-error}) to visit each reference (as for
 compilation errors).
 
 @item C-c C-x
-@findex ada-show-overriding
 Show all declarations that override the primitive procedure at
 point. Use @kbd{C-x `} (@code{next-error}) to visit each reference (as
 for compilation errors).
 
 @item C-c M-x
-@findex ada-show-overridden
 Show the declaration that the declaration at point overrides.
 
 @item C-u SPACE
@@ -1472,7 +1569,8 @@ Jump back to the previous location.
 
 @item Ada | Misc | Refresh cross reference cache
 Cross reference information is loaded from the compiler output when
-the first cross reference command is issued. If the code is recompiled
+the first cross reference command is issued (or when the project file
+is parsed, if useing cached project files). If the code is recompiled
 after that, the cross reference information is reloaded by invoking
 this menu command.
 
@@ -1485,6 +1583,9 @@ Emacs provides a general way of completing identifiers: @kbd{M-/}
 (bound to @code{dabbrev-expand}). This is an easy way to type faster:
 you just have to type the first few letters of an identifier, and then
 loop through all the possible completions.
+
+If you have bound @code{hippie-expand}, that also uses
+@code{dabbrev-expand}.
 
 @kbd{M-/} works by parsing all open Ada files for possible
 completions.
@@ -1585,8 +1686,8 @@ Indentation for the lines in a @code{with} context clause.
 @end table
 
 The indentation variables are buffer local; the global value may be
-overridden in an elisp file invoked by an @code{el_file} Emacs Ada
-mode project file statement, or in a file local variable section.
+overridden in an elisp function on @code{ada-mode-hook}, or in a file
+local variable section.
 
 The following keys indent portions of the text:
 @table @kbd
@@ -1600,55 +1701,23 @@ Indent the current line, or the current region.
 @item C-c TAB
 Indent the current statement or declaration.
 
+@item C-c S-TAB
+Indent the statement or declaration containing the current statement
+or declaration.
+
 @end table
 
 The indentation algorithm relies on a grammar parser to identify the
-syntactic role for keywords and other words in the code. If the code
-is accepted by the parser, the indentation is done according to the
-rules in the indentation engine.
-
-If the code is not accepted (because it is partially complete during
-editing), the indentation engine falls back to the trivial algorithm
-of indenting each new line the same as the previous line. Once enough
-new text has been entered to make the code acceptable to the parser,
-the statement or declaration is properly indented.
-
-For example, if you are entering this code:
-
-@example
-if A then
-   B;
-end if;
-@end example
-
-when you type @kbd{RET B}, @code{B} is indented to the same column as
-@code{if}, because the parser does not find @code{end if;}. Then when
-you type the final @code{;} followed by @key{TAB}, all three lines are
-indented, putting @code{B} where it belongs.
-
-To be more user friendly, the parser accepts a superset of the Ada
-grammer. For example, the parser accepts this code for an @code{if}
-statement:
-
-@example
-if then
-end if;
-@end example
-
-In general, any sequence of statements, and many expressions, may be
-omitted.
-
-One way to easily insert empty statements like this is using
-@ref{Statement skeletons}.
+syntactic role for keywords and other words in the code.
 
 In rare cases, the parser gets confused; it can be reset by invoking
-menu @key{Ada | Misc | Reset parser}. Please report such cases as a
+menu @key{Ada | Misc | Restart parser}. Please report such cases as a
 bug.
 
 @node Statement skeletons, Aligning code, Indentation, Top
 @chapter Statement skeletons
 
-@kbd{C-c C-e} expands the previous one or two words into a statment
+@kbd{C-c C-e} expands the previous one or two words into a statement
 skeleton. For example, @kbd{i f C-c C-e} expands to:
 
 @example
@@ -1657,10 +1726,6 @@ elsif  then
 else
 end if;
 @end example
-
-All skeleton expansions are accepted by the indentation parser, so
-this is a convenient way to insert statements with correct
-indentation.
 
 For named statements (packages, loops, etc), the name is taken from
 the word before point, and the name of the statement from the word
@@ -1776,45 +1841,26 @@ all uppercase identifiers without defining a casing exception.
 @end table
 
 You can define exceptions to these rules, in files specified by the
-variable @code{ada-case-exception-file}. Each line in a case exception
-file specifies the casing of one word or word fragment. If an
-exception is defined in multiple files, the first occurrence is used.
+@code{casing} project variable; @ref{Casing exception files, Casing
+exception files, Casing exception files, wisi}.
 
-If the word starts with an asterisk (@code{*}), it defines the casing
-of a word fragment (or ``substring''); part of a word between two
-underscores or word boundary.
-
-For example:
-
-@example
-DOD
-*IO
-GNAT
-@end example
-
-The word fragment @code{*IO} applies to any word containing ``_io'';
-@code{Text_IO}, @code{Hardware_IO}, etc.
-
-@findex ada-case-create-exception
-There are two ways to add new items to this file: you can simply edit
-it as you would edit any text file. Or you can position point on the
-word you want to add, and select menu @samp{Ada | Casing | Create full
-exception} or @samp{Ada | Casing | Create partial exception}.  The
-word will be added to the current list of exceptions and to the file.
+There are two ways to add new items to a casing exception file: you
+can simply edit it as you would edit any text file, or you can
+position point on the word you want to add, and select menu @samp{Ada
+| Casing | Create full exception} or @samp{Ada | Casing | Create
+partial exception}.  The word will be added to the current list of
+exceptions and to the file.
 
 It is sometimes useful to have multiple exception files. For
 example, one could be the standard Ada acronyms, the second some
 company specific exceptions, and the last one some project specific
-exceptions. If you set up the variable @code{ada-case-exception-file}
-as a list of files, each of them will be parsed and used in your emacs
-session. When you create a new exception, you are prompted for the
+exceptions. When you create a new exception, you are prompted for the
 file to save it in.
 
 Other keys and menu entries are defined:
 
 @table @kbd
 @item C-c C-w
-@findex ada-case-adjust-at-point
 Adjust case of the word at point. With prefix arg, adjust case even if
 in a comment or string. Normally, comments and strings are not
 affected by case adjust.
@@ -1835,7 +1881,6 @@ additional functions to handle comments:
 
 @table @kbd
 @item M-;
-@findex comment-dwim
 If the region is active, comment or uncomment it.
 
 If the current line is empty, start a comment.
@@ -1844,7 +1889,6 @@ Otherwise, add a comment at the end of the line, in a column given by
 @code{comment-column}.
 
 @item M-q
-@findex fill-paragraph
 Fill the current comment paragraph.
 @end table
 
@@ -1881,6 +1925,10 @@ Indent the current line, or the current region.
 @item C-c TAB
 @xref{Indentation}.
 Indent the current statement or declaration.
+
+@item C-c S-TAB
+@xref{Indentation}.
+Indent the containing statement or declaration.
 
 @item C-c `
 @xref{Compiler errors}.
@@ -1962,13 +2010,12 @@ sources, here's an overview.
 
 @menu
 * Directory structure::
-* Package organization::
 * ELPA::
 * Savannah::
 * ada-france::
 @end menu
 
-@node Directory structure, Package organization, Developer overview, Developer overview
+@node Directory structure
 @section Directory structure
 @table @file
 @item org.emacs.ada-mode
@@ -2057,107 +2104,6 @@ More tests; allows testing path search features.
 
 @end table
 
-@node Package organization
-@section Package organization
-
-@menu
-* Ada mode::
-* gpr mode::
-* GNAT core::
-* Wisi::
-@end menu
-
-@node Ada mode, gpr mode, Package organization, Package organization
-@subsection Ada mode
-Ada mode consists of all files with @file{ada-} prefix in the file
-name.
-
-@table @file
-@item ada-mode.el
-The main file, implementing the keymap, menu, and top level
-functionality.
-
-It allows for different backend implementations for compiling,
-cross-referencing, and indenting. The functions for each of these
-backends dispatch thru global variables that are set by Emacs Ada mode
-project files. They default to the GNAT compiler, the gnatxref cross
-reference tool, and the ada-wisi indentation engine.
-
-@item ada-build.el
-Provides functions for compiling Ada files without a Makefile (or
-similar tool).
-
-@item ada-fix-error.el
-Provides an interface to utilities for automatically fixing errors
-reported by the compiler. It dispatches to a compiler-specific
-backend.
-
-@item ada-gnat-compile.el
-Implements the Ada mode compiler functions for the GNAT compiler.
-
-@item ada-gnat-xref.el
-Implements the Ada mode cross reference functions for the GNAT compiler.
-
-@item ada.wy
-The Ada language grammar.
-
-@item ada-indent-user-options.el
-All user-settable options for the Ada indentation engine.
-
-@item ada-mode-compat.el
-Defines functions used by Ada mode that are not in older versions of Emacs.
-
-@item ada-mode.texi
-This Ada mode user guide source.
-
-@item ada-skel.el
-Skeletons for expansion of Ada syntax (@pxref{Statement
-skeletons}). Extends the Emacs skeleton functions with ``tokens'',
-inspired by the lamented Else package (which was inspired by DEC LSE).
-
-@item ada-wisi.el
-Implements the Ada mode indentation functions for the wisi indentation
-engine backend.
-
-@end table
-
-@node gpr mode, GNAT core, Ada mode, Package organization
-@subsection gpr mode
-
-gpr mode consists of all files with @file{gpr-} prefix in the file
-name. The functions in each file are similar to the similarly-named
-Ada mode files.
-
-@node GNAT core, Wisi, gpr mode, Package organization
-@subsection GNAT core
-@table @file
-
-@item gnat-core.el
-GNAT is actually a multi-language tool; it builds on top of the
-multi-language gcc.
-
-@file{gnat-core.el} is a start at a language-agnostic interface to the
-GNAT tools. It was first factored out from @file{ada-gnat.el} and
-@file{ada-mode.el} to support the multi-language @file{gpr_query.el}.
-
-More code currently in @file{ada-mode.el} could be migrated to
-@file{gnat-core.el}, in particular the project file support.
-
-@item gpr-query.el
-Provides an interface to the external multi-language cross-reference
-tool @file{gpr_query}.
-
-Implements the Ada mode cross-reference functions for the
-@file{gpr_query} backend, and a minor mode providing similar
-functions for C++.
-
-@end table
-
-@node Wisi,  , GNAT core, Package organization
-@subsection Wisi
-
-The ``wisi'' parser. @xref{Overview, Overview, Overview, wisi}.
-
 @node ELPA
 @section ELPA
 Ada mode is published via the Gnu ELPA archive. To test a new version
@@ -2193,13 +2139,8 @@ project admin page there for more information.
 The source code for ada-mode is maintained in a monotone repository in
 the ada-france server @url{mtn://www.ada-france.org}.
 
-@node GNU Free Documentation License, Index, Developer overview, Top
+@node GNU Free Documentation License
 @appendix GNU Free Documentation License
 @include doclicense.texi
-
-@node Index,  , GNU Free Documentation License, Top
-@unnumbered Index
-
-@printindex fn
 
 @bye

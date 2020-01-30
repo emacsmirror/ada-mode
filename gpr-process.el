@@ -98,6 +98,7 @@
 (defconst gpr-process-face-table
   [
    font-lock-function-name-face
+   font-lock-keyword-face
    nil
    ])
 

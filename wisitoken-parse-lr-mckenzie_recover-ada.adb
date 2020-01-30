@@ -2,7 +2,7 @@
 --
 --  see spec.
 --
---  Copyright (C) 2018 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2018 - 2020 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -992,6 +992,38 @@ package body WisiToken.Parse.LR.McKenzie_Recover.Ada is
             end if;
          end;
 
+      elsif Config.Error_Token.ID = +TICK_1_ID then
+         --  Editing "Put ('|');" => "Put ('|-');"; need to change ' to ".
+
+         declare
+            New_Config : Configuration := Config;
+         begin
+            New_Config.Strategy_Counts (Language_Fix) := New_Config.Strategy_Counts (Language_Fix) + 1;
+
+            declare
+               Index      : WisiToken.Token_Index               := New_Config.Current_Shared_Token;
+               Start_Line : constant WisiToken.Line_Number_Type := Terminals
+                 (Config.Error_Token.Min_Terminal_Index).Line;
+            begin
+               Delete_Check (Terminals, New_Config, Index, +TICK_1_ID); -- increments index
+               loop
+                  if Index > Terminals.Last_Index then
+                     raise Bad_Config;
+                  end if;
+                  if Terminals (Index).Line /= Start_Line then
+                     raise Bad_Config;
+                  end if;
+                  exit when Terminals (Index).ID = +TICK_1_ID;
+                  Delete (Terminals, New_Config, Index); -- increments index
+               end loop;
+               Delete_Check (Terminals, New_Config, Index, +TICK_1_ID);
+               Insert (New_Config, Index, +STRING_LITERAL_ID);
+            end;
+            Local_Config_Heap.Add (New_Config);
+            if Trace_McKenzie > Detail then
+               Put ("Language_Fixes char_literal to string", New_Config);
+            end if;
+         end;
       end if;
    exception
    when Bad_Config =>
@@ -1132,5 +1164,5 @@ package body WisiToken.Parse.LR.McKenzie_Recover.Ada is
 
 end WisiToken.Parse.LR.McKenzie_Recover.Ada;
 --  Local Variables:
---  ada-auto-case: not-upper-case
+--  ada-case-strict: nil
 --  End:

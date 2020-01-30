@@ -251,8 +251,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple,
-         (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
+         (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (True,
+         (Simple, (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
       end case;
    end aggregate_3;
 
@@ -274,6 +275,25 @@ package body Ada_Process_Actions is
          (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
       end case;
    end aggregate_4;
+
+   procedure aggregate_5
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple,
+         (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
+      end case;
+   end aggregate_5;
 
    procedure array_type_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
@@ -329,7 +349,9 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         null;
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
       end case;
    end aspect_clause_0;
 
@@ -446,10 +468,31 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, (1 => (True, (Hanging_0, (Label => None), (Int,
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
+         (Label => None))), (False, (Simple, (Label => None))), (False, (Hanging_0, (Label => None), (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Hanging_0, (Label => None), (Int,
          Ada_Indent_Broken)), (Hanging_0, (Label => None), (Int, Ada_Indent_Broken)))));
       end case;
    end association_opt_4;
+
+   procedure association_opt_5
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
+     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, (1 => (True, (Hanging_0, (Label => None), (Int,
+         Ada_Indent_Broken)), (Hanging_0, (Label => None), (Int, Ada_Indent_Broken)))));
+      end case;
+   end association_opt_5;
 
    procedure asynchronous_select_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
@@ -659,8 +702,7 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple,
-         (Label => None)), (Simple, (Int, Ada_Indent_When))), (False, (Simple, (Label => None)))));
+         null;
       end case;
    end case_expression_alternative_list_0;
 
@@ -969,7 +1011,10 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (3, 1, 2)));
       when Indent =>
-         null;
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
+         (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (True, (Simple,
+         (Label => None)), (Simple, (Language, Ada_Indent_Record_1'Access, 69 & 6 & 0))), (False, (Simple, (Label =>
+         None)))));
       end case;
    end derived_type_definition_0;
 
@@ -1769,9 +1814,9 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 3, 2)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int,
+         Ada_Indent_Broken)), (Simple, (Language, Ada_Indent_Record_1'Access, 69 & 5 & Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
       end case;
    end full_type_declaration_0;
 
@@ -3877,11 +3922,12 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 2)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Language,
-         Ada_Indent_Record_0'Access, 1 & 4 & 0))), (False, (Simple, (Language, Ada_Indent_Record_0'Access, 1 & 4 &
-         Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_0'Access, 1 & 4 & Ada_Indent))), (False, (Simple,
-         (Language, Ada_Indent_Record_0'Access, 1 & 4 & 0))), (False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Language,
+         Ada_Indent_Record_1'Access, 28 & 4 & 0)), (Simple, (Language, Ada_Indent_Record_1'Access, 28 & 4 &
+         Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_0'Access, 1 & 4 & Ada_Indent))), (True, (Simple,
+         (Language, Ada_Indent_Record_1'Access, 28 & 4 & Ada_Indent)), (Simple, (Language, Ada_Indent_Record_1'Access,
+         28 & 4 & Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_1'Access, 28 & 4 & 0))), (False,
+         (Simple, (Label => None))), (False, (Simple, (Label => None)))));
       end case;
    end record_representation_clause_0;
 

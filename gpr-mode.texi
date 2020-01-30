@@ -73,14 +73,6 @@ gpr mode is distributed in the Gnu ELPA package archive, bundled with
 Ada mode; it can be installed via @code{M-x list-packages}
 (@pxref{Packages,,,emacs,Emacs User Guide}).
 
-gpr mode is also available as a separate distribution bundled with
-Ada mode, from the Emacs Ada mode website
-@uref{http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html}. The
-separate distribution may be more recent.
-
-For installing the separate distribution, see the @file{README} file
-in the distribution.
-
 gpr mode does not have a separate version; it uses the Ada mode
 version number. To see what version of Ada mode you have installed, do
 @kbd{M-x ada-mode-version}.
@@ -88,9 +80,9 @@ version number. To see what version of Ada mode you have installed, do
 @node Customization, Moving Through Gpr Code, Installation, Top
 @chapter Customization
 
-gpr mode uses the Ada mode indentation variables; they can be set via
-the menu @samp{Ada | Customize} from an Ada mode buffer.  Click on the
-@samp{Help} button there for help on using customize.
+Indentation variables for gpr mode can be set via the menu @samp{gpr |
+Customize} from a gpr mode buffer.  Click on the @samp{Help} button
+there for help on using customize. @xref{Indentation}.
 
 To modify a specific variable, you can directly call the function
 @code{customize-variable}; just type @kbd{M-x customize-variable
@@ -115,7 +107,7 @@ Don't insert tab characters when indenting.
 Bind @code{hippie-expand} to a key; it expands the word before point,
 using words from current buffer, other buffers, file names, etc; see
 @code{hippie-expand-try-functions-list}. You can also add
-@code{skeleton-hippie-try} to that list (@pxref{Statement skeletons}).
+@code{wisi-skel-hippie-try} to that list (@pxref{Statement skeletons}).
 @end table
 
 The above can all be set by the following code in your
@@ -124,7 +116,7 @@ The above can all be set by the following code in your
 @example
 (setq-default indent-tabs-mode nil)
 (require 'gpr-mode)
-(add-to-list 'hippie-expand-try-functions-list 'skeleton-hippie-try)
+(add-to-list 'hippie-expand-try-functions-list 'wisi-skel-hippie-try)
 (define-key gpr-mode-map "\C-e"     'hippie-expand)
 (add-hook 'gpr-mode-hook
    (lambda ()
@@ -149,6 +141,12 @@ corresponding package declaration.
 @item C-u SPACE
 Jump back to the previous location.
 
+@item C-M-f
+Move to the end of the current declaration.
+
+@item C-M-b
+Move to the start of the current declaration.
+
 @end table
 
 @node Identifier completion, Indentation, Moving Through Gpr Code, Top
@@ -158,6 +156,9 @@ Emacs provides a general way of completing identifiers: @kbd{M-/}
 (bound to @code{dabbrev-expand}). This is an easy way to type faster:
 you just have to type the first few letters of an identifier, and then
 loop through all the possible completions.
+
+If you have bound @code{hippie-expand}, that also uses
+@code{dabbrev-expand}.
 
 @kbd{M-/} works by parsing all open gpr files for possible
 completions.
@@ -184,18 +185,14 @@ gpr mode comes with a full set of rules for automatic indentation. You
 can also configure the indentation, via the following variables:
 
 @table @asis
-@item @code{ada-indent}                  (default value: 3)
+@item @code{gpr-indent}                  (default value: 3)
 Number of columns for default indentation.
 
-@item @code{ada-indent-broken}           (default value: 2)
+@item @code{gpr-indent-broken}           (default value: 2)
 Number of columns to indent the continuation of a broken line.
 
-@item @code{ada-indent-when}             (default value: 3)
-Indentation for @code{when} relative to @code{exception}, @code{case},
-or @code{or} in @code{select}.
-
-@item @code{ada-indent-with}             (default value: ada-indent-broken)
-Indentation for the lines in a @code{with} context clause.
+@item @code{gpr-indent-when}             (default value: 3)
+Indentation for @code{when} relative to @code{case}.
 
 @end table
 
@@ -213,48 +210,9 @@ Indent the current declaration.
 
 @end table
 
-The indentation algorithm relies on a grammar parser to identify the
-syntactic role for keywords and other words in the code. If the code
-is accepted by the parser, the indentation is done according to the
-rules in the indentation engine.
-
-If the code is not accepted (because it is partially complete during
-editing), the indentation engine falls back to the trivial algorithm
-of indenting each new line the same as the previous line. Once enough
-new text has been entered to make the code acceptable to the parser,
-the declaration is properly indented.
-
-For example, if you are entering this code:
-
-@example
-   for Source_Dirs use
-     ("../../1553/test",
-      "../../system/test");
-@end example
-
-when you type @kbd{RET (}, @code{(} is indented to the same column as
-@code{for}, because the parser does not find @code{);}. Then when
-you type the final @code{;} followed by @key{TAB}, all three lines are
-indented, putting @code{(} where it belongs.
-
-To be more user friendly, the parser accepts a superset of the gpr
-grammer. For example, the parser accepts this code for a @code{case}
-statement:
-
-@example
-case is
-end case;
-@end example
-
-In general, any sequence of statements, and many expressions, may be
-omitted.
-
-One way to easily insert empty statements like this is using
-@ref{Statement skeletons}.
-
-In rare cases, the parser gets confused; it can be reset by invoking
-menu @key{gpr | Misc | Reset parser}. Please report such cases as a
-bug.
+The indentation algorithm relies on an error-correcting grammar parser
+to identify the syntactic role for keywords and other words in the
+code.
 
 @node Statement skeletons, GNU Free Documentation License, Indentation, Top
 @chapter Statement skeletons
@@ -267,10 +225,6 @@ case  is
 when =>
 end case;
 @end example
-
-All skeleton expansions are accepted by the indentation parser, so
-this is a convenient way to insert statements with correct
-indentation.
 
 For named packages, the name is taken from
 the word before point, and the package keyword from the word

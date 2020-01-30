@@ -1,6 +1,6 @@
 ;; gpr-skel.el --- Extension to gpr-mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2013-2015, 2018 Free Software Foundation, Inc.
+;; Copyright (C) 2013-2015, 2018, 2019 Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -21,7 +21,7 @@
 
 ;;; Design:
 ;;
-;; The primary user command is `gpr-skel-expand', which inserts the
+;; The primary user command is `wisi-skel-expand', which inserts the
 ;; skeleton associated with the previous word (possibly skipping a
 ;; name).
 ;;
@@ -37,7 +37,7 @@
 ;; Created Dec 2013
 
 (require 'skeleton)
-(require 'gpr-mode)
+(require 'wisi-skel)
 
 ;;;;; user variables, example skeletons intended to be overwritten
 
@@ -109,140 +109,6 @@ Each user will probably want to override this."
   _
   "end " str ";")
 
-;;;;; skeleton extensions
-
-;; FIXME: code below should be in skeleton.el
-
-(defvar-local skeleton-token-alist nil
-  "Symbol giving skeleton token alist of elements (STRING ELEMENT).
-See `skeleton-expand'.
-STRING must be a symbol in the current syntax, and is normally
-the first keyword in the skeleton. All strings must be
-lowercase; `skeleton-expand' converts user inputs.
-
-ELEMENT may be:
-- a skeleton, which is inserted
-- an alist of (string . skeleton). User is prompted with `completing-read', selected skeleton is inserted. ")
-
-(defun skeleton-add-skeleton (token skel alist &optional where)
-  "Add an element (TOKEN . SKEL) to ALIST by side-effect.
-If WHERE is nil, prepend to ALIST; otherwise, prepend to sublist
-at WHERE."
-  (if (null where)
-      (setf alist (cons (cons token skel) alist))
-    (setf (cdr (assoc where alist))
-	  (cons (cons token skel) (cdr (assoc where alist))))
-    ))
-
-(defvar skeleton-test-input nil
-  "When non-nil, bypasses prompt in alist token expansions - used for unit testing.")
-
-(defun skeleton-build-prompt (alist count)
-  "Build a prompt from the keys of the ALIST.
-The prompt consists of the first COUNT keys from the alist, separated by `|', with
-trailing `...' if there are more keys."
-  (if (>= count (length alist))
-      (concat (mapconcat 'car alist " | ") " : ")
-    (let ((alist-1 (butlast alist (- (length alist) count))))
-      (concat (mapconcat 'car alist-1 " | ") " | ... : "))
-  ))
-
-(defun skeleton-expand (&optional name)
-  "Expand the token or placeholder before point to a skeleton, as defined by `skeleton-token-alist'.
-A token is a symbol in the current syntax.
-A placeholder is a symbol enclosed in generic comment delimiters.
-If the word before point is not in `skeleton-token-alist', assume
-it is a name, and use the word before that as the token."
-  (interactive "*")
-
-  ;; Skip trailing space, newline, and placeholder delimiter.
-  ;; Standard comment end included for languages where that is newline.
-  (skip-syntax-backward " !>")
-
-  ;; include punctuation here, in case this is an identifier, to allow Gpr.Text_IO
-  (let* ((end (prog1 (point) (skip-syntax-backward "w_.")))
-	 (token (downcase (buffer-substring-no-properties (point) end)))
-	 (skel (assoc-string token (symbol-value skeleton-token-alist)))
-	 (handled nil))
-
-    (if skel
-	(progn
-	  (when (listp (cdr skel))
-	    (let* ((alist (cdr skel))
-		   (prompt (skeleton-build-prompt alist 4)))
-	      (setq skel (assoc-string
-			  (or skeleton-test-input
-			      (completing-read prompt alist))
-			  alist))
-	      (setq skeleton-test-input nil) ;; don't reuse input on recursive call
-	      ))
-
-	  ;; delete placeholder delimiters around token, token, and
-	  ;; name. point is currently before token.
-	  (skip-syntax-backward "!")
-	  (delete-region
-	   (point)
-	   (progn
-	     (skip-syntax-forward "!w_")
-	     (when name
-	       (skip-syntax-forward " ")
-	       (skip-syntax-forward "w_."))
-	     (point)))
-	  (funcall (cdr skel) name)
-	  (setq handled t))
-
-      ;; word in point .. end is not a token; assume it is a name
-      (when (not name)
-	;; avoid infinite recursion
-
-	;; Do this now, because skeleton insert won't.
-	;;
-	;; We didn't do it above, because we don't want to adjust case
-	;; on tokens and placeholders.
-	;; FIXME: hook for Ada case adjust
-
-	(setq token (buffer-substring-no-properties (point) end))
-
-	(skeleton-expand token)
-	(setq handled t)))
-
-    (when (not handled)
-      (error "undefined skeleton token: %s" name))
-    ))
-
-(defun skeleton-hippie-try (old)
-  "For `hippie-expand-try-functions-list'. OLD is ignored."
-  (if old
-      ;; hippie is asking us to try the "next" completion; we don't have one
-      nil
-    (let ((pos (point))
-	  (undo-len (if (sequencep pending-undo-list) (length pending-undo-list) 0)))
-      (undo-boundary)
-      (condition-case nil
-	  (progn
-	    (skeleton-expand)
-	    t)
-	(error
-	 ;; undo hook action if any
-	 (unless (= undo-len (if (sequencep pending-undo-list) (length pending-undo-list) 0))
-	   (undo))
-
-	 ;; undo motion
-	 (goto-char pos)
-	 nil)))))
-
-(defun skeleton-next-placeholder ()
-  "Move point forward to start of next placeholder."
-  (interactive)
-  (skip-syntax-forward "^!"))
-
-(defun skeleton-prev-placeholder ()
-  "Move point forward to start of next placeholder."
-  (interactive)
-  (skip-syntax-backward "^!"))
-
-;; end FIXME:
-
 ;;;;; token alist, setup
 
 (defconst gpr-skel-token-alist
@@ -253,22 +119,18 @@ it is a name, and use the word before that as the token."
     ("header" . gpr-skel-header)
     ("package" . gpr-skel-package)
     ("project" . gpr-skel-project))
-"For skeleton-token-alist")
+"For `wisi-skel-token-alist', used by `wisi-skel-expand'.")
 
 (defun gpr-skel-setup ()
-  "Setup a buffer gpr-skel."
-  (setq skeleton-token-alist 'gpr-skel-token-alist)
-  (add-hook 'skeleton-end-hook 'gpr-indent-statement nil t)
+  "Setup a buffer for gpr-skel."
+  (setq wisi-skel-token-alist gpr-skel-token-alist)
+  (add-hook 'skeleton-end-hook 'wisi-indent-statement nil t)
   (when (and gpr-skel-initial-string
 	     (= (buffer-size) 0))
     (insert gpr-skel-initial-string))
   )
 
-(provide 'gpr-skeletons)
-(provide 'gpr-skel)
-
-(setq gpr-expand #'skeleton-expand)
-
 (add-hook 'gpr-mode-hook #'gpr-skel-setup)
 
+(provide 'gpr-skel)
 ;;; end of file

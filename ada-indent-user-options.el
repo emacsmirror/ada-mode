@@ -39,18 +39,7 @@ begin
   :safe #'integerp)
 (make-variable-buffer-local 'ada-indent)
 
-(defvar ada-broken-indent nil)
-(make-obsolete-variable
- 'ada-broken-indent
- 'ada-indent-broken
- "Emacs 24.4, Ada mode 5.0")
-
-(defcustom ada-indent-broken
-  (if ada-broken-indent
-      (progn
-	(message "WARNING: setting `ada-indent-broken' to obsolete `ada-broken-indent'")
-	ada-broken-indent)
-    2)
+(defcustom ada-indent-broken 2
   "Indentation for the continuation of a broken line.
 
 Example :
@@ -80,22 +69,7 @@ Otherwise, they are indented as a with previous comments or code."
   :safe  #'booleanp)
 (make-variable-buffer-local 'ada-indent-comment-gnat)
 
-(defvar ada-label-indent nil)
-(make-obsolete-variable
- 'ada-label-indent
- 'ada-indent-label
- "Emacs 24.4, Ada mode 5.0")
-
-(defcustom ada-indent-label
-    (if ada-label-indent
-      (progn
-	(message "WARNING: setting `ada-indent-label' to obsolete `ada-label-indent'")
-	ada-label-indent)
-      -3)
-  ;; Ada mode 4.01 and earlier default this to -4. But that is
-  ;; incompatible with the default gnat indentation style check, which
-  ;; wants all indentations to be a multiple of 3 (with some
-  ;; exceptions). So we default this to -3.
+(defcustom ada-indent-label -3
   "Indentation for a loop, block, or statement label, relative to the item it labels.
 
 Example :
@@ -164,18 +138,7 @@ An example is:
   :safe #'integerp)
 (make-variable-buffer-local 'ada-indent-return)
 
-(defvar ada-use-indent nil)
-(make-obsolete-variable
- 'ada-use-indent
- 'ada-indent-use
- "Emacs 24.4, Ada mode 5.0")
-
-(defcustom ada-indent-use
-    (if ada-use-indent
-      (progn
-	(message "WARNING: setting `ada-indent-use' to obsolete `ada-use-indent'")
-	ada-use-indent)
-      ada-indent-broken)
+(defcustom ada-indent-use ada-indent-broken
   "Indentation for the lines in a `use' statement.
 
 An example is:
@@ -185,18 +148,7 @@ An example is:
   :safe #'integerp)
 (make-variable-buffer-local 'ada-indent-use)
 
-(defvar ada-when-indent nil)
-(make-obsolete-variable
- 'ada-when-indent
- 'ada-indent-when
- "Emacs 24.4, Ada mode 5.0")
-
-(defcustom ada-indent-when
-    (if ada-when-indent
-      (progn
-	(message "WARNING: setting `ada-indent-when' to obsolete `ada-when-indent'")
-	ada-when-indent)
-      3)
+(defcustom ada-indent-when 3
   "Indentation for `when' relative to `exception', `case', `or' in select.
 
 An example is:
@@ -206,18 +158,7 @@ An example is:
   :safe  #'integerp)
 (make-variable-buffer-local 'ada-indent-when)
 
-(defvar ada-with-indent nil)
-(make-obsolete-variable
- 'ada-with-indent
- 'ada-indent-with
- "Emacs 24.4, Ada mode 5.0")
-
-(defcustom ada-indent-with
-    (if ada-with-indent
-      (progn
-	(message "WARNING: setting `ada-indent-with' to obsolete `ada-with-indent'")
-	ada-with-indent)
-      ada-indent-broken)
+(defcustom ada-indent-with ada-indent-broken
   "Indentation for the lines in a `with' context clause.
 
 An example is:

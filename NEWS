@@ -1,11 +1,58 @@
 GNU Emacs Ada mode NEWS -- history of user-visible changes.
 
-Copyright (C) 2019 Free Software Foundation, Inc.
+Copyright (C) 2014 - 2020 Free Software Foundation, Inc.
 
 Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada Mode 7.0.1
+30 Jan 2020
+
+** fix packaging bugs
+
+** build.sh is now split into build.sh and install.sh; the latter
+   takes --prefix and may need to be run as root.
+
+** improve xref integration
+
+* Ada Mode 7.0.0
+19 Dec 2019
+
+** parser Ada language protocol version 3
+
+** Added support for the Ada 2020 features
+   iterated_component_association (ai12-0061), target_name
+   (ai12-0125), delta_aggregate (ai12-0127); these are supported in
+   GNAT Community 2019.
+
+** Major restructuring of code, moving many functions from ada-mode to
+   wisi for use in other language modes, and using cl-defgeneric
+   dispatching instead of function variables. Normal users should see
+   no changes, except that some ada-mode functions will warn about
+   being obsolete. If you've written custom code that depends on
+   ada-mode functions, you may have to change it.
+
+** gpr-mode fully supports auto-casing; new user variables
+   gpr-auto-case, gpr-case-keyword, gpr-case-strict,
+   gpr-case-identifier, respects 'casing' project file settings.
+
+** New commands `wisi-goto-containing-statement-start',
+   `wisi-indent-containing-statement' are in the menu.
+   `wisi-indent-containing-statement' is bound to 'C-c S-i'.
+
+** `ada-goto-declarative-region-start' now goes to the containing
+   region, when the start point is before the 'is' in the current
+   declaration (previously, it went to the declarative region of the
+   current declaration). This is required for adding a use_clause for
+   an identifier/operator in a format_part or aspect_clause.
+
+** Delete not-upper-case setting for ada-auto-case; instead, set
+   ada-case-strict to nil.
+
+** wisi-prj-identifier-at-point (previously ada-identifier-at-point)
+   now handles non-ASCII characters.
+
 * Ada Mode 6.2.1
 17 Aug 2019
 

@@ -1,5 +1,7 @@
 #!/bin/sh
-# Build and install executables for Ada mode.
+# Build executables for Ada mode.
+#
+# See install.sh for install
 
 # In December 2016, GNATCOLL changed its Xref interface. First, the
 # GPR was split out; and second, one of the subprogram
@@ -13,18 +15,15 @@ if test $? -eq 0 ; then HAVE_GNATCOLL_XREF="yes"; else HAVE_GNATCOLL_XREF="no"; 
 echo "HAVE_GNATCOLL_XREF=$HAVE_GNATCOLL_XREF"
 
 gnatprep -DHAVE_GNATCOLL_XREF=$HAVE_GNATCOLL_XREF gpr_query-process_refresh.adb.gp gpr_query-process_refresh.adb
-gnatprep -DHAVE_GNATCOLL_XREF=$HAVE_GNATCOLL_XREF gpr_query.gpr.gp gpr_query.gpr
 
 # support for libadalang is still experimental
-gnatprep -DHAVE_LIBADALANG="no" -DELPA="yes" ada_mode_wisi_parse.gpr.gp ada_mode_wisi_parse.gpr
+gnatprep -DHAVE_GNATCOLL_XREF=$HAVE_GNATCOLL_XREF -DHAVE_LIBADALANG="no" -DELPA="yes" ada_mode_wisi_parse.gpr.gp ada_mode_wisi_parse.gpr
 
-export GPR_PROJECT_PATH="../wisi-2.2.1"
+export GPR_PROJECT_PATH="../wisi-3.0.1"
 
-gprbuild -p -P gpr_query.gpr
-gprinstall -f -p -P gpr_query.gpr --install-name=gpr_query
+gnatprep -DELPA="yes" $GPR_PROJECT_PATH/wisi.gpr.gp $GPR_PROJECT_PATH/wisi.gpr
 
-gprbuild -p -P ada_mode_wisi_parse.gpr
+gprbuild -p -j8 -P ada_mode_wisi_parse.gpr
 gzip -d -q ada_lr1_parse_table.txt.gz
-gprinstall -f -p -P ada_mode_wisi_parse.gpr --install-name=ada_mode_wisi_parse
 
 # end of file

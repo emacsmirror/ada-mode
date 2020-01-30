@@ -2,7 +2,7 @@
 --
 --  build ada_mode_wisi_parse and other executables
 --
---  Copyright (C) 2014, 2018 Free Software Foundation, Inc.
+--  Copyright (C) 2014, 2018, 2019 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -22,9 +22,15 @@ with "wisi";
 with "wisitoken";
 #end if;
 with "standard_common";
-#if HAVE_LIBADALANG="yes"
-with "libadalang";
+with "gnatcoll";
+with "gnatcoll_sqlite";
+#if HAVE_GNATCOLL_XREF="yes"
+with "gnatcoll_xref";
 #end if;
+with "gnat_util";
+--  #if HAVE_LIBADALANG="yes"
+--  with "libadalang";
+--  #end if;
 project Ada_Mode_Wisi_Parse is
 
    for Main use
@@ -32,11 +38,12 @@ project Ada_Mode_Wisi_Parse is
       "ada_mode_wisi_lr1_parse.ads",
       "run_ada_lalr_parse.ads",
       "run_ada_lr1_parse.ads",
-#if HAVE_LIBADALANG="yes"
-      "run_ada_libadalang_parse.ads",
-#end if;
+--  #if HAVE_LIBADALANG="yes"
+--        "run_ada_libadalang_parse.ads",
+--  #end if;
       "gpr_mode_wisi_parse.ads",
-      "run_gpr_parse.ads"
+      "run_gpr_parse.ads",
+      "gpr_query.adb"
      );
 
    for Source_Dirs use (".");
@@ -122,8 +129,6 @@ project Ada_Mode_Wisi_Parse is
 
       for Global_Compilation_Switches ("Ada") use Standard_Common.Builder'Global_Compilation_Switches ("Ada");
 
-      --  We use ".exe" extension even on non-Windows, to simplify the makefiles.
-      for Executable_Suffix use ".exe";
    end Builder;
 
    package Binder is

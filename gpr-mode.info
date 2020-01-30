@@ -62,14 +62,6 @@ gpr mode is distributed in the Gnu ELPA package archive, bundled with
 Ada mode; it can be installed via 'M-x list-packages' (*note
 (emacs)Packages::).
 
-   gpr mode is also available as a separate distribution bundled with
-Ada mode, from the Emacs Ada mode website
-<http://stephe-leake.org/emacs/ada-mode/emacs-ada-mode.html>.  The
-separate distribution may be more recent.
-
-   For installing the separate distribution, see the 'README' file in
-the distribution.
-
    gpr mode does not have a separate version; it uses the Ada mode
 version number.  To see what version of Ada mode you have installed, do
 'M-x ada-mode-version'.
@@ -80,9 +72,9 @@ File: gpr-mode.info,  Node: Customization,  Next: Moving Through Gpr Code,  Prev
 3 Customization
 ***************
 
-gpr mode uses the Ada mode indentation variables; they can be set via
-the menu 'Ada | Customize' from an Ada mode buffer.  Click on the 'Help'
-button there for help on using customize.
+Indentation variables for gpr mode can be set via the menu 'gpr |
+Customize' from a gpr mode buffer.  Click on the 'Help' button there for
+help on using customize.  *Note Indentation::.
 
    To modify a specific variable, you can directly call the function
 'customize-variable'; just type 'M-x customize-variable <RET>
@@ -104,14 +96,14 @@ the syntax to set a variable is the following:
      Bind 'hippie-expand' to a key; it expands the word before point,
      using words from current buffer, other buffers, file names, etc;
      see 'hippie-expand-try-functions-list'.  You can also add
-     'skeleton-hippie-try' to that list (*note Statement skeletons::).
+     'wisi-skel-hippie-try' to that list (*note Statement skeletons::).
 
    The above can all be set by the following code in your '~/.emacs'.
 Note that some are functions are added to 'before-save-hook'; they run
 just before a buffer is written to disk.
      (setq-default indent-tabs-mode nil)
      (require 'gpr-mode)
-     (add-to-list 'hippie-expand-try-functions-list 'skeleton-hippie-try)
+     (add-to-list 'hippie-expand-try-functions-list 'wisi-skel-hippie-try)
      (define-key gpr-mode-map "\C-e"     'hippie-expand)
      (add-hook 'gpr-mode-hook
         (lambda ()
@@ -136,6 +128,12 @@ available through the gpr menu and keybindings.
 'C-u SPACE'
      Jump back to the previous location.
 
+'C-M-f'
+     Move to the end of the current declaration.
+
+'C-M-b'
+     Move to the start of the current declaration.
+
 
 File: gpr-mode.info,  Node: Identifier completion,  Next: Indentation,  Prev: Moving Through Gpr Code,  Up: Top
 
@@ -146,6 +144,8 @@ Emacs provides a general way of completing identifiers: 'M-/' (bound to
 'dabbrev-expand').  This is an easy way to type faster: you just have to
 type the first few letters of an identifier, and then loop through all
 the possible completions.
+
+   If you have bound 'hippie-expand', that also uses 'dabbrev-expand'.
 
    'M-/' works by parsing all open gpr files for possible completions.
 
@@ -171,18 +171,14 @@ File: gpr-mode.info,  Node: Indentation,  Next: Statement skeletons,  Prev: Iden
 gpr mode comes with a full set of rules for automatic indentation.  You
 can also configure the indentation, via the following variables:
 
-'ada-indent' (default value: 3)
+'gpr-indent' (default value: 3)
      Number of columns for default indentation.
 
-'ada-indent-broken' (default value: 2)
+'gpr-indent-broken' (default value: 2)
      Number of columns to indent the continuation of a broken line.
 
-'ada-indent-when' (default value: 3)
-     Indentation for 'when' relative to 'exception', 'case', or 'or' in
-     'select'.
-
-'ada-indent-with' (default value: ada-indent-broken)
-     Indentation for the lines in a 'with' context clause.
+'gpr-indent-when' (default value: 3)
+     Indentation for 'when' relative to 'case'.
 
    The following keys indent portions of the text:
 
@@ -195,43 +191,9 @@ can also configure the indentation, via the following variables:
 'C-c TAB'
      Indent the current declaration.
 
-   The indentation algorithm relies on a grammar parser to identify the
-syntactic role for keywords and other words in the code.  If the code is
-accepted by the parser, the indentation is done according to the rules
-in the indentation engine.
-
-   If the code is not accepted (because it is partially complete during
-editing), the indentation engine falls back to the trivial algorithm of
-indenting each new line the same as the previous line.  Once enough new
-text has been entered to make the code acceptable to the parser, the
-declaration is properly indented.
-
-   For example, if you are entering this code:
-
-        for Source_Dirs use
-          ("../../1553/test",
-           "../../system/test");
-
-   when you type 'RET (', '(' is indented to the same column as 'for',
-because the parser does not find ');'.  Then when you type the final ';'
-followed by <TAB>, all three lines are indented, putting '(' where it
-belongs.
-
-   To be more user friendly, the parser accepts a superset of the gpr
-grammer.  For example, the parser accepts this code for a 'case'
-statement:
-
-     case is
-     end case;
-
-   In general, any sequence of statements, and many expressions, may be
-omitted.
-
-   One way to easily insert empty statements like this is using *note
-Statement skeletons::.
-
-   In rare cases, the parser gets confused; it can be reset by invoking
-menu <gpr | Misc | Reset parser>.  Please report such cases as a bug.
+   The indentation algorithm relies on an error-correcting grammar
+parser to identify the syntactic role for keywords and other words in
+the code.
 
 
 File: gpr-mode.info,  Node: Statement skeletons,  Next: GNU Free Documentation License,  Prev: Indentation,  Up: Top
@@ -245,9 +207,6 @@ skeleton.  For example, 'c a s e C-c C-e' expands to:
      case  is
      when =>
      end case;
-
-   All skeleton expansions are accepted by the indentation parser, so
-this is a convenient way to insert statements with correct indentation.
 
    For named packages, the name is taken from the word before point, and
 the package keyword from the word before that:
@@ -762,12 +721,12 @@ Tag Table:
 Node: Top952
 Node: Overview1227
 Node: Installation1786
-Node: Customization2537
-Node: Moving Through Gpr Code4459
-Node: Identifier completion4909
-Node: Indentation5871
-Node: Statement skeletons8201
-Node: GNU Free Documentation License8957
-Node: Index34119
+Node: Customization2226
+Node: Moving Through Gpr Code4151
+Node: Identifier completion4719
+Node: Indentation5753
+Node: Statement skeletons6656
+Node: GNU Free Documentation License7269
+Node: Index32431
 
 End Tag Table

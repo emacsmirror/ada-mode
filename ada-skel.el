@@ -21,7 +21,7 @@
 
 ;;; Design:
 ;;
-;; The primary user command is `ada-skel-expand', which inserts the
+;; The primary user command is `wisi-skel-expand', which inserts the
 ;; skeleton associated with the previous word (possibly skipping a
 ;; name).
 ;;
@@ -29,8 +29,8 @@
 ;; is easier just to type in the buffer.
 ;;
 ;; These skeletons are not intended to teach a novice the language,
-;; just to make it easier to write code that the ada-wisi parser
-;; likes, and handle repeated names nicely.
+;; just to make it easier to write code that the wisi parser
+;; handles without error, and handle repeated names nicely.
 
 ;;; History:
 
@@ -63,7 +63,8 @@
 ;; skeletons; just make it easier to work with the ada-wisi parser,
 ;; don't try to teach syntax.
 
-(require 'skeleton nil t)
+(require 'skeleton)
+(require 'wisi-skel)
 
 ;;;;; user variables, example skeletons intended to be overwritten
 
@@ -122,10 +123,6 @@ This could end in a token recognized by `ada-skel-expand'."
   "pragma License (Modified_GPL);\n"
 
 )
-
-;; override ada-mode 4.01 autoloaded functions
-(define-obsolete-function-alias 'ada-header 'ada-skel-header "24.4"
-  "Insert a descriptive header at the top of the file.")
 
 ;;;;; Ada skeletons (alphabetical)
 
@@ -309,7 +306,7 @@ See `ada-find-other-file' to create library level package body from spec."
   ()
   "with " str "; use " str ";")
 
-;;;;; token alist, other functions
+;;;;; token alist
 
 (defconst ada-skel-token-alist
   '(("accept" . ada-skel-accept)
@@ -351,138 +348,18 @@ See `ada-find-other-file' to create library level package body from spec."
      ("spec" . ada-skel-task-spec))
     ("while" . ada-skel-while)
     ("with" . ada-skel-with-use))
-  "alist of elements (STRING ELEMENT). See `ada-skel-expand'.
-STRING must be a symbol in the current syntax, and is normally
-the first Ada keyword in the skeleton. All strings must be
-lowercase; `ada-skel-expand' converts user inputs.
-
-ELEMENT may be:
-- a skeleton, which is inserted
-- an alist of (string . skeleton). User is prompted with `completing-read', selected skeleton is inserted. ")
-
-(defvar ada-skel-test-input nil
-  "When non-nil, bypasses prompt in alist token expansions - used for unit testing.")
-
-(defun ada-skel-build-prompt (alist count)
-  "Build a prompt from the keys of the ALIST.
-The prompt consists of the first COUNT keys from the alist, separated by `|', with
-trailing `...' if there are more keys."
-  (if (>= count (length alist))
-      (concat (mapconcat 'car alist " | ") " : ")
-    (let ((alist-1 (butlast alist (- (length alist) count))))
-      (concat (mapconcat 'car alist-1 " | ") " | ... : "))
-  ))
-
-(defun ada-skel-expand (&optional name)
-  "Expand the token or placeholder before point to a skeleton, as defined by `ada-skel-token-alist'.
-A token is a symbol in the current syntax.
-A placeholder is a symbol enclosed in generic comment delimiters.
-If the word before point is not in `ada-skel-token-alist', assume
-it is a name, and use the word before that as the token."
-  (interactive "*")
-
-  ;; Skip trailing space, newline, and placeholder delimiter.
-  ;; Standard comment end included for languages where that is newline.
-  (skip-syntax-backward " !>")
-
-  ;; include punctuation here, in case is is an identifier, to allow Ada.Text_IO
-  (let* ((end (prog1 (point) (skip-syntax-backward "w_.")))
-	 (token (downcase (buffer-substring-no-properties (point) end)))
-	 (skel (assoc-string token ada-skel-token-alist))
-	 (handled nil))
-
-    (if skel
-	(progn
-	  (when (listp (cdr skel))
-	    (let* ((alist (cdr skel))
-		   (prompt (ada-skel-build-prompt alist 4)))
-	      (setq skel (assoc-string
-			  (or ada-skel-test-input
-			      (completing-read prompt alist))
-			  alist))
-	      (setq ada-skel-test-input nil) ;; don't reuse input on recursive call
-	      ))
-
-	  ;; delete placeholder delimiters around token, token, and
-	  ;; name. point is currently before token.
-	  (skip-syntax-backward "!")
-	  (delete-region
-	   (point)
-	   (progn
-	     (skip-syntax-forward "!w_")
-	     (when name
-	       (skip-syntax-forward " ")
-	       (skip-syntax-forward "w_."))
-	     (point)))
-	  (funcall (cdr skel) name)
-	  (setq handled t))
-
-      ;; word in point .. end is not a token; assume it is a name
-      (when (not name)
-	;; avoid infinite recursion
-
-	;; Do this now, because skeleton insert won't.
-	;;
-	;; We didn't do it above, because we don't want to adjust case
-	;; on tokens and placeholders.
-	(save-excursion (ada-case-adjust-region (point) end))
-	(setq token (buffer-substring-no-properties (point) end))
-
-	(ada-skel-expand token)
-	(setq handled t)))
-
-    (when (not handled)
-      (error "undefined skeleton token: %s" name))
-    ))
-
-(defun ada-skel-hippie-try (old)
-  "For `hippie-expand-try-functions-list'. OLD is ignored."
-  (if old
-      ;; hippie is asking us to try the "next" completion; we don't have one
-      nil
-    (let ((pos (point))
-	  (undo-len (if (eq 't pending-undo-list)
-			0
-		      (length pending-undo-list))))
-      (undo-boundary)
-      (condition-case nil
-	  (progn
-	    (ada-skel-expand)
-	    t)
-	(error
-	 ;; undo hook action if any
-	 (unless (or (eq 't pending-undo-list)
-		     (= undo-len (length pending-undo-list)))
-	   (undo))
-
-	 ;; undo motion
-	 (goto-char pos)
-	 nil)))))
-
-(defun ada-skel-next-placeholder ()
-  "Move point to after next placeholder."
-  (skip-syntax-forward "^!")
-  (skip-syntax-forward "w!"))
-
-(defun ada-skel-prev-placeholder ()
-  "Move point to after previous placeholder."
-  (skip-syntax-backward "^!"))
+  "Ada tokens for `wisi-skel-token-alist', used by `wisi-skel-expand'.")
 
 (defun ada-skel-setup ()
   "Setup a buffer for ada-skel."
-  (add-hook 'skeleton-end-hook 'ada-indent-statement nil t)
+  (setq wisi-skel-token-alist ada-skel-token-alist)
+  (add-hook 'skeleton-end-hook 'wisi-indent-statement nil t)
   (when (and ada-skel-initial-string
 	     (= (buffer-size) 0))
     (insert ada-skel-initial-string))
   )
 
-(provide 'ada-skeletons)
-(provide 'ada-skel)
-
-(setq ada-expand #'ada-skel-expand)
-(setq ada-next-placeholder #'ada-skel-next-placeholder)
-(setq ada-prev-placeholder #'ada-skel-prev-placeholder)
-
 (add-hook 'ada-mode-hook #'ada-skel-setup)
 
+(provide 'ada-skel)
 ;;; ada-skel.el ends here

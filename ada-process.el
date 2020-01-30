@@ -98,6 +98,7 @@
    LEFT_PAREN
    RIGHT_PAREN
    AMPERSAND
+   AT_SIGN
    BAR
    BOX
    COLON
@@ -440,6 +441,7 @@
    (LEFT_PAREN . "(")
    (RIGHT_PAREN . ")")
    (AMPERSAND . "&")
+   (AT_SIGN . "@")
    (BAR . "|")
    (BOX . "<>")
    (COLON . ":")

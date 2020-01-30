@@ -2,7 +2,7 @@
 --
 --  see spec.
 --
---  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2020 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -34,8 +34,6 @@ package body Wisi.Ada is
    is
       use Ada_Process_Actions;
    begin
-      --  [1] ada-wisi-elisp-parse--indent-record-1.
-
       if Anchor_Token.Byte_Region = Null_Buffer_Region or
         Record_Token.Byte_Region = Null_Buffer_Region or
         Indenting_Token.Byte_Region = Null_Buffer_Region
@@ -49,8 +47,26 @@ package body Wisi.Ada is
            (Data, Anchor_Token.Line, Record_Token.Last_Line (Indenting_Comment), Ada_Indent_Record_Rel_Type,
             Accumulate => True);
 
+      elsif Indenting_Comment and Indenting_Token.ID = +WITH_ID then
+         --  comment before 'record'. test/ada_mode-nominal-child.ads Child_Type_1
+         return Indent_Anchored_2
+           (Data, Anchor_Token.Line, Indenting_Token.Last_Line (Indenting_Comment), Ada_Indent_Record_Rel_Type,
+            Accumulate => True);
+
+      elsif Indenting_Comment and Indenting_Token.ID = +IS_ID then
+         --  comment after 'is'
+         if Record_Token.ID = +RECORD_ID then
+            --  before 'record'. test/ada_mode-nominal.ads Record_Type_1
+            return Indent_Anchored_2
+              (Data, Anchor_Token.Line, Indenting_Token.Last_Line (Indenting_Comment), Ada_Indent_Record_Rel_Type,
+               Accumulate => True);
+         else
+            --  not before 'record'. test/ada_mode-nominal-child.ads Child_Type_1
+            return (Simple, (Int, Offset));
+         end if;
+
       else
-         --  Indenting comment, component or 'end'
+         --  Indenting other comment, component or 'end'
          --
          --  Ensure 'record' line is anchored.
          if not (Data.Indents (Record_Token.Line).Label = Anchored or
@@ -70,7 +86,6 @@ package body Wisi.Ada is
             end if;
          end if;
 
-         --  from [2] wisi-elisp-parse--anchored-1
          return Indent_Anchored_2
            (Data,
             Anchor_Line => Anchor_Token.Line,
@@ -701,12 +716,15 @@ package body Wisi.Ada is
       --  In our grammar, 'aggregate' can be an Ada aggregate, or a
       --  parenthesized expression.
       --
-      --  We always want an 'aggregate' to be indented by
-      --  ada-indent-broken. However, in some places in the grammar,
-      --  'aggregate' is indented by ada-indent. The following checks for
-      --  those places, and returns a correction value.
+      --  We always want an 'aggregate' to be indented by ada-indent-broken.
+      --  However, in some places in the grammar, 'aggregate' is indented by
+      --  ada-indent. The following checks for those places, and returns a
+      --  correction value. The aggregate may be nested inside a conidtional
+      --  expression, so we search for 'name' as well; see
+      --  test/ada_mode-conditional_expressions-more_1.adb.
 
-      Expression : constant Syntax_Trees.Node_Index := Tree.Find_Ancestor (Tree_Indenting, +expression_opt_ID);
+      Expression : constant Syntax_Trees.Node_Index := Tree.Find_Ancestor
+        (Tree_Indenting, (+expression_opt_ID, +name_ID));
    begin
       if Expression = Syntax_Trees.Invalid_Node_Index or else
         Tree.Parent (Expression) = Syntax_Trees.Invalid_Node_Index
@@ -858,19 +876,28 @@ package body Wisi.Ada is
       Args              : in     Wisi.Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
    is
-      --  We are indenting a token in 'record_definition'.
+      --  We are indenting a token in record_definition or
+      --  record_representation_clause, or a comment before 'record'.
       --
-      --  Args (1) is the token ID of the anchor (= TYPE); it appears as a
-      --  direct child in an ancestor 'full_type_declaration'.
+      --  If record_definition, args (1) is the token ID of the anchor (=
+      --  TYPE); it appears as a direct child in an ancestor
+      --  full_type_declaration.
+      --
+      --  If record_representation_clause, args (1) is FOR, child of
+      --  record_representation_clause.
 
       use all type WisiToken.Syntax_Trees.Node_Label;
       use Ada_Process_Actions;
 
-      Full_Type_Declaration : constant Syntax_Trees.Valid_Node_Index := Tree.Find_Ancestor
-        (Tree_Indenting, +full_type_declaration_ID);
+      Anchor : constant Token_ID := Token_ID (Integer'(Args (1)));
 
-      Tree_Anchor : constant Syntax_Trees.Valid_Node_Index := Tree.Find_Child
-        (Full_Type_Declaration, Token_ID (Integer'(Args (1))));
+      Declaration : constant Syntax_Trees.Valid_Node_Index := Tree.Find_Ancestor
+        (Tree_Indenting,
+         (if To_Token_Enum (Anchor) = TYPE_ID
+          then +full_type_declaration_ID
+          else +record_representation_clause_ID));
+
+      Tree_Anchor : constant Syntax_Trees.Valid_Node_Index := Tree.Find_Child (Declaration, Anchor);
    begin
       if Tree.Label (Tree_Anchor) /= WisiToken.Syntax_Trees.Shared_Terminal then
          --  Anchor is virtual; Indent_Record would return Null_Delta
@@ -880,9 +907,15 @@ package body Wisi.Ada is
       declare
          Anchor_Token : constant Aug_Token_Ref := Get_Aug_Token (Data, Tree, Tree_Anchor);
 
-         --  Args (2) is the index of RECORD in Tokens
-         Record_Token : constant Aug_Token_Ref := Get_Aug_Token
-           (Data, Tree, Tokens (Positive_Index_Type (Integer'(Args (2)))));
+         --  Args (2) is the index of RECORD (or a nonterminal possibly
+         --  starting with RECORD) in Tokens
+         Record_Token_Tree_Index : constant Syntax_Trees.Node_Index :=
+           Tokens (Positive_Index_Type (Integer'(Args (2))));
+         Record_Token : constant Aug_Token_Ref :=
+           (case Tree.Label (Record_Token_Tree_Index) is
+            when Shared_Terminal | Virtual_Terminal | Virtual_Identifier => Get_Aug_Token
+              (Data, Tree, Record_Token_Tree_Index),
+            when Nonterm => To_Aug_Token_Ref (Data.Terminals (Tree.Min_Terminal_Index (Record_Token_Tree_Index))));
 
          Indenting_Token : constant Aug_Token_Ref := Get_Aug_Token (Data, Tree, Tree_Indenting);
       begin
