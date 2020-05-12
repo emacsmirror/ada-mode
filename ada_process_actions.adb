@@ -27,8 +27,8 @@ package body Ada_Process_Actions is
    procedure abstract_subprogram_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -41,15 +41,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end abstract_subprogram_declaration_0;
 
    procedure accept_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -64,8 +64,8 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (True, (Simple, (Label => None)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Int,
-         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label =>
-         None))), (False, (Simple, (Label => None)))));
+         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end accept_statement_0;
 
@@ -84,8 +84,8 @@ package body Ada_Process_Actions is
    procedure accept_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -97,15 +97,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end accept_statement_1;
 
    procedure access_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -117,15 +117,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple,
-         (Anchored_1, 4, Ada_Indent_Broken)))));
+         (Anchored_2, 4, Ada_Indent_Broken)))));
       end case;
    end access_definition_0;
 
    procedure access_definition_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -144,8 +144,8 @@ package body Ada_Process_Actions is
    procedure access_definition_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -162,8 +162,8 @@ package body Ada_Process_Actions is
    procedure actual_parameter_part_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -181,8 +181,8 @@ package body Ada_Process_Actions is
    procedure actual_parameter_part_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -200,8 +200,27 @@ package body Ada_Process_Actions is
    procedure aggregate_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple,
+         (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
+      end case;
+   end aggregate_0;
+
+   procedure aggregate_2
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -215,13 +234,13 @@ package body Ada_Process_Actions is
          (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Label => None))), (False,
          (Simple, (Label => None))), (False, (Simple, (Anchored_0, 1, 0)))));
       end case;
-   end aggregate_0;
+   end aggregate_2;
 
-   procedure aggregate_1
+   procedure aggregate_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -235,13 +254,13 @@ package body Ada_Process_Actions is
          (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (True, (Simple, (Anchored_0, 1, 1)), (Simple,
          (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
       end case;
-   end aggregate_1;
+   end aggregate_3;
 
-   procedure aggregate_3
+   procedure aggregate_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -255,32 +274,33 @@ package body Ada_Process_Actions is
          (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (True,
          (Simple, (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
       end case;
-   end aggregate_3;
-
-   procedure aggregate_4
-    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
-     Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
-   is
-      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
-   begin
-      case Parse_Data.Post_Parse_Action is
-      when Navigate =>
-         null;
-      when Face =>
-         null;
-      when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple,
-         (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
-      end case;
    end aggregate_4;
 
    procedure aggregate_5
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
+         (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 1))), (True,
+         (Simple, (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
+      end case;
+   end aggregate_5;
+
+   procedure aggregate_6
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -293,13 +313,13 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple,
          (Anchored_0, 1, 1)), (Simple, (Anchored_0, 1, 1))), (False, (Simple, (Anchored_0, 1, 0)))));
       end case;
-   end aggregate_5;
+   end aggregate_6;
 
    procedure array_type_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -318,8 +338,8 @@ package body Ada_Process_Actions is
    procedure array_type_definition_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -338,8 +358,8 @@ package body Ada_Process_Actions is
    procedure aspect_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -351,15 +371,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end aspect_clause_0;
 
    procedure aspect_specification_opt_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -377,8 +397,8 @@ package body Ada_Process_Actions is
    procedure assignment_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -390,15 +410,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Hanging_0, (Anchored_1, 2, Ada_Indent_Broken), (Anchored_1, 3,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end assignment_statement_0;
 
    procedure association_opt_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -409,7 +429,8 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (True, (Simple, (Anchored_1, 2, Ada_Indent_Broken)), (Simple, (Anchored_1, 2,
+         (Int, Ada_Indent_Broken))), (True, (Hanging_3, (Anchored_1, 2, Ada_Indent_Broken), (Anchored_1, 2, 2 *
+         Ada_Indent_Broken)), (Hanging_3, (Anchored_1, 2, Ada_Indent_Broken), (Anchored_1, 2, 2 *
          Ada_Indent_Broken)))));
       end case;
    end association_opt_0;
@@ -417,8 +438,8 @@ package body Ada_Process_Actions is
    procedure association_opt_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -438,8 +459,8 @@ package body Ada_Process_Actions is
    procedure association_opt_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -457,8 +478,27 @@ package body Ada_Process_Actions is
    procedure association_opt_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
+   is
+      Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+   begin
+      case Parse_Data.Post_Parse_Action is
+      when Navigate =>
+         null;
+      when Face =>
+         null;
+      when Indent =>
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, (1 => (True, (Hanging_0, (Label => None), (Int,
+         Ada_Indent_Broken)), (Hanging_0, (Label => None), (Int, Ada_Indent_Broken)))));
+      end case;
+   end association_opt_4;
+
+   procedure association_opt_6
+    (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
+     Tree      : in out WisiToken.Syntax_Trees.Tree;
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -473,13 +513,13 @@ package body Ada_Process_Actions is
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Hanging_0, (Label => None), (Int,
          Ada_Indent_Broken)), (Hanging_0, (Label => None), (Int, Ada_Indent_Broken)))));
       end case;
-   end association_opt_4;
+   end association_opt_6;
 
-   procedure association_opt_5
+   procedure association_opt_7
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -489,16 +529,17 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, (1 => (True, (Hanging_0, (Label => None), (Int,
-         Ada_Indent_Broken)), (Hanging_0, (Label => None), (Int, Ada_Indent_Broken)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_0,
+         (Label => None), (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Hanging_0,
+         (Label => None), (Int, Ada_Indent_Broken)), (Hanging_0, (Label => None), (Int, Ada_Indent_Broken)))));
       end case;
-   end association_opt_5;
+   end association_opt_7;
 
    procedure asynchronous_select_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -513,16 +554,16 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple, (Int,
          Ada_Indent)), (Simple, (Int, Ada_Indent))), (True, (Simple, (Label => None)), (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int, Ada_Indent)),
-         (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))),
+         (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end asynchronous_select_0;
 
    procedure at_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -539,8 +580,8 @@ package body Ada_Process_Actions is
    procedure block_label_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -582,8 +623,8 @@ package body Ada_Process_Actions is
    procedure block_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -599,7 +640,7 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
          => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label =>
-         None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end block_statement_0;
 
@@ -618,8 +659,8 @@ package body Ada_Process_Actions is
    procedure block_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -632,7 +673,7 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end block_statement_1;
 
@@ -651,8 +692,8 @@ package body Ada_Process_Actions is
    procedure case_expression_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -671,8 +712,8 @@ package body Ada_Process_Actions is
    procedure case_expression_alternative_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -691,8 +732,8 @@ package body Ada_Process_Actions is
    procedure case_expression_alternative_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -709,8 +750,8 @@ package body Ada_Process_Actions is
    procedure case_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -724,16 +765,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent_When)),
-         (Simple, (Int, Ada_Indent_When))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))),
-         (False, (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_When))), (False, (Simple, (Label => None))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end case_statement_0;
 
    procedure case_statement_alternative_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -752,8 +793,8 @@ package body Ada_Process_Actions is
    procedure case_statement_alternative_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -770,8 +811,8 @@ package body Ada_Process_Actions is
    procedure compilation_unit_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -789,8 +830,8 @@ package body Ada_Process_Actions is
    procedure compilation_unit_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -808,8 +849,8 @@ package body Ada_Process_Actions is
    procedure compilation_unit_list_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -838,8 +879,8 @@ package body Ada_Process_Actions is
    procedure component_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -850,17 +891,18 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end component_clause_0;
 
    procedure component_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -873,15 +915,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 4, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end component_declaration_0;
 
    procedure component_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -893,15 +935,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end component_declaration_1;
 
    procedure component_list_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -918,8 +960,8 @@ package body Ada_Process_Actions is
    procedure conditional_entry_call_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -933,16 +975,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple, (Int,
          Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (True, (Simple, (Int,
-         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label =>
-         None))), (False, (Simple, (Label => None)))));
+         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end conditional_entry_call_0;
 
    procedure declaration_9
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -955,15 +997,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Hanging_0, (Label => None), (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 4,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end declaration_9;
 
    procedure delay_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -974,15 +1016,16 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end delay_statement_0;
 
    procedure delay_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -993,15 +1036,15 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end delay_statement_1;
 
    procedure derived_type_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1021,8 +1064,8 @@ package body Ada_Process_Actions is
    procedure derived_type_definition_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1039,8 +1082,8 @@ package body Ada_Process_Actions is
    procedure discriminant_part_opt_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1058,8 +1101,8 @@ package body Ada_Process_Actions is
    procedure elsif_expression_item_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1079,8 +1122,8 @@ package body Ada_Process_Actions is
    procedure elsif_expression_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1097,8 +1140,8 @@ package body Ada_Process_Actions is
    procedure elsif_statement_item_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1118,8 +1161,8 @@ package body Ada_Process_Actions is
    procedure elsif_statement_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1136,8 +1179,8 @@ package body Ada_Process_Actions is
    procedure entry_body_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1156,7 +1199,7 @@ package body Ada_Process_Actions is
          Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 4, Ada_Indent_Broken))), (False, (Simple, (Label =>
          None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))),
          (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end entry_body_0;
 
@@ -1175,8 +1218,8 @@ package body Ada_Process_Actions is
    procedure entry_body_formal_part_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1196,8 +1239,8 @@ package body Ada_Process_Actions is
    procedure entry_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1212,15 +1255,16 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
          (False, (Simple, (Anchored_0, 4, 1))), (False, (Simple, (Anchored_0, 4, 0))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end entry_declaration_0;
 
    procedure entry_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1234,15 +1278,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end entry_declaration_1;
 
    procedure enumeration_representation_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1252,17 +1296,17 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 2)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end enumeration_representation_clause_0;
 
    procedure enumeration_type_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1280,8 +1324,8 @@ package body Ada_Process_Actions is
    procedure exception_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1298,8 +1342,8 @@ package body Ada_Process_Actions is
    procedure exception_handler_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1319,8 +1363,8 @@ package body Ada_Process_Actions is
    procedure exception_handler_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1339,8 +1383,8 @@ package body Ada_Process_Actions is
    procedure exception_handler_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1357,8 +1401,8 @@ package body Ada_Process_Actions is
    procedure exit_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1370,15 +1414,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
-         (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end exit_statement_0;
 
    procedure exit_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1395,8 +1439,8 @@ package body Ada_Process_Actions is
    procedure expression_function_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1409,15 +1453,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end expression_function_declaration_0;
 
    procedure extended_return_object_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1437,8 +1481,8 @@ package body Ada_Process_Actions is
    procedure extended_return_object_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1457,8 +1501,8 @@ package body Ada_Process_Actions is
    procedure extended_return_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1473,15 +1517,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((True, (Simple, (Label => None)), (Simple, (Int,
          Ada_Indent))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True,
          (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end extended_return_statement_0;
 
    procedure extended_return_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1498,8 +1542,8 @@ package body Ada_Process_Actions is
    procedure formal_object_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1511,17 +1555,17 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 6, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 6, Ada_Indent_Broken))), (False, (Simple,
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_object_declaration_0;
 
    procedure formal_object_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1534,15 +1578,16 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 5,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end formal_object_declaration_1;
 
    procedure formal_object_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1554,16 +1599,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_object_declaration_2;
 
    procedure formal_object_declaration_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1575,15 +1620,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end formal_object_declaration_3;
 
    procedure formal_part_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1601,8 +1647,8 @@ package body Ada_Process_Actions is
    procedure formal_subprogram_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1615,15 +1661,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
          (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Label => None)))));
+         (Int, Ada_Indent_Broken)))));
       end case;
    end formal_subprogram_declaration_0;
 
    procedure formal_subprogram_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1635,15 +1681,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_subprogram_declaration_1;
 
    procedure formal_subprogram_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1655,15 +1701,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end formal_subprogram_declaration_2;
 
    procedure formal_subprogram_declaration_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1674,15 +1721,15 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_subprogram_declaration_3;
 
    procedure formal_type_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1695,15 +1742,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_type_declaration_0;
 
    procedure formal_type_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1716,15 +1763,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_type_declaration_1;
 
    procedure formal_type_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1736,15 +1783,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_type_declaration_2;
 
    procedure formal_derived_type_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1761,8 +1808,8 @@ package body Ada_Process_Actions is
    procedure formal_derived_type_definition_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1779,8 +1826,8 @@ package body Ada_Process_Actions is
    procedure formal_package_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1791,18 +1838,18 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (6, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))),
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end formal_package_declaration_0;
 
    procedure full_type_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1816,15 +1863,16 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Int,
          Ada_Indent_Broken)), (Simple, (Language, Ada_Indent_Record_1'Access, 69 & 5 & Ada_Indent_Broken))), (False,
-         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Label => None))),
+         (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end full_type_declaration_0;
 
    procedure function_specification_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1835,8 +1883,8 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 1)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end function_specification_0;
 
@@ -1855,8 +1903,8 @@ package body Ada_Process_Actions is
    procedure generic_formal_part_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1874,8 +1922,8 @@ package body Ada_Process_Actions is
    procedure generic_formal_part_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1892,8 +1940,8 @@ package body Ada_Process_Actions is
    procedure generic_instantiation_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1904,18 +1952,18 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 1), (5, 1, 1)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple,
+         (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))),
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end generic_instantiation_0;
 
    procedure generic_instantiation_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1928,17 +1976,18 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (6, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end generic_instantiation_1;
 
    procedure generic_instantiation_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1951,17 +2000,18 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (6, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end generic_instantiation_2;
 
    procedure generic_package_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1974,15 +2024,15 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((True, (Simple, (Label => None)), (Simple, (Int,
-         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end generic_package_declaration_0;
 
    procedure generic_renaming_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -1994,17 +2044,18 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (5, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Label => None)))));
+         (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 *
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end generic_renaming_declaration_0;
 
    procedure generic_renaming_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2016,17 +2067,18 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (5, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Language,
-         Ada_Indent_Renames_0'Access, +3))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Language, Ada_Indent_Renames_0'Access, +3))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2
+         * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end generic_renaming_declaration_1;
 
    procedure generic_renaming_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2038,17 +2090,18 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (5, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Language,
-         Ada_Indent_Renames_0'Access, +3))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Language, Ada_Indent_Renames_0'Access, +3))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2
+         * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end generic_renaming_declaration_2;
 
    procedure generic_subprogram_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2068,8 +2121,8 @@ package body Ada_Process_Actions is
    procedure goto_label_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2080,15 +2133,15 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 3, 0)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, Ada_Indent_Label))), (False,
-         (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end goto_label_0;
 
    procedure handled_sequence_of_statements_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2107,8 +2160,8 @@ package body Ada_Process_Actions is
    procedure identifier_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2126,8 +2179,8 @@ package body Ada_Process_Actions is
    procedure identifier_list_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2156,8 +2209,8 @@ package body Ada_Process_Actions is
    procedure if_expression_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2179,8 +2232,8 @@ package body Ada_Process_Actions is
    procedure if_expression_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2201,8 +2254,8 @@ package body Ada_Process_Actions is
    procedure if_expression_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2223,8 +2276,8 @@ package body Ada_Process_Actions is
    procedure if_expression_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2244,8 +2297,8 @@ package body Ada_Process_Actions is
    procedure if_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2262,16 +2315,16 @@ package body Ada_Process_Actions is
          (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
          => None))), (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int,
-         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label
-         => None)))));
+         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end if_statement_0;
 
    procedure if_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2288,15 +2341,15 @@ package body Ada_Process_Actions is
          (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
          => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label =>
-         None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end if_statement_1;
 
    procedure if_statement_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2311,16 +2364,16 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Hanging_2,
          (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label =>
-         None)))));
+         => None))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
+         (Int, Ada_Indent_Broken)))));
       end case;
    end if_statement_2;
 
    procedure if_statement_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2335,15 +2388,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Hanging_2,
          (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end if_statement_3;
 
    procedure incomplete_type_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2356,15 +2409,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end incomplete_type_declaration_0;
 
    procedure incomplete_type_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2376,15 +2430,16 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 3, 2)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end incomplete_type_declaration_1;
 
    procedure index_constraint_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2402,8 +2457,8 @@ package body Ada_Process_Actions is
    procedure interface_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2420,8 +2475,8 @@ package body Ada_Process_Actions is
    procedure interface_list_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2438,8 +2493,8 @@ package body Ada_Process_Actions is
    procedure iteration_scheme_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2457,8 +2512,8 @@ package body Ada_Process_Actions is
    procedure iteration_scheme_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2476,8 +2531,8 @@ package body Ada_Process_Actions is
    procedure iterator_specification_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2494,8 +2549,8 @@ package body Ada_Process_Actions is
    procedure iterator_specification_5
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2512,8 +2567,8 @@ package body Ada_Process_Actions is
    procedure loop_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2528,8 +2583,8 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int,
-         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end loop_statement_0;
 
@@ -2548,8 +2603,8 @@ package body Ada_Process_Actions is
    procedure loop_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2564,8 +2619,8 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label =>
-         None)))));
+         => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end loop_statement_1;
 
@@ -2584,8 +2639,8 @@ package body Ada_Process_Actions is
    procedure name_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2604,8 +2659,8 @@ package body Ada_Process_Actions is
    procedure name_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2636,8 +2691,8 @@ package body Ada_Process_Actions is
    procedure name_5
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2690,8 +2745,8 @@ package body Ada_Process_Actions is
    procedure null_exclusion_opt_name_type_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2708,8 +2763,8 @@ package body Ada_Process_Actions is
    procedure null_exclusion_opt_name_type_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2726,8 +2781,8 @@ package body Ada_Process_Actions is
    procedure null_exclusion_opt_name_type_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2744,8 +2799,8 @@ package body Ada_Process_Actions is
    procedure null_exclusion_opt_name_type_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2762,8 +2817,8 @@ package body Ada_Process_Actions is
    procedure null_procedure_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2776,15 +2831,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end null_procedure_declaration_0;
 
    procedure object_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2796,17 +2851,17 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Anchored_2, 6, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_2, 6, Ada_Indent_Broken))), (False, (Simple,
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_declaration_0;
 
    procedure object_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2820,15 +2875,15 @@ package body Ada_Process_Actions is
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 6, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_declaration_1;
 
    procedure object_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2842,15 +2897,15 @@ package body Ada_Process_Actions is
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 6, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_declaration_2;
 
    procedure object_declaration_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2862,16 +2917,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_declaration_3;
 
    procedure object_declaration_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2884,15 +2939,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_declaration_4;
 
    procedure object_declaration_5
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2905,15 +2960,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_declaration_5;
 
    procedure object_renaming_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2926,16 +2981,17 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_renaming_declaration_0;
 
    procedure object_renaming_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2948,16 +3004,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_renaming_declaration_1;
 
    procedure object_renaming_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2970,16 +3026,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end object_renaming_declaration_2;
 
    procedure overriding_indicator_opt_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -2996,8 +3052,8 @@ package body Ada_Process_Actions is
    procedure overriding_indicator_opt_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3014,8 +3070,8 @@ package body Ada_Process_Actions is
    procedure package_body_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3030,10 +3086,11 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (10, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))),
-         (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False,
-         (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))),
+         (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)),
+         (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple,
+         (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2
+         * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end package_body_0;
 
@@ -3052,8 +3109,8 @@ package body Ada_Process_Actions is
    procedure package_body_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3067,10 +3124,10 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((3, 1, 1), (8, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int,
-         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label
-         => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))),
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Int,
+         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end package_body_1;
 
@@ -3089,8 +3146,8 @@ package body Ada_Process_Actions is
    procedure package_body_stub_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3102,17 +3159,17 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (3, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))),
+         (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end package_body_stub_0;
 
    procedure package_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3130,8 +3187,8 @@ package body Ada_Process_Actions is
    procedure package_renaming_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3142,17 +3199,18 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 1), (4, 1, 1)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end package_renaming_declaration_0;
 
    procedure package_specification_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3165,11 +3223,11 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 1), (9, 1, 1)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))),
-         (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (True,
-         (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple,
+         (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
+         => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)))));
       end case;
    end package_specification_0;
 
@@ -3188,8 +3246,8 @@ package body Ada_Process_Actions is
    procedure package_specification_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3201,10 +3259,10 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, ((2, 1, 1), (7, 1, 1)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))),
-         (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple,
+         (Label => None))), (False, (Hanging_3, (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)))));
       end case;
    end package_specification_1;
 
@@ -3223,8 +3281,8 @@ package body Ada_Process_Actions is
    procedure parameter_and_result_profile_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3242,8 +3300,8 @@ package body Ada_Process_Actions is
    procedure parameter_specification_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3255,17 +3313,17 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 7,
-         Ada_Indent_Broken)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Anchored_1, 7, Ada_Indent_Broken)))));
       end case;
    end parameter_specification_0;
 
    procedure parameter_specification_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3277,16 +3335,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken)))));
       end case;
    end parameter_specification_1;
 
    procedure parameter_specification_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3306,8 +3364,8 @@ package body Ada_Process_Actions is
    procedure parameter_specification_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3326,8 +3384,8 @@ package body Ada_Process_Actions is
    procedure paren_expression_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3345,8 +3403,8 @@ package body Ada_Process_Actions is
    procedure pragma_g_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3358,15 +3416,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_0, 3,
-         1))), (False, (Simple, (Anchored_0, 3, 0))), (False, (Simple, (Label => None)))));
+         1))), (False, (Simple, (Anchored_0, 3, 0))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end pragma_g_0;
 
    procedure pragma_g_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3378,15 +3436,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_0, 3,
-         1))), (False, (Simple, (Anchored_0, 3, 0))), (False, (Simple, (Label => None)))));
+         1))), (False, (Simple, (Anchored_0, 3, 0))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end pragma_g_1;
 
    procedure pragma_g_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3397,15 +3455,15 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 3, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end pragma_g_2;
 
    procedure primary_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3422,8 +3480,8 @@ package body Ada_Process_Actions is
    procedure primary_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3441,8 +3499,8 @@ package body Ada_Process_Actions is
    procedure primary_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3459,8 +3517,8 @@ package body Ada_Process_Actions is
    procedure private_extension_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3476,15 +3534,15 @@ package body Ada_Process_Actions is
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end private_extension_declaration_0;
 
    procedure private_type_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3498,15 +3556,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))),
          (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end private_type_declaration_0;
 
    procedure procedure_call_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3516,16 +3574,16 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Hanging_0, (Label => None), (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Hanging_1, (Label => None), (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end procedure_call_statement_0;
 
    procedure procedure_specification_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3536,8 +3594,8 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 1)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end procedure_specification_0;
 
@@ -3556,8 +3614,8 @@ package body Ada_Process_Actions is
    procedure protected_body_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3573,7 +3631,7 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))),
          (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))),
-         (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end protected_body_0;
 
@@ -3592,8 +3650,8 @@ package body Ada_Process_Actions is
    procedure protected_body_stub_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3607,15 +3665,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end protected_body_stub_0;
 
    procedure protected_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3646,8 +3704,8 @@ package body Ada_Process_Actions is
    procedure protected_definition_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3677,8 +3735,8 @@ package body Ada_Process_Actions is
    procedure protected_type_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3696,7 +3754,7 @@ package body Ada_Process_Actions is
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end protected_type_declaration_0;
 
@@ -3715,8 +3773,8 @@ package body Ada_Process_Actions is
    procedure protected_type_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3732,7 +3790,7 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Label => None)), (Simple, (Int,
-         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end protected_type_declaration_1;
 
@@ -3751,8 +3809,8 @@ package body Ada_Process_Actions is
    procedure qualified_expression_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3771,8 +3829,8 @@ package body Ada_Process_Actions is
    procedure quantified_expression_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3791,8 +3849,8 @@ package body Ada_Process_Actions is
    procedure raise_expression_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3811,8 +3869,8 @@ package body Ada_Process_Actions is
    procedure raise_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3822,17 +3880,17 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_1, 3,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Anchored_1, 3, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end raise_statement_0;
 
    procedure raise_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3842,16 +3900,16 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end raise_statement_1;
 
    procedure raise_statement_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3868,8 +3926,8 @@ package body Ada_Process_Actions is
    procedure range_g_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3888,8 +3946,8 @@ package body Ada_Process_Actions is
    procedure record_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3910,8 +3968,8 @@ package body Ada_Process_Actions is
    procedure record_representation_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3921,21 +3979,21 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 2)));
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True, (Simple, (Language,
-         Ada_Indent_Record_1'Access, 28 & 4 & 0)), (Simple, (Language, Ada_Indent_Record_1'Access, 28 & 4 &
-         Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_0'Access, 1 & 4 & Ada_Indent))), (True, (Simple,
-         (Language, Ada_Indent_Record_1'Access, 28 & 4 & Ada_Indent)), (Simple, (Language, Ada_Indent_Record_1'Access,
-         28 & 4 & Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_1'Access, 28 & 4 & 0))), (False,
-         (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (True,
+         (Simple, (Language, Ada_Indent_Record_1'Access, 28 & 4 & 0)), (Simple, (Language, Ada_Indent_Record_1'Access,
+         28 & 4 & Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_0'Access, 1 & 4 & Ada_Indent))), (True,
+         (Simple, (Language, Ada_Indent_Record_1'Access, 28 & 4 & Ada_Indent)), (Simple, (Language,
+         Ada_Indent_Record_1'Access, 28 & 4 & Ada_Indent))), (False, (Simple, (Language, Ada_Indent_Record_1'Access, 28
+         & 4 & 0))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end record_representation_clause_0;
 
    procedure requeue_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3952,8 +4010,8 @@ package body Ada_Process_Actions is
    procedure requeue_statement_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3970,8 +4028,8 @@ package body Ada_Process_Actions is
    procedure result_profile_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -3982,15 +4040,15 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (3, 1, 2)));
       when Indent =>
          Indent_Action_1 (Parse_Data, Tree, Nonterm, Tokens, 1, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Anchored_3, 1, Ada_Indent_Broken))), (False, (Simple, (Anchored_3, 1, Ada_Indent_Broken)))));
+         (Anchored_3, 1, Ada_Indent_Broken))), (False, (Simple, (Anchored_4, 1, Ada_Indent_Broken)))));
       end case;
    end result_profile_0;
 
    procedure result_profile_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4008,8 +4066,8 @@ package body Ada_Process_Actions is
    procedure selected_component_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4019,7 +4077,8 @@ package body Ada_Process_Actions is
       when Face =>
          Face_Mark_Action (Parse_Data, Tree, Nonterm, Tokens, ((1, Prefix), (3, Suffix)));
       when Indent =>
-         null;
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end selected_component_0;
 
@@ -4038,8 +4097,8 @@ package body Ada_Process_Actions is
    procedure selected_component_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4056,8 +4115,8 @@ package body Ada_Process_Actions is
    procedure selected_component_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4086,8 +4145,8 @@ package body Ada_Process_Actions is
    procedure selected_component_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4104,8 +4163,8 @@ package body Ada_Process_Actions is
    procedure selective_accept_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4120,15 +4179,15 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((True, (Simple, (Label => None)), (Simple, (Int,
          Ada_Indent))), (True, (Simple, (Label => None)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label =>
          None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))),
-         (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end selective_accept_0;
 
    procedure selective_accept_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4141,15 +4200,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((True, (Simple, (Label => None)), (Simple, (Int,
          Ada_Indent))), (True, (Simple, (Label => None)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label =>
-         None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end selective_accept_1;
 
    procedure select_alternative_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4168,8 +4227,8 @@ package body Ada_Process_Actions is
    procedure select_alternative_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4188,8 +4247,8 @@ package body Ada_Process_Actions is
    procedure select_alternative_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4208,8 +4267,8 @@ package body Ada_Process_Actions is
    procedure select_alternative_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4226,8 +4285,8 @@ package body Ada_Process_Actions is
    procedure select_alternative_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4246,8 +4305,8 @@ package body Ada_Process_Actions is
    procedure select_alternative_list_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4264,8 +4323,8 @@ package body Ada_Process_Actions is
    procedure simple_return_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4276,15 +4335,15 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end simple_return_statement_0;
 
    procedure simple_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4301,8 +4360,8 @@ package body Ada_Process_Actions is
    procedure simple_statement_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4319,8 +4378,8 @@ package body Ada_Process_Actions is
    procedure simple_statement_8
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4337,8 +4396,8 @@ package body Ada_Process_Actions is
    procedure single_protected_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4355,7 +4414,7 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False,
          (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end single_protected_declaration_0;
 
@@ -4374,8 +4433,8 @@ package body Ada_Process_Actions is
    procedure single_protected_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4390,7 +4449,7 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Label => None)), (Simple,
-         (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end single_protected_declaration_1;
 
@@ -4409,8 +4468,8 @@ package body Ada_Process_Actions is
    procedure single_task_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4428,7 +4487,7 @@ package body Ada_Process_Actions is
          (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False,
          (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end single_task_declaration_0;
 
@@ -4447,8 +4506,8 @@ package body Ada_Process_Actions is
    procedure single_task_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4464,7 +4523,7 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Label => None)), (Simple,
          (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end single_task_declaration_1;
 
@@ -4483,8 +4542,8 @@ package body Ada_Process_Actions is
    procedure single_task_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4496,15 +4555,16 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 3, 2)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end single_task_declaration_2;
 
    procedure subprogram_body_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4521,7 +4581,7 @@ package body Ada_Process_Actions is
          (Label => None)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label =>
          None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))),
          (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end subprogram_body_0;
 
@@ -4540,8 +4600,8 @@ package body Ada_Process_Actions is
    procedure subprogram_body_stub_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4554,15 +4614,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
-         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end subprogram_body_stub_0;
 
    procedure subprogram_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4580,8 +4640,8 @@ package body Ada_Process_Actions is
    procedure subprogram_default_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4598,8 +4658,8 @@ package body Ada_Process_Actions is
    procedure subprogram_renaming_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4611,8 +4671,9 @@ package body Ada_Process_Actions is
          Face_Apply_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (4, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Language, Ada_Indent_Renames_0'Access, +2))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None)))));
+         (Label => None))), (False, (Simple, (Language, Ada_Indent_Renames_0'Access, +2))), (False, (Hanging_3, (Int,
+         Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end subprogram_renaming_declaration_0;
 
@@ -4643,8 +4704,8 @@ package body Ada_Process_Actions is
    procedure subtype_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4657,15 +4718,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end subtype_declaration_0;
 
    procedure subtype_indication_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4682,8 +4743,8 @@ package body Ada_Process_Actions is
    procedure subtype_indication_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4700,8 +4761,8 @@ package body Ada_Process_Actions is
    procedure subtype_indication_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4718,8 +4779,8 @@ package body Ada_Process_Actions is
    procedure subtype_indication_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4736,8 +4797,8 @@ package body Ada_Process_Actions is
    procedure subunit_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4747,17 +4808,17 @@ package body Ada_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Anchored_0, 2, 1))), (False, (Simple, (Anchored_0, 2, 0))),
-         (False, (Simple, (Label => None)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Hanging_3,
+         (Int, Ada_Indent_Broken), (Int, 2 * Ada_Indent_Broken))), (False, (Simple, (Anchored_0, 2, 1))), (False,
+         (Simple, (Anchored_0, 2, 0))), (False, (Simple, (Label => None)))));
       end case;
    end subunit_0;
 
    procedure task_body_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4775,7 +4836,7 @@ package body Ada_Process_Actions is
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False,
          (Simple, (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple,
          (Label => None))), (True, (Simple, (Int, Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end task_body_0;
 
@@ -4794,8 +4855,8 @@ package body Ada_Process_Actions is
    procedure task_body_stub_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4808,16 +4869,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False,
-         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Label =>
-         None)))));
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end task_body_stub_0;
 
    procedure task_definition_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4836,8 +4897,8 @@ package body Ada_Process_Actions is
    procedure task_definition_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4855,8 +4916,8 @@ package body Ada_Process_Actions is
    procedure task_type_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4875,7 +4936,7 @@ package body Ada_Process_Actions is
          Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end task_type_declaration_0;
 
@@ -4894,8 +4955,8 @@ package body Ada_Process_Actions is
    procedure task_type_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4912,8 +4973,8 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
          Ada_Indent_Broken))), (False, (Simple, (Label => None))), (True, (Simple, (Label => None)), (Simple, (Int,
-         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label
-         => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end task_type_declaration_1;
 
@@ -4932,8 +4993,8 @@ package body Ada_Process_Actions is
    procedure task_type_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4946,15 +5007,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end task_type_declaration_2;
 
    procedure timed_entry_call_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4968,16 +5030,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (True, (Simple, (Int,
          Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (True, (Simple, (Int,
-         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Label =>
-         None))), (False, (Simple, (Label => None)))));
+         Ada_Indent)), (Simple, (Int, Ada_Indent))), (False, (Simple, (Label => None))), (False, (Simple, (Int,
+         Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end timed_entry_call_0;
 
    procedure variant_part_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -4991,15 +5053,16 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_When))),
-         (False, (Simple, (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Label => None)))));
+         (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end variant_part_0;
 
    procedure variant_list_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5016,8 +5079,8 @@ package body Ada_Process_Actions is
    procedure variant_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5036,8 +5099,8 @@ package body Ada_Process_Actions is
    procedure use_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5049,15 +5112,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_Use))), (False, (Simple, (Label => None)))));
+         Ada_Indent_Use))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end use_clause_0;
 
    procedure use_clause_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5068,15 +5131,16 @@ package body Ada_Process_Actions is
          Face_Apply_List_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (3, 1, 2)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Use))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Use))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end use_clause_1;
 
    procedure use_clause_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5087,15 +5151,15 @@ package body Ada_Process_Actions is
          Face_Apply_List_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Use))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Use))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end use_clause_2;
 
    procedure with_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5107,15 +5171,15 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
          (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int,
-         Ada_Indent_With))), (False, (Simple, (Label => None)))));
+         Ada_Indent_With))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end with_clause_0;
 
    procedure with_clause_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5126,15 +5190,16 @@ package body Ada_Process_Actions is
          Face_Apply_List_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (3, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_With))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_With))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end with_clause_1;
 
    procedure with_clause_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5145,15 +5210,16 @@ package body Ada_Process_Actions is
          Face_Apply_List_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (3, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_With))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_With))), (False, (Simple, (Int,
+         Ada_Indent_Broken)))));
       end case;
    end with_clause_2;
 
    procedure with_clause_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -5164,7 +5230,7 @@ package body Ada_Process_Actions is
          Face_Apply_List_Action (Parse_Data, Tree, Nonterm, Tokens, (1 => (2, 1, 1)));
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Int, Ada_Indent_With))), (False, (Simple, (Label => None)))));
+         (Int, Ada_Indent_With))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end with_clause_3;
 

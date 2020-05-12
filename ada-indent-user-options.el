@@ -1,6 +1,6 @@
 ;; user options shared by Ada mode indentation engines  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2012, 2013, 2015, 2017 - 2019  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015, 2017 - 2020  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Contributors: Simon Wright <simon.j.wright@mac.com>
@@ -64,7 +64,7 @@ That is, one of:
 - next non-blank line
 - previous non-blank line
 
-Otherwise, they are indented as a with previous comments or code."
+Otherwise, they are indented as previous comments or code."
   :type  'boolean
   :safe  #'booleanp)
 (make-variable-buffer-local 'ada-indent-comment-gnat)

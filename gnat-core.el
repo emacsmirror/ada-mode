@@ -3,7 +3,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2019  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2020  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -81,13 +81,12 @@ Throw an error if current project does not have a gnat-compiler."
 	compiler
       (error "no gnat-compiler in current project"))))
 
-(defun gnat-prj-add-prj-dir (project dir)
-  "Add DIR to compiler.project_path, and to GPR_PROJECT_PATH in project.environment."
+(defun gnat-prj-add-prj-dir (project compiler dir)
+  "Add DIR to COMPILER.project_path, and to GPR_PROJECT_PATH in PROJECT.file-env"
   ;; We maintain two project values for this;
   ;; project-path - a list of directories, for elisp find file
   ;; GPR_PROJECT_PATH in environment, for gnat-run
-  (let ((process-environment (copy-sequence (wisi-prj-file-env project)))
-	(compiler (wisi-prj-compiler project)))
+  (let ((process-environment (copy-sequence (wisi-prj-file-env project))))
     (cl-pushnew dir (gnat-compiler-project-path compiler) :test #'string-equal)
 
     (setenv "GPR_PROJECT_PATH"
@@ -96,10 +95,9 @@ Throw an error if current project does not have a gnat-compiler."
     (setf (wisi-prj-file-env project) (copy-sequence process-environment))
     ))
 
-(defun gnat-get-paths (project)
-  "Add project and/or compiler source, project paths to PROJECT source-path and project-path."
-  (let* ((compiler (wisi-prj-compiler project))
-	 (src-dirs (wisi-prj-source-path project))
+(defun gnat-get-paths (project compiler)
+  "Add project and/or compiler source, project paths to PROJECT source-path"
+  (let* ((src-dirs (wisi-prj-source-path project))
 	 (prj-dirs (cl-copy-list (gnat-compiler-project-path compiler))))
 
     ;; Don't need project plist obj_dirs if using a project file, so
@@ -165,32 +163,32 @@ Throw an error if current project does not have a gnat-compiler."
     ;; reverse prj-dirs so project file dirs precede gnat library dirs
     (setf (wisi-prj-source-path project) (nreverse (delete-dups src-dirs)))
     (setf (gnat-compiler-project-path compiler) nil)
-    (mapc (lambda (dir) (gnat-prj-add-prj-dir project dir))
+    (mapc (lambda (dir) (gnat-prj-add-prj-dir project compiler dir))
 	  prj-dirs)
     ))
 
-(defun gnat-parse-gpr (gpr-file project)
+(defun gnat-parse-gpr (gpr-file project compiler)
   "Append to source-path and project-path in PROJECT (a `wisi-prj' object) by parsing GPR-FILE.
 GPR-FILE must be absolute file name.
 source-path will include compiler runtime."
   ;; this can take a long time; let the user know what's up
-  (let ((compiler (wisi-prj-compiler project)))
-    (if (gnat-compiler-gpr-file compiler)
-	;; gpr-file previously set; new one must match
-	(when (not (string-equal gpr-file (gnat-compiler-gpr-file compiler)))
-	  (error "project file %s defines a different GNAT project file than %s"
-		 (gnat-compiler-gpr-file compiler)
-		 gpr-file))
+  (if (gnat-compiler-gpr-file compiler)
+      ;; gpr-file previously set; new one must match
+      (when (not (string-equal gpr-file (gnat-compiler-gpr-file compiler)))
+	(error "project file %s defines a different GNAT project file than %s"
+	       (gnat-compiler-gpr-file compiler)
+	       gpr-file))
 
-      (setf (gnat-compiler-gpr-file compiler) gpr-file)
-      ))
+    (setf (gnat-compiler-gpr-file compiler) gpr-file))
 
-  (gnat-get-paths project))
+  (gnat-get-paths project compiler))
 
 (defun gnat-parse-gpr-1 (gpr-file project)
   "For `wisi-prj-parser-alist'."
-  (setf (gnat-compiler-run-buffer-name (wisi-prj-compiler project)) gpr-file)
-  (gnat-parse-gpr gpr-file project))
+  (let ((compiler (wisi-prj-compiler project)))
+    ;; FIXME: need to pass in compiler for gpr-query?
+    (setf (gnat-compiler-run-buffer-name compiler) gpr-file)
+    (gnat-parse-gpr gpr-file project compiler)))
 
 ;;;; command line tool interface
 
@@ -315,7 +313,7 @@ which is displayed on error."
 	   (append
 	    (wisi-prj-compile-env project)
 	    (wisi-prj-file-env project))));; reference, for substitute-in-file-name
-      (gnat-prj-add-prj-dir project (expand-file-name (substitute-in-file-name value)))))
+      (gnat-prj-add-prj-dir project compiler (expand-file-name (substitute-in-file-name value)))))
 
    ((string= name "gnat-stub-cargs")
     (setf (gnat-compiler-gnat-stub-cargs compiler) value))
@@ -352,10 +350,10 @@ which is displayed on error."
   (setf (gnat-compiler-run-buffer-name compiler) (gnat-run-buffer-name prj-file-name))
 
   (if (gnat-compiler-gpr-file compiler)
-      (gnat-parse-gpr (gnat-compiler-gpr-file compiler) project)
+      (gnat-parse-gpr (gnat-compiler-gpr-file compiler) project compiler)
 
     ;; add the compiler libraries to project.source-path
-    (gnat-get-paths project)
+    (gnat-get-paths project compiler)
     ))
 
 (cl-defmethod wisi-compiler-select-prj ((_compiler gnat-compiler) _project)

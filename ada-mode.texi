@@ -25,7 +25,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 7.0.1
+@title Ada Mode Version 7.1.0
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -37,7 +37,7 @@ developing GNU and promoting software freedom.''
 @node Top, Overview, (dir), (dir)
 @top Top
 
-Ada Mode Version 7.0.1
+Ada Mode Version 7.1.0
 @end ifnottex
 
 @menu
@@ -71,7 +71,7 @@ Installation
 
 Ada executables
 
-* Building GNATCOLL 2019::
+* Building GNATCOLL::
 * Building the executables::
 
 Customizing Ada mode
@@ -252,22 +252,32 @@ does not include the xref package, which is required by
 @file{gpr_query}. So we must build gnatcoll xref from sources.
 
 @menu
-* Building GNATCOLL 2019::
+* Building GNATCOLL::
 * Building the executables::
 @end menu
 
-@node Building GNATCOLL 2019
-@subsection Building GNATCOLL 2019
+@node Building GNATCOLL
+@subsection Building GNATCOLL
 
-Download the gnatcoll xref source file from
-@url{https://github.com/AdaCore/gnatcoll-db}; click on the ``clone or
-download'' button, select ``Download ZIP''.
+Download gnatcoll-db from
+@url{https://github.com/AdaCore/gnatcoll-db}; select the latest
+release branch (or the one that matches your compiler), click on the
+``clone or download'' button, select ``Download ZIP''.
+
+Similarly, download gnatcoll-bindings from
+@url{https://github.com/AdaCore/gnatcoll-bindings/tree/20.2} (for gnatcoll-iconv).
 
 Then unpack, build, and install the required components:
 
 @example
-tar xf ~/Downloads/gnatcoll-db-19.2.zip
-cd gnatcoll-db-19.2
+tar xf ~/Downloads/gnatcoll-bindings-20.2.zip
+cd gnatcoll-bindings-20.2
+cd iconv
+./setup.py build
+./setup.py install
+
+tar xf ~/Downloads/gnatcoll-db-20.2.zip
+cd gnatcoll-db-20.2
 make -C sql
 make -C sql install
 make -C sqlite
@@ -275,6 +285,16 @@ make -C sqlite install
 make -C xref
 make -C xref install
 @end example
+
+@c To build gnatcoll-core with debug, edit the corresponding gpr file
+@c to delete @code{-gnatwe} (there are lots of warnings about license
+@c incompatibility, and a few other things). Then _do not_ build or
+@c install; just setup to create the .gpr files. Installing causes
+@c lots of spurious warnings about files need to be
+@c recompiled. Uninstall core, sql, sqlite, xref; add the build
+@c directories to GPR_PROJECT_PATH, add @code{BUILD=DEBUG} to the
+@c command line, edit the .gpr files to set OS. Sigh; that still
+@c doesn't work.
 
 @node Building the executables
 @subsection Building the executables
@@ -1222,7 +1242,7 @@ selected.
 
 If @file{Example_5} is the only project in the current emacs session,
 @code{wisi-prj-find-dominating-cached} finds no project file (because
-@file{Example_4} is not a child directory of @file{Example_5}, so the
+@file{Example_4} is not a child directory of @file{Example_5}), so the
 default strategy of ``ask the user'' is used, giving the prompt for a
 directory.
 
@@ -1236,7 +1256,9 @@ are not in the same directory tree, you will have this problem.
 The fix is to use a different function in
 @code{project-find-functions}; @code{wisi-prj-current-cached}. This
 uses a global variable to indicate what the current project is. wisi
-provides four different functions for @code{project-find-functions}. @xref{Selecting projects, Selecting projects, Selecting projects, wisi}.
+provides four different functions for
+@code{project-find-functions}. @xref{Selecting projects, Selecting
+projects, Selecting projects, wisi}.
 
 To change @code{project-find-functions}, execute:
 
@@ -1579,16 +1601,22 @@ this menu command.
 @node Identifier completion, Indentation, Moving Through Ada Code, Top
 @chapter Identifier completion
 
-Emacs provides a general way of completing identifiers: @kbd{M-/}
-(bound to @code{dabbrev-expand}). This is an easy way to type faster:
-you just have to type the first few letters of an identifier, and then
-loop through all the possible completions.
+Emacs provides two general ways of completing identifiers while typing: @kbd{M-/}
+(bound to @code{dabbrev-expand}), and @kbd{M-tab} (bound to
+@code{complete-symbol}.
+
+This is an easy way to type faster: you just have to type the first
+few letters of an identifier, and then loop through all the possible
+completions.
+
+@code{complete-symbol} completes on all the symbols defined in the
+current project, as returned by @code{gpr_query}.
 
 If you have bound @code{hippie-expand}, that also uses
 @code{dabbrev-expand}.
 
-@kbd{M-/} works by parsing all open Ada files for possible
-completions.
+@code{dabbrev-expand} completes on all words in all open Ada files for
+possible completions, using simple Emacs syntax-class parsing.
 
 For instance, if the words @samp{my_identifier} and @samp{my_subprogram}
 are the only words starting with @samp{my} in any of the open Ada files,
@@ -1604,6 +1632,18 @@ Pressing @kbd{M-/} once more will bring you back to @samp{my_identifier}.
 
 This is a very fast way to do completion, and the casing of words will
 also be respected.
+
+Another place where identifier completion is used in the
+@code{xref-find-definitions} (@key{C-u M-.}) and
+@code{wisi-goto-spec/body} (@key{C-u C-c C-d}) commands; these complete
+on all symbols in the project (provided by @code{gpr_query}). With two
+@kbd{C-u}, the completion is limited to symbols defined in the current
+file.
+
+Note that in Ada, for subprograms that have a specification in the
+@file{.ads} file and a body in the @file{.adb} file,
+@key{C-u C-u C-c C-d} returns the spec location only, so it will not
+find the function if invoked in the @file{.adb} file.
 
 @node Indentation, Statement skeletons, Identifier completion, Top
 @chapter Indentation

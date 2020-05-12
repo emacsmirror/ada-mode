@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS gpr.wy
 --
 
---  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -26,8 +26,8 @@ package body Gpr_Process_Actions is
    procedure aggregate_g_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -45,8 +45,8 @@ package body Gpr_Process_Actions is
    procedure attribute_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -66,8 +66,8 @@ package body Gpr_Process_Actions is
    procedure attribute_declaration_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -88,8 +88,8 @@ package body Gpr_Process_Actions is
    procedure attribute_declaration_2
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -111,8 +111,8 @@ package body Gpr_Process_Actions is
    procedure attribute_declaration_3
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -132,8 +132,8 @@ package body Gpr_Process_Actions is
    procedure case_statement_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -152,8 +152,8 @@ package body Gpr_Process_Actions is
    procedure case_item_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -171,8 +171,8 @@ package body Gpr_Process_Actions is
    procedure compilation_unit_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -202,8 +202,8 @@ package body Gpr_Process_Actions is
    procedure package_spec_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -235,8 +235,8 @@ package body Gpr_Process_Actions is
    procedure package_extension_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -269,8 +269,8 @@ package body Gpr_Process_Actions is
    procedure package_renaming_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -287,8 +287,8 @@ package body Gpr_Process_Actions is
    procedure project_extension_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -321,8 +321,8 @@ package body Gpr_Process_Actions is
    procedure simple_declarative_item_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -340,8 +340,8 @@ package body Gpr_Process_Actions is
    procedure simple_declarative_item_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -360,8 +360,8 @@ package body Gpr_Process_Actions is
    procedure simple_declarative_item_4
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -378,8 +378,8 @@ package body Gpr_Process_Actions is
    procedure simple_project_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin
@@ -411,8 +411,8 @@ package body Gpr_Process_Actions is
    procedure typed_string_declaration_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
-     Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Index;
-     Tokens    : in     WisiToken.Syntax_Trees.Valid_Node_Index_Array)
+     Nonterm   : in     WisiToken.Valid_Node_Index;
+     Tokens    : in     WisiToken.Valid_Node_Index_Array)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
    begin

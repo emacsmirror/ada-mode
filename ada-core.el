@@ -236,13 +236,13 @@ parser accepts; the parser always accepts a superset of ada2012."
   :safe  #'symbolp)
 (make-variable-buffer-local 'ada-language-version)
 
-(defun ada-in-case-expression ()
+(defun ada-in-case-expression (parse-result)
   "Return non-nil if point is in a case expression."
-  (save-excursion
-    ;; Used by ada-align; we know we are in a paren.
-    (wisi-goto-open-paren 1)
-    (while (forward-comment 1))
-    (looking-at "case")))
+  (when (wisi-in-paren-p parse-result)
+    (save-excursion
+      (wisi-goto-open-paren 1 parse-result)
+      (while (forward-comment 1))
+      (looking-at "case"))))
 
 (defun ada-align ()
   "If region is active, apply `align'. If not, attempt to align
@@ -259,9 +259,7 @@ current construct."
        ((ada-in-paramlist-p parse-result)
         (ada-format-paramlist))
 
-       ((and
-	 (wisi-in-paren-p parse-result)
-	 (ada-in-case-expression))
+       ((ada-in-case-expression parse-result)
 	;; align '=>'
 	(let* ((begin (nth 1 parse-result))
 	       (end   (scan-lists begin 1 0)))
@@ -274,14 +272,21 @@ current construct."
 (defun ada-in-paramlist-p (parse-result)
   "Return t if point is inside the parameter-list of a subprogram declaration.
 PARSE-RESULT must be the result of `syntax-ppss'."
-  (wisi-validate-cache (point-min) (point-max) nil 'navigate)
   ;; (info "(elisp)Parser State" "*syntax-ppss*")
   (let (cache)
-    (and (> (nth 0 parse-result) 0)
-	 ;; cache is nil if the parse failed
-	 (setq cache (wisi-get-cache (nth 1 parse-result)))
-	 (eq 'formal_part (wisi-cache-nonterm cache)))
-    ))
+    (when (> (nth 0 parse-result) 0)
+      ;; In parens. Request parse of region containing parens; that
+      ;; will be expanded to include the subprogram declaration, if
+      ;; any,
+      (let* ((forward-sexp-function nil) ;; forward-sexp just does parens
+	     (start (nth 1 parse-result))
+	     (end (save-excursion (goto-char (nth 1 parse-result)) (forward-sexp) (point))))
+	(wisi-validate-cache start end nil 'navigate)
+	(setq cache (wisi-get-cache start))
+	;; cache is nil if the parse failed
+	(when cache
+	  (eq 'formal_part (wisi-cache-nonterm cache)))
+	))))
 
 (defun ada-format-paramlist ()
   "Reformat the parameter list point is in."
@@ -625,9 +630,8 @@ If SRC-DIR is non-nil, use it as the default for project.source-path."
 
 (defun ada-prj-make-xref (label)
   ;; We use the autoloaded constructor here
+  ;; No new require here.
   (funcall (intern (format "create-%s-xref" (symbol-name label))))
-  ;; So far the only ada xref we have is gpr_query, which uses a
-  ;; gnat-compiler object, so no new require here.
   )
 
 (defun ada-prj-require-prj ()
@@ -718,39 +722,45 @@ Deselects the current project first."
   ;; test/ada_mode-slices.adb
   ;;   D1, D2 : Day := +Sun;
   ;;
-  ;; For operators, return quoted operator, for gpr_query or gnatfind.
+  ;; For operators, return quoted operator
 
   (cond
    ((wisi-in-comment-p)
-    (error "Inside comment"))
+    nil)
 
    ((wisi-in-string-p)
     ;; In an operator, or a string literal
-    (skip-chars-backward "+*/&<>=-")
-    (cond
-     ((and (= (char-before) ?\")
-	   (progn
-	     (forward-char -1)
-	     (looking-at (concat "\"\\(" ada-operator-re "\\)\""))))
-      (concat "\"" (match-string-no-properties 1) "\""))
+    (let (start)
+      (skip-chars-backward "+*/&<>=-")
+      (setq start (point))
+      (cond
+       ((and (= (char-before) ?\")
+	     (progn
+	       (forward-char -1)
+	       (looking-at (concat "\"\\(" ada-operator-re "\\)\""))))
+	(list start (match-end 1) (concat "\"" (match-string-no-properties 1) "\"")))
 
      (t
-      (error "Inside string or character constant"))
-     ))
+      nil)
+     )))
 
    ((looking-at (concat "\"\\(" ada-operator-re "\\)\""))
-    (match-string-no-properties 0))
+    (list (match-beginning 0) (match-end 0) (match-string-no-properties 0)))
 
    ((looking-at ada-operator-re)
-    (concat "\"" (match-string-no-properties 0) "\""))
+    (list (match-beginning 0) (match-end 0) (concat "\"" (match-string-no-properties 0) "\"")))
 
-   ((memq (syntax-class (syntax-after (point))) '(2 3))
+   ((or (memq (syntax-class (syntax-after (1- (point)))) '(2 3))
+	(memq (syntax-class (syntax-after (point))) '(2 3)))
     ;; word or symbol syntax.
-    (skip-syntax-backward "w_")
-    (buffer-substring-no-properties (point) (save-excursion (skip-syntax-forward "w_") (point))))
+    (let (start)
+      (skip-syntax-backward "w_")
+      (setq start (point))
+      (skip-syntax-forward "w_")
+      (list start (point) (buffer-substring-no-properties start (point)))))
 
    (t
-    (error "No identifier around"))
+    nil)
    ))
 
 ;;;; initialization

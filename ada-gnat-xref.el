@@ -79,9 +79,18 @@
 (cl-defmethod wisi-xref-parse-final ((xref gnatxref-xref) _project prj-file-name)
   (setf (gnat-compiler-run-buffer-name xref) (gnat-run-buffer-name prj-file-name gnatxref-buffer-name-prefix)))
 
+(cl-defmethod wisi-xref-completion-table ((_xref gnatxref-xref) _project)
+  (wisi-names t t))
+
+(cl-defgeneric wisi-xref-completion-regexp ((_xref gnatxref-xref))
+  wisi-names-regexp)
+
 (defun ada-gnat-xref-adj-col (identifier col)
   "Return COL adjusted for 1-index, quoted operators."
   (cond
+   ((null col)
+    col)
+   
    ((eq ?\" (aref identifier 0))
     ;; There are two cases here:
     ;;
@@ -124,11 +133,11 @@ elements of the result may be nil."
           (concat "-aI" (mapconcat 'identity (wisi-prj-source-path project) " -aI")))
         (when (plist-get (ada-prj-plist project) 'obj_dir)
           (concat "-aO" (mapconcat 'identity (plist-get (ada-prj-plist project) 'obj_dir) " -aO")))
-        (format "%s:%s:%d:%d"
+        (format "%s:%s:%s:%s"
                 identifier
                 (file-name-nondirectory file)
-                line
-                (ada-gnat-xref-adj-col identifier col))))
+                (or line "")
+                (or (ada-gnat-xref-adj-col identifier col) ""))))
 
 (defun ada-gnat-xref-refs (project item all)
   (with-slots (summary location) item

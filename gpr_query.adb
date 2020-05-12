@@ -43,9 +43,12 @@ with GNATCOLL.VFS;
 with GNATCOLL.VFS_Utils;
 with GNATCOLL.Xref;
 procedure Gpr_Query is
+   use all type GNATCOLL.VFS.File_Array;
    use GNATCOLL;
 
-   Version : constant String := "2";
+   Version : constant String := "3";
+   --  Changes once per release when the API (commands and responses)
+   --  changes; must match gpr-query.el gpr-query-protocol-version
 
    Me : constant GNATCOLL.Traces.Trace_Handle := GNATCOLL.Traces.Create ("gpr_query");
 
@@ -54,6 +57,9 @@ procedure Gpr_Query is
 
    function "+" (Item : in Ada.Strings.Unbounded.Unbounded_String) return String
      renames Ada.Strings.Unbounded.To_String;
+
+   function "+" (Item : in String) return Ada.Strings.Unbounded.Unbounded_String
+     renames Ada.Strings.Unbounded.To_Unbounded_String;
 
    function "+" (Item : in GNATCOLL.VFS.Filesystem_String) return String
    is begin
@@ -65,7 +71,7 @@ procedure Gpr_Query is
    --  Raise Invalid_Command when the command is invalid.
 
    function Get_Entity (Arg : String) return GNATCOLL.Xref.Entity_Information;
-   --  Return the entity matching the "name:file:line:column" argument
+   --  Return the entity matching the "name:file:line[:column]" argument
 
    type My_Xref_Database is new GNATCOLL.Xref.Xref_Database with null record;
    --  Derived so we can override Image to output full paths
@@ -78,9 +84,11 @@ procedure Gpr_Query is
    function Image (Self : GNATCOLL.Xref.Entity_Information) return String;
    --  Return a display version of the argument
 
-   Xref              : aliased My_Xref_Database;
-   Env               : GNATCOLL.Projects.Project_Environment_Access;
-   Tree              : aliased GNATCOLL.Projects.Project_Tree;
+   Xref               : aliased My_Xref_Database;
+   Env                : GNATCOLL.Projects.Project_Environment_Access;
+   Tree               : aliased GNATCOLL.Projects.Project_Tree;
+   Source_Search_Path : GNATCOLL.VFS.File_Array_Access;
+
    Previous_Progress : Natural := 0;
    Progress_Reporter : access procedure (Current, Total : Integer) := null;
 
@@ -171,6 +179,7 @@ procedure Gpr_Query is
    procedure Process_DB_Name (Args : GNATCOLL.Arg_Lists.Arg_List);
 
    --  Queries; alphabetical
+   procedure Process_Complete (Args : GNATCOLL.Arg_Lists.Arg_List);
    procedure Process_Overridden is new Process_Command_Single (GNATCOLL.Xref.Overrides);
    procedure Process_Overriding is new Process_Command_Multiple (GNATCOLL.Xref.Overridden_By);
    procedure Process_Parent_Types is new Process_Command_Multiple (GNATCOLL.Xref.Parent_Types);
@@ -205,18 +214,23 @@ procedure Gpr_Query is
 
       --  queries
 
+      (new String'("complete"),
+       new String'("pattern"),
+       new String'("Names that complete the pattern."),
+       Process_Complete'Access),
+
       (new String'("overridden"),
-       new String'("name:file:line:column {full_file_names | short_file_names}"),
+       new String'("name:file:line[:column] {full_file_names | short_file_names}"),
        new String'("The entity that is overridden by the parameter"),
        Process_Overridden'Access),
 
       (new String'("overriding"),
-       new String'("name:file:line:column {full_file_names | short_file_names}"),
+       new String'("name:file:line[:column] {full_file_names | short_file_names}"),
        new String'("The entities that override the parameter"),
        Process_Overriding'Access),
 
       (new String'("parent_types"),
-       new String'("name:file:line:column {full_file_names | short_file_names}"),
+       new String'("name:file:line[:column] {full_file_names | short_file_names}"),
        new String'("The parent types of the entity."),
        Process_Parent_Types'Access),
 
@@ -226,18 +240,18 @@ procedure Gpr_Query is
        Process_Project_Path'Access),
 
       (new String'("refs"),
-       new String'("name:file:line:column {global | local_only} {full_file_names | short_file_names}"),
+       new String'("name:file:line[:column] {global | local_only} {full_file_names | short_file_names}"),
        new String'("All known references to the entity."),
        Process_Refs'Access),
 
       (new String'("tree_defs"),
-       new String'("name:file:line:column {full_file_names | short_file_names}"),
+       new String'("name:file[:line[:column]] {full_file_names | short_file_names}"),
        new String'
-         ("All known references to the entity, and to parent/child types or overridden/overriding operations."),
+         ("All known references to the entity, and to child types or overridden/overriding operations."),
        Process_Tree_Defs'Access),
 
       (new String'("tree_refs"),
-       new String'("name:file:line:column {full_file_names | short_file_names}"),
+       new String'("name:file:line[:column] {full_file_names | short_file_names}"),
        new String'
          ("All known references to the entity, and to parent/child types or overridden/overriding operations."),
        Process_Tree_Refs'Access),
@@ -256,7 +270,7 @@ procedure Gpr_Query is
    Force_Refresh        : aliased Boolean;
    Gpr_Config_File      : aliased GNAT.Strings.String_Access;
    Nightly_DB_Name      : aliased GNAT.Strings.String_Access;
-   Project_Name         : aliased GNAT.Strings.String_Access;
+   Project_File_Name    : aliased GNAT.Strings.String_Access;
    Show_Progress        : aliased Boolean;
    Traces_Config_File   : aliased GNAT.Strings.String_Access;
 
@@ -274,8 +288,7 @@ procedure Gpr_Query is
    end Check_Arg_Count;
 
    procedure Display_Progress (Current, Total : Integer) is
-      Now : constant Integer := Integer (Float'Floor
-        (Float (Current) / Float (Total) * 100.0));
+      Now : constant Integer := Integer (Float'Floor (Float (Current) / Float (Total) * 100.0));
    begin
       if Now /= Previous_Progress then
          Ada.Text_IO.Put_Line
@@ -352,6 +365,7 @@ procedure Gpr_Query is
               (Integer'Value (Words (Words'First + 3).all)));
 
       when 3 =>
+         --  No column; assume good enough for a precise match
          Ref := Xref.Get_Entity
            (Name     => Words (Words'First).all,
             File     => Format_Pathname
@@ -361,17 +375,19 @@ procedure Gpr_Query is
             Line     => Integer'Value (Words (Words'First + 2).all));
 
       when 2 =>
-         Ref := Xref.Get_Entity
-           (Name     => Words (Words'First).all,
-            File     => Format_Pathname
-              (Style => UNIX,
-               Path  => Words (Words'First + 1).all),
-            Project  => GNATCOLL.Projects.No_Project);
-
-      --  Xref.Get_Entity treats 'File => ""' as searching for pre-defined entities such as "Integer".
+         --  No line or column; error.
+         GNAT.Strings.Free (Words);
+         raise Invalid_Command with "Invalid parameter '" & Arg & "', expecting name:file:line[:column]]";
 
       when others =>
-         raise Invalid_Command with "Invalid parameter '" & Arg & "', expecting name:file:line:column";
+         --  No file, or bad args.
+         --
+         --  Xref.Get_Entity treats 'File => ""' as searching for pre-defined entities such as "Integer".
+         --
+         --  To search for a name in all files, use "complete" command.
+         GNAT.Strings.Free (Words);
+
+         raise Invalid_Command with "Invalid parameter '" & Arg & "', expecting name:file:line[:column]]";
       end case;
 
       GNAT.Strings.Free (Words);
@@ -492,6 +508,73 @@ procedure Gpr_Query is
       GNAT.Strings.Free (Expr);
    end Process_Line;
 
+   function Get_Parameters (Entity : GNATCOLL.Xref.Entity_Information) return String
+   is
+      use Ada.Strings.Unbounded;
+      use GNATCOLL.Xref;
+      Params     : Parameters_Cursor := GNATCOLL.Xref.Parameters (Xref, Entity);
+      Result     : Unbounded_String;
+      Need_Paren : Boolean           := True;
+   begin
+      loop
+         exit when not Has_Element (Params);
+         Result := Result &
+           ((if Need_Paren
+             then (if Length (Result) > 0 then " (" else "(")
+             else ", ") &
+              Xref.Declaration (Element (Params).Parameter).Name);
+         Need_Paren := False;
+         Next (Params);
+      end loop;
+      if not Need_Paren then
+         Result := Result & ")";
+      end if;
+      return +Result;
+   end Get_Parameters;
+
+   procedure Process_Complete (Args : GNATCOLL.Arg_Lists.Arg_List)
+   is
+      use Ada.Text_IO;
+      use GNATCOLL.Arg_Lists;
+      use GNATCOLL.Xref;
+      Prefix  : constant String := Nth_Arg (Args, 1);
+      Matches : Entities_Cursor;
+      Count   : Integer         := 0;
+   begin
+      Short_File_Names := False;
+
+      --  First count all matches, so Emacs can show progress
+      Xref.From_Prefix
+        (Prefix,
+         Is_Partial => True,
+         Cursor     => Matches);
+      loop
+         exit when not Has_Element (Matches);
+         Count := @ + 1;
+         Next (Matches);
+      end loop;
+
+      Ada.Text_IO.Put_Line ("element count" & Count'Image);
+
+      Xref.From_Prefix
+        (Prefix,
+         Is_Partial => True,
+         Cursor     => Matches);
+      loop
+         exit when not Has_Element (Matches);
+         declare
+            Decl : constant Entity_Declaration := Xref.Declaration (Element (Matches));
+         begin
+            Put (Xref.Qualified_Name (Element (Matches)));
+            if Decl.Flags.Is_Subprogram then
+               Ada.Text_IO.Put (Get_Parameters (Decl.Location.Entity));
+            end if;
+         end;
+         Ada.Text_IO.Put_Line (" " & Image (Element (Matches)));
+         Next (Matches);
+      end loop;
+   end Process_Complete;
+
    procedure Process_Project_Path (Args : GNATCOLL.Arg_Lists.Arg_List)
    is
       pragma Unreferenced (Args);
@@ -501,8 +584,20 @@ procedure Gpr_Query is
       Put (Dirs);
    end Process_Project_Path;
 
-   procedure Process_Refresh (Args : GNATCOLL.Arg_Lists.Arg_List) is separate;
-   --  Requires different code for GNAT GPL 2016 vs 2017
+   procedure Process_Refresh (Args : GNATCOLL.Arg_Lists.Arg_List)
+   is
+      pragma Unreferenced (Args);
+   begin
+      Parse_All_LI_Files
+        (Self                => Xref,
+         Project             => Tree.Root_Project,
+         Parse_Runtime_Files => False,
+         Show_Progress       => Progress_Reporter,
+         ALI_Encoding        => ALI_Encoding.all,
+         From_DB_Name        => Nightly_DB_Name.all,
+         To_DB_Name          => DB_Name.all,
+         Force_Refresh       => Force_Refresh);
+   end Process_Refresh;
 
    procedure Process_Refs (Args : GNATCOLL.Arg_Lists.Arg_List)
    is
@@ -603,37 +698,47 @@ procedure Gpr_Query is
       return Result;
    end Controlling_Type;
 
-   procedure Dump_Decl (Decl : in GNATCOLL.Xref.Entity_Declaration; Controlling_Type_Name : in String := "")
+   procedure Dump_Decl (Decl : in GNATCOLL.Xref.Entity_Declaration; Annotation : in String := "")
    is begin
       Ada.Text_IO.Put_Line
         (Xref.Image (Decl.Location) & " (" &
            (+Decl.Name) & " " &
-           (if Controlling_Type_Name'Length = 0
+           (if Annotation'Length = 0
             then ""
-            else Controlling_Type_Name & "; ") &
+            else Annotation & " ") &
            (+Decl.Kind) & ")");
    end Dump_Decl;
 
-   procedure Dump_Ref (Ref : in GNATCOLL.Xref.Entity_Reference; Controlling_Type_Name : in String := "")
+   procedure Dump_Ref (Ref : in GNATCOLL.Xref.Entity_Reference; Annotation : in String := "")
    is begin
       Ada.Text_IO.Put_Line
         (Xref.Image (Ref) & " (" &
            (+Xref.Declaration (Ref.Entity).Name) & " " &
-           (if Controlling_Type_Name'Length = 0
+           (if Annotation'Length = 0
             then ""
-            else Controlling_Type_Name & "; ") &
+            else Annotation & " ") &
            (+Ref.Kind) & ")");
    end Dump_Ref;
 
    procedure Dump_Entity (Entity : in GNATCOLL.Xref.Entity_Information; Controlling_Type_Name : in String := "")
    is
+      use Ada.Strings.Unbounded;
       use GNATCOLL.Xref;
       Spec_Decl : constant Entity_Declaration := Xref.Declaration (Entity);
       Body_Decls : References_Cursor;
+      Parameters : Unbounded_String;
    begin
+      if Controlling_Type_Name'Length > 0 then
+         Parameters := +Controlling_Type_Name & ";";
+      end if;
+
+      if Spec_Decl.Flags.Is_Subprogram then
+         Parameters := Parameters & Get_Parameters (Spec_Decl.Location.Entity);
+      end if;
+
       Xref.Bodies (Entity, Body_Decls);
       if not Has_Element (Body_Decls) then
-         Dump_Decl (Spec_Decl);
+         Dump_Decl (Spec_Decl, +Parameters);
       else
          declare
             use all type GNATCOLL.VFS.Virtual_File;
@@ -645,13 +750,13 @@ procedure Gpr_Query is
             then
                Ada.Text_IO.Put_Line
                  (Xref.Image (First_Body_Ref) & " (" & (+Spec_Decl.Name) & " " &
-                    (if Controlling_Type_Name'Length = 0
+                    (if Length (Parameters) = 0
                      then ""
-                     else Controlling_Type_Name & "; ") &
+                     else +Parameters & " ") &
                     (+Spec_Decl.Kind) & "/" & (+First_Body_Ref.Kind) & ")");
             else
-               Dump_Decl (Spec_Decl, Controlling_Type_Name);
-               Dump_Ref (First_Body_Ref, Controlling_Type_Name);
+               Dump_Decl (Spec_Decl, +Parameters);
+               Dump_Ref (First_Body_Ref, +Parameters);
             end if;
          end;
 
@@ -659,7 +764,7 @@ procedure Gpr_Query is
 
          loop
             exit when not Has_Element (Body_Decls);
-            Dump_Ref (Body_Decls.Element, Controlling_Type_Name);
+            Dump_Ref (Body_Decls.Element, +Parameters);
             Next (Body_Decls);
          end loop;
       end if;
@@ -672,94 +777,186 @@ procedure Gpr_Query is
       use GNATCOLL.Arg_Lists;
       use GNATCOLL.Xref;
 
-      Orig_Entity : constant Entity_Information := Get_Entity (Nth_Arg (Args, 1));
-      Orig_Decl   : constant Entity_Declaration := Xref.Declaration (Orig_Entity);
+      Words       : GNAT.Strings.String_List_Access := GNATCOLL.Utils.Split (Nth_Arg (Args, 1), On => ':');
       Root_Parent : Entity_Information;
 
-      procedure Dump_Method
-        (Type_Entity       : in GNATCOLL.Xref.Entity_Information;
-         Primitive_Op_Name : in String)
+      procedure One_Entity (Orig_Entity : in Entity_Information; No_Children : in Boolean := False)
       is
-         Type_Name : constant String := +Xref.Declaration (Type_Entity).Name;
-         Ops       : Entities_Cursor;
+         Orig_Decl       : constant Entity_Declaration := Xref.Declaration (Orig_Entity);
+         Orig_Short_Name : constant String             := +Orig_Decl.Name;
+
+         procedure Dump_Method
+           (Type_Entity       : in GNATCOLL.Xref.Entity_Information;
+            Primitive_Op_Name : in String)
+         is
+            Type_Name : constant String := Xref.Qualified_Name (Type_Entity);
+            Ops       : Entities_Cursor;
+         begin
+            Xref.Methods (Type_Entity, Ops);
+            loop
+               exit when not Has_Element (Ops);
+               declare
+                  Method_Name : constant String := +Xref.Declaration (Element (Ops)).Name;
+               begin
+                  if Primitive_Op_Name = Method_Name then
+                     --  IMPROVEME: if the method is inherited but not overridden, use the
+                     --  type location.
+                     Dump_Entity (Element (Ops), Type_Name);
+                  end if;
+               end;
+               Next (Ops);
+            end loop;
+         end Dump_Method;
+
+         procedure Dump_Entities (Entities : in out Recursive_Entities_Cursor)
+         is begin
+            loop
+               exit when not Has_Element (Entities);
+               if Orig_Decl.Flags.Is_Subprogram then
+                  Dump_Method (Entities.Element, Primitive_Op_Name => Orig_Short_Name);
+               else
+                  Dump_Entity (Entities.Element);
+               end if;
+               Next (Entities);
+            end loop;
+         end Dump_Entities;
       begin
-         Xref.Methods (Type_Entity, Ops);
-         loop
-            exit when not Has_Element (Ops);
+
+         if Orig_Decl.Flags.Is_Type then
+            --  It is tempting to find the highest ancestor type here, then show
+            --  all types derived from that. But in Ada, that root ancestor is
+            --  often Ada.Finalization.[Limited_]Controlled (or some similar root
+            --  type), so the tree is much larger than we really want. So we just
+            --  show all children of the given type; the user can then climb the
+            --  tree if they want to enlarge it. This also allows the user to
+            --  choose which anscestor to examine when there is more than one,
+            --  with interfaces.
+            Root_Parent := Orig_Entity;
+
+         elsif Orig_Decl.Flags.Is_Subprogram then
             declare
-               Method_Name : constant String := +Xref.Declaration (Element (Ops)).Name;
+               Controlling : constant Entity_Information := Controlling_Type (Orig_Entity);
             begin
-               if Primitive_Op_Name = Method_Name then
-                  --  IMPROVEME: if the method is inherited but not overridden, use the
-                  --  type location.
-                  Dump_Entity (Element (Ops), Type_Name);
+               if Controlling = No_Entity then
+                  --  Not a primitive subprogram
+                  Dump_Entity (Orig_Entity);
                   return;
+               else
+                  if No_Children then
+                     Root_Parent := Controlling; -- for type name
+                  else
+                     --  Here we find the highest ancestor type that has this method.
+                     --  gnatcoll.xref does not let us get the type of each parameter, so
+                     --  we can't match profiles, just names.
+                     Root_Parent := Root_Parent_Type (Controlling, Primitive_Op_Name => Orig_Short_Name);
+                  end if;
                end if;
             end;
-            Next (Ops);
-         end loop;
-      end Dump_Method;
+         else
+            --  Something else (variable, package, ...)
+            Dump_Decl (Orig_Decl);
+            return;
+         end if;
 
-      procedure Dump_Entities (Entities : in out Recursive_Entities_Cursor)
-      is begin
-         loop
-            exit when not Has_Element (Entities);
-            if Orig_Decl.Flags.Is_Subprogram then
-               Dump_Method (Entities.Element, +Orig_Decl.Name);
+         if No_Children then
+            if Orig_Decl.Flags.Is_Type then
+               Dump_Entity (Orig_Entity);
             else
-               Dump_Entity (Entities.Element);
+               Dump_Entity (Orig_Entity, Controlling_Type_Name => Xref.Qualified_Name (Root_Parent));
             end if;
-            Next (Entities);
-         end loop;
-      end Dump_Entities;
+         else
+            declare
+               Child_Types : Recursive_Entities_Cursor;
+            begin
+               --  "Child_Types" includes generic formal parameters (ie
+               --  gen_run_wisi_lr_parse.ads Parse_Data_Type) in addition to the
+               --  actual parameters.
+               All_Child_Types (Root_Parent, Child_Types);
+               if Orig_Decl.Flags.Is_Type then
+                  Dump_Entity (Root_Parent);
+               else
+                  Dump_Method (Root_Parent, +Orig_Decl.Name);
+               end if;
+               Dump_Entities (Child_Types);
+            end;
+         end if;
+      end One_Entity;
 
+      use GNAT.Directory_Operations;
    begin
       Short_File_Names := Nth_Arg (Args, 2) = Short_File_Names_Arg;
 
-      if Orig_Decl.Flags.Is_Type then
-         --  It is tempting to find the highest ancestor type here, then show
-         --  all types derived from that. But in Ada, that root ancestor is
-         --  often Ada.Finalization.[Limited_]Controlled (or some similar root
-         --  type), so the tree is much larger than we really want. So we just
-         --  show all children of the given type; the user can then climb the
-         --  tree if they want to enlarge it. This also allows the user to
-         --  choose which anscestor to examine when there is more than one,
-         --  with interfaces.
-         Root_Parent := Orig_Entity;
+      case Words'Length is
+      when 3 | 4         =>
+         One_Entity
+           (Xref.Get_Entity
+              (Name     => Words (Words'First).all,
+               File     => Format_Pathname
+                 (Style => UNIX,
+                  Path  => Words (Words'First + 1).all),
+               Project  => GNATCOLL.Projects.No_Project,
+               Line     => Integer'Value (Words (Words'First + 2).all),
+               Column   =>
+                 (if Words'Length = 4
+                  then Visible_Column (Integer'Value (Words (Words'First + 3).all))
+                  else -1)) --  No column; assume good enough for a precise match
+              .Entity);
 
-      elsif Orig_Decl.Flags.Is_Subprogram then
+      when 2 =>
+         --  No line or column; find all matching names in file
          declare
-            Controlling : constant Entity_Information := Controlling_Type (Orig_Entity);
-         begin
-            if Controlling = No_Entity then
-               --  Not a primitive subprogram
-               Dump_Entity (Orig_Entity);
-               return;
-            else
-               --  Here we find the highest ancestor type that has this method.
-               Root_Parent := Root_Parent_Type (Controlling, Primitive_Op_Name => +Orig_Decl.Name);
-            end if;
-         end;
-      else
-         --  Something else (variable, package, ...)
-         Dump_Decl (Orig_Decl);
-         return;
-      end if;
+            use GNATCOLL.VFS;
 
-      declare
-         Child_Types : Recursive_Entities_Cursor;
-      begin
-         --  "Child_Types" includes generic formal parameters (ie
-         --  gen_run_wisi_lr_parse.ads Parse_Data_Type) in addition to the
-         --  actual parameters.
-         All_Child_Types (Root_Parent, Child_Types);
-         if Orig_Decl.Flags.Is_Type then
-            Dump_Entity (Root_Parent);
-         else
-            Dump_Method (Root_Parent, +Orig_Decl.Name);
-         end if;
-         Dump_Entities (Child_Types);
-      end;
+            Multiple       : Entities_Cursor;
+            Orig_File      : constant Virtual_File      := Locate_Regular_File
+              (File_Name => +Words (Words'First + 1).all,
+               Path      => Source_Search_Path.all);
+            Orig_File_Name : constant Filesystem_String := Full_Name (Orig_File);
+         begin
+            From_Prefix (Xref, Words (Words'First).all, Is_Partial => False, Cursor => Multiple);
+
+            loop
+               exit when not Has_Element (Multiple);
+               declare
+                  Decl : constant Entity_Declaration := Xref.Declaration (Element (Multiple));
+
+                  function Check_Body_File return Boolean
+                  is
+                     Bodies : References_Cursor;
+                  begin
+                     Xref.Bodies (Decl.Location.Entity, Bodies);
+                     loop
+                        exit when not Has_Element (Bodies);
+                        declare
+                           Ref : Entity_Reference renames Element (Bodies);
+                        begin
+                           if Orig_File_Name = Full_Name (Ref.File) then
+                              return True;
+                           end if;
+                        end;
+                        Next (Bodies);
+                     end loop;
+                     return False;
+                  end Check_Body_File;
+
+               begin
+                  if Orig_File_Name = Full_Name (Decl.Location.File) or else
+                    Check_Body_File
+                  then
+                     One_Entity (Element (Multiple), No_Children => True);
+                  end if;
+               end;
+               Next (Multiple);
+            end loop;
+         end;
+
+      when others =>
+         --  No file or bad arg.
+         GNAT.Strings.Free (Words);
+         raise Invalid_Command with "Invalid parameter '" & Nth_Arg (Args, 1) &
+           "', expecting name:file:[line[:column]]";
+      end case;
+
    end Process_Tree_Defs;
 
    procedure Process_Tree_Refs (Args : GNATCOLL.Arg_Lists.Arg_List)
@@ -768,6 +965,7 @@ procedure Gpr_Query is
 
       use GNATCOLL.Arg_Lists;
       use GNATCOLL.Xref;
+
       Orig_Entity : constant Entity_Information := Get_Entity (Nth_Arg (Args, 1));
       Orig_Decl   : constant Entity_Declaration := Xref.Declaration (Orig_Entity);
       Root_Parent : Entity_Information;
@@ -852,16 +1050,8 @@ procedure Gpr_Query is
    procedure Process_Source_Dirs (Args : GNATCOLL.Arg_Lists.Arg_List)
    is
       pragma Unreferenced (Args);
-      use GNATCOLL.VFS;
-      use GNATCOLL.Projects;
-
-      Dirs : constant File_Array := Source_Dirs
-        (Project   => Tree.Root_Project,
-         Recursive => True) &
-        Predefined_Source_Path (Env.all);
    begin
-      Short_File_Names := False;
-      Put (Dirs);
+      Put (Source_Search_Path.all);
    end Process_Source_Dirs;
 
    procedure Put (Item : GNATCOLL.VFS.File_Array)
@@ -918,7 +1108,7 @@ begin
          Help        => "Specifies the name of a prebuilt database");
       Define_Switch
         (Cmdline,
-         Output      => Project_Name'Access,
+         Output      => Project_File_Name'Access,
          Switch      => "-P:",
          Long_Switch => "--project=",
          Help        => "Load the given project (mandatory)");
@@ -932,12 +1122,13 @@ begin
         (Cmdline,
          Output      => Traces_Config_File'Access,
          Long_Switch => "--tracefile=",
-         Help        => "Specify a traces configuration file, set projects lib verbose");
+         Help        =>
+           "Specify a traces configuration file, set projects lib verbose. File should contain ""gpr_query=yes""");
 
       Getopt (Cmdline, Callback => null);
    end;
 
-   if Project_Name.all = "" then
+   if Project_File_Name.all = "" then
       Ada.Text_IO.Put_Line ("No project file specified");
       GNAT.Command_Line.Display_Help (Cmdline);
       return;
@@ -987,19 +1178,27 @@ begin
          else Ada.Directories.Current_Directory);
 
       Path : constant Virtual_File := -- must be an absolute file name
-        (if Is_Absolute_Path (+Project_Name.all) then
-            Create_From_UTF8 (Project_Name.all, Normalize => True)
+        (if Is_Absolute_Path (+Project_File_Name.all) then
+            Create_From_UTF8 (Project_File_Name.all, Normalize => True)
          else
-            Locate_Regular_File (+Project_Name.all, From_Path (+Gpr_Project_Path)));
+            Locate_Regular_File (+Project_File_Name.all, From_Path (+Gpr_Project_Path)));
    begin
+      GNATCOLL.Traces.Trace (Me, "GPR_PROJECT_PATH " & Gpr_Project_Path);
+
       if not Path.Is_Regular_File then
-         Put (Project_Name.all & ": not found on path " & Gpr_Project_Path);
+         declare
+            Path : constant File_Array := From_Path (+Gpr_Project_Path);
+         begin
+            Put_Line (Project_File_Name.all & ": not found on path:");
+            for P of Path loop
+               Put_Line (+Full_Name (P));
+            end loop;
+         end;
          Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
          return;
       end if;
 
-      GNATCOLL.Traces.Trace (Me, "project path " & Gpr_Project_Path);
-      GNATCOLL.Traces.Trace (Me, "using project file " & (+Path.Full_Name));
+      GNATCOLL.Traces.Trace (Me, "project file " & (+Path.Full_Name));
 
       if Show_Progress then
          Progress_Reporter := Display_Progress'Unrestricted_Access;
@@ -1067,6 +1266,12 @@ begin
    end;
 
    Process_Refresh (GNATCOLL.Arg_Lists.Empty_Command_Line);
+
+   Source_Search_Path := new GNATCOLL.VFS.File_Array'
+     (GNATCOLL.Projects.Source_Dirs
+        (Project   => Tree.Root_Project,
+         Recursive => True) &
+        GNATCOLL.Projects.Predefined_Source_Path (Env.all));
 
    if Commands_From_Switch.all /= "" then
       Process_Line (Commands_From_Switch.all);

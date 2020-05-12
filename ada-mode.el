@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.0.1
-;; package-requires: ((uniquify-files "1.0.1") (wisi "3.0.1") (emacs "25.0"))
+;; Version: 7.1.0
+;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.0") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -117,7 +117,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "7.0.1"))
+  (let ((version-string "7.1.0"))
     (if (called-interactively-p 'interactive)
 	(message version-string)
       version-string)))
@@ -191,6 +191,7 @@ nil, only the file name."
     (define-key map "\C-c\C-f" 	 'wisi-show-parse-error)
     (define-key map "\C-c\C-i" 	 'wisi-indent-statement)
     (define-key map [3 backtab] 'wisi-indent-containing-statement);; C-c backtab, translated from C-c S-tab
+    (define-key map "\C-\M-i"    'completion-at-point)
     (define-key map "\C-c\C-l" 	 'wisi-show-local-references)
     (define-key map "\C-c\C-m"   'ada-build-set-make)
     (define-key map "\C-c\C-n" 	 'forward-sexp)
@@ -265,6 +266,7 @@ nil, only the file name."
      ["Previous placeholder"          wisi-skel-prev-placeholder    t]
      )
     ("Edit"
+     ["Complete name at point"      completion-at-point     t]
      ["Expand skeleton"             wisi-skel-expand        t]
      ["Indent line or selection"    indent-for-tab-command  t]
      ["Indent current statement"    wisi-indent-statement   t]
@@ -293,7 +295,7 @@ nil, only the file name."
      )
     ("Misc"
      ["Show last parse error"         wisi-show-parse-error       t]
-     ["Refresh cross reference cache" ada-xref-refresh            t]
+     ["Refresh cross reference cache" wisi-refresh-prj-cache      t]
      ["Restart parser"                wisi-kill-parser            t]
      )))
 
@@ -479,8 +481,8 @@ Runs `ada-syntax-propertize-hook'."
     (save-match-data
       (while (re-search-forward
 	      (concat
-	       "[^a-zA-Z0-9)]\\('\\)[^'\n]\\('\\)"; 1, 2: character literal, not attribute
-	       "\\|[^a-zA-Z0-9)]\\('''\\)"; 3: character literal '''
+	       "[^[:alnum:])]\\('\\)[^'\n]\\('\\)"; 1, 2: character literal, not attribute
+	       "\\|[^[:alnum:])]\\('''\\)"; 3: character literal '''
 	       )
 	      end t)
 	;; syntax-propertize-extend-region-functions is set to
@@ -519,7 +521,7 @@ The extensions should include a `.' if needed.")
 See `ff-other-file-alist'.")
 
 (defconst ada-parent-name-regexp
-  "\\([a-zA-Z0-9_\\.]+\\)\\.[a-zA-Z0-9_]+"
+  "\\([[:alnum:]_\\.]+\\)\\.[[:alnum:]_]+"
   "Regexp for extracting the parent name from fully-qualified name.")
 
 (defun ada-ff-special-extract-parent ()
@@ -608,7 +610,7 @@ Also sets ff-function-name for ff-pre-load-hook."
 		    ((entry_body entry_declaration)
 		     (setq result (ada-which-function-1 "entry" nil)))
 
-		    (full_type_declaration
+		    ((full_type_declaration private_type_declaration)
 		     (setq result (ada-which-function-1 "type" nil)))
 
 		    (package_body
@@ -861,7 +863,7 @@ compiler-specific compilation filters."
 		    ((entry_body entry_declaration)
 		     (eq (wisi-cache-token cache) 'ENTRY))
 
-		    (full_type_declaration
+		    ((full_type_declaration private_type_declaration)
 		     (when include-type
 		       (eq (wisi-cache-token cache) 'TYPE)))
 
@@ -1336,10 +1338,11 @@ comment:      comment"
 	((code comment)
 	 ;; After code with no trailing comment, or after comment
 	 ;; test/ada_mode-conditional_expressions.adb
-	 ;; (if J > 42
-	 ;; -- comment indent matching GNAT style check
-	 ;; -- second line of comment
-	 prev-indent)
+	 ;; K2 : Integer := (if J > 42
+	 ;;                  -- comment indent matching GNAT style check
+	 ;;                  then
+	 ;;
+	 (max prev-indent next-indent))
 
 	))
      )))

@@ -6,7 +6,7 @@
 ;; Keywords: syntax
 
 %code copyright_license %{
-;;  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+;;  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 ;;  This program is free software; you can redistribute it and/or
 ;;  modify it under the terms of the GNU General Public License as
@@ -81,7 +81,7 @@
 ;; handle DOS or Unix newline
 %non_grammar <new-line> NEW_LINE %[ [\x0a]|[\x0d][\x0a] ]%
 
-%non_grammar <comment> COMMENT %[ "--"[^\n]* ]%
+%non_grammar <comment> COMMENT %[ "--"[^\x04\n]* ]%
 
 %token <number> NUMERIC_LITERAL
     %[ [0-9]+ ]%

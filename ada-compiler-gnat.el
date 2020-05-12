@@ -155,7 +155,7 @@ For `compilation-filter-hook'."
   "regexp to extract a file name")
 
 (defconst ada-gnat-quoted-name-regexp
-  "\"\\([a-zA-Z0-9_.']+\\)\""
+  "\"\\([[:alnum:]_.']+\\)\""
   "regexp to extract the quoted names in error messages")
 
 (defconst ada-gnat-quoted-punctuation-regexp
@@ -204,7 +204,7 @@ Prompt user if more than one."
   (save-excursion
     (forward-line 1)
     (skip-syntax-forward "^ ")
-    (looking-at " use fully qualified name starting with \\([a-zA-Z0-9_]+\\) to make")
+    (looking-at " use fully qualified name starting with \\([[:alnum:]_]+\\) to make")
     (match-string 1)
     ))
 
@@ -436,7 +436,7 @@ Prompt user if more than one."
 	     (insert " " expected-keyword))
 	   t)
 
-	  ((looking-at "\\(?:possible \\)?missing \"with \\([a-zA-Z0-9_.]+\\);")
+	  ((looking-at "\\(?:possible \\)?missing \"with \\([[:alnum:]_.]+\\);")
 	   ;; also 'possible missing "with Ada.Text_IO; use Ada.Text_IO"' - ignoring the 'use'
 	   (let ((package-name (match-string-no-properties 1)))
 	     (pop-to-buffer source-buffer)
@@ -543,9 +543,18 @@ Prompt user if more than one."
 	   t)
 
 	  ((looking-at (concat "warning: formal parameter " ada-gnat-quoted-name-regexp " is not referenced"))
-	   (let ((param (match-string 1)))
+	   (let ((param (match-string 1))
+		 cache)
 	     (pop-to-buffer source-buffer)
-	     (ada-goto-declarative-region-start)
+	     ;; Point is in a subprogram parameter list;
+	     ;; ada-goto-declarative-region-start goes to the package,
+	     ;; not the subprogram declarative_part (this is a change
+	     ;; from previous wisi versions).
+	     (setq cache (wisi-goto-statement-start))
+	     (while (not (eq 'IS (wisi-cache-token cache)))
+	       (forward-sexp)
+	       (setq cache (wisi-get-cache (point))))
+	     (forward-word)
 	     (newline-and-indent)
 	     (insert "pragma Unreferenced (" param ");"))
 	   t)
@@ -774,7 +783,7 @@ Prompt user if more than one."
   (save-match-data
     (while (re-search-forward
 	    (concat
-	     "[^a-zA-Z0-9)]\\('\\)\\[[\"a-fA-F0-9]+\"\\]\\('\\)"; 1, 2: non-ascii character literal, not attributes
+	     "[^[:alnum:])]\\('\\)\\[[\"a-fA-F0-9]+\"\\]\\('\\)"; 1, 2: non-ascii character literal, not attributes
 	     "\\|\\(\\[\"[a-fA-F0-9]+\"\\]\\)"; 3: non-ascii character in identifier
 	     )
 	    end t)

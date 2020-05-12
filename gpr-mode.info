@@ -1,4 +1,4 @@
-This is gpr-mode.info, produced by makeinfo version 6.3 from
+This is gpr-mode.info, produced by makeinfo version 6.7 from
 gpr-mode.texi.
 
 Copyright (C) 2013, 2019 Free Software Foundation, Inc.
@@ -730,3 +730,8 @@ Node: GNU Free Documentation License7269
 Node: Index32431
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

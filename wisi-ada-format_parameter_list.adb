@@ -2,7 +2,7 @@
 --
 --
 --
---  Copyright (C) 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2019 - 2020 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -45,7 +45,7 @@ is
       Default_Exp : Buffer_Region := Null_Buffer_Region;
    end record;
 
-   Formal_Part : constant Node_Index := Find_ID_At (Tree, Data.Terminals, +formal_part_ID, Edit_Begin);
+   Formal_Part : constant Node_Index := Find_ID_At (Tree, +formal_part_ID, Edit_Begin);
    Param_Iter  : Iterator;
    Edit_End    : Buffer_Pos;
    Param_Count : Count_Type := 0;

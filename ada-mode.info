@@ -1,4 +1,4 @@
-This is ada-mode.info, produced by makeinfo version 6.3 from
+This is ada-mode.info, produced by makeinfo version 6.7 from
 ada-mode.texi.
 
 Copyright (C) 1999 - 2020 Free Software Foundation, Inc.
@@ -25,7 +25,7 @@ File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 Top
 ***
 
-Ada Mode Version 7.0.1
+Ada Mode Version 7.1.0
 
 * Menu:
 
@@ -58,7 +58,7 @@ Installation
 
 Ada executables
 
-* Building GNATCOLL 2019::
+* Building GNATCOLL::
 * Building the executables::
 
 Customizing Ada mode
@@ -242,23 +242,34 @@ build gnatcoll xref from sources.
 
 * Menu:
 
-* Building GNATCOLL 2019::
+* Building GNATCOLL::
 * Building the executables::
 
 
-File: ada-mode.info,  Node: Building GNATCOLL 2019,  Next: Building the executables,  Up: Ada executables
+File: ada-mode.info,  Node: Building GNATCOLL,  Next: Building the executables,  Up: Ada executables
 
-2.2.1 Building GNATCOLL 2019
-----------------------------
+2.2.1 Building GNATCOLL
+-----------------------
 
-Download the gnatcoll xref source file from
-<https://github.com/AdaCore/gnatcoll-db>; click on the "clone or
-download" button, select "Download ZIP".
+Download gnatcoll-db from <https://github.com/AdaCore/gnatcoll-db>;
+select the latest release branch (or the one that matches your
+compiler), click on the "clone or download" button, select "Download
+ZIP".
+
+   Similarly, download gnatcoll-bindings from
+<https://github.com/AdaCore/gnatcoll-bindings/tree/20.2> (for
+gnatcoll-iconv).
 
    Then unpack, build, and install the required components:
 
-     tar xf ~/Downloads/gnatcoll-db-19.2.zip
-     cd gnatcoll-db-19.2
+     tar xf ~/Downloads/gnatcoll-bindings-20.2.zip
+     cd gnatcoll-bindings-20.2
+     cd iconv
+     ./setup.py build
+     ./setup.py install
+
+     tar xf ~/Downloads/gnatcoll-db-20.2.zip
+     cd gnatcoll-db-20.2
      make -C sql
      make -C sql install
      make -C sqlite
@@ -267,7 +278,7 @@ download" button, select "Download ZIP".
      make -C xref install
 
 
-File: ada-mode.info,  Node: Building the executables,  Prev: Building GNATCOLL 2019,  Up: Ada executables
+File: ada-mode.info,  Node: Building the executables,  Prev: Building GNATCOLL,  Up: Ada executables
 
 2.2.2 Building the executables
 ------------------------------
@@ -1157,7 +1168,7 @@ name as one that was previously selected.
 
    If 'Example_5' is the only project in the current emacs session,
 'wisi-prj-find-dominating-cached' finds no project file (because
-'Example_4' is not a child directory of 'Example_5', so the default
+'Example_4' is not a child directory of 'Example_5'), so the default
 strategy of "ask the user" is used, giving the prompt for a directory.
 
    If 'Example_4' is also a project in the current emacs session,
@@ -1499,14 +1510,21 @@ File: ada-mode.info,  Node: Identifier completion,  Next: Indentation,  Prev: Mo
 7 Identifier completion
 ***********************
 
-Emacs provides a general way of completing identifiers: 'M-/' (bound to
-'dabbrev-expand').  This is an easy way to type faster: you just have to
-type the first few letters of an identifier, and then loop through all
-the possible completions.
+Emacs provides two general ways of completing identifiers while typing:
+'M-/' (bound to 'dabbrev-expand'), and 'M-tab' (bound to
+'complete-symbol'.
+
+   This is an easy way to type faster: you just have to type the first
+few letters of an identifier, and then loop through all the possible
+completions.
+
+   'complete-symbol' completes on all the symbols defined in the current
+project, as returned by 'gpr_query'.
 
    If you have bound 'hippie-expand', that also uses 'dabbrev-expand'.
 
-   'M-/' works by parsing all open Ada files for possible completions.
+   'dabbrev-expand' completes on all words in all open Ada files for
+possible completions, using simple Emacs syntax-class parsing.
 
    For instance, if the words 'my_identifier' and 'my_subprogram' are
 the only words starting with 'my' in any of the open Ada files, then you
@@ -1520,6 +1538,17 @@ will have this scenario:
 
    This is a very fast way to do completion, and the casing of words
 will also be respected.
+
+   Another place where identifier completion is used in the
+'xref-find-definitions' (<C-u M-.>) and 'wisi-goto-spec/body' (<C-u C-c
+C-d>) commands; these complete on all symbols in the project (provided
+by 'gpr_query').  With two 'C-u', the completion is limited to symbols
+defined in the current file.
+
+   Note that in Ada, for subprograms that have a specification in the
+'.ads' file and a body in the '.adb' file, <C-u C-u C-c C-d> returns the
+spec location only, so it will not find the function if invoked in the
+'.adb' file.
 
 
 File: ada-mode.info,  Node: Indentation,  Next: Statement skeletons,  Prev: Identifier completion,  Up: Top
@@ -2515,45 +2544,50 @@ their use in free software.
 
 Tag Table:
 Node: Top931
-Node: Overview2716
-Node: Why not LSP?3953
-Node: Installation4709
-Node: Ada Reference Manual5675
-Node: Ada executables5936
-Node: Building GNATCOLL 20198294
-Node: Building the executables8879
-Node: Customization9702
-Node: Slow response10202
-Node: Non-standard file names11928
-Node: Other compiler13807
-Node: Other cross-reference14382
-Node: Other customization15105
-Node: Compiling Executing19096
-Node: Compile commands19819
-Node: Compiling Examples22511
-Node: No project files23343
-Node: Set compiler options28659
-Node: Set source search path30712
-Node: Use wisi project file32949
-Node: Use multiple GNAT project files36556
-Node: Use a Makefile41400
-Node: Compiler errors43051
-Node: Project files43868
-Node: Project file overview44920
-Node: Project file variables45462
-Node: Moving Through Ada Code48902
-Node: Identifier completion51934
-Node: Indentation52968
-Node: Statement skeletons56497
-Node: Aligning code58140
-Node: Automatic casing59085
-Node: Comment Handling61272
-Node: Key summary61791
-Node: Developer overview64521
-Node: Directory structure64850
-Node: ELPA67537
-Node: Savannah68174
-Node: ada-france68526
-Node: GNU Free Documentation License68765
+Node: Overview2711
+Node: Why not LSP?3948
+Node: Installation4704
+Node: Ada Reference Manual5670
+Node: Ada executables5931
+Node: Building GNATCOLL8284
+Node: Building the executables9179
+Node: Customization9997
+Node: Slow response10497
+Node: Non-standard file names12223
+Node: Other compiler14102
+Node: Other cross-reference14677
+Node: Other customization15400
+Node: Compiling Executing19391
+Node: Compile commands20114
+Node: Compiling Examples22806
+Node: No project files23638
+Node: Set compiler options28954
+Node: Set source search path31007
+Node: Use wisi project file33244
+Node: Use multiple GNAT project files36851
+Node: Use a Makefile41696
+Node: Compiler errors43347
+Node: Project files44164
+Node: Project file overview45216
+Node: Project file variables45758
+Node: Moving Through Ada Code49198
+Node: Identifier completion52230
+Node: Indentation54028
+Node: Statement skeletons57557
+Node: Aligning code59200
+Node: Automatic casing60145
+Node: Comment Handling62332
+Node: Key summary62851
+Node: Developer overview65581
+Node: Directory structure65910
+Node: ELPA68597
+Node: Savannah69234
+Node: ada-france69586
+Node: GNU Free Documentation License69825
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

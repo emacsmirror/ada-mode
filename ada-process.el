@@ -96,7 +96,9 @@
    WITH
    XOR
    LEFT_PAREN
+   LEFT_SQUARE_BRACKET
    RIGHT_PAREN
+   RIGHT_SQUARE_BRACKET
    AMPERSAND
    AT_SIGN
    BAR
@@ -439,7 +441,9 @@
    (WITH . "with")
    (XOR . "xor")
    (LEFT_PAREN . "(")
+   (LEFT_SQUARE_BRACKET . "[")
    (RIGHT_PAREN . ")")
+   (RIGHT_SQUARE_BRACKET . "]")
    (AMPERSAND . "&")
    (AT_SIGN . "@")
    (BAR . "|")

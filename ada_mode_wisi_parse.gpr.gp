@@ -24,13 +24,13 @@ with "wisitoken";
 with "standard_common";
 with "gnatcoll";
 with "gnatcoll_sqlite";
-#if HAVE_GNATCOLL_XREF="yes"
 with "gnatcoll_xref";
-#end if;
+#if HAVE_GNAT_UTIL="yes"
 with "gnat_util";
---  #if HAVE_LIBADALANG="yes"
---  with "libadalang";
---  #end if;
+#end if;
+#if HAVE_LIBADALANG="yes"
+with "libadalang";
+#end if;
 project Ada_Mode_Wisi_Parse is
 
    for Main use
@@ -38,9 +38,12 @@ project Ada_Mode_Wisi_Parse is
       "ada_mode_wisi_lr1_parse.ads",
       "run_ada_lalr_parse.ads",
       "run_ada_lr1_parse.ads",
---  #if HAVE_LIBADALANG="yes"
---        "run_ada_libadalang_parse.ads",
---  #end if;
+#if ELPA="no"
+       #if HAVE_LIBADALANG="yes"
+         "dump_libadalang_corrected.adb",
+       #end if;
+      "dump_wisitoken_corrected.adb",
+#end if;
       "gpr_mode_wisi_parse.ads",
       "run_gpr_parse.ads",
       "gpr_query.adb"
@@ -67,7 +70,7 @@ project Ada_Mode_Wisi_Parse is
          for Default_Switches ("Ada") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Style_Checks &
-           Standard_Common.Compiler.Debug_Switches;
+           Standard_Common.Compiler.Debug_Switches & "-gnat2020";
 
          --  Generated files; lines too long, don't need debug
          for Switches ("ada_process_actions.adb") use
@@ -96,7 +99,7 @@ project Ada_Mode_Wisi_Parse is
          for Default_Switches ("Ada") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Style_Checks &
-           Standard_Common.Compiler.Release_Switches;
+           Standard_Common.Compiler.Release_Switches & "-gnat2020";
 
          for Switches ("ada_process_actions.adb") use
            Standard_Common.Compiler.Common_Switches &
