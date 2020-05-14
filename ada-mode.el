@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.1.0
-;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.0") (emacs "25.0"))
+;; Version: 7.1.1
+;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.1") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.

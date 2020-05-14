@@ -19,7 +19,7 @@ fi
 # support for libadalang is still experimental
 gnatprep  -DHAVE_LIBADALANG="no" -DELPA="yes" -DHAVE_GNAT_UTIL=$HAVE_GNAT_UTIL ada_mode_wisi_parse.gpr.gp ada_mode_wisi_parse.gpr
 
-WISI_DIR="../wisi-3.1.0"
+WISI_DIR=`ls -d ../wisi-3.1.?`
 
 gnatprep -DELPA="yes" $WISI_DIR/wisi.gpr.gp $WISI_DIR/wisi.gpr
 
