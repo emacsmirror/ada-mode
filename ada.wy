@@ -1078,7 +1078,7 @@ expression_function_declaration
  ;; IS does not start a block, so it is not "motion".
  ;;
     %((wisi-statement-action [1 statement-start 2 statement-override 6 statement-end])
-      (wisi-indent-action [nil nil ada-indent-broken ada-indent-broken ada-indent-broken ada-indent-broken]))%
+      (wisi-indent-action [nil nil nil ada-indent-broken ada-indent-broken ada-indent-broken]))%
   ;
 
 extended_return_object_declaration
