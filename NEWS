@@ -6,6 +6,45 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada Mode 7.1.3
+
+** Indentation of 'is' in expression functions is restored to 7.0.1
+   behavior.
+
+** wisi-get-identifier (used by wisi-goto-spec/body and others) sets
+   completion delimiters appropriately. When using gpr-query, for a
+   procedure declared as:
+
+   package Package_Name is
+      procedure Procedure_Name (args);
+
+   the completion string looks like:
+
+     Procedure_Name(args)<Package_Name<line>>
+
+   so for example you can type "iterate<wisitok" to complete on
+   WisiToken iterators, or "add(Data" to complete on all subprograms
+   whose name starts with "add" and whose first argument starts with
+   "Data".
+
+** New constant ada-declaration-nonterms holds the Ada nonterminal
+   identifiers, for use with wisi-cache-nonterm.
+
+** ada-which-function is now a command (can be invoked by M-x); useful
+   when you don't want which-function-mode turned on, but want to know
+   what function point is in.
+
+* Ada Mode 7.1.2
+20 May 2020
+
+** Revert change in indent of 'is' in expression_function_declaration
+   to 7.0.1 behavior.
+
+* Ada Mode 7.1.1
+14 May 2020
+
+** packaging bug fix
+
 * Ada Mode 7.1
 11 May 2020
 

@@ -423,7 +423,7 @@ package body Wisi.Ada is
    end Object_Index_To_Element_Object;
 
    procedure Format_Parameter_List
-     (Tree       : in     WisiToken.Syntax_Trees.Tree;
+     (Tree       : in out WisiToken.Syntax_Trees.Tree;
       Data       : in out Parse_Data_Type;
       Edit_Begin : in     WisiToken.Buffer_Pos)
    is separate;
@@ -705,7 +705,7 @@ package body Wisi.Ada is
    overriding
    procedure Refactor
      (Data       : in out Parse_Data_Type;
-      Tree       : in     WisiToken.Syntax_Trees.Tree;
+      Tree       : in out WisiToken.Syntax_Trees.Tree;
       Action     : in     Positive;
       Edit_Begin : in     WisiToken.Buffer_Pos)
    is

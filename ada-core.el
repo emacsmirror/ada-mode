@@ -63,7 +63,11 @@ Called by `syntax-propertize', which is called by font-lock in
   "Goto start of declarative region containing point."
   (interactive)
   (wisi-validate-cache (point-min) (point-max) t 'navigate)
-
+  (push-mark)
+  (when (looking-back "declare" (line-beginning-position))
+    ;; We just did ada-goto-declarative-region-start to get here; we
+    ;; want the next one up.
+    (backward-word 1))
   (let ((done nil)
 	(start-pos (point))
 	(outermost nil)
@@ -84,14 +88,16 @@ Called by `syntax-propertize', which is called by font-lock in
 
 	(if (ada-declarative-region-start-p cache)
 	    (if (< (point) start-pos)
+		;; found it.
 		(progn
-		  (forward-word);; past 'is'
+		  (forward-word);; past 'is' or 'declare'.
 		  (setq done t))
 
 	      ;; test/ada_mode-nominal.adb function F2
 	      ;;
-	      ;; start-point is in a formal_part or aspect_clause; we
-	      ;; want the next level up.
+	      ;; start-point is in a subprogram_declarator,
+	      ;; formal_part, aspect_clause, etc; code that contains a
+	      ;; declarative part. We want the next level up.
 	      (if outermost
 		  ;; there is no next level up; add the use_clause in the context_clause.
 		  (progn

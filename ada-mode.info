@@ -25,7 +25,7 @@ File: ada-mode.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 Top
 ***
 
-Ada Mode Version 7.1.0
+Ada Mode Version 7.1.3
 
 * Menu:
 
@@ -221,7 +221,7 @@ below assume that the compiler is installed at '$prefix', e.g.
 If you are running Windows, use mingw64 'bash' to run these commands.
 
    On linux, some versions of the 'GNATCOLL.iconv' package (used by
-'gpr_query', but not the parser) explicity require the 'libiconv.so'
+'gpr_query', but not the parser) explicitly require the 'libiconv.so'
 library.  GNAT provides the 'libiconv.so' library in
 '<gnat>/lib64/libiconv.so'.  On Debian, that directory is not in the
 standard load path, and iconv is provided by glibc, so 'libiconv.so' is
@@ -1519,7 +1519,18 @@ few letters of an identifier, and then loop through all the possible
 completions.
 
    'complete-symbol' completes on all the symbols defined in the current
-project, as returned by 'gpr_query'.
+project, as returned by 'gpr_query'.  For a procedure declared as:
+
+     package Package_Name is
+        procedure Procedure_Name (args);
+
+   the completion string looks like:
+
+     Procedure_Name(args)<Package_Name<line>>
+
+   so for example you can type "iterate<wisitok" to complete on
+WisiToken iterators, or "add(Data" to complete on all subprograms whose
+name starts with "add" and whose first argument starts with "Data".
 
    If you have bound 'hippie-expand', that also uses 'dabbrev-expand'.
 
@@ -2549,41 +2560,41 @@ Node: Why not LSP?3948
 Node: Installation4704
 Node: Ada Reference Manual5670
 Node: Ada executables5931
-Node: Building GNATCOLL8284
-Node: Building the executables9179
-Node: Customization9997
-Node: Slow response10497
-Node: Non-standard file names12223
-Node: Other compiler14102
-Node: Other cross-reference14677
-Node: Other customization15400
-Node: Compiling Executing19391
-Node: Compile commands20114
-Node: Compiling Examples22806
-Node: No project files23638
-Node: Set compiler options28954
-Node: Set source search path31007
-Node: Use wisi project file33244
-Node: Use multiple GNAT project files36851
-Node: Use a Makefile41696
-Node: Compiler errors43347
-Node: Project files44164
-Node: Project file overview45216
-Node: Project file variables45758
-Node: Moving Through Ada Code49198
-Node: Identifier completion52230
-Node: Indentation54028
-Node: Statement skeletons57557
-Node: Aligning code59200
-Node: Automatic casing60145
-Node: Comment Handling62332
-Node: Key summary62851
-Node: Developer overview65581
-Node: Directory structure65910
-Node: ELPA68597
-Node: Savannah69234
-Node: ada-france69586
-Node: GNU Free Documentation License69825
+Node: Building GNATCOLL8285
+Node: Building the executables9180
+Node: Customization9998
+Node: Slow response10498
+Node: Non-standard file names12224
+Node: Other compiler14103
+Node: Other cross-reference14678
+Node: Other customization15401
+Node: Compiling Executing19392
+Node: Compile commands20115
+Node: Compiling Examples22807
+Node: No project files23639
+Node: Set compiler options28955
+Node: Set source search path31008
+Node: Use wisi project file33245
+Node: Use multiple GNAT project files36852
+Node: Use a Makefile41697
+Node: Compiler errors43348
+Node: Project files44165
+Node: Project file overview45217
+Node: Project file variables45759
+Node: Moving Through Ada Code49199
+Node: Identifier completion52231
+Node: Indentation54420
+Node: Statement skeletons57949
+Node: Aligning code59592
+Node: Automatic casing60537
+Node: Comment Handling62724
+Node: Key summary63243
+Node: Developer overview65973
+Node: Directory structure66302
+Node: ELPA68989
+Node: Savannah69626
+Node: ada-france69978
+Node: GNU Free Documentation License70217
 
 End Tag Table
 

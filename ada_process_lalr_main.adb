@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LALR Ada_Emacs re2c PROCESS ada.wy
 --
 
---  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -870,7 +870,7 @@ package body Ada_Process_LALR_Main is
             Table.States (49).Action_List.Set_Capacity (40);
             Add_Action (Table.States (49), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 81, 96, 107, 108, 109, 110), (146, 1),  1,
-            compilation_unit_list_1'Access, compilation_unit_list_1_check'Access);
+            compilation_1'Access, compilation_1_check'Access);
             Table.States (49).Kernel := To_Vector ((0 => ((146, 1),  145,  0, (146, 1),  1)));
             Table.States (49).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, (146, 1),  1)));
             Table.States (50).Action_List.Set_Capacity (40);
@@ -3195,7 +3195,7 @@ package body Ada_Process_LALR_Main is
             Table.States (231).Action_List.Set_Capacity (40);
             Add_Action (Table.States (231), (4, 5, 13, 15, 17, 18, 25, 27, 28, 29, 30, 31, 32, 36, 37, 40, 41, 46, 47,
             48, 49, 50, 51, 52, 57, 58, 60, 61, 63, 66, 69, 71, 73, 74, 81, 96, 107, 108, 109, 110), (146, 0),  2,
-            compilation_unit_list_0'Access, null);
+            compilation_0'Access, null);
             Table.States (231).Kernel := To_Vector ((0 => ((146, 0),  145,  0, (146, 0),  2)));
             Table.States (231).Minimal_Complete_Actions := To_Vector ((0 => (Reduce, (146, 0),  2)));
             Table.States (232).Action_List.Set_Capacity (4);

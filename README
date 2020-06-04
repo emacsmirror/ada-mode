@@ -1,4 +1,4 @@
-Emacs Ada mode version 7.1.0
+Emacs Ada mode version 7.1.3
 
 Ada mode provides auto-casing, fontification, navigation, and
 indentation for Ada source code files.
@@ -34,4 +34,3 @@ Ada mode uses project files to define large (multi-directory)
 projects, and to define casing exceptions.
 
 See ada-mode.info for help on using and customizing Ada mode.
-

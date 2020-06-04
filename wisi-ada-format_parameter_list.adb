@@ -21,7 +21,7 @@ pragma License (GPL);
 with WisiToken.Syntax_Trees.LR_Utils; use WisiToken.Syntax_Trees.LR_Utils;
 separate (Wisi.Ada)
 procedure Format_Parameter_List
-  (Tree       : in     WisiToken.Syntax_Trees.Tree;
+  (Tree       : in out WisiToken.Syntax_Trees.Tree;
    Data       : in out Parse_Data_Type;
    Edit_Begin : in     WisiToken.Buffer_Pos)
 is
@@ -46,7 +46,15 @@ is
    end record;
 
    Formal_Part : constant Node_Index := Find_ID_At (Tree, +formal_part_ID, Edit_Begin);
-   Param_Iter  : Iterator;
+   Param_List  : constant Constant_List :=
+     (if Formal_Part = Invalid_Node_Index
+      then Creators.Invalid_List (Tree)
+      else Creators.Create_List
+        (Tree,
+         Root       => Tree.Child (Formal_Part, 2),
+         List_ID    => +parameter_specification_list_ID,
+         Element_ID => +parameter_specification_ID));
+
    Edit_End    : Buffer_Pos;
    Param_Count : Count_Type := 0;
 
@@ -65,22 +73,20 @@ begin
       Put_Line (";; format parameter list node" & Formal_Part'Image);
    end if;
 
-   Edit_End   := Tree.Byte_Region (Formal_Part).Last;
-   Param_Iter := Iterator
-     (Iterate (Tree, Data.Base_Terminals, Data.Lexer, Data.Descriptor,
-               Tree.Child (Formal_Part, 2), +parameter_specification_ID, +SEMICOLON_ID));
+   Edit_End := Tree.Byte_Region (Formal_Part).Last;
 
    --  The last parameter might be empty, due to syntax errors.
-   for Param_Cur in Param_Iter loop
-      if not Tree.Is_Empty (Node (Param_Cur)) then
+   for N of Param_List loop
+      if not Tree.Buffer_Region_Is_Empty (N) then
          Param_Count := Param_Count + 1;
       end if;
    end loop;
 
    declare
       Params           : array (1 .. Param_Count) of Parameter;
-      Param_Cur        : Cursor              := First (Param_Iter);
-      First_Param_Node : constant Node_Index := Node (First (Param_Iter));
+      Param_Cur        : Cursor                     := Param_List.First;
+      Param_Iter       : constant Constant_Iterator := Param_List.Iterate_Constant;
+      First_Param_Node : constant Node_Index        := Node (Param_Cur);
       Last_Param_Node  : Node_Index;
    begin
       for Param of Params loop
@@ -89,18 +95,16 @@ begin
          declare
             Children : constant Valid_Node_Index_Array := Tree.Children (Node (Param_Cur));
          begin
-            for Ident_Cur in Iterate
-              (Tree, Data.Base_Terminals, Data.Lexer, Data.Descriptor, Children (1), +IDENTIFIER_ID, +COMMA_ID)
-            loop
-               Param.Identifiers.Append (Tree.Byte_Region (Node (Ident_Cur)));
+            for Ident of Creators.Create_List (Tree, Children (1), +identifier_list_ID, +IDENTIFIER_ID) loop
+               Param.Identifiers.Append (Tree.Byte_Region (Ident));
             end loop;
 
-            Param.Aliased_P := not Tree.Is_Empty (Children (3));
+            Param.Aliased_P := not Tree.Buffer_Region_Is_Empty (Children (3));
 
             for I in 4 .. Children'Last loop
                case To_Token_Enum (Tree.ID (Children (I))) is
                when mode_opt_ID =>
-                  if Tree.Is_Empty (Children (I)) then
+                  if Tree.Buffer_Region_Is_Empty (Children (I)) then
                      Param.In_P  := False;
                      Param.Out_P := False;
                   else
@@ -110,7 +114,7 @@ begin
                   end if;
 
                when null_exclusion_opt_ID =>
-                  Param.Not_Null_P := not Tree.Is_Empty (Children (I));
+                  Param.Not_Null_P := not Tree.Buffer_Region_Is_Empty (Children (I));
 
                when name_ID =>
                   Param.Type_Region := Tree.Byte_Region (Children (I));
@@ -121,14 +125,14 @@ begin
                   declare
                      Access_Children : constant Valid_Node_Index_Array := Tree.Children (Children (I));
                   begin
-                     Param.Not_Null_P := not Tree.Is_Empty (Access_Children (1));
+                     Param.Not_Null_P := not Tree.Buffer_Region_Is_Empty (Access_Children (1));
                      Param.Access_P := True;
 
                      if Tree.ID (Access_Children (3)) = +general_access_modifier_opt_ID then
-                        Param.Constant_P := not Tree.Is_Empty (Access_Children (3));
+                        Param.Constant_P := not Tree.Buffer_Region_Is_Empty (Access_Children (3));
                         Param.Type_Region := Tree.Byte_Region (Access_Children (4));
                      else
-                        Param.Protected_P := not Tree.Is_Empty (Access_Children (3));
+                        Param.Protected_P := not Tree.Buffer_Region_Is_Empty (Access_Children (3));
                         Param.Type_Region :=
                           (Tree.Byte_Region (Access_Children (4)).First,
                            Tree.Byte_Region (Children (I)).Last);
@@ -139,7 +143,7 @@ begin
                   null;
 
                when expression_opt_ID =>
-                  if not Tree.Is_Empty (Children (I)) then
+                  if not Tree.Buffer_Region_Is_Empty (Children (I)) then
                      Param.Default_Exp := Tree.Byte_Region (Children (I));
                   end if;
 
@@ -150,7 +154,7 @@ begin
                end case;
             end loop;
          end;
-         Param_Cur := Next (Param_Iter, Param_Cur);
+         Param_Cur := Param_Iter.Next (Param_Cur);
       end loop;
 
       declare

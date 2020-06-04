@@ -93,7 +93,7 @@ package Wisi.Ada is
    overriding
    procedure Refactor
      (Data       : in out Parse_Data_Type;
-      Tree       : in     WisiToken.Syntax_Trees.Tree;
+      Tree       : in out WisiToken.Syntax_Trees.Tree;
       Action     : in     Positive;
       Edit_Begin : in     WisiToken.Buffer_Pos);
 

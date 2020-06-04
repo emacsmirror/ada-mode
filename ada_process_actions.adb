@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada.wy
 --
 
---  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -827,7 +827,7 @@ package body Ada_Process_Actions is
       end case;
    end compilation_unit_2;
 
-   procedure compilation_unit_list_0
+   procedure compilation_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Valid_Node_Index;
@@ -844,9 +844,9 @@ package body Ada_Process_Actions is
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Int, 0))), (True, (Simple, (Int, 0)),
          (Simple, (Int, 0)))));
       end case;
-   end compilation_unit_list_0;
+   end compilation_0;
 
-   procedure compilation_unit_list_1
+   procedure compilation_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Valid_Node_Index;
@@ -862,9 +862,9 @@ package body Ada_Process_Actions is
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, (1 => (True, (Simple, (Int, 0)), (Simple, (Int, 0)))));
       end case;
-   end compilation_unit_list_1;
+   end compilation_1;
 
-   function compilation_unit_list_1_check
+   function compilation_1_check
     (Lexer          : access constant WisiToken.Lexer.Instance'Class;
      Nonterm        : in out WisiToken.Recover_Token;
      Tokens         : in     WisiToken.Recover_Token_Array;
@@ -874,7 +874,7 @@ package body Ada_Process_Actions is
       pragma Unreferenced (Lexer, Tokens);
    begin
       return Terminate_Partial_Parse (Partial_Parse_Active, Partial_Parse_Byte_Goal, Recover_Active, Nonterm);
-   end compilation_unit_list_1_check;
+   end compilation_1_check;
 
    procedure component_clause_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
@@ -1452,8 +1452,8 @@ package body Ada_Process_Actions is
          null;
       when Indent =>
          Indent_Action_0 (Parse_Data, Tree, Nonterm, Tokens, ((False, (Simple, (Label => None))), (False, (Simple,
-         (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))),
-         (False, (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
+         (Label => None))), (False, (Simple, (Label => None))), (False, (Simple, (Int, Ada_Indent_Broken))), (False,
+         (Simple, (Int, Ada_Indent_Broken))), (False, (Simple, (Int, Ada_Indent_Broken)))));
       end case;
    end expression_function_declaration_0;
 

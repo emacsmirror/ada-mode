@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada.wy
 --
 
---  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -145,8 +145,8 @@ package body Ada_Process_LR1_Main is
             Acts (145).Set_First_Last (0, 4);
             Acts (145)(2) := (compilation_unit_2'Access, null);
             Acts (146).Set_First_Last (0, 1);
-            Acts (146)(0) := (compilation_unit_list_0'Access, null);
-            Acts (146)(1) := (compilation_unit_list_1'Access, compilation_unit_list_1_check'Access);
+            Acts (146)(0) := (compilation_0'Access, null);
+            Acts (146)(1) := (compilation_1'Access, compilation_1_check'Access);
             Acts (147).Set_First_Last (0, 0);
             Acts (147)(0) := (component_clause_0'Access, null);
             Acts (149).Set_First_Last (0, 1);

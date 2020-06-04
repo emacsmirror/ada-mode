@@ -83,7 +83,7 @@ For `compilation-filter-hook'."
       ;; We don't want 'next-error' to always go to secondary
       ;; references, so we _don't_ set 'compilation-message text
       ;; property. Instead, we set 'ada-secondary-error, so
-      ;; `ada-goto-secondary-error' will handle it. We also set
+      ;; `ada-show-secondary-error' will handle it. We also set
       ;; fonts, so the user can see the reference.
 
       ;; typical secondary references look like:

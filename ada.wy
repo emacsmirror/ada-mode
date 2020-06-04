@@ -5,8 +5,28 @@
 ;; Created: Sept 2012
 ;; Keywords: syntax
 ;;
+;; Copied from Ada Language Reference Manual Annex P:
+;;
+;; (info "(aarm2012)Annex P" "*info Annex P*")
+;; file:///C:/Projects/arm_info/org.adaic.arm_form/build/html/aarm2012/AA-P.html
+;; https://www.adaic.org/ada-resources/standards/ Ada 2012 annex P
+;;
+;; but listed in alphabetical order. Repeating and optional constructs
+;; are implemented with extra productions. Most names are simplified
+;; to just "name", many productions are modified to reduce conflicts.
+;;
+;; The EBNF in LRM Annex P is not LALR(1), so we use a generalized
+;; LR parser.
+;;
+;; Annex P overloads several keywords as grammar elements; 'body',
+;; 'pragma', some others. That matters in the generated Ada code. We
+;; resolve this by appending _g to the grammar element name.
+;;
+;; To tolerate some invalid syntax during editing, we relax the
+;; grammar, mainly by allowing many items to be empty.
+
 %code copyright_license %{
-;;  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+;;  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 ;;  This program is free software; you can redistribute it and/or
 ;;  modify it under the terms of the GNU General Public License as
@@ -27,21 +47,11 @@
    Partial_Parse_Byte_Goal : WisiToken.Buffer_Pos := WisiToken.Buffer_Pos'Last;
 }%
 
-;;; Commentary:
-;;
-;; This is a wisi grammar file for the Ada language. It is derived
-;; from the 2012 Ada Reference Manual (ARM) with Technical Corrigendum
-;; 1, which is available as (info "(aarm2012)") or at
-;; http://www.ada-auth.org/standards/ada12.html, under the license in
-;; ada_license.text.
-;;
-;; see wisi.el for discussion of using the wisi parser for an
-;; indentation engine.
-
 %generate LALR Ada_Emacs re2c Process
 %generate LR1 Ada_Emacs text_rep re2c Process
 
 %case_insensitive
+%start compilation
 
 %keyword ABS "abs"
 %keyword ACCEPT "accept"
@@ -192,8 +202,6 @@
     %[ "'"([\x20-\U0010FFFF]|GNAT_Char_Coding)"'" ]%
   "' '"
 
-%start compilation_unit_list
-
 %elisp_face font-lock-constant-face
 %elisp_face font-lock-function-name-face
 %elisp_face font-lock-type-face
@@ -306,7 +314,7 @@
 %conflict SHIFT/REDUCE in state association_opt, name on token EQUAL_GREATER
 %conflict SHIFT/REDUCE in state attribute_designator, attribute_designator  on token LEFT_PAREN
 %conflict SHIFT/REDUCE in state block_label, identifier_list  on token COLON
-%conflict SHIFT/REDUCE in state compilation_unit_list, compilation_unit_list  on token FOR
+%conflict SHIFT/REDUCE in state compilation, compilation  on token FOR
 %conflict SHIFT/REDUCE in state declaration, declaration  on token CONSTANT
 %conflict SHIFT/REDUCE in state expression_function_declaration, subprogram_specification on token IS
 %conflict SHIFT/REDUCE in state formal_derived_type_definition, formal_derived_type_definition on token WITH
@@ -329,30 +337,7 @@
 %conflict SHIFT/REDUCE in state task_body, task_body  on token IS
 %conflict SHIFT/REDUCE in state wisitoken_accept, wisitoken_accept  on token FOR
 
-;;;; grammar rules
-;;
-;; The actions cache information in keywords that are significant for
-;; indentation and motion.
-;;
-;; BNF copied from:
-;;
-;; (info "(aarm2012)Annex P" "*info Annex P*")
-;; file:///C:/Projects/arm_info/org.adaic.arm_form/build/html/aarm2012/AA-P.html
-;;
-;; but listed in alphabetical order. Repeating constructs are
-;; implemented with extra productions. Optional constructs are
-;; implemented by repeated productions. Most names are simplified to
-;; just "name".
-;;
-;; The EBNF in LRM Annex P is not LALR(1), so we use a generalized
-;; LALR(1) parser.
-;;
-;; Annex P overloads several keywords as grammar elements; 'body',
-;; 'pragma', some others. That matters in the generated Ada code. We
-;; resolve this by appending _g to the grammar element name.
-;;
-;; To tolerate some invalid syntax during editing, we relax the
-;; grammar, mainly by allowing many items to be empty.
+;;; grammar rules
 
 abstract_limited_synchronized_opt
   : ABSTRACT LIMITED
@@ -682,11 +667,11 @@ case_statement_alternative_list
 ;; Since we allow multiple compilation units in one parse, and don't
 ;; require a library_item in order to be user friendly, we don't need
 ;; a context_clause, since a list of context_items is just a
-;; compilation_unit_list. Since context_item includes pragma, this
+;; compilation. Since context_item includes pragma, this
 ;; also allows a pragma following a compilation_unit.
 ;;
 ;; We allow additional items here for partial syntax in mako-ada
-;; templates and grammar actions.
+;; templates and grammar actions, and for partial parsing in large files.
 compilation_unit
   : with_clause
   | subunit
@@ -697,8 +682,8 @@ compilation_unit
   ;
 
 ;; Compute indent for trailing comments.
-compilation_unit_list
-  : compilation_unit_list compilation_unit
+compilation
+  : compilation compilation_unit
     %((wisi-indent-action [0 [0 0]]))%
   | compilation_unit
     %((wisi-indent-action [[0 0]]))%

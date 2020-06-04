@@ -25,7 +25,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 7.1.0
+@title Ada Mode Version 7.1.3
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -37,7 +37,7 @@ developing GNU and promoting software freedom.''
 @node Top, Overview, (dir), (dir)
 @top Top
 
-Ada Mode Version 7.1.0
+Ada Mode Version 7.1.3
 @end ifnottex
 
 @menu
@@ -228,7 +228,7 @@ on the @code{PATH}. If you are running Windows, use mingw64
 @code{bash} to run these commands.
 
 On linux, some versions of the @code{GNATCOLL.iconv} package (used by
-@code{gpr_query}, but not the parser) explicity
+@code{gpr_query}, but not the parser) explicitly
 require the @file{libiconv.so} library. GNAT provides the
 @file{libiconv.so} library in @file{<gnat>/lib64/libiconv.so}. On
 Debian, that directory is not in the standard load path, and iconv is
@@ -1610,7 +1610,23 @@ few letters of an identifier, and then loop through all the possible
 completions.
 
 @code{complete-symbol} completes on all the symbols defined in the
-current project, as returned by @code{gpr_query}.
+current project, as returned by @code{gpr_query}. For a
+procedure declared as:
+
+@example
+package Package_Name is
+   procedure Procedure_Name (args);
+@end example
+
+the completion string looks like:
+
+@example
+Procedure_Name(args)<Package_Name<line>>
+@end example
+
+so for example you can type "iterate<wisitok" to complete on WisiToken
+iterators, or "add(Data" to complete on all subprograms whose name
+starts with "add" and whose first argument starts with "Data".
 
 If you have bound @code{hippie-expand}, that also uses
 @code{dabbrev-expand}.

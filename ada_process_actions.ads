@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada.wy
 --
 
---  Copyright (C) 2013 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2020 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as
@@ -180,7 +180,7 @@ package Ada_Process_Actions is
          new String'("case_statement_alternative"),
          new String'("case_statement_alternative_list"),
          new String'("compilation_unit"),
-         new String'("compilation_unit_list"),
+         new String'("compilation"),
          new String'("component_clause"),
          new String'("component_clause_list"),
          new String'("component_declaration"),
@@ -521,7 +521,7 @@ package Ada_Process_Actions is
       case_statement_alternative_ID,
       case_statement_alternative_list_ID,
       compilation_unit_ID,
-      compilation_unit_list_ID,
+      compilation_ID,
       component_clause_ID,
       component_clause_list_ID,
       component_declaration_ID,
@@ -905,12 +905,12 @@ package Ada_Process_Actions is
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Valid_Node_Index;
      Tokens    : in     WisiToken.Valid_Node_Index_Array);
-   procedure compilation_unit_list_0
+   procedure compilation_0
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Valid_Node_Index;
      Tokens    : in     WisiToken.Valid_Node_Index_Array);
-   procedure compilation_unit_list_1
+   procedure compilation_1
     (User_Data : in out WisiToken.Syntax_Trees.User_Data_Type'Class;
      Tree      : in out WisiToken.Syntax_Trees.Tree;
      Nonterm   : in     WisiToken.Valid_Node_Index;
@@ -1910,7 +1910,7 @@ package Ada_Process_Actions is
      Tokens         : in     WisiToken.Recover_Token_Array;
      Recover_Active : in     Boolean)
     return WisiToken.Semantic_Checks.Check_Status;
-   function compilation_unit_list_1_check
+   function compilation_1_check
     (Lexer          : access constant WisiToken.Lexer.Instance'Class;
      Nonterm        : in out WisiToken.Recover_Token;
      Tokens         : in     WisiToken.Recover_Token_Array;

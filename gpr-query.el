@@ -808,6 +808,9 @@ FILE is from gpr-query."
       (gpr-query-session-wait session 'symbols));; ensure symbol-locs is ready
     (gpr-query--session-symbol-locs session)))
 
+(cl-defmethod wisi-xref-completion-delim-regex ((_xref gpr-query-xref))
+  (concat "[_(.<>*]"))
+
 (cl-defmethod wisi-xref-completion-regexp ((_xref gpr-query-xref))
   gpr-query-completion-regexp)
 
