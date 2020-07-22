@@ -1520,8 +1520,8 @@ Prompts with completion, defaults to filename at point."
 
 ;;;; ada-mode
 
-(defvar which-func-functions nil) ;; which-func.el
-(defvar which-func-non-auto-modes nil) ;; ""
+(defvar which-func-functions) ;; which-func.el
+(defvar which-func-non-auto-modes) ;; ""
 
 ;;;###autoload
 (define-derived-mode ada-mode prog-mode "Ada"
@@ -1578,7 +1578,8 @@ Prompts with completion, defaults to filename at point."
   ;; loaded later, it will use the add-log which-function, which
   ;; forces a navigate parse.
   (add-hook 'which-func-functions #'ada-which-function nil t)
-  (add-to-list 'which-func-non-auto-modes 'ada-mode)
+  (when (boundp 'which-func-non-auto-modes)
+    (add-to-list 'which-func-non-auto-modes 'ada-mode))
 
   ;;  Support for align
   (add-to-list 'align-dq-string-modes 'ada-mode)
