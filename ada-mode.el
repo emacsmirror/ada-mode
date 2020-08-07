@@ -6,7 +6,7 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.1.3
+;; Version: 7.1.4
 ;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.2") (emacs "25.0"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
@@ -1679,6 +1679,9 @@ Prompts with completion, defaults to filename at point."
 (put 'ada-mode 'custom-mode-group 'ada)
 
 ;;;;; Global initializations
+
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.ad[abs]\\'" . ada-mode))
 
 (when (featurep 'imenu)
   (require 'ada-imenu))
