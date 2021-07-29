@@ -171,7 +171,8 @@ An example is:
 
 (defcustom ada-indent-hanging-rel-exp nil
   "If nil, indent hanging lines in an expression relative to the first line.
-Otherwise, indent by `ada-indent-broken' relative to the start of the expression."
+Otherwise, indent by `ada-indent-broken' relative to the start of
+the expression."
   :type 'boolean
   :safe #'booleanp)
 (make-variable-buffer-local 'ada-indent-hanging-rel-exp)

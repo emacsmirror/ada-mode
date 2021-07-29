@@ -721,7 +721,7 @@ Deselects the current project first."
   "Set PROJECT options that are Ada and compiler specific.")
 
 (cl-defgeneric ada-prj-deselect-compiler (compiler project)
-  "PROJECT has been deselected; unset any project options that are both Ada and compiler specific.")
+  "Unset any PROJECT options that are both Ada and compiler specific.")
 
 (cl-defmethod wisi-prj-select :after ((project ada-prj))
   (ada-prj-select-compiler (ada-prj-compiler project) project))
