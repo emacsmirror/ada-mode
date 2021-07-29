@@ -6,10 +6,13 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
-* Ada Mode 7.1.5
-22 Jul 2021
+* Ada Mode 7.1.6 
+28 Jul 2021
 
-** Uses wisi 3.1.3 for compatibility with FSF gnat 11, Pro gnat 21.
+** Uses wisi 3.1.3 for compatibility with gnat FSF 11, Pro 22,
+   Community 2021.
+
+* Ada Mode 7.1.5 packaging bug
 
 * Ada Mode 7.1.4
 07 Aug 2020

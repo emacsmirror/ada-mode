@@ -107,7 +107,6 @@ Developer overview
 * Directory structure::
 * ELPA::
 * Savannah::
-* ada-france::
 
 @end detailmenu
 @end menu
@@ -166,9 +165,10 @@ supports LSP.
 @node Installation, Customization, Overview, Top
 @chapter Installation
 
-Ada mode requires Emacs 25.0 or greater. Compiling the Ada code for
+Ada mode requires Emacs 25.3 or greater. Compiling the Ada code for
 the external process parser requires GNAT GPL 2017 or later; tested
-with GNAT Community Edition 2019 and GNAT Pro 19.
+with GNAT Community Edition 2021 and GNAT Pro 22.2 (@pxref{Known
+versions}).
 
 Ada mode is distributed in the Gnu ELPA package archive; it can be
 installed via @code{M-x list-packages} (@pxref{Packages,,,emacs,Emacs
@@ -187,17 +187,13 @@ To see what version of Ada mode you have installed, invoke @kbd{M-x
 ada-mode-version}.
 
 You must also install the associated Ada executables (for the language
-parser). You may want to install the Ada Reference Manual.
+parser). You may want to install the Ada Reference Manual in info
+format, via the ELPA package ada-ref-man.
 
 @menu
-* Ada Reference Manual::
 * Ada executables::
+* Known versions
 @end menu
-
-@node Ada Reference Manual
-@section Ada Reference Manual
-The ELPA package ada-ref-man includes the Ada Reference Manual and
-Annotated Ada Reference Manual in info format.
 
 @node Ada executables
 @section Ada executables
@@ -221,11 +217,19 @@ but supports additional queries.
 Both the parser and @file{gpr_query} require the @code{GNATCOLL}
 library provided by AdaCore, distributed with GNAT GPL 2017 or later,
 and also available at Github
-(@url{https://github.com/AdaCore/gnatcoll}). The notes below assume
-that the compiler is installed at @file{$prefix},
-e.g. @file{/usr/local/gnat-2019}, and that @file{$prefix/bin} is first
-on the @code{PATH}. If you are running Windows, use mingw64
-@code{bash} to run these commands.
+(@url{https://github.com/AdaCore/gnatcoll}). The parser builds with
+the gnatcoll distributed with the gnat compiler. However, that
+gnatcoll does not include the xref package, which is required by
+@file{gpr_query}. So we must build gnatcoll xref from sources
+downloaded from github.
+
+The notes below assume that the compiler is installed at
+@file{$prefix}, e.g. @file{/usr/local/gnat-2019}, and that
+@file{$prefix/bin} is first on the @code{PATH}. If you are running
+Windows, use mingw64 @code{bash} to run these commands.
+
+On some operating systems, we must install gnatcoll-iconv; other
+operating systems don't need it.
 
 On linux, some versions of the @code{GNATCOLL.iconv} package (used by
 @code{gpr_query}, but not the parser) explicitly
@@ -239,6 +243,8 @@ running @code{gpr-query}:
 @example
 (setq gpr-query-env '("LD_LIBRARY_PATH=/Projects/gnat/pro_19.2/lib64")
 @end example
+@c FIXME: is this done by gpr-query-mode or wisi-prj? give example for
+@c wisi-prj setting.
 
 In general, @file{gpr_query} should be compiled with the compiler
 version that is used to generate the user project @file{.ali} files;
@@ -246,10 +252,6 @@ the @file{ali} file format can change with each compiler
 version. @file{gpr_query} creates a database of cross reference
 information; that database must be deleted if the compiler version
 changes, to force a complete rebuild.
-
-The default binary gnatcoll distributed with GNAT GPL 2019
-does not include the xref package, which is required by
-@file{gpr_query}. So we must build gnatcoll xref from sources.
 
 @menu
 * Building GNATCOLL::
@@ -264,19 +266,31 @@ Download gnatcoll-db from
 release branch (or the one that matches your compiler), click on the
 ``clone or download'' button, select ``Download ZIP''.
 
+@c branch nn-sustained?
+
 Similarly, download gnatcoll-bindings from
-@url{https://github.com/AdaCore/gnatcoll-bindings/tree/20.2} (for gnatcoll-iconv).
+@url{https://github.com/AdaCore/gnatcoll-bindings/tree/20.2} (for
+gnatcoll-iconv; not needed for GNAT Community 2020 on Windows).
 
-Then unpack, build, and install the required components:
+@c FIXME: gnatcoll-bindings is in community download Sources
+@c FIXME: table of os/gnat version that need/don't need iconv;
+@c debian/comm-2020 requires gnatcoll-iconv
+@c debian/pro-21.1 requires gnatcoll-iconv
 
+Then unpack, build, and install the required components. If you are
+unsure whether you need to install iconv, skip that step; a later step
+will complain if it is needed.
+
+@c FIXME: ada-mode uses -gnat2020, which makes one expression in
+@c gnatcoll-sql ambiguous. Change that, and specify -gnat2020 in .gpr
 @example
-tar xf ~/Downloads/gnatcoll-bindings-20.2.zip
+unzip ~/Downloads/gnatcoll-bindings-20.2.zip
 cd gnatcoll-bindings-20.2
 cd iconv
 ./setup.py build
 ./setup.py install
 
-tar xf ~/Downloads/gnatcoll-db-20.2.zip
+unzip ~/Downloads/gnatcoll-db-20.2.zip
 cd gnatcoll-db-20.2
 make -C sql
 make -C sql install
@@ -320,13 +334,173 @@ else, use @code{install.sh --prefix=<dir>}.
 @code{ada-mode} will use @file{gpr_query} and the parser if they are
 found in @code{PATH}.
 
+@node Known versions
+@section Known versions
+Here we list GNAT compiler versions that are known to work or not work
+with ada-mode.
+
+There are various ways to get the compiler:
+@table @samp
+@item Community
+Downloaded from @url{https://www.adacore.com/download}. The version
+number is the release year.
+
+This version is provided by AdaCore, but they do not support users
+using it.
+
+@item Pro
+Downloaded from AdaCore via a support subscription. The version number
+is the last two digits of the release year, followed by a patch
+release digit.
+
+This version is provided by AdaCore, and they support users using it.
+
+@item FSF
+Installed via a free software package manager, typically as part of
+the ``gcc'' package. The version number is the same as the gcc
+version, something like ``10.3.0'', possibly followed by a date.
+
+This version is derived from some AdaCore version, but is typically
+not identical to a released version. It may be supported by the
+packager.
+@end table
+
+Sometimes compiler versions change what code they accept, particularly
+in the area of access types. So some compiler versions may require
+minor edits of the code; there is a ``WORKAROUND'' comment in the code
+describing the edit required.
+
+Compiler versions that work:
+@table @samp
+@item Community 2019
+Reports an error about a dangling reference; see WORKAROUND comment in
+@file{~/.emacs.d/elpa/wisi-i.j.k/sal-gen_unbounded_definite_red_black_trees.adb}
+
+@item Community 2020
+no edits required
+
+@item Pro 20.2
+no edits required
+
+@item FSF 11.1.0
+@end table
+
+Compiler versions that fail:
+@table @samp
+@item FSF gnat 10.2.1 20210110
+ada-mode uses compiler option -gnat2020; that causes bogus failures
+with this version of gnat. Reported at @url{https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99099}
+@end table
+
 @node Customization, Compiling Executing, Installation, Top
 @chapter Customizing Ada mode
 
-Here we assume you are familiar with setting variables in Emacs,
-either thru 'customize' or in elisp (in your @file{.emacs} file). For
-a basic introduction to customize, elisp, and Emacs in general, see
-the tutorial (@kbd{C-h t}).
+All user-settable Ada mode variables can be set via the menu @samp{Ada
+| Customize}; some can also be set in wisi project files
+(@pxref{Project files}).
+
+To modify a specific variable, you can directly call the function
+@code{customize-variable}; just type @kbd{M-x customize-variable
+@key{RET} @var{variable-name} @key{RET}}.
+
+Alternately, you can specify variable settings in the Emacs
+configuration file, @file{~/.emacs}. This file is coded in Emacs lisp,
+and the syntax to set a variable is the following:
+
+@example
+(setq variable-name value)
+@end example
+
+ada-mode variables that you might consider changing:
+@table @code
+@item Matching end names
+By default, the option @code{ada-end-name-optional} is set to
+@code{t}, which matches the Ada standard. This is useful for new Ada
+users. Experienced users that follow a
+   style guide requiring matching end names should set this to 't',
+   since that gives better error correction.
+
+@end table
+
+Some general (non ada-mode) Emacs settings that are useful for Ada files:
+
+@table @code
+@item context menu
+By default, the context menu is bound to @key{C-down-mouse-3},
+i.e. control-right-click. @key{down-mouse-3} is already bound in the
+global map; you can override that global binding in the
+@code{ada-mode-hook} (see below for code).
+@item other-frame-window-mode
+Ada mode does not provide any @code{other-frame} or
+@code{other-window} variants of user operations. Instead, it is
+recommended to use the Gnu ELPA package @code{other-frame-window}.
+@item delete-trailing-whitespace
+Deletes space, tab at end of line and blank lines at end of buffer.
+@item xref configuration
+@table @code
+@item xref-prompt-for-identifier
+Set to @code{nil} to be prompted less when finding definitions or
+references.
+@item xref-show-xrefs-function
+Determine placement of the window where references are shown.
+@item xref-show-definitions-function
+Determine placement of the window where definitions are shown.
+@item xref--transient-buffer-mode-map
+keymap used in some xref windows; you may want to disable the
+@key{RET} binding there.
+@end table
+@item untabify
+Deletes tab characters that have crept into the file.
+@item indent-tabs-mode
+Don't insert tab characters when indenting.
+@item copyright-update
+Updates the copyright date in the file header comment, to the current
+year.
+@item electric-pair-mode
+Insert a matching right paren when you type a left paren.
+@item hippie-expand
+Bind @code{hippie-expand} to a key; it expands the word before point,
+using words from current buffer, other buffers, file names, etc; see
+@code{hippie-expand-try-functions-list}. You can also add
+@code{wisi-skel-hippie-try} to that list. Note that
+@code{wisi-skel-expand} is bound to @key{C-c C-e} (@pxref{Statement
+skeletons}).
+@item imenu
+Navigate to subprograms and types by name, from a minibuffer menu.
+@item speedbar
+Navigate to subprograms and types by name, from a list in a dedicated window.
+@item which-func
+Display the current subprogram name in the mode bar.
+@end table
+
+The above can all be set by the following code in your
+@file{~/.emacs}. Note that some are functions are added to
+@code{before-save-hook}; they run just before a buffer is written to
+disk. Also, the order is important; ada-mode does not set up the
+Ada-specific features of imenu and speedbar unless imenu is loaded
+first.
+
+@example
+(setq-default indent-tabs-mode nil)
+(define-key xref--transient-buffer-mode-map (kbd "RET") 'xref-goto-xref)
+(setq xref-prompt-for-identifier nil) ;; only prompt on C-u
+(setq xref-show-xrefs-function #'xref--show-defs-buffer-at-bottom)
+(setq xref-show-definitions-function #'xref--show-defs-buffer-at-bottom)
+
+(electric-pair-mode 1)
+(require 'imenu) ;; also enables speedbar
+(require 'ada-mode)
+(add-to-list 'hippie-expand-try-functions-list 'wisi-skel-hippie-try)
+(define-key ada-mode-map "\C-e"     'hippie-expand)
+(define-key ada-mode-map [down-mouse-3] 'ada-popup-menu)
+(add-hook 'ada-mode-hook
+   (lambda ()
+    (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)
+    (add-hook 'before-save-hook 'copyright-update nil t)
+    (add-hook 'before-save-hook
+              (lambda () (untabify (point-min) (point-max)))
+               nil t)))
+@end example
 
 @menu
 * Slow response::
@@ -470,102 +644,6 @@ See @file{ada-gnat-xref.el} and @file{gpr-query.el} for examples.
 
 @node Other customization,  , Other cross-reference, Customization
 @section Other customization
-
-All user-settable Ada mode variables can be set via the menu @samp{Ada
-| Customize}; some can also be set in wisi project files
-(@pxref{Project files}).
-
-To modify a specific variable, you can directly call the function
-@code{customize-variable}; just type @kbd{M-x customize-variable
-@key{RET} @var{variable-name} @key{RET}}.
-
-Alternately, you can specify variable settings in the Emacs
-configuration file, @file{~/.emacs}. This file is coded in Emacs lisp,
-and the syntax to set a variable is the following:
-
-@example
-(setq variable-name value)
-@end example
-
-Some general Emacs settings that are useful for Ada files:
-
-@table @code
-@item context menu
-By default, the context menu is bound to @key{C-down-mouse-3},
-i.e. control-right-click. @key{down-mouse-3} is already bound in the
-global map; you can override that global binding in the
-@code{ada-mode-hook} (see below for code).
-@item other-frame-window-mode
-Ada mode does not provide any @code{other-frame} or
-@code{other-window} variants of user operations. Instead, it is
-recommended to use the Gnu ELPA package @code{other-frame-window}.
-@item delete-trailing-whitespace
-Deletes space, tab at end of line and blank lines at end of buffer.
-@item xref configuration
-@table @code
-@item xref-prompt-for-identifier
-Set to @code{nil} to be prompted less when finding definitions or
-references.
-@item xref-show-xrefs-function
-Determine placement of the window where references are shown.
-@item xref-show-definitions-function
-Determine placement of the window where definitions are shown.
-@item xref--transient-buffer-mode-map
-keymap used in some xref windows; you may want to disable the
-@key{RET} binding there.
-@end table
-@item untabify
-Deletes tab characters that have crept into the file.
-@item indent-tabs-mode
-Don't insert tab characters when indenting.
-@item copyright-update
-Updates the copyright date in the file header comment, to the current
-year.
-@item electric-pair-mode
-Insert a matching right paren when you type a left paren.
-@item hippie-expand
-Bind @code{hippie-expand} to a key; it expands the word before point,
-using words from current buffer, other buffers, file names, etc; see
-@code{hippie-expand-try-functions-list}. You can also add
-@code{wisi-skel-hippie-try} to that list. Note that
-@code{wisi-skel-expand} is bound to @key{C-c C-e} (@pxref{Statement
-skeletons}).
-@item imenu
-Navigate to subprograms and types by name, from a minibuffer menu.
-@item speedbar
-Navigate to subprograms and types by name, from a list in a dedicated window.
-@item which-func
-Display the current subprogram name in the mode bar.
-@end table
-
-The above can all be set by the following code in your
-@file{~/.emacs}. Note that some are functions are added to
-@code{before-save-hook}; they run just before a buffer is written to
-disk. Also, the order is important; ada-mode does not set up the
-Ada-specific features of imenu and speedbar unless imenu is loaded
-first.
-
-@example
-(setq-default indent-tabs-mode nil)
-(define-key xref--transient-buffer-mode-map (kbd "RET") 'xref-goto-xref)
-(setq xref-prompt-for-identifier nil) ;; only prompt on C-u
-(setq xref-show-xrefs-function #'xref--show-defs-buffer-at-bottom)
-(setq xref-show-definitions-function #'xref--show-defs-buffer-at-bottom)
-
-(electric-pair-mode 1)
-(require 'imenu) ;; also enables speedbar
-(require 'ada-mode)
-(add-to-list 'hippie-expand-try-functions-list 'wisi-skel-hippie-try)
-(define-key ada-mode-map "\C-e"     'hippie-expand)
-(define-key ada-mode-map [down-mouse-3] 'ada-popup-menu)
-(add-hook 'ada-mode-hook
-   (lambda ()
-    (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)
-    (add-hook 'before-save-hook 'copyright-update nil t)
-    (add-hook 'before-save-hook
-              (lambda () (untabify (point-min) (point-max)))
-               nil t)))
-@end example
 
 @node Compiling Executing, Project files, Customization, Top
 @chapter Compiling Executing
@@ -2068,7 +2146,6 @@ sources, here's an overview.
 * Directory structure::
 * ELPA::
 * Savannah::
-* ada-france::
 @end menu
 
 @node Directory structure
@@ -2087,15 +2164,13 @@ Byte-compiled elisp files, not in the distribution. Generated by the
 Makefile target @code{byte-compile}, or by the Emacs package installer.
 
 @item *.ad?
-Ada code for the external process parser, some generated by the
-WisiToken tool @file{wisitoken-bnf-generate.exe}. The generated code
-is in the tarball distribution and the monotone repository so users
-and Elisp developers don't have to install WisiToken.
+Ada code for the external process parser and other tools, some
+generated by the WisiToken tool @file{wisitoken-bnf-generate.exe}.
 
 @item *.parse_table
-Diagnostic output from @file{wisitoken-bnf-generate.exe}, useful for tracing
-parses while debugging a grammar issue. Not in the tarball
-distribution or the monotone repository.
+Diagnostic output from @file{wisitoken-bnf-generate.exe}, useful for
+tracing parses while debugging a grammar issue. Not in any
+distribution.
 
 @item *.wy
 Grammar files, specifying the language to be parsed. The syntax for
@@ -2165,7 +2240,7 @@ More tests; allows testing path search features.
 Ada mode is published via the Gnu ELPA archive. To test a new version
 of Ada mode, we use a local Gnu ELPA archive. That requires fetching
 Gnu ELPA via git:
-
+@c FIXME: this is wrong
 @example
 cd /Projects
 git clone git://git.savannah.gnu.org/emacs/elpa.git
@@ -2184,16 +2259,27 @@ the elpa workspace, and for building the elpa archive there.
 @node Savannah
 @section Savannah
 
-The ada-mode web page, mailing list, and tarball download are hosted
-on savannah.non-gnu.org, project Emacs Ada mode
+The ada-mode git repository, web page, mailing list, and tarball
+download are hosted on savannah.non-gnu.org, project Emacs Ada mode
 (@url{https://savannah.nongnu.org/projects/ada-mode/}). See the
 project admin page there for more information.
 
-@node ada-france
-@section ada-france
+To checkout all source required to build and test ada-mode, assuming you have
+ssh read/write git access to savannah ada-mode:
 
-The source code for ada-mode is maintained in a monotone repository in
-the ada-france server @url{mtn://www.ada-france.org}.
+@example
+git clone stephen_leake@@git.sv.gnu.org:/srv/git/ada-mode.git \
+    -b org.emacs.ada-mode org.emacs.ada-mode
+cd ada-mode
+git worktree add -b org.wisitoken ../org.wisitoken origin/org.wisitoken
+git worktree add -b org.stephe_leake.sal ../org.stephe_leake.sal origin/org.stephe_leake.sal
+git worktree add -b org.stephe_leake.aunit_ext ../org.stephe_leake.aunit_ext origin/org.stephe_leake.aunit_ext
+git worktree add -b org.stephe_leake.makerules ../org.stephe_leake.makerules origin/org.stephe_leake.makerules
+@end example
+
+In each worktree, there is a @file{build} directory containing the
+Makefile and all build outputs. The target 'all' runs all tests and
+build documentation for that worktree.
 
 @node GNU Free Documentation License
 @appendix GNU Free Documentation License

@@ -144,7 +144,7 @@ rather than to the same column."
   :safe #'booleanp)
 
 (defcustom ada-which-func-parse-size 30000
-  "Minimum size of the region surrounding point that is parsed for `which-function-mode'."
+  "Minimum size of region around point parsed for `which-function-mode'."
   :group 'ada
   :type 'integer
   :safe #'integerp)

@@ -70,7 +70,8 @@ Otherwise, they are indented as previous comments or code."
 (make-variable-buffer-local 'ada-indent-comment-gnat)
 
 (defcustom ada-indent-label -3
-  "Indentation for a loop, block, or statement label, relative to the item it labels.
+  "Indentation for a loop, block, or statement label,
+relative to the item it labels.
 
 Example :
    Label_1 :

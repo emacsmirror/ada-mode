@@ -1,6 +1,6 @@
 ;;; ada-core.el --- core facilities for ada-mode -*- lexical-binding:t -*-
 
-;; Copyright (C) 1994, 1995, 1997 - 2017, 2019 - 2020  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017, 2019 - 2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -190,9 +190,15 @@ is the package spec.")
 (defconst ada-refactor-format-paramlist 5)
 
 (defun ada-refactor (action)
+  "Perform refactor action ACTION on symbol at point."
   (wisi-validate-cache (line-end-position -7) (line-end-position 7) t 'navigate)
   (save-excursion
+    ;; We include punctuation and quote for operators.
     (skip-syntax-backward "w_.\"")
+
+    ;; Skip leading punctuation, for "-Foo.Bar".
+    (skip-syntax-forward ".")
+
     (let* ((edit-begin (point))
 	   (cache (wisi-goto-statement-start))
 	   (parse-begin (point))
@@ -712,7 +718,7 @@ Deselects the current project first."
 (make-obsolete 'ada-select-prj-file 'wisi-prj-select-cache "ada-mode 7.0")
 
 (cl-defgeneric ada-prj-select-compiler (compiler project)
-  "PROJECT has been selected; set any project options that are both Ada and compiler specific.")
+  "Set PROJECT options that are Ada and compiler specific.")
 
 (cl-defgeneric ada-prj-deselect-compiler (compiler project)
   "PROJECT has been deselected; unset any project options that are both Ada and compiler specific.")
