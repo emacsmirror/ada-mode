@@ -1,3 +1,8 @@
 /ada-mode-pkg.el
 /ada-mode-autoloads.el
 *.elc
+ada_lr1_parse_table.txt
+*.exe
+ada_mode_wisi_parse.gpr
+check.gpr
+obj/
