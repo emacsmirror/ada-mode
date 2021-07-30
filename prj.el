@@ -1,4 +1,6 @@
 ;; Emacs wisi project definitions for compiling ada-mode in ELPA workspace
+;;
+;; Copyright (C) 2021  Free Software Foundation, Inc.
 
 (let ((wisi-core (expand-file-name "../wisi")))
 
