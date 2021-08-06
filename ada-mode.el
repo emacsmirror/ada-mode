@@ -6,7 +6,7 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.1.6
+;; Version: 7.1.7
 ;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.3") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
@@ -117,7 +117,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "7.1.5"))
+  (let ((version-string "7.1.7"))
     (if (called-interactively-p 'interactive)
 	(message version-string)
       version-string)))

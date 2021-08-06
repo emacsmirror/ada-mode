@@ -6,6 +6,11 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada Mode 7.1.7 
+06 Aug 2021
+
+** Packaging bug fix.
+
 * Ada Mode 7.1.6 
 30 Jul 2021
 

@@ -15,6 +15,6 @@
    "Makefile"
    ))
 
-(wisi-prj-delete "ada_mode elpa")
+;;(wisi-prj-delete "ada_mode elpa")
 
 ;; end of file
