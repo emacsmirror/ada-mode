@@ -1435,6 +1435,10 @@ references are accessed via @kbd{C-c `}.
 Ada mode uses wisi project files;
 @ifinfo
 @ref{Project files, Project files, Project files, wisi}.
+@end ifinfo
+@ifhtml
+@ref{Project files, Project files, Project files, doc/wisi/wisi}.
+@end ifhtml
 
 A wisi project file specifies what directories hold sources for your
 project, and allows you to customize the compilation commands and
