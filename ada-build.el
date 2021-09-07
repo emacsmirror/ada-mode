@@ -1,7 +1,7 @@
 ;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
 ;; Ada projects without 'make' or similar tool
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2017, 2019  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017, 2019, 2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -232,9 +232,9 @@ main.
 
 search-prompt - Search for a project file in the current
 directory with the same name as the main file. If not found,
-prompt for a project file; thow error if user aborts
+prompt for a project file; throw an error if user aborts.
 
-prompt - Prompt for a project file; thow error if user aborts.
+prompt - Prompt for a project file; throw an error if user aborts.
 
 error - Throw an error (no prompt, no default project).
 

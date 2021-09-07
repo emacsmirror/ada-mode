@@ -1432,7 +1432,9 @@ references are accessed via @kbd{C-c `}.
 @node Project files, Moving Through Ada Code, Compiling Executing, Top
 @chapter Project files
 
-Ada mode uses wisi project files; @ref{wisi, Project files, Project files, wisi}.
+Ada mode uses wisi project files;
+@ifinfo
+@ref{Project files, Project files, Project files, wisi}.
 
 A wisi project file specifies what directories hold sources for your
 project, and allows you to customize the compilation commands and
@@ -1465,7 +1467,7 @@ The current project file is shown by the menu command
 
 To set the project file, use the menu command @key{Ada | Project Files | Find and
 select Project ...}, or one of the elisp functions described in
-@ref{wisi, Selecting Projects, Selecting Projects, wisi}.
+@ref{Selecting Projects, Selecting Projects, Selecting Projects, wisi}.
 
 The project file may also be a GNAT project file (with file extension
 is @code{.gpr}).
