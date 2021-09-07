@@ -1440,7 +1440,7 @@ wisi project files; @ref{Project files, Project files, Project files, wisi}.
 @c We can't use @ref, because that doesn't let us specify a relative
 @c directory for the html file (it drops the directory part of
 @c the info file name!). This path works for the ELPA website.
-@url{../wisi/wisi.html, wisi project files}.
+@url{../wisi/wisi.html#Project-files, wisi project files}.
 @end ifhtml
 
 A wisi project file specifies what directories hold sources for your
