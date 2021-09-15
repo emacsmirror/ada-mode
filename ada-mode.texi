@@ -1433,15 +1433,7 @@ references are accessed via @kbd{C-c `}.
 @chapter Project files
 
 Ada mode uses
-@ifinfo
 wisi project files; @ref{Project files, Project files, Project files, wisi}.
-@end ifinfo
-@ifhtml
-@c We can't use @ref, because that doesn't let us specify a relative
-@c directory for the html file (it drops the directory part of
-@c the info file name!). This path works for the ELPA website.
-@url{../wisi/wisi.html#Project-files, wisi project files}.
-@end ifhtml
 
 A wisi project file specifies what directories hold sources for your
 project, and allows you to customize the compilation commands and
