@@ -25,7 +25,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 7.1.8
+@title Ada Mode Version 7.1.9
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -37,7 +37,7 @@ developing GNU and promoting software freedom.''
 @node Top, Overview, (dir), (dir)
 @top Top
 
-Ada Mode Version 7.1.8
+Ada Mode Version 7.1.9
 @end ifnottex
 
 @menu

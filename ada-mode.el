@@ -6,7 +6,7 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.1.8
+;; Version: 7.1.9
 ;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.5") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
