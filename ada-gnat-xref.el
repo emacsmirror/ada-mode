@@ -5,7 +5,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2020  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -90,7 +90,7 @@
   (cond
    ((null col)
     col)
-   
+
    ((eq ?\" (aref identifier 0))
     ;; There are two cases here:
     ;;
@@ -140,38 +140,45 @@ elements of the result may be nil."
                 (or (ada-gnat-xref-adj-col identifier col) ""))))
 
 (defun ada-gnat-xref-refs (project item all)
-  (with-slots (summary location) item
-    (with-slots (file line column) location
-      (let* ((wisi-xref-full-path t)
-	     (args (cons "-r" (ada-gnat-xref-common-args project summary file line column)))
-	     (result nil))
-	(with-current-buffer (gnat-run-buffer project (gnat-compiler-run-buffer-name (wisi-prj-xref project)))
-	  (gnat-run project (ada-gnat-xref-common-cmd project) args)
+  ;; WORKAROUND: xref 1.3.2 xref-location changed from defclass to cl-defstruct
+  (with-suppressed-warnings (nil) ;; "unknown slot"
+    (let ((summary (if (functionp 'xref-item-summary) (xref-item-summary item) (oref item :summary)))
+	  (location (if (functionp 'xref-item-location) (xref-item-location item) (oref item :location))))
+      (let ((file (if (functionp 'xref-location-file) (xref-location-file location) (oref location :file)))
+	    (line (if (functionp 'xref-location-line) (xref-location-line location) (oref location :line)))
+	    (column (if (functionp 'xref-location-column)
+			(xref-location-column location)
+		      (oref location :column))))
+	(let* ((wisi-xref-full-path t)
+	       (args (cons "-r" (ada-gnat-xref-common-args project summary file line column)))
+	       (result nil))
+	  (with-current-buffer (gnat-run-buffer project (gnat-compiler-run-buffer-name (wisi-prj-xref project)))
+	    (gnat-run project (ada-gnat-xref-common-cmd project) args)
 
-	  (goto-char (point-min))
-	  (when ada-gnat-debug-run (forward-line 2)); skip ADA_PROJECT_PATH, 'gnat find'
+	    (goto-char (point-min))
+	    (when ada-gnat-debug-run (forward-line 2)); skip ADA_PROJECT_PATH, 'gnat find'
 
-	  (while (not (eobp))
-	    (cond
-	     ((looking-at ada-gnat-file-line-col-type-regexp)
-	      ;; process line
-	      (let ((found-file (match-string 1))
-		    (found-line (string-to-number (match-string 2)))
-		    (found-col  (string-to-number (match-string 3)))
-		    (found-type (match-string 4)))
-		(when (or all found-type)
-		  (push (xref-make (if found-type
-				       (concat summary " " found-type)
-				     summary)
-				   (xref-make-file-location found-file found-line found-col))
-			result))
+	    (while (not (eobp))
+	      (cond
+	       ((looking-at ada-gnat-file-line-col-type-regexp)
+		;; process line
+		(let ((found-file (match-string 1))
+		      (found-line (string-to-number (match-string 2)))
+		      (found-col  (string-to-number (match-string 3)))
+		      (found-type (match-string 4)))
+		  (when (or all found-type)
+		    (push (xref-make (if found-type
+					 (concat summary " " found-type)
+				       summary)
+				     (xref-make-file-location found-file found-line found-col))
+			  result))
+		  ))
+	       (t
+		;; ignore line
 		))
-	     (t
-	      ;; ignore line
-	      ))
-	    (forward-line 1)))
-	(nreverse result) ;; specs first.
-	))))
+	      (forward-line 1)))
+	  (nreverse result) ;; specs first.
+	  )))))
 
 (cl-defmethod wisi-xref-definitions (_xref project item)
   (ada-gnat-xref-refs project item nil))
