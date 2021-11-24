@@ -6,6 +6,16 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada Mode 7.2.0
+21 Nov 2021
+
+** Correct last fix (sigh).
+
+* Ada Mode 7.1.9
+21 Nov 2021
+
+** Adapt to change in xref.el xref-file-location.
+
 * Ada Mode 7.1.8
 09 Aug 2021
 
