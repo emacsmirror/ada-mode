@@ -3,7 +3,7 @@
 ;; gpr-query supports Ada and any gcc language that supports the
 ;; AdaCore -fdump-xref switch (which includes C, C++).
 ;;
-;; Copyright (C) 2013 - 2021  Free Software Foundation, Inc.
+;; Copyright (C) 2013 - 2022  Free Software Foundation, Inc.
 
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -722,18 +722,18 @@ FILE is from gpr-query."
   "Run gpr_query tree command OP on ITEM (an xref-item), return list of xref-items."
   ;; WORKAROUND: xref 1.3.2 xref-location changed from defclass to cl-defstruct
   (with-no-warnings ;; "unknown slot"
-    (let ((summary (if (functionp 'xref-item-summary) (xref-item-summary item) (oref item :summary)))
-	  (location (if (functionp 'xref-item-location) (xref-item-location item) (oref item :location)))
+    (let ((summary (if (functionp 'xref-item-summary) (xref-item-summary item) (oref item summary)))
+	  (location (if (functionp 'xref-item-location) (xref-item-location item) (oref item location)))
 	  (eieio-skip-typecheck t)) ;; 'location' may have line, column nil
       (let ((file (if (functionp 'xref-file-location-file)
 		      (xref-file-location-file location)
-		    (oref location :file)))
+		    (oref location file)))
 	    (line (if (functionp 'xref-file-location-line)
 		      (xref-file-location-line location)
-		    (oref location :line)))
+		    (oref location line)))
 	    (column (if (functionp 'xref-file-location-column)
 			(xref-file-location-column location)
-		      (oref location :column))))
+		      (oref location column))))
 
 	(when (eq ?\" (aref summary 0))
 	  ;; gpr_query wants the quotes stripped

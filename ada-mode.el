@@ -1,13 +1,13 @@
 ;;; ada-mode.el --- major-mode for editing Ada sources  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2021  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2022  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.2.0
-;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.5") (emacs "25.3"))
+;; Version: 7.2.1
+;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.8") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -1462,24 +1462,24 @@ For `wisi-indent-calculate-functions'.
   "Find a file in the current project.
 Prompts with completion, defaults to filename at point."
   (interactive)
-  ;; In emacs 27, we can just call 'project-find-file;
-  ;; project-read-file-name-function handles the uniquify-files alist
+  ;; In emacs 27, we can set project-read-file-name-function to
+  ;; tell 'project-find-file to use the uniquify-files alist
   ;; completion table. In emacs 26, we must do that ourselves.
-  (cl-ecase emacs-major-version
-    (27
-     (project-find-file))
+  (require 'project)
+  (if (boundp 'project-read-file-name-function)
+      (let ((project-read-file-name-function #'uniq-file-read))
+        (project-find-file))
 
-    (26
-     (let* ((def (thing-at-point 'filename))
-	    (project (project-current))
-	    (all-files (project-files project nil))
-	    (alist (uniq-file-uniquify all-files))
-	    (table (apply-partially #'uniq-file-completion-table alist))
-            (file (project--completing-read-strict
-                   "Find file" table nil nil def)))
-       (if (string= file "")
-           (user-error "You didn't specify the file")
-	 (find-file (cdr (assoc file alist))))))
+    (let* ((def (thing-at-point 'filename))
+	   (project (project-current))
+	   (all-files (project-files project nil))
+	   (alist (uniq-file-uniquify all-files))
+	   (table (apply-partially #'uniq-file-completion-table alist))
+           (file (project--completing-read-strict
+                  "Find file" table nil nil def)))
+      (if (string= file "")
+          (user-error "You didn't specify the file")
+	(find-file (cdr (assoc file alist)))))
     ))
 
 ;;;; compatibility with previous ada-mode versions

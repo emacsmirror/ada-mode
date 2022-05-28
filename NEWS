@@ -6,6 +6,20 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada Mode 7.2.1
+
+** More fixes for xref-file-location syntax, required by Emacs 28.
+
+** Adapt to change in uniquify-files.
+   uniquify-files no longer sets project-read-file-name-function by
+   default.  ada-find-file (C-c C-t) will still use this package's
+   completion style, but project-find-file (C-x p f) will not by
+   default.
+
+   Set project-read-file-name-function to uniq-file-read if you would
+   like to keep using uniquify-files's completion style outside of
+   ada-find-file.
+
 * Ada Mode 7.2.0
 21 Nov 2021
 
