@@ -6,7 +6,7 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
-* Ada Mode ?
+* Ada Mode 7.3.beta
 9 Jul 2022 beta testing
 
 ** Support incremental parse. Set wisi-incremental-parse-enable t to

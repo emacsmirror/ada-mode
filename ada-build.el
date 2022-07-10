@@ -1,7 +1,7 @@
 ;; ada-build.el --- Extensions to ada-mode for compiling and running  -*- lexical-binding:t -*-
 ;; Ada projects without 'make' or similar tool
 ;;
-;; Copyright (C) 1994, 1995, 1997 - 2017, 2019, 2021  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017, 2019, 2021 - 2022  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -223,7 +223,7 @@ Returns the project if a file is selected, nil otherwise."
 (defun ada-build-require-project-file ()
   "Ensure that a project file is selected, return the project.
 Action when no project file is currently selected is determined
-by `ada-build-prompt-prj':
+by ada-build-prompt-prj:
 
 default - Search for a project file in the current directory with
 the same name as the main file. If not found, use a default
@@ -238,8 +238,8 @@ prompt - Prompt for a project file; thow error if user aborts.
 
 error - Throw an error (no prompt, no default project).
 
-'search' means look for a file with an extension in
-`wisi-prj-file-extensions'.
+\"search\" means look for a file with an extension in
+`wisi-prj-file-extensions\".
 
 An error result does not change the current project."
   (let ((prj (project-current)))

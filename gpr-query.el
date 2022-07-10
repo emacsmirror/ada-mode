@@ -275,7 +275,7 @@ Must match gpr_query.adb Version.")
 	))))
 
 (defun gpr-query--start-process (session command-type)
-  "Start a session process running gpr_query. COMMAND-TYPE is 'xref or 'symbols."
+  "Start a session process running gpr_query. COMMAND-TYPE is xref or symbols."
   (unless (locate-file gpr-query-exec exec-path '("" ".exe"))
     (user-error "'%s' not found on PATH" gpr-query-exec))
 
@@ -373,7 +373,7 @@ If NO-SYMBOLS is non-nil, don't create the symbols process."
 
 (defun gpr-query-session-wait (session command-type)
   "Wait for the current COMMAND-TYPE command to complete.
-COMMAND-TYPE is one of 'xref or 'symbols."
+COMMAND-TYPE is one of xref or symbols."
   (when (and
 	 (eq command-type 'symbols)
 	 (null (gpr-query--session-symbols-process session)))

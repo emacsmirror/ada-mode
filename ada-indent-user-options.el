@@ -1,6 +1,6 @@
 ;; user options shared by Ada mode indentation engines  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2012, 2013, 2015, 2017 - 2021  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015, 2017 - 2022  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Contributors: Simon Wright <simon.j.wright@mac.com>
@@ -94,19 +94,19 @@ An example is:
 (make-variable-buffer-local 'ada-indent-record-rel-type)
 
 (defcustom ada-indent-renames 2
-  "Indentation for `renames' relative to the subprogram keyword.
+  "Indentation for \"renames\" relative to the subprogram keyword.
 
-For `renames' of non-subprograms the indentation is
-`ada-indent-broken' relative to the start of the statement.
+For \"renames\" of non-subprograms the indentation is
+\"ada-indent-broken\" relative to the start of the statement.
 
-If the subprogram has parameters then if `ada-indent-renames' is
-zero or less the indentation is abs `ada-indent-renames' relative
-to the open parenthesis; if `ada-indent-renames' is one or more
+If the subprogram has parameters then if \"ada-indent-renames\" is
+zero or less the indentation is abs \"ada-indent-renames\" relative
+to the open parenthesis; if \"ada-indent-renames\" is one or more
 the indentation is relative to the line containing the subprogram
-keyword ('function' or 'procedure').
+keyword (\"function\" or \"procedure\").
 
 If the subprogram has no parameters then the indentation is
-`ada-indent-broken' relative to the line containing the keyword.
+\"ada-indent-broken\" relative to the line containing the keyword.
 
 Examples:
    ada-indent-renames = 2
@@ -122,15 +122,15 @@ Examples:
 (make-variable-buffer-local 'ada-indent-renames)
 
 (defcustom ada-indent-return 0
-  "Indentation for `return' relative to the matching `function' keyword.
+  "Indentation for \"return\" relative to the matching \"function\" keyword.
 
-If the function has parameters, then if `ada-indent-return' is
-zero or less, the indentation is abs `ada-indent-return' relative
-to the open parenthesis; if `ada-indent-return' is one or more,
-indentation is relative to line containing `function'.
+If the function has parameters, then if \"ada-indent-return\" is
+zero or less, the indentation is abs \"ada-indent-return\" relative
+to the open parenthesis; if \"ada-indent-return\" is one or more,
+indentation is relative to line containing \"function'.
 
-If the function has no parameters, `ada-indent-broken' is used
-relative to line containing `function'.
+If the function has no parameters, \"ada-indent-broken\" is used
+relative to line containing \"function'.
 
 An example is:
    function A (B : Integer)
@@ -140,7 +140,7 @@ An example is:
 (make-variable-buffer-local 'ada-indent-return)
 
 (defcustom ada-indent-use ada-indent-broken
-  "Indentation for the lines in a `use' statement.
+  "Indentation for the lines in a \"use\" statement.
 
 An example is:
    use Ada.Text_IO,
@@ -150,7 +150,7 @@ An example is:
 (make-variable-buffer-local 'ada-indent-use)
 
 (defcustom ada-indent-when 3
-  "Indentation for `when' relative to `exception', `case', `or' in select.
+  "Indentation for \"when\" relative to \"exception', \"case', \"or\" in select.
 
 An example is:
    case A is
@@ -160,7 +160,7 @@ An example is:
 (make-variable-buffer-local 'ada-indent-when)
 
 (defcustom ada-indent-with ada-indent-broken
-  "Indentation for the lines in a `with' context clause.
+  "Indentation for the lines in a \"with\" context clause.
 
 An example is:
    with Ada.Text_IO,
@@ -171,7 +171,7 @@ An example is:
 
 (defcustom ada-indent-hanging-rel-exp nil
   "If nil, indent hanging lines in an expression relative to the first line.
-Otherwise, indent by `ada-indent-broken' relative to the start of
+Otherwise, indent by \"ada-indent-broken\" relative to the start of
 the expression."
   :type 'boolean
   :safe #'booleanp)
@@ -186,7 +186,7 @@ the expression."
 (make-variable-buffer-local 'ada-indent-after-trailing-comment)
 
 (defcustom ada-indent-subprogram-is ada-indent-broken
-  "Indentation for `is' relative to `function' or `procedure' when
+  "Indentation for \"is\" relative to \"function\" or \"procedure\" when
 the subprogram body is a short form; \"is null\", expression
 function, etc.
 

@@ -34,7 +34,7 @@
 (defun benchmark-xref (test-list xref-function)
   "TEST-LIST is a list of TEST, where TEST is a list (FILENAME (TARGET ...) ...).
 For each TEST, open the file, and search for each TARGET,
-starting from point-min. If TARGET is "", start the next test
+starting from point-min. If TARGET is \"\", start the next test
 from current point instead. Then invoke xref-function. Repeat for
 each list of TARGET, using the current file. Show the time for
 each TEST, and the total time.

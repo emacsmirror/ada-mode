@@ -5,7 +5,7 @@
 ;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2021  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2022  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -82,7 +82,7 @@
 (cl-defmethod wisi-xref-completion-table ((_xref gnatxref-xref) _project)
   (wisi-names t t))
 
-(cl-defgeneric wisi-xref-completion-regexp ((_xref gnatxref-xref))
+(cl-defgeneric wisi-xref-completion-regexp (_xref)
   wisi-names-regexp)
 
 (defun ada-gnat-xref-adj-col (identifier col)
