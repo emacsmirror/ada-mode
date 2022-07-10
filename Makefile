@@ -4,7 +4,7 @@
 
 .PHONY : all force
 
-all : build_executables
+all : build_executables byte-compile
 
 Makefile.conf : create_makefile_conf.sh
 	$(SHELL) -c ./create_makefile_conf.sh
@@ -30,6 +30,14 @@ ada_mode_wisi_parse.gpr : ada_mode_wisi_parse.gpr.gp ../wisi/wisi.gpr
 
 ../wisi/wisitoken-bnf-generate : ../wisi/wisi.gpr force
 	cd ../wisi; gprbuild -p -j8 -P wisi.gpr wisitoken-bnf-generate
+
+BYTE_COMPILE := "(progn (setq package-load-list '((wisi) (ada-mode) all)) (package-initialize)(setq byte-compile-error-on-warn t)(batch-byte-compile))"
+byte-compile : byte-compile-clean
+	cd ../wisi; emacs -Q -batch -L . --eval $(BYTE_COMPILE) *.el
+	emacs -Q -batch -L . -L ../wisi  --eval $(BYTE_COMPILE) *.el
+
+byte-compile-clean :
+	cd ..; rm -f *.elc
 
 recursive-clean : force
 	gprclean -r -P ada_mode_wisi_parse.gpr

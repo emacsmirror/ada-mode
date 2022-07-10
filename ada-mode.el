@@ -7,7 +7,7 @@
 ;; Keywords: languages
 ;;  ada
 ;; Version: 7.2.1
-;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.5") (emacs "25.3"))
+;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.8") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
