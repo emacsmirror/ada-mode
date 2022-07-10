@@ -39,6 +39,9 @@ byte-compile : byte-compile-clean
 byte-compile-clean :
 	cd ..; rm -f *.elc
 
+clean : force
+	rm -rf obj
+
 recursive-clean : force
 	gprclean -r -P ada_mode_wisi_parse.gpr
 
