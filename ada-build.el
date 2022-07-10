@@ -232,9 +232,9 @@ main.
 
 search-prompt - Search for a project file in the current
 directory with the same name as the main file. If not found,
-prompt for a project file; throw an error if user aborts.
+prompt for a project file; thow error if user aborts
 
-prompt - Prompt for a project file; throw an error if user aborts.
+prompt - Prompt for a project file; thow error if user aborts.
 
 error - Throw an error (no prompt, no default project).
 
@@ -314,7 +314,7 @@ If CONFIRM is non-nil, prompt for user confirmation of the command."
 
 ;;;###autoload
 (defun ada-build-set-make (&optional confirm)
-  "Set the main project variable to the current file, then run the make_cmd project variable.
+  "Set the main project variable to the current file, then run make_cmd.
 By default, this compiles and links the new main program.
 If CONFIRM is non-nil, prompt for user confirmation of the command."
   (interactive "P")

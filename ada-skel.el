@@ -1,6 +1,6 @@
 ;;; ada-skel.el --- Extension to Ada mode for inserting statement skeletons  -*- lexical-binding:t -*-
 
-;; Copyright (C) 1987, 1993, 1994, 1996-2020  Free Software Foundation, Inc.
+;; Copyright (C) 1987, 1993, 1994, 1996-2021  Free Software Foundation, Inc.
 
 ;; Authors: Stephen Leake <stephen_leake@stephe-leake.org>
 
@@ -129,13 +129,15 @@ This could end in a token recognized by `ada-skel-expand'."
   "Insert accept statement with name from `str'."
   ()
   "accept " str " do\n"
+  "null;\n"
   "end " str ";\n")
 
 (define-skeleton ada-skel-case
   "Insert case statement."
   ()
   "case " str " is\n"
-  "when " _ "=>\n"
+  "when A" _ " =>\n"
+  "null;\n"
   "end case;\n")
 
 (define-skeleton ada-skel-declare
@@ -145,40 +147,45 @@ This could end in a token recognized by `ada-skel-expand'."
   "declare\n"
   _
   "begin\n"
+  "null;\n"
   "exception\n"
+  "when others =>\n"
+  "null;\n"
   "end " str | -1 ";\n")
 
 (define-skeleton ada-skel-entry
   "Insert entry statement with name from `str'."
   ()
-  "entry " str " when " _ "\n"
+  "entry " str " when A" _ "\n"
   "is\n"
   "begin\n"
+  "null;\n"
   "end " str ";\n")
 
 (define-skeleton ada-skel-for
   "Insert a for loop statement with an optional name (from `str')."
   ()
   str & " :\n"
-  "for " _ " loop\n"
+  "for A in A" _ " loop\n"
+  "null;\n"
   "end loop " str | -1 ";\n")
 
 (define-skeleton ada-skel-function-body
   "Insert a function body with name from `str'."
   ()
-  "function " str " return \n"
+  "function " str " return A\n"
   "is\n"
   "begin\n"
-  _
+  "null;\n" _
   "end " str ";\n")
 
 (define-skeleton ada-skel-function-spec
   "Insert a function type specification with name from `str'."
   ()
-  "function " str " return ;\n")
+  "function " str " return A;\n")
 
 (define-skeleton ada-skel-header
-  "Insert a file header comment, with automatic copyright year and prompt for copyright owner/license.
+  "Insert a file header comment, prompt for copyright owner/license.
 Each user will probably want to override this."
   ()
   "--  Abstract :\n"
@@ -191,9 +198,12 @@ Each user will probably want to override this."
 (define-skeleton ada-skel-if
   "Insert an if statement."
   ()
-  "if " _ " then\n"
-  "elsif  then\n"
+  "if A" _ " then\n"
+  "null;\n"
+  "elsif A then\n"
+  "null;\n"
   "else\n"
+  "null;\n"
   "end if;\n")
 
 (define-skeleton ada-skel-loop
@@ -201,7 +211,7 @@ Each user will probably want to override this."
   ()
   str & " :\n"
   "loop\n"
-  "exit " str | -1 " when " _ ";\n"
+  "exit " str | -1 " when A" _ ";\n"
   "end loop " str | -1 ";\n")
 
 (define-skeleton ada-skel-package-body
@@ -210,6 +220,7 @@ Each user will probably want to override this."
   "package body " str " is\n"
   _
   "begin\n"
+  "null;\n"
   "end " str ";\n")
 
 (define-skeleton ada-skel-package-spec
@@ -227,7 +238,7 @@ See `ada-find-other-file' to create library level package body from spec."
   "procedure " str "\n"
   "is\n"
   "begin\n"
-  _
+  "null;\n" _
   "end " str ";\n")
 
 (define-skeleton ada-skel-procedure-spec
@@ -254,21 +265,23 @@ See `ada-find-other-file' to create library level package body from spec."
   "Insert a record type declaration with a type name from `str'."
   ()
   "type " str " is record\n"
-  _
+  "null;\n"_
   "end record;\n")
 
 (define-skeleton ada-skel-return
   "Insert an extended return statement."
   ()
-  "return " _ " do\n"
+  "return A : A" _ " do\n"
+  "null;\n"
   "end return;\n")
 
 (define-skeleton ada-skel-select
   "Insert a select statement."
   ()
   "select\n"
-  _
+  "accept A;\n"_
   "else\n"
+  "null;\n"
   "end select;\n")
 
 (define-skeleton ada-skel-separate
@@ -281,23 +294,24 @@ See `ada-find-other-file' to create library level package body from spec."
   "Insert a task body with name from `str'."
   ()
   "task body " str "\n"
-  "is\n"
-  _
+  "is\n" _
   "begin\n"
+  "null;\n"
   "end " str ";\n")
 
 (define-skeleton ada-skel-task-spec
   "Insert a task specification with name from `str'."
   ()
   "task type " str " is\n"
-  _
+  "entry A;\n" _
   "end " str ";\n")
 
 (define-skeleton ada-skel-while
   "Insert a while loop statement with an optional name (from `str')."
   ()
   str & ":\n"
-  "while " _ " loop\n"
+  "while A" _ " loop\n"
+  "null;\n"
   "end loop " str | -1 ";\n")
 
 (define-skeleton ada-skel-with-use
@@ -352,7 +366,7 @@ See `ada-find-other-file' to create library level package body from spec."
 (defun ada-skel-setup ()
   "Setup a buffer for ada-skel."
   (setq wisi-skel-token-alist ada-skel-token-alist)
-  (add-hook 'skeleton-end-hook 'wisi-indent-statement nil t)
+  (add-hook 'skeleton-end-hook #'wisi-indent-statement -90 t)
   (when (and ada-skel-initial-string
 	     (= (buffer-size) 0))
     (insert ada-skel-initial-string))

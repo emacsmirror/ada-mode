@@ -1,6 +1,6 @@
 ;;; ada-core.el --- core facilities for ada-mode -*- lexical-binding:t -*-
 
-;; Copyright (C) 1994, 1995, 1997 - 2017, 2019 - 2021  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017, 2019 - 2022  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -53,24 +53,40 @@ Values defined by compiler packages.")
 Called by `syntax-propertize', which is called by font-lock in
 `after-change-functions'.")
 
-(defun ada-declarative-region-start-p (cache)
-  "Return t if cache is a keyword starting a declarative region."
-  (memq (wisi-cache-token cache) '(DECLARE IS PRIVATE))
-  ;; IS has a cache only if start of declarative region
-  )
+(defun ada-validate-enclosing-declaration (error-on-fail parse-action)
+  "Call `wisi-validate-cache' on at least the declaration enclosing point."
+  ;; Not in wisi because it's not clear other languages have useful
+  ;; declarations, or they use other terms for them.
+  (cond
+   (wisi-incremental-parse-enable
+    (let (query-result
+	  (pos (point)))
+      (while (not (and query-result
+		       ;; package specs have no declarative_item
+		       (memq (wisi-tree-node-id query-result) '(declarative_item wisitoken_accept))))
+	(setq query-result (wisi-parse-tree-query wisi-parser-shared 'containing-statement pos))
+	(setq pos (car (wisi-tree-node-char-region query-result))))
+
+      (wisi-validate-cache (car (wisi-tree-node-char-region query-result))
+			   (cdr (wisi-tree-node-char-region query-result))
+			   error-on-fail
+			   parse-action)))
+
+   (t
+    (wisi-validate-cache (point-min) (point-max) error-on-fail parse-action))))
+
 
 (defun ada-goto-declarative-region-start ()
-  "Goto start of declarative region containing point."
+  "Goto start of declarative region containing point.
+If in a statement, goto declarative region of the containing
+declaration.  If already in a declaration at or before a
+declarative region start, goto containing region start."
   (interactive)
-  (wisi-validate-cache (point-min) (point-max) t 'navigate)
+  (ada-validate-enclosing-declaration t 'navigate)
   (push-mark)
-  (when (looking-back "declare" (line-beginning-position))
-    ;; We just did ada-goto-declarative-region-start to get here; we
-    ;; want the next one up.
-    (backward-word 1))
+
   (let ((done nil)
 	(start-pos (point))
-	(outermost nil)
 	(cache (or (wisi-get-cache (point))
 		   (wisi-backward-cache))))
 
@@ -81,32 +97,40 @@ Called by `syntax-propertize', which is called by font-lock in
     ;; The typical use case for calling this fuction is to add a
     ;; use_clause for an identifier/operator at start-pos.
 
-    (when cache ;; nil at bob
-      (while (not done)
-	(unless (wisi-cache-containing cache)
-	  (setq outermost t))
+    (while (not done)
+      (if (not cache) ;; nil at bob
+	  (setq done t)
 
-	(if (ada-declarative-region-start-p cache)
-	    (if (< (point) start-pos)
-		;; found it.
-		(progn
-		  (forward-word);; past 'is' or 'declare'.
-		  (setq done t))
+	(if (memq (wisi-cache-token cache) '(DECLARE IS PRIVATE))
+	    ;; IS has a cache only if start of declarative region
+	    (progn
+	      (forward-word);; past 'is' or 'declare'.
+	      (if (< (point) start-pos)
+		  ;; found it.
+		  (setq done t)
 
-	      ;; test/ada_mode-nominal.adb function F2
-	      ;;
-	      ;; start-point is in a subprogram_declarator,
-	      ;; formal_part, aspect_clause, etc; code that contains a
-	      ;; declarative part. We want the next level up.
-	      (if outermost
-		  ;; there is no next level up; add the use_clause in the context_clause.
-		  (progn
-		    (setq cache (wisi-goto-containing cache))
-		    (setq done t))
+		;; else goto containing declarative-region-start
+		;;
+		;; test/ada_mode-nominal.adb function F2
+		;;
+		;; start-point is in a subprogram_declarator,
+		;; formal_part, aspect_clause, etc; code that contains a
+		;; declarative part. We want the next level up.
+		(if (wisi-cache-containing cache)
+		    (cl-ecase (wisi-cache-token cache)
+		      (DECLARE
+		       (setq cache (wisi-goto-containing cache)))
 
-	      (setq cache (wisi-goto-containing cache))
-	      (setq cache (wisi-goto-containing cache))))
+		      ((IS PRIVATE)
+		       (setq cache (wisi-goto-containing cache)) ;; start of current declaration
+		       (setq cache (wisi-goto-containing cache)))
+		      )
 
+		  ;; else there is no next level up; stop here
+		  ;; (probably in a context_clause).
+		  (setq done t))))
+
+	  ;; else keep searching.
 	  (cl-case (wisi-cache-class cache)
 	    (motion
 	     (setq cache (wisi-goto-containing cache)));; statement-start
@@ -129,21 +153,38 @@ Called by `syntax-propertize', which is called by font-lock in
 	     (cl-case (wisi-cache-nonterm cache)
 	       (generic_package_declaration
 		(setq cache (wisi-next-statement-cache cache)) ;; 'package'
-		(setq cache (wisi-next-statement-cache cache))) ;; 'is'
+		(setq cache (wisi-next-statement-cache cache)) ;; 'is'
+
+		(when (< start-pos (point))
+		  (wisi-goto-start cache)
+		  (setq cache (wisi-backward-cache))))
 
 	       (package_declaration
-		(setq cache (wisi-next-statement-cache cache))) ;; 'is'
+		(setq cache (wisi-next-statement-cache cache)) ;; 'is'
+
+		(when (< start-pos (point))
+		  (wisi-goto-start cache)
+		  (setq cache (wisi-backward-cache))))
 
 	       ((entry_body package_body protected_body subprogram_body task_body)
 		(while (not (eq 'IS (wisi-cache-token cache)))
-		  (setq cache (wisi-next-statement-cache cache))))
+		  (setq cache (wisi-next-statement-cache cache)))
+
+		(when (< start-pos (point))
+		  (wisi-goto-start cache)
+                  (ada-validate-enclosing-declaration t 'navigate)
+		  (setq cache (wisi-backward-cache))))
 
 	       ((protected_type_declaration single_protected_declaration single_task_declaration task_type_declaration)
 		(while (not (eq 'IS (wisi-cache-token cache)))
 		  (setq cache (wisi-next-statement-cache cache)))
 		(when (looking-at "\<new\>")
 		  (while (not (eq 'WITH (wisi-cache-token cache)))
-		    (setq cache (wisi-next-statement-cache cache)))))
+		    (setq cache (wisi-next-statement-cache cache))))
+
+		(when (< start-pos (point))
+		  (wisi-goto-start cache)
+		  (setq cache (wisi-backward-cache))))
 
 	       (t
 		(setq cache (wisi-goto-containing cache t)))
@@ -180,35 +221,20 @@ is the package spec.")
 
 ;;;; refactor
 
-;; Refactor actions; must match wisi-ada.adb Refactor
-(defconst ada-refactor-method-object-to-object-method 1)
-(defconst ada-refactor-object-method-to-method-object 2)
+;; Refactor actions; must match wisi-ada.adb Refactor_Label
+(defconst ada-refactor-method-object-to-object-method 0)
+(defconst ada-refactor-object-method-to-method-object 1)
 
-(defconst ada-refactor-element-object-to-object-index 3)
-(defconst ada-refactor-object-index-to-element-object 4)
+(defconst ada-refactor-element-object-to-object-index 2)
+(defconst ada-refactor-object-index-to-element-object 3)
 
-(defconst ada-refactor-format-paramlist 5)
+(defconst ada-refactor-format-paramlist 4)
 
 (defun ada-refactor (action)
-  "Perform refactor action ACTION on symbol at point."
-  (wisi-validate-cache (line-end-position -7) (line-end-position 7) t 'navigate)
-  (save-excursion
-    ;; We include punctuation and quote for operators.
-    (skip-syntax-backward "w_.\"")
-
-    ;; Skip leading punctuation, for "-Foo.Bar".
-    (skip-syntax-forward ".")
-
-    (let* ((edit-begin (point))
-	   (cache (wisi-goto-statement-start))
-	   (parse-begin (point))
-	   (parse-end (wisi-cache-end cache)))
-      (if parse-end
-	  (setq parse-end (+ parse-end (wisi-cache-last (wisi-get-cache (wisi-cache-end cache)))))
-	;; else there is a syntax error; missing end of statement
-	(setq parse-end (point-max)))
-      (wisi-refactor wisi--parser action parse-begin parse-end edit-begin)
-      )))
+  "Perform refactor action ACTION at point."
+  (unless wisi-incremental-parse-enable
+   (wisi-validate-cache (line-end-position -7) (line-end-position 7) t 'navigate))
+  (wisi-refactor wisi-parser-shared action (point)))
 
 (defun ada-refactor-1 ()
   "Refactor Method (Object) => Object.Method.
@@ -285,32 +311,58 @@ current construct."
   "Return t if point is inside the parameter-list of a subprogram declaration.
 PARSE-RESULT must be the result of `syntax-ppss'."
   ;; (info "(elisp)Parser State" "*syntax-ppss*")
-  (let (cache)
-    (when (> (nth 0 parse-result) 0)
-      ;; In parens. Request parse of region containing parens; that
+  (when (> (nth 0 parse-result) 0)
+    ;; In parens.
+    (cond
+     (wisi-incremental-parse-enable
+      (let ((node (wisi-parse-tree-query wisi-parser-shared 'node (nth 1 parse-result))))
+	(eq 'formal_part
+	    (wisi-tree-node-id
+	     (wisi-parse-tree-query wisi-parser-shared 'parent (wisi-tree-node-address node) 1)))))
+
+     (t ;; not incremental parse
+
+      ;; Request parse of region containing parens; that
       ;; will be expanded to include the subprogram declaration, if
       ;; any,
       (let* ((forward-sexp-function nil) ;; forward-sexp just does parens
 	     (start (nth 1 parse-result))
 	     (end (save-excursion (goto-char (nth 1 parse-result)) (forward-sexp) (point))))
 	(wisi-validate-cache start end nil 'navigate)
-	(setq cache (wisi-get-cache start))
-	;; cache is nil if the parse failed
-	(when cache
-	  (eq 'formal_part (wisi-cache-nonterm cache)))
-	))))
+	(let ((cache (wisi-get-cache start)))
+	  ;; cache is nil if the parse failed
+	  (when cache
+	    (eq 'formal_part (wisi-cache-nonterm cache)))
+	  )))
+     )))
 
 (defun ada-format-paramlist ()
   "Reformat the parameter list point is in."
   (interactive)
-  (condition-case nil
+  (condition-case-unless-debug nil
+      ;; FIXME: this aborts if missing close paren, but incremental parse can handle that
       (wisi-goto-open-paren)
     (error
      (user-error "Not in parameter list")))
-  (funcall indent-line-function); so new list is indented properly
   (when (not (looking-back "^[ \t]*" (line-beginning-position)))
+    ;;  Left paren after code; ensure nominal spacing. See
+    ;;  test/ada_mode-parens.adb If_Statement.
     (delete-horizontal-space)
     (insert " "))
+  (funcall indent-line-function); so reformatted list is indented properly
+  (when (not wisi-incremental-parse-enable)
+    ;; Force parse of current statement after indent
+    (let* ((paren (point))
+	   (cache (wisi-goto-statement-start))
+	   (parse-begin (point))
+	   (parse-end (wisi-cache-end cache)))
+      (if parse-end
+	  (setq parse-end (+ parse-end (wisi-cache-last (wisi-get-cache (wisi-cache-end cache)))))
+	;; else there is a syntax error; missing end of statement
+	(setq parse-end (point-max)))
+      (wisi-invalidate-cache 'navigate parse-begin)
+      (wisi-validate-cache parse-begin parse-end t 'navigate)
+      (goto-char paren)))
   (ada-refactor ada-refactor-format-paramlist))
 
 ;;;; fix compiler errors
@@ -328,8 +380,8 @@ excluding leading pragmas."
 	(setq cache (wisi-forward-cache))
 	(cl-case (wisi-cache-nonterm cache)
 	  (pragma_g (wisi-goto-end-1 cache))
-	  (use_clause (wisi-goto-end-1 cache))
-	  (with_clause
+	  (use_package_clause (wisi-goto-end-1 cache))
+	  ((limited_with_clause | nonlimited_with_clause)
 	   (when (not begin)
 	     (setq begin (line-beginning-position)))
 	   (wisi-goto-end-1 cache))
@@ -411,14 +463,17 @@ sort-lines."
       (ada-fix-sort-context-clause (car context-clause) (point)))
     ))
 
-(defun ada-fix-extend-with-clause (child-name)
+(defun ada-fix-extend-with-clause (partial-parent-name child-name)
   "Assuming point is in a selected name, just before CHILD-NAME, add or
-extend a with_clause to include CHILD-NAME  .	"
+extend a with_clause to include CHILD-NAME."
+  ;; In GNAT Community 2020, point is before partial-parent-name; in
+  ;; earlier gnat, it is after.
+  (search-forward partial-parent-name (line-end-position) t)
   (let ((parent-name-end (point)))
     ;; Find the full parent name; skip back to whitespace, then match
     ;; the name forward.
     (skip-syntax-backward "w_.")
-    (search-forward-regexp ada-name-regexp parent-name-end)
+    (search-forward-regexp ada-name-regexp parent-name-end t)
     (let ((parent-name (match-string 0))
 	  (context-clause (ada-fix-context-clause)))
       (goto-char (car context-clause))
@@ -451,7 +506,7 @@ extend a with_clause to include CHILD-NAME  .	"
     (delete-char 1)))
 
 (defun ada-fix-add-use-type (type)
-  "Insert `use type' clause for TYPE at start of declarative part for current construct."
+  "Insert `use type' clause for TYPE."
   (ada-goto-declarative-region-start); leaves point after 'is'
   (newline-and-indent)
   (cl-ecase ada-language-version
@@ -470,7 +525,7 @@ extend a with_clause to include CHILD-NAME  .	"
     ))
 
 (defun ada-fix-add-use (package)
-  "Insert `use' clause for PACKAGE at start of declarative part for current construct."
+  "Insert `use' clause for PACKAGE."
   (ada-goto-declarative-region-start); leaves point after 'is'
   (newline-and-indent)
   (insert "use " package ";"))
@@ -488,20 +543,17 @@ extend a with_clause to include CHILD-NAME  .	"
   (interactive)
   (wisi-goto-statement-start)
   ;; point is at start of subprogram specification;
-  ;; wisi-parse-expand-region will find the terminal semicolon.
-  (wisi-validate-cache (point-min) (point-max) t 'navigate)
 
   (let* ((begin (point))
 	 (end (wisi-cache-end (wisi-get-cache (point))))
 	 (name (wisi-next-name)))
     (goto-char end)
-    (newline)
-    (insert " is begin\n\nend ");; legal syntax; parse does not fail
+    (insert "\nis begin\nnull;\nend ")
     (insert name)
     (forward-char 1)
 
     ;; newline after body to separate from next body
-    (newline-and-indent)
+    (newline)
     (indent-region begin (point))
     (forward-line -2)
     (back-to-indentation)
@@ -743,7 +795,7 @@ Deselects the current project first."
    ((wisi-in-string-p)
     ;; In an operator, or a string literal
     (let (start)
-      (skip-chars-backward "+*/&<>=-")
+      (skip-chars-backward "+*/&<>=-andxorme") ;; Ada operator string content (see ada-operator-re).
       (setq start (point))
       (cond
        ((and (= (char-before) ?\")

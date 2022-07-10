@@ -2,7 +2,7 @@
 --
 --  build ada_mode_wisi_parse and other executables
 --
---  Copyright (C) 2014, 2018, 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2014, 2018 - 2020 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -16,11 +16,6 @@
 --  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston,
 --  MA 02110-1335, USA.
 
-#if ELPA="yes"
-with "wisi";
-#else
-with "wisitoken";
-#end if;
 with "standard_common";
 with "gnatcoll";
 with "gnatcoll_sqlite";
@@ -31,6 +26,7 @@ with "gnat_util";
 #if HAVE_LIBADALANG="yes"
 with "libadalang";
 #end if;
+with "wisi";
 project Ada_Mode_Wisi_Parse is
 
    for Main use
@@ -38,12 +34,12 @@ project Ada_Mode_Wisi_Parse is
       "ada_mode_wisi_lr1_parse.ads",
       "run_ada_lalr_parse.ads",
       "run_ada_lr1_parse.ads",
-#if ELPA="no"
-       #if HAVE_LIBADALANG="yes"
-         "dump_libadalang_corrected.adb",
-       #end if;
-      "dump_wisitoken_corrected.adb",
-#end if;
+-- #if ELPA="no"
+--        #if HAVE_LIBADALANG="yes"
+--          "dump_libadalang_corrected.adb",
+--        #end if;
+--       "dump_wisitoken_corrected.adb", FIXME: broken by wisitoken changes
+-- #end if;
       "gpr_mode_wisi_parse.ads",
       "run_gpr_parse.ads",
       "gpr_query.adb"
@@ -70,52 +66,60 @@ project Ada_Mode_Wisi_Parse is
          for Default_Switches ("Ada") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Style_Checks &
-           Standard_Common.Compiler.Debug_Switches & "-gnat2020";
+           Standard_Common.Compiler.Debug_Switches;
 
          --  Generated files; lines too long, don't need debug
          for Switches ("ada_process_actions.adb") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
+           Standard_Common.Compiler.Base_Release_Switches & ("-O1", "-gnat2020");
 
          for Switches ("ada_process_main.adb") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
-
-         for Switches ("gpr_process_actions.adb") use
-           Standard_Common.Compiler.Common_Switches &
-           Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
+           Standard_Common.Compiler.Base_Release_Switches & ("-O1", "-gnat2020");
 
          for Switches ("gpr_process_main.adb") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
+           Standard_Common.Compiler.Base_Release_Switches & ("-O1", "-gnat2020");
 
          for Default_Switches ("C") use Standard_Common.Compiler.Debug_Switches_C;
 
+         for Switches ("gpr_query.adb") use
+           -- WORKAROUND: GNAT Community 2021 reports that gnatcoll 21.2 is missing an "overrides" somewhere
+           Standard_Common.Compiler.Common_Switches &
+           "-gnaty3abcefhiklnprtx" & -- not overrding -- Standard_Common.Compiler.Base_Style_Checks &
+           Standard_Common.Compiler.Debug_Switches;
+           
       when "Normal" =>
          for Default_Switches ("Ada") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Style_Checks &
-           Standard_Common.Compiler.Release_Switches & "-gnat2020";
+           Standard_Common.Compiler.Release_Switches;
 
          for Switches ("ada_process_actions.adb") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
+           Standard_Common.Compiler.Base_Release_Switches & ("-O1", "-gnat2020");
 
          for Switches ("ada_process_main.adb") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
+           Standard_Common.Compiler.Base_Release_Switches & ("-O1", "-gnat2020");
 
          for Switches ("gpr_process.adb") use
            Standard_Common.Compiler.Common_Switches &
            Standard_Common.Compiler.Base_Style_Checks &
-           Standard_Common.Compiler.Base_Release_Switches & ("-O1");
+           Standard_Common.Compiler.Base_Release_Switches & ("-O1", "-gnat2020");
 
+         for Switches ("gpr_query.adb") use
+           -- WORKAROUND: GNAT Community 2021 with gnatcoll 21.2 and -gnat2020 reports a missing "overrides"
+           -- AdaCore ticket U618-051
+           Standard_Common.Compiler.Common_Switches &
+           "-gnaty3abcefhiklnprtx" & "-gnatyM120" & -- not overriding
+           Standard_Common.Compiler.Release_Switches;
+           
          for Default_Switches ("C") use Standard_Common.Compiler.Release_Switches_C;
       end case;
 
@@ -140,7 +144,7 @@ project Ada_Mode_Wisi_Parse is
 
    package Install is
       for Required_Artifacts ("bin") use
-        ("ada_lr1_parse_table.txt");
+        ("ada_annex_p_lr1_parse_table.txt");
    end Install;
 
 end Ada_Mode_Wisi_Parse;

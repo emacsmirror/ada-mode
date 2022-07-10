@@ -25,7 +25,7 @@ developing GNU and promoting software freedom.''
 
 @titlepage
 @sp 10
-@title Ada Mode Version 7.2.1
+@title Ada Mode Version 7.1.3
 @page
 @vskip 0pt plus 1filll
 @insertcopying
@@ -37,7 +37,7 @@ developing GNU and promoting software freedom.''
 @node Top, Overview, (dir), (dir)
 @top Top
 
-Ada Mode Version 7.2.1
+Ada Mode Version 7.1.3
 @end ifnottex
 
 @menu
@@ -80,7 +80,6 @@ Customizing Ada mode
 * Non-standard file names::
 * Other compiler::
 * Other cross-reference::
-* Other customization::
 
 Compiling Executing
 
@@ -101,6 +100,10 @@ Project files
 
 * Project file overview::
 * Project file variables::
+
+Indentation
+
+* Ada-specific indent functions::
 
 Developer overview
 
@@ -133,7 +136,7 @@ naming convention or compiler; @xref{Non-standard file names},
 @xref{Other compiler}.
 
 In addition, you may want to customize the indentation,
-capitalization, and other things; @xref{Other customization}.
+capitalization, and other things; @xref{Customization}.
 
 Finally, for large Ada projects, you will want to set up an Emacs Ada
 mode project file for each project; @xref{Project files}. Note that
@@ -261,19 +264,32 @@ changes, to force a complete rebuild.
 @node Building GNATCOLL
 @subsection Building GNATCOLL
 
-Download gnatcoll-db from
+The GNAT Community and GNAT pro binary installs have some of the
+GNATCOLL packages we need, but we need to install others from source.
+
+Debian 11 provides binary packages for the GNATCOLL packages we need;
+@table @samp
+@item libgnatcoll-db-bin
+@item libgnatcoll-iconv20-dev
+@item libgnatcoll-sql4-dev
+@item libgnatcoll-sqlite20-dev
+@item libgnatcoll-xref21-dev
+@end table
+
+Debian does not provide a binary for gnatstub.
+
+If you are using GNAT Community, download gnatcoll-db from
 @url{https://github.com/AdaCore/gnatcoll-db}; select the latest
 release branch (or the one that matches your compiler), click on the
 ``clone or download'' button, select ``Download ZIP''.
 
-@c branch nn-sustained?
+If you are using GNAT Pro, download @file{gnatcoll-db.tar.gz} from the
+GNAT Studio sources in GNAT Tracker.
 
-Similarly, download gnatcoll-bindings from
-@url{https://github.com/AdaCore/gnatcoll-bindings/tree/20.2} (for
-gnatcoll-iconv; not needed for GNAT Community 2020 on Windows).
+Similarly, if needed for your OS, download gnatcoll-bindings from the
+GNAT Community sources. This is for gnatcoll-iconv; not needed on
+Windows.
 
-@c FIXME: gnatcoll-bindings is in community download Sources
-@c FIXME: table of os/gnat version that need/don't need iconv;
 @c debian/comm-2020 requires gnatcoll-iconv
 @c debian/pro-21.1 requires gnatcoll-iconv
 
@@ -281,17 +297,20 @@ Then unpack, build, and install the required components. If you are
 unsure whether you need to install iconv, skip that step; a later step
 will complain if it is needed.
 
-@c FIXME: ada-mode uses -gnat2020, which makes one expression in
-@c gnatcoll-sql ambiguous. Change that, and specify -gnat2020 in .gpr
+If @code{./setup.py} complains it can't find @code{python}, try
+@code{python3 setup.py ...}.
+
+For github gnatcoll-db version 21.2, apply gnatcoll-2021-sql.diff.
+
 @example
-unzip ~/Downloads/gnatcoll-bindings-20.2.zip
-cd gnatcoll-bindings-20.2
+unzip ~/Downloads/gnatcoll-bindings-22.2.zip
+cd gnatcoll-bindings-22.2
 cd iconv
 ./setup.py build
 ./setup.py install
 
-unzip ~/Downloads/gnatcoll-db-20.2.zip
-cd gnatcoll-db-20.2
+unzip ~/Downloads/gnatcoll-db-22.2.zip
+cd gnatcoll-db-22.2
 make -C sql
 make -C sql install
 make -C sqlite
@@ -339,7 +358,7 @@ found in @code{PATH}.
 Here we list GNAT compiler versions that are known to work or not work
 with ada-mode.
 
-There are various ways to get the compiler:
+There are various ways to get the GNAT compiler:
 @table @samp
 @item Community
 Downloaded from @url{https://www.adacore.com/download}. The version
@@ -370,6 +389,9 @@ in the area of access types. So some compiler versions may require
 minor edits of the code; there is a ``WORKAROUND'' comment in the code
 describing the edit required.
 
+Sometimes there is a bug in the gnatcoll source; we provide a patch
+file.
+
 Compiler versions that work:
 @table @samp
 @item Community 2019
@@ -377,10 +399,23 @@ Reports an error about a dangling reference; see WORKAROUND comment in
 @file{~/.emacs.d/elpa/wisi-i.j.k/sal-gen_unbounded_definite_red_black_trees.adb}
 
 @item Community 2020
-no edits required
+No edits required.
+
+@item Community 2021
+Requires ada-mode version 7.1.6 or later.
+
+gnatcoll requires a patch; @xref{Building GNATCOLL}.
 
 @item Pro 20.2
-no edits required
+Requires ada-mode version 7.1.6 or later.
+
+No edits required.
+
+@item Pro 21.2
+No edits required.
+
+@item Pro 22.2
+No edits required.
 
 @item FSF 11.1.0
 @end table
@@ -507,20 +542,31 @@ first.
 * Non-standard file names::
 * Other compiler::
 * Other cross-reference::
-* Other customization::
 @end menu
 
 @node Slow response
 @section Slow response
 
-In large files, parsing takes a noticable amount of time, so it gets
-in the way of interactive typing due to immediate fontification
-triggering a parse.
+The external process that runs the Ada parser can be slow to start,
+due to loading the very large LR1 parse table. The impact of this can
+be minimized by starting the process before it is actually needed, by
+executing @code{ada-parse-require-process} as part of Emacs startup.
 
-There are three ways to deal with this:
+In addition, in large files, parsing takes a noticable amount of time,
+so it gets in the way of interactive typing due to immediate
+fontification triggering a parse.
+
+There are several ways to deal with this:
 
 @enumerate
-@item Set @code{wisi-partial-parse-threshold}
+@item Set @code{wisi-incremental-parse-enabled t}
+This enables incremental parsing. In this mode, the entire file is
+parsed once when it is opened, and then changes to the text are parsed
+incrementally, which is both fast and accurate.
+
+@item Lower @code{wisi-partial-parse-threshold}
+This assumes @code{wisi-incremental-parse-enabled} is @code{nil}.
+
 In your @file{~./emacs}:
 
 @example
@@ -625,7 +671,7 @@ the indirection variables.
 
 See @file{ada-compiler-gnat.el} for an example.
 
-@node Other cross-reference, Other customization, Other compiler, Customization
+@node Other cross-reference
 @section Other cross-reference
 The wisi project variable @code{xref_tool} (default elisp variable
 @code{ada-xref-tool}) controls dispatching in
@@ -641,9 +687,6 @@ Emacs lisp code that provides the interface to the tool, and set
 @code{ada-xref-tool} and the indirection variables.
 
 See @file{ada-gnat-xref.el} and @file{gpr-query.el} for examples.
-
-@node Other customization,  , Other cross-reference, Customization
-@section Other customization
 
 @node Compiling Executing, Project files, Customization, Top
 @chapter Compiling Executing
@@ -1335,8 +1378,8 @@ The fix is to use a different function in
 @code{project-find-functions}; @code{wisi-prj-current-cached}. This
 uses a global variable to indicate what the current project is. wisi
 provides four different functions for
-@code{project-find-functions}. @xref{Selecting projects, Selecting
-projects, Selecting projects, wisi}.
+@code{project-find-functions}. @xref{Selecting projects,,, wisi, Wisi
+User Guide}.
 
 To change @code{project-find-functions}, execute:
 
@@ -1432,8 +1475,8 @@ references are accessed via @kbd{C-c `}.
 @node Project files, Moving Through Ada Code, Compiling Executing, Top
 @chapter Project files
 
-Ada mode uses
-wisi project files; @ref{Project files, Project files, Project files, wisi}.
+Ada mode uses wisi project files; @ref{Project files,,, wisi, Wisi
+User Guide}.
 
 A wisi project file specifies what directories hold sources for your
 project, and allows you to customize the compilation commands and
@@ -1466,7 +1509,7 @@ The current project file is shown by the menu command
 
 To set the project file, use the menu command @key{Ada | Project Files | Find and
 select Project ...}, or one of the elisp functions described in
-@ref{Selecting Projects, Selecting Projects, Selecting Projects, wisi}.
+@ref{Selecting Projects,,, wisi, Wisi User Guide}.
 
 The project file may also be a GNAT project file (with file extension
 is @code{.gpr}).
@@ -1500,8 +1543,8 @@ xref tool, so it must occur before any compiler-specific project
 variable.
 
 @item @code{casing}
-List of files containing casing exceptions. @xref{Automatic casing,
-Automatic casing, wisi.info}.
+List of files containing casing exceptions.
+@xref{Automatic casing,,, wisi, Wisi User Guide}.
 
 @item @code{gnat-stub-args}
 List of strings passed to @code{gnat stub} when it is run.
@@ -1849,6 +1892,29 @@ In rare cases, the parser gets confused; it can be reset by invoking
 menu @key{Ada | Misc | Restart parser}. Please report such cases as a
 bug.
 
+@menu
+* Ada-specific indent functions::
+@end menu
+
+@node Ada-specific indent functions
+@section Ada-specific indent functions
+The following indent functions are defined by the ada-mode grammar
+backend (@xref{Indent functions,,, wisi, Wisi User Guide}).
+
+@table @code
+@item ada-indent-aggregate
+Insures that aggregates are indented consistently; see the code for
+more details. Only used once in the grammar; for @code{aggregate} in
+@code{primary}.
+
+@c FIXME: doc these!
+@item ada-indent-aspect
+@item ada-indent-renames
+@item ada-indent-return
+@item ada-indent-record
+@item ada-indent-record*
+@end table
+
 @node Statement skeletons, Aligning code, Indentation, Top
 @chapter Statement skeletons
 
@@ -1976,8 +2042,8 @@ all uppercase identifiers without defining a casing exception.
 @end table
 
 You can define exceptions to these rules, in files specified by the
-@code{casing} project variable; @ref{Casing exception files, Casing
-exception files, Casing exception files, wisi}.
+@code{casing} project variable; @ref{Casing exception files,,, wisi,
+Wisi User Guide}.
 
 There are two ways to add new items to a casing exception file: you
 can simply edit it as you would edit any text file, or you can
@@ -2272,6 +2338,7 @@ ssh read/write git access to savannah ada-mode:
 git clone stephen_leake@@git.sv.gnu.org:/srv/git/ada-mode.git \
     -b org.emacs.ada-mode org.emacs.ada-mode
 cd ada-mode
+git worktree add -b org.emacs.wisi ../org.emacs.wisi origin/org.emacs.wisi
 git worktree add -b org.wisitoken ../org.wisitoken origin/org.wisitoken
 git worktree add -b org.stephe_leake.sal ../org.stephe_leake.sal origin/org.stephe_leake.sal
 git worktree add -b org.stephe_leake.aunit_ext ../org.stephe_leake.aunit_ext origin/org.stephe_leake.aunit_ext

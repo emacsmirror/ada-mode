@@ -2,7 +2,7 @@
 --
 --
 --
---  Copyright (C) 2019 - 2020 Free Software Foundation, Inc.
+--  Copyright (C) 2019 - 2022 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -21,12 +21,11 @@ pragma License (GPL);
 with WisiToken.Syntax_Trees.LR_Utils; use WisiToken.Syntax_Trees.LR_Utils;
 separate (Wisi.Ada)
 procedure Format_Parameter_List
-  (Tree       : in out WisiToken.Syntax_Trees.Tree;
-   Data       : in out Parse_Data_Type;
-   Edit_Begin : in     WisiToken.Buffer_Pos)
+  (Tree            : in out WisiToken.Syntax_Trees.Tree;
+   Edit_Begin_Char : in     WisiToken.Buffer_Pos)
 is
    use Standard.Ada.Containers;
-   use Ada_Process_Actions;
+   use Ada_Annex_P_Process_Actions;
    use Standard.Ada.Text_IO;
    use WisiToken.Syntax_Trees;
 
@@ -45,9 +44,9 @@ is
       Default_Exp : Buffer_Region := Null_Buffer_Region;
    end record;
 
-   Formal_Part : constant Node_Index := Find_ID_At (Tree, +formal_part_ID, Edit_Begin);
+   Formal_Part : constant Node_Access := Find_ID_Containing (Tree, (1 => +formal_part_ID), Edit_Begin_Char);
    Param_List  : constant Constant_List :=
-     (if Formal_Part = Invalid_Node_Index
+     (if Formal_Part = Invalid_Node_Access
       then Creators.Invalid_List (Tree)
       else Creators.Create_List
         (Tree,
@@ -55,29 +54,26 @@ is
          List_ID    => +parameter_specification_list_ID,
          Element_ID => +parameter_specification_ID));
 
-   Edit_End    : Buffer_Pos;
    Param_Count : Count_Type := 0;
 
    function Get_Text (Region : in WisiToken.Buffer_Region) return String
    is begin
-      return Data.Lexer.Buffer_Text (Region);
+      return Tree.Lexer.Buffer_Text (Region);
    end Get_Text;
 
 begin
-   if Formal_Part = Invalid_Node_Index then
+   if Formal_Part = Invalid_Node_Access then
       --  Most likely the edit point is wrong.
-      raise SAL.Parameter_Error with "no parameter list found at byte_pos" & Edit_Begin'Image;
+      raise SAL.Parameter_Error with "no parameter list found containing byte_pos" & Edit_Begin_Char'Image;
    end if;
 
    if WisiToken.Trace_Action > Detail then
-      Put_Line (";; format parameter list node" & Formal_Part'Image);
+      Put_Line (";; format parameter list node " & Tree.Image (Formal_Part, Node_Numbers => True));
    end if;
-
-   Edit_End := Tree.Byte_Region (Formal_Part).Last;
 
    --  The last parameter might be empty, due to syntax errors.
    for N of Param_List loop
-      if not Tree.Buffer_Region_Is_Empty (N) then
+      if not Tree.Is_Empty_Nonterm (N) then
          Param_Count := Param_Count + 1;
       end if;
    end loop;
@@ -86,25 +82,26 @@ begin
       Params           : array (1 .. Param_Count) of Parameter;
       Param_Cur        : Cursor                     := Param_List.First;
       Param_Iter       : constant Constant_Iterator := Param_List.Iterate_Constant;
-      First_Param_Node : constant Node_Index        := Node (Param_Cur);
-      Last_Param_Node  : Node_Index;
+      First_Param_Node : constant Node_Access       := Element (Param_Cur);
+      Last_Param_Node  : Node_Access;
    begin
       for Param of Params loop
-         Last_Param_Node := Node (Param_Cur);
+         Last_Param_Node := Element (Param_Cur);
 
          declare
-            Children : constant Valid_Node_Index_Array := Tree.Children (Node (Param_Cur));
+            Children : constant Node_Access_Array := Tree.Children (Element (Param_Cur));
          begin
-            for Ident of Creators.Create_List (Tree, Children (1), +identifier_list_ID, +IDENTIFIER_ID) loop
-               Param.Identifiers.Append (Tree.Byte_Region (Ident));
+            for Ident of Creators.Create_List (Tree, Children (1), +defining_identifier_list_ID, +IDENTIFIER_ID) loop
+               Param.Identifiers.Append (Tree.Byte_Region (Ident, Trailing_Non_Grammar => False));
             end loop;
 
-            Param.Aliased_P := not Tree.Buffer_Region_Is_Empty (Children (3));
-
-            for I in 4 .. Children'Last loop
+            for I in 3 .. Children'Last loop
                case To_Token_Enum (Tree.ID (Children (I))) is
-               when mode_opt_ID =>
-                  if Tree.Buffer_Region_Is_Empty (Children (I)) then
+               when ALIASED_ID =>
+                  Param.Aliased_P := True;
+
+               when mode_ID =>
+                  if Tree.Is_Empty_Nonterm (Children (I)) then
                      Param.In_P  := False;
                      Param.Out_P := False;
                   else
@@ -113,44 +110,45 @@ begin
                        Tree.Children (Children (I))'Length > 1; -- 'in out'
                   end if;
 
-               when null_exclusion_opt_ID =>
-                  Param.Not_Null_P := not Tree.Buffer_Region_Is_Empty (Children (I));
+               when null_exclusion_ID =>
+                  Param.Not_Null_P := True;
 
                when name_ID =>
-                  Param.Type_Region := Tree.Byte_Region (Children (I));
+                  Param.Type_Region := Tree.Byte_Region (Children (I), Trailing_Non_Grammar => False);
 
                when access_definition_ID =>
-                  --  First two children are always:
-                  --  null_exclusion_opt ACCESS
                   declare
-                     Access_Children : constant Valid_Node_Index_Array := Tree.Children (Children (I));
+                     use all type SAL.Base_Peek_Type;
+                     Access_Children : constant Node_Access_Array := Tree.Children (Children (I));
+                     Last_Child      : SAL.Base_Peek_Type         := 1;
                   begin
-                     Param.Not_Null_P := not Tree.Buffer_Region_Is_Empty (Access_Children (1));
-                     Param.Access_P := True;
-
-                     if Tree.ID (Access_Children (3)) = +general_access_modifier_opt_ID then
-                        Param.Constant_P := not Tree.Buffer_Region_Is_Empty (Access_Children (3));
-                        Param.Type_Region := Tree.Byte_Region (Access_Children (4));
-                     else
-                        Param.Protected_P := not Tree.Buffer_Region_Is_Empty (Access_Children (3));
-                        Param.Type_Region :=
-                          (Tree.Byte_Region (Access_Children (4)).First,
-                           Tree.Byte_Region (Children (I)).Last);
+                     if Tree.ID (Access_Children (Last_Child)) = +null_exclusion_ID then
+                        Last_Child := @ + 1;
+                        Param.Not_Null_P := True;
                      end if;
+
+                     pragma Assert (Tree.ID (Access_Children (Last_Child)) = +ACCESS_ID);
+                     Param.Access_P := True;
+                     Last_Child := @ + 1;
+
+                     if Tree.ID (Access_Children (Last_Child)) = +CONSTANT_ID then
+                        Param.Constant_P := True;
+                        Last_Child := @ + 1;
+                     elsif Tree.ID (Access_Children (Last_Child)) = +PROTECTED_ID then
+                        Param.Protected_P := True;
+                        Last_Child := @ + 1;
+                     end if;
+
+                     Param.Type_Region :=
+                       (Tree.Byte_Region (Access_Children (Last_Child), Trailing_Non_Grammar => False).First,
+                        Tree.Byte_Region (Children (I), Trailing_Non_Grammar => False).Last);
                   end;
 
-               when COLON_EQUAL_ID =>
-                  null;
-
-               when expression_opt_ID =>
-                  if not Tree.Buffer_Region_Is_Empty (Children (I)) then
-                     Param.Default_Exp := Tree.Byte_Region (Children (I));
-                  end if;
+               when assign_value_ID =>
+                  Param.Default_Exp := Tree.Byte_Region (Tree.Child (Children (I), 2), Trailing_Non_Grammar => False);
 
                when others =>
-                  Raise_Programmer_Error
-                    ("format_parameter_list param id", Data.Descriptor.all, Data.Lexer, Tree, Data.Base_Terminals.all,
-                     Children (I));
+                  Raise_Programmer_Error ("unknown format_parameter_list token id", Tree, Children (I));
                end case;
             end loop;
          end;
@@ -162,7 +160,8 @@ begin
          Result     : Unbounded_String := +"(";
          Line_End   : Integer          := 0;     --  Index of last LF char in Result.
          Multi_Line : constant Boolean :=
-           Tree.Augmented (First_Param_Node).Line < Tree.Augmented (Last_Param_Node).Line;
+           Tree.Line_Region (First_Param_Node, Trailing_Non_Grammar => False).First <
+           Tree.Line_Region (Last_Param_Node, Trailing_Non_Grammar => False).First;
          Ident_Len  : Integer          := 0;     -- Maximum over all params, includes commas
          Type_Len   : Integer          := 0;
          Aliased_P  : Boolean          := False; -- "_P" for "present"
@@ -203,7 +202,7 @@ begin
             end loop;
             declare
                subtype Count is Standard.Ada.Text_IO.Count;
-               Open_Paren_Col : constant Count := Tree.Augmented (Formal_Part).Column;
+               Open_Paren_Col : constant Count := Tree.Column (Formal_Part);
                Ident_Col      : constant Count := Open_Paren_Col + 1;
                Colon_Col      : constant Count := Ident_Col + Count (Ident_Len) + 1;
                In_Col         : constant Count := Colon_Col + (if Aliased_P then 10 else 2);
@@ -227,9 +226,13 @@ begin
                        (Length (Result) - Line_End)) * ' ';
                end Indent_To;
             begin
+               if WisiToken.Trace_Action > Detail then
+                  Put_Line (";; open_paren_col:" & Open_Paren_Col'Image);
+               end if;
+
                for Param of Params loop
                   if Need_New_Line then
-                     Result   := Result & ";" & ASCII.LF;
+                     Result   := Result & ";" & Emacs_Lisp_New_Line;
                      Line_End := Length (Result);
                   end if;
 
@@ -310,10 +313,16 @@ begin
 
                Need_New_Line := True;
             end loop;
-               Result := Result & ")";
+            Result := Result & ")";
          end if;
-         Put_Line
-           ("[" & Edit_Action_Code & Edit_Begin'Image & Edit_End'Image & " """ & Elisp_Escape_Quotes (-Result) & """]");
+         declare
+            Region : constant Buffer_Region := Tree.Char_Region
+              (Formal_Part, Trailing_Non_Grammar => False);
+         begin
+            Put_Line
+              ("[" & Edit_Action_Code & Region.First'Image & Region.Last'Image &
+                 " """ & Elisp_Escape_Quotes (-Result) & """]");
+         end;
       end;
    end;
 end Format_Parameter_List;

@@ -2,7 +2,7 @@
 ;;;
 ;; GNAT is provided by AdaCore; see http://libre.adacore.com/
 ;;
-;;; Copyright (C) 2012 - 2020  Free Software Foundation, Inc.
+;;; Copyright (C) 2012 - 2022  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -163,12 +163,17 @@ For `compilation-filter-hook'."
   "regexp to extract quoted punctuation in error messages")
 
 (defun ada-gnat-misspelling ()
-  "Return correct spelling from current compiler error, if there are corrections offered.
+  "Return correct spelling from current compiler error.
 Prompt user if more than one."
   ;; wisi-output.adb:115:41: no selector "Productions" for type "RHS_Type" defined at wisi.ads:77
   ;; wisi-output.adb:115:41: invalid expression in loop iterator
   ;; wisi-output.adb:115:42: possible misspelling of "Production"
   ;; wisi-output.adb:115:42: possible misspelling of "Production"
+  ;;
+  ;; GNAT Community 2021 adds "error: " to the above (a misspelling is never a warning):
+  ;; wisi-output.adb:115:41: error: invalid expression in loop iterator
+  ;; wisi-output.adb:115:42: error: possible misspelling of "Production"
+  ;; wisi-output.adb:115:42: error: possible misspelling of "Production"
   ;;
   ;; column number can vary, so only check the line number
   (save-excursion
@@ -184,6 +189,8 @@ Prompt user if more than one."
 		   (progn
 		     (skip-syntax-forward "^-")
 		     (forward-char 1)
+		     (when (looking-at "error: ")
+		       (goto-char (match-end 0)))
 		     (looking-at (concat "possible misspelling of " ada-gnat-quoted-name-regexp))))
 	  (push (match-string 1) choices)))
 
@@ -204,17 +211,23 @@ Prompt user if more than one."
   (save-excursion
     (forward-line 1)
     (skip-syntax-forward "^ ")
-    (looking-at " use fully qualified name starting with \\([[:alnum:]_]+\\) to make")
-    (match-string 1)
+    (when (looking-at " use fully qualified name starting with \\([[:alnum:]_]+\\) to make")
+      (match-string 1))
     ))
 
 (cl-defmethod wisi-compiler-fix-error ((_compiler gnat-compiler) source-buffer)
   (let ((start-pos (point))
 	message-column
 	result)
-    ;; Move to start of error message text
-    (skip-syntax-forward "^-")
+    ;; Move to start of error message text. GNAT Community 2021 puts
+    ;; warning: | error: after the file:line:column; earlier compilers
+    ;; only put "warning: ".
+    ;;
+    ;; test_incremental.adb:657:20: error: "Checks" not declared in "WisiToken"
+    (skip-syntax-forward "^-") ;; file:line:column
     (forward-char 1)
+    (when (looking-at "warning: \\|error: ")
+      (goto-char (match-end 0)))
     (setq message-column (current-column))
 
     ;; recognize it, handle it
@@ -253,16 +266,19 @@ Prompt user if more than one."
 	     ;; defined; if present, it will have been marked by
 	     ;; ada-gnat-compilation-filter:
 	     ;;
-	     ;; gnatquery.adb:255:13: "Has_Element" is not visible
-	     ;; gnatquery.adb:255:13: non-visible declaration at a-convec.ads:68, instance at gnatcoll-arg_lists.ads:157
-	     ;; gnatquery.adb:255:13: non-visible declaration at a-coorse.ads:62, instance at gnatcoll-xref.ads:912
-	     ;; gnatquery.adb:255:13: non-visible declaration at a-coorse.ads:62, instance at gnatcoll-xref.ads:799
-	     ;; gnatquery.adb:255:13: non-visible declaration at gnatcoll-xref.ads:314
+    ;; gnatquery.adb:255:13: error: "Has_Element" is not visible
+    ;; gnatquery.adb:255:13: error: non-visible declaration at a-convec.ads:68, instance at gnatcoll-arg_lists.ads:157
+    ;; gnatquery.adb:255:13: error: non-visible declaration at a-coorse.ads:62, instance at gnatcoll-xref.ads:912
+    ;; gnatquery.adb:255:13: error: non-visible declaration at a-coorse.ads:62, instance at gnatcoll-xref.ads:799
+    ;; gnatquery.adb:255:13: error: non-visible declaration at gnatcoll-xref.ads:314
 	     ;;
 	     ;; or the next line may contain "multiple use clauses cause hiding"
 	     ;;
 	     ;; the lines after that may contain alternate matches;
 	     ;; collect all, let user choose.
+	     ;;
+	     ;; However, a line that contains 'ada-secondary-error may be from the next error message:
+	     ;; parser_no_recover.adb:297:60: no selector "Tree" for type "Parser_State" defined at lists.ads:96
 	     (forward-line 1)
 	     (when (looking-at ".* multiple use clauses cause hiding")
 	       (forward-line 1))
@@ -271,9 +287,9 @@ Prompt user if more than one."
 		 ;; 1- because next compilation error is at next line beginning
 		 (setq done (not
 			     (and
-			      (equal file-line-struct err-msg)
+			      (equal file-line-struct err-msg) ;; same error message?
 			      (setq pos (next-single-property-change (point) 'ada-secondary-error nil limit))
-			      (< pos limit))))
+			      (<= pos limit))))
 		 (when (not done)
 		   (let* ((item (get-text-property pos 'ada-secondary-error))
 			  (unit-file (nth 0 item))
@@ -282,7 +298,9 @@ Prompt user if more than one."
 		     (unless (member choice choices) (push choice choices))
 		     (goto-char (1+ pos))
 		     (goto-char (1+ (next-single-property-change (point) 'ada-secondary-error nil limit)))
-		     (when (eolp) (forward-line 1))
+		     (when (eolp)
+		       (forward-line 1)
+		       (setq file-line-struct (get-text-property (point) 'compilation-message)))
 		     ))
 		 ))
 
@@ -335,6 +353,7 @@ Prompt user if more than one."
 	  ((looking-at (concat ada-gnat-quoted-name-regexp " not declared in " ada-gnat-quoted-name-regexp))
 	   (save-excursion
 	     (let ((child-name (match-string 1))
+		   (partial-parent-name (match-string 2))
 		   (correct-spelling (ada-gnat-misspelling))
 		   (qualified (ada-gnat-qualified)))
 	       (cond
@@ -352,7 +371,7 @@ Prompt user if more than one."
 		(t
 		 ;; else guess that "child" is a child package, and extend the with_clause
 		 (pop-to-buffer source-buffer)
-		 (ada-fix-extend-with-clause child-name))))
+		 (ada-fix-extend-with-clause partial-parent-name child-name))))
 	   t))
 
 	  ((looking-at (concat ada-gnat-quoted-punctuation-regexp
@@ -367,6 +386,12 @@ Prompt user if more than one."
 	   t)
 
 ;;;; strings
+	  ((looking-at (concat "aspect \"" ada-name-regexp "\" requires 'Class"))
+	   (pop-to-buffer source-buffer)
+	   (forward-word 1)
+	   (insert "'Class")
+	   t)
+
 	  ((looking-at (concat "\"end " ada-name-regexp ";\" expected"))
 	   (let ((expected-name (match-string 1)))
 	     (pop-to-buffer source-buffer)
@@ -414,7 +439,7 @@ Prompt user if more than one."
 	     (pop-to-buffer source-buffer)
 	     (if (looking-at "'Access")
 		 (kill-word 1)
-	       (forward-word 1)
+	       (forward-symbol 1)
 	       (insert ".all"))
 	     t)
 	    ((looking-at "found type .*_Access_Type")
@@ -441,8 +466,8 @@ Prompt user if more than one."
 	   (let ((package-name (match-string-no-properties 1)))
 	     (pop-to-buffer source-buffer)
 	     ;; Could check if prefix is already with'd, extend
-	     ;; it. But no one has reported that case yet; this
-	     ;; message only occurs for predefined Ada packages.
+	     ;; it. But that's not easy. This message only occurs for
+	     ;; compiler-provided Ada and GNAT packages.
 	     (ada-fix-add-with-clause package-name))
 	   t)
 
@@ -483,10 +508,17 @@ Prompt user if more than one."
 		 (replace-match correct-spelling)
 		 t))))
 
-	  ((looking-at (concat "operator for \\(private \\)?type " ada-gnat-quoted-name-regexp
-			       "\\( defined at " ada-gnat-file-name-regexp "\\)?"))
-	   (let ((type (match-string 2))
-		 (package-file (match-string 4))
+	  ((looking-at (concat "operator for \\(?:private \\)?type " ada-gnat-quoted-name-regexp
+			       "\\(?: defined at " ada-gnat-file-name-regexp "\\)?"))
+	   (let ((type (match-string 1))
+		 (package-file (match-string 2))
+		 ;; IMPROVEME: we'd like to handle ", instance at
+		 ;; <file:line:column>", but gnatcoll.xref does not
+		 ;; support looking up an entity by location alone; it
+		 ;; requires the name, and this error message does not
+		 ;; give the name of the instance. When we implement
+		 ;; adalang xref, or if the error message improves,
+		 ;; try again.
 		 (prj (project-current)))
 	     (when package-file
 	       (setq type (concat
@@ -516,14 +548,14 @@ Prompt user if more than one."
 	   t)
 
 ;;;; warnings
-	  ((looking-at (concat "warning: " ada-gnat-quoted-name-regexp " is already use-visible"))
+	  ((looking-at (concat ada-gnat-quoted-name-regexp " is already use-visible"))
 	   ;; just delete the 'use'; assume it's on a line by itself.
 	   (pop-to-buffer source-buffer)
 	   (beginning-of-line)
 	   (delete-region (point) (progn (forward-line 1) (point)))
 	   t)
 
-	  ((looking-at (concat "warning: " ada-gnat-quoted-name-regexp " is not modified, could be declared constant"))
+	  ((looking-at (concat ada-gnat-quoted-name-regexp " is not modified, could be declared constant"))
 	   (pop-to-buffer source-buffer)
 	   (search-forward ":")
 	   (forward-comment (- (point-max) (point)))
@@ -534,7 +566,7 @@ Prompt user if more than one."
 	   (insert "constant ")
 	   t)
 
-	  ((looking-at (concat "warning: constant " ada-gnat-quoted-name-regexp " is not referenced"))
+	  ((looking-at (concat "constant " ada-gnat-quoted-name-regexp " is not referenced"))
 	   (let ((constant (match-string 1)))
 	     (pop-to-buffer source-buffer)
 	     (end-of-line)
@@ -542,7 +574,7 @@ Prompt user if more than one."
 	     (insert "pragma Unreferenced (" constant ");"))
 	   t)
 
-	  ((looking-at (concat "warning: formal parameter " ada-gnat-quoted-name-regexp " is not referenced"))
+	  ((looking-at (concat "formal parameter " ada-gnat-quoted-name-regexp " is not referenced"))
 	   (let ((param (match-string 1))
 		 cache)
 	     (pop-to-buffer source-buffer)
@@ -559,7 +591,7 @@ Prompt user if more than one."
 	     (insert "pragma Unreferenced (" param ");"))
 	   t)
 
-	  ((looking-at (concat "warning: formal parameter " ada-gnat-quoted-name-regexp " is not modified"))
+	  ((looking-at (concat "formal parameter " ada-gnat-quoted-name-regexp " is not modified"))
 	   (let ((mode-regexp "\"\\([in out]+\\)\"")
 		 new-mode
 		 old-mode)
@@ -575,7 +607,7 @@ Prompt user if more than one."
 	     )
 	   t)
 
-	  ((looking-at (concat "warning: variable " ada-gnat-quoted-name-regexp " is not referenced"))
+	  ((looking-at (concat "variable " ada-gnat-quoted-name-regexp " is not referenced"))
 	   (let ((param (match-string 1)))
 	     (pop-to-buffer source-buffer)
 	     (forward-sexp);; end of declaration
@@ -585,16 +617,17 @@ Prompt user if more than one."
 	   t)
 
 	  ((or
-	    (looking-at (concat "warning: no entities of " ada-gnat-quoted-name-regexp " are referenced"))
-	    (looking-at (concat "warning: unit " ada-gnat-quoted-name-regexp " is never instantiated"))
-	    (looking-at "warning: redundant with clause"))
-	   ;; just delete the 'with'; assume it's on a line by itself.
+	    (looking-at (concat "no entities of " ada-gnat-quoted-name-regexp " are referenced"))
+	    (looking-at (concat "unit " ada-gnat-quoted-name-regexp " is never instantiated"))
+	    (looking-at (concat "renamed constant " ada-gnat-quoted-name-regexp " is not referenced"))
+	    (looking-at "redundant with clause"))
+	   ;; just delete the declaration; assume it's on a line by itself.
 	   (pop-to-buffer source-buffer)
 	   (beginning-of-line)
 	   (delete-region (point) (progn (forward-line 1) (point)))
 	   t)
 
-	  ((looking-at (concat "warning: variable " ada-gnat-quoted-name-regexp " is assigned but never read"))
+	  ((looking-at (concat "variable " ada-gnat-quoted-name-regexp " is assigned but never read"))
 	   (let ((param (match-string 1)))
 	     (pop-to-buffer source-buffer)
 	     (wisi-goto-statement-end) ;; leaves point before semicolon
@@ -603,14 +636,14 @@ Prompt user if more than one."
 	     (insert "pragma Unreferenced (" param ");"))
 	   t)
 
-	  ((looking-at (concat "warning: unit " ada-gnat-quoted-name-regexp " is not referenced"))
+	  ((looking-at (concat "unit " ada-gnat-quoted-name-regexp " is not referenced"))
 	   ;; just delete the 'with'; assume it's on a line by itself.
 	   (pop-to-buffer source-buffer)
 	   (beginning-of-line)
 	   (delete-region (point) (progn (forward-line 1) (point)))
 	   t)
 
-	  ((looking-at (concat "warning: use clause for \\(package\\|type\\|private type\\) " ada-gnat-quoted-name-regexp " \\(defined at\\|from instance at\\|has no effect\\)"))
+	  ((looking-at (concat "use clause for \\(package\\|type\\|private type\\) " ada-gnat-quoted-name-regexp " \\(defined at\\|from instance at\\|has no effect\\)"))
 	   ;; delete the 'use'; assume it's on a line by itself.
 	   (pop-to-buffer source-buffer)
 	   (beginning-of-line)

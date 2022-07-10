@@ -1,6 +1,6 @@
 ;; user options shared by Ada mode indentation engines  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2012, 2013, 2015, 2017 - 2020  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2015, 2017 - 2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Contributors: Simon Wright <simon.j.wright@mac.com>
@@ -175,7 +175,7 @@ Otherwise, indent by `ada-indent-broken' relative to the start of
 the expression."
   :type 'boolean
   :safe #'booleanp)
-(make-variable-buffer-local 'ada-indent-hanging-rel-exp)
+(make-obsolete-variable 'ada-indent-hanging-rel-exp "" "ada-mode 4.0.0")
 
 (defcustom ada-indent-after-trailing-comment t
  "If t, align comment lines imediately following a comment on the
@@ -185,14 +185,26 @@ the expression."
   :safe #'booleanp)
 (make-variable-buffer-local 'ada-indent-after-trailing-comment)
 
-(defcustom ada-end-name-optional nil
+(defcustom ada-indent-subprogram-is ada-indent-broken
+  "Indentation for `is' relative to `function' or `procedure' when
+the subprogram body is a short form; \"is null\", expression
+function, etc.
+
+An example is:
+   function A return Integer
+   >>is (B);"
+  :type  'integer
+  :safe  #'integerp)
+(make-variable-buffer-local 'ada-indent-subprogram-is)
+
+(defcustom ada-end-name-optional t
   "If t, names at ends of blocks/subprograms are optional (as in
 standard Ada). If nil, they are required; this helps in error
 recovery, and matches the gnat style option -gnatye.
-Default is nil because it significantly improves error recovery."
+Default is t for new Ada users."
   :type 'boolean
   :safe #'booleanp)
-(make-variable-buffer-local 'ada-indent-hanging-rel-exp)
+(make-variable-buffer-local 'ada-end-name-optional)
 
 (provide 'ada-indent-user-options)
 

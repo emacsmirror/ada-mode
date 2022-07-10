@@ -2,7 +2,7 @@
 --
 --  see spec.
 --
---  Copyright (C) 2017 - 2020 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2022 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -13,10 +13,12 @@
 
 pragma License (GPL);
 
+with Ada.Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
-with Ada_Process_Actions; --  token_enum_id
+with Ada_Annex_P_Process_Actions; --  token_enum_id
+with GNAT.Traceback.Symbolic;
 package body Wisi.Ada is
    use WisiToken;
 
@@ -24,335 +26,334 @@ package body Wisi.Ada is
    --  body local subprograms
 
    function Indent_Record
-     (Data              : in out Parse_Data_Type;
-      Tree              : in     Syntax_Trees.Tree;
-      Anchor_Token      : in     Augmented_Token;
-      Record_Token      : in     Augmented_Token;
-      Indenting_Token   : in     Augmented_Token;
-      Indenting_Comment : in     Boolean;
-      Offset            : in     Integer)
+     (Data                   : in out Parse_Data_Type;
+      Tree                   : in     Syntax_Trees.Tree;
+      Controlling_Token_Line : in     Line_Number_Type;
+      Anchor_Token           : in     Syntax_Trees.Valid_Node_Access;
+      Record_Token           : in     Syntax_Trees.Valid_Node_Access;
+      Indenting_Token        : in     Syntax_Trees.Valid_Node_Access;
+      Indenting_Comment      : in     Boolean;
+      Offset                 : in     Integer)
      return Wisi.Delta_Type
    is
-      use Ada_Process_Actions;
+      use Ada_Annex_P_Process_Actions;
    begin
-      if not Indenting_Comment and Indenting_Token.ID = +RECORD_ID then
+      if not Indenting_Comment and Tree.ID (Indenting_Token) = +RECORD_ID then
          --  Indenting 'record'
          return Indent_Anchored_2
-           (Data, Anchor_Token.Line, Record_Token.Last_Line (Indenting_Comment), Ada_Indent_Record_Rel_Type,
-            Accumulate => True);
+           (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment, Ada_Indent_Record_Rel_Type);
 
-      elsif Indenting_Comment and Indenting_Token.ID = +WITH_ID then
+      elsif Indenting_Comment and Tree.ID (Indenting_Token) = +WITH_ID then
          --  comment before 'record'. test/ada_mode-nominal-child.ads Child_Type_1
          return Indent_Anchored_2
-           (Data, Anchor_Token.Line, Indenting_Token.Last_Line (Indenting_Comment), Ada_Indent_Record_Rel_Type,
-            Accumulate => True);
+           (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment, Ada_Indent_Record_Rel_Type);
 
-      elsif Indenting_Comment and Indenting_Token.ID = +IS_ID then
+      elsif Indenting_Comment and Tree.ID (Indenting_Token) = +IS_ID then
          --  comment after 'is'
-         if Record_Token.ID = +RECORD_ID then
+         if Tree.ID (Record_Token) = +RECORD_ID then
             --  before 'record'. test/ada_mode-nominal.ads Record_Type_1
             return Indent_Anchored_2
-              (Data, Anchor_Token.Line, Indenting_Token.Last_Line (Indenting_Comment), Ada_Indent_Record_Rel_Type,
-               Accumulate => True);
+              (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment, Ada_Indent_Record_Rel_Type);
          else
             --  not before 'record'. test/ada_mode-nominal-child.ads Child_Type_1
-            return (Simple, (Int, Offset));
+            return (Simple, (Int, Controlling_Token_Line, Offset));
          end if;
 
       else
          --  Indenting comment after 'record', other comment, component or 'end'
          --
-         --  Ensure 'record' line is anchored to Anchor_Token.
-         if not (Data.Indents (Record_Token.Line).Label = Anchored or
-                   Data.Indents (Record_Token.Line).Label = Anchor_Anchored)
-         then
-            if Anchor_Token.Line /= Record_Token.Line then
+         --  Ensure line containing 'record' is anchored to Anchor_Token.
+         if Data.Indents (Tree.Line_Region (Record_Token, Trailing_Non_Grammar => True).First).Label /= Anchored then
+            if Tree.Line_Region (Anchor_Token, Trailing_Non_Grammar => True).First /=
+              Tree.Line_Region (Record_Token, Trailing_Non_Grammar => True).First
+            then
                --  We don't pass Indenting_Comment here, because 'record' is code.
                Indent_Token_1
                  (Data,
                   Tree,
-                  Indenting_Token         => Record_Token,
-                  Delta_Indent            => Indent_Anchored_2
-                    (Data,
-                     Anchor_Token.Line,
-                     Record_Token.Last_Line
-                       (Indenting_Comment => False),
-                     Ada_Indent_Record_Rel_Type,
-                     Accumulate           => True),
-                  Indenting_Comment       => False);
+                  Line_Region          => Tree.Line_Region (Record_Token, Trailing_Non_Grammar => False),
+                  Delta_Indent         => Indent_Anchored_2
+                    (Data, Tree, Anchor_Token, Record_Token,
+                     Indenting_Comment => False,
+                     Offset            => Ada_Indent_Record_Rel_Type),
+                  Indenting_Comment    => None);
             end if;
          end if;
 
          return Indent_Anchored_2
-           (Data,
-            Anchor_Line => Anchor_Token.Line,
-            Last_Line   => Indenting_Token.Last_Line (Indenting_Comment),
-            Offset      => Current_Indent_Offset
-              (Data, Anchor_Token,
-               Offset   =>
-                 (if Anchor_Token.Line = Record_Token.Line
-                  then Offset
-                  else Offset + Ada_Indent_Record_Rel_Type)),
-            Accumulate => True);
+           (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment, Current_Indent_Offset
+              (Tree, Anchor_Token,
+               (if Tree.Line_Region (Anchor_Token, Trailing_Non_Grammar => True).First =
+                  Tree.Line_Region (Record_Token, Trailing_Non_Grammar => True).First
+                then Offset
+                else Offset + Ada_Indent_Record_Rel_Type)));
       end if;
    end Indent_Record;
 
    ----------
    --  Refactor body subprograms
 
-   function Find_ID_At
-     (Tree       : in WisiToken.Syntax_Trees.Tree;
-      ID         : in Token_ID;
-      Edit_Begin : in WisiToken.Buffer_Pos)
-     return WisiToken.Node_Index
+   function Find_ID_Containing
+     (Tree            : in WisiToken.Syntax_Trees.Tree;
+      IDs             : in Token_ID_Array;
+      Edit_Begin_Char : in WisiToken.Buffer_Pos)
+     return WisiToken.Syntax_Trees.Node_Access
    is
-      function Match (Tree : in Syntax_Trees.Tree; Node : in Valid_Node_Index) return Boolean
-        is (Tree.ID (Node) = ID and then Get_Aug_Token_Const_1 (Tree, Node).Byte_Region.First = Edit_Begin);
+      use Syntax_Trees;
+      Terminal : constant Node_Access := Tree.Find_Char_Pos
+        (Edit_Begin_Char, After => True, Trailing_Non_Grammar => True);
    begin
-      return Tree.Find_Descendant (Tree.Root, Predicate => Match'Access);
-   end Find_ID_At;
+      return Tree.Find_Ancestor (Terminal, IDs);
+   end Find_ID_Containing;
 
    procedure Unrecognized
-     (Expecting  : in String;
-      Found      : in WisiToken.Valid_Node_Index;
-      Edit_Begin : in WisiToken.Buffer_Pos)
+     (Expecting : in     String;
+      Tree      : in     WisiToken.Syntax_Trees.Tree;
+      Data      : in out Parse_Data_Type;
+      Found     : in     WisiToken.Syntax_Trees.Valid_Node_Access)
    with No_Return
    is begin
-      raise SAL.Parameter_Error with "unrecognized subprogram call at byte_pos" & Edit_Begin'Image &
-        "; expecting " & Expecting & " found node" & Found'Image;
+      raise SAL.Parameter_Error with "expecting '" & Expecting & "'; found " &
+        Tree.Image (Found, Node_Numbers => True) & " '" & Elisp_Escape_Quotes (Data.Get_Text (Tree, Found)) & "'";
    end Unrecognized;
 
    procedure Method_Object_To_Object_Method
      (Tree       : in     WisiToken.Syntax_Trees.Tree;
       Data       : in out Parse_Data_Type;
-      Edit_Begin : in     WisiToken.Buffer_Pos)
+      Edit_Begin_Char : in     WisiToken.Buffer_Pos)
+   --  Data.Tree contains one statement or declaration; Edit_Begin_Char
+   --  is the character position at the start of a subprogram call.
+   --  Convert the subprogram call from Prefix.Method (Object, ...) to
+   --  Object.Method (...).
    is
-      --  Data.Tree contains one statement or declaration; Edit_Begin is at
-      --  start of a subprogram call. Convert the subprogram call from
-      --  Prefix.Method (Object, ...) to Object.Method (...).
-
-      use Ada_Process_Actions;
+      use Ada_Annex_P_Process_Actions;
       use Standard.Ada.Strings.Unbounded;
       use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
 
-      Call             : Node_Index := Find_ID_At (Tree, +name_ID, Edit_Begin);
-      Edit_End         : WisiToken.Buffer_Pos;
-      Method           : Valid_Node_Index;
-      Temp             : Node_Index;
-      Association_List : Node_Index;
-      Object           : Valid_Node_Index;
-      Result           : Unbounded_String;
+      Call : constant Node_Access := Find_ID_Containing (Tree, (1 => +function_call_ID), Edit_Begin_Char);
+
+      Edit_End              : WisiToken.Buffer_Pos;
+      Actual_Parameter_Part : Node_Access;
+      Association_List      : Node_Access;
+      Method                : Node_Access;
+
    begin
-      if Call = Invalid_Node_Index then
+      if Call = Invalid_Node_Access then
          --  Most likely the edit point is wrong.
-         raise SAL.Parameter_Error with "no 'name' found at byte_pos" & Edit_Begin'Image;
-      elsif not (Tree.RHS_Index (Call) in 1 | 3) then
-         raise SAL.Parameter_Error with "no subprogram call found at byte_pos" & Edit_Begin'Image &
-           " (found node" & Call'Image & ")";
+         raise SAL.Parameter_Error with "no subprogram call found at byte_pos" & Edit_Begin_Char'Image;
       end if;
 
-      if WisiToken.Trace_Action > Detail then
-         Put_Line (";; refactoring node" & Call'Image & " '" & Data.Get_Text (Tree, Call) & "'");
+      if Trace_Action > Detail then
+         Tree.Lexer.Trace.Put_Line
+           ("refactoring node " & Tree.Image (Call, Node_Numbers => True) & " '" & Data.Get_Text (Tree, Call) & "'");
       end if;
 
-      if Tree.RHS_Index (Call) = 3 then
-         --  Code looks like: Length (Container)'Old. We only want to edit
-         --  'Length (Container)', keeping the trailing 'Old.
-         Call := Tree.Child (Tree.Child (Call, 1), 1);
-      end if;
+      Actual_Parameter_Part := Tree.Child (Call, 2);
+      pragma Assert (Tree.ID (Actual_Parameter_Part) = +actual_parameter_part_ID);
 
-      Association_List := Tree.Child (Tree.Child (Call, 2), 2);
-      Edit_End         := Tree.Byte_Region (Call).Last;
-      Method           := Tree.Child (Tree.Child (Call, 1), 1);
-      loop
-         case To_Token_Enum (Tree.ID (Method)) is
-         when selected_component_ID | attribute_reference_ID =>
+      Association_List := Tree.Child (Actual_Parameter_Part, 2);
+      pragma Assert (Tree.ID (Association_List) = +parameter_association_list_ID);
+
+      Edit_End := Tree.Byte_Region (Call, Trailing_Non_Grammar => False).Last;
+
+      Method := Tree.Child (Tree.Child (Call, 1), 1);
+
+      case To_Token_Enum (Tree.ID (Method)) is
+      when selected_component_ID =>
+         Method := Tree.Child (Method, 3);
+         pragma Assert (Tree.ID (Method) = +selector_name_ID);
+
+         Method := Tree.Child (Method, 1);
+
+      when attribute_reference_ID =>
+         case To_Token_Enum (Tree.ID (Tree.Child (Method, 1))) is
+         when name_ID =>
             Method := Tree.Child (Method, 3);
+            pragma Assert (Tree.ID (Method) = +attribute_designator_ID);
 
-         when qualified_expression_ID =>
-            Method := Tree.Child (Method, 3); -- aggregate
-            if Tree.ID (Tree.Child (Method, 2)) = +association_list_ID then
-               Method := Tree.Child (Method, 2);
-               if Tree.RHS_Index (Method) = 1 then
-                  Temp := Tree.Find_Descendant (Tree.Child (Method, 1), +expression_ID);
-                  if Temp = Invalid_Node_Index then
-                     Unrecognized ("expression", Tree.Child (Method, 1), Edit_Begin);
-                  else
-                     Method := Temp;
-                     exit;
-                  end if;
-               else
-                  Unrecognized ("association", Method, Edit_Begin);
-               end if;
-            else
-               Unrecognized ("association_list", Method, Edit_Begin);
-            end if;
+            Method := Tree.Child (Method, 1);
 
-         when IDENTIFIER_ID | STRING_LITERAL_ID =>
-            exit;
+         when reduction_attribute_reference_ID =>
+            Unrecognized ("subprogram call", Tree, Data, Method);
+
          when others =>
-            Unrecognized ("supported token", Method, Edit_Begin);
+            raise SAL.Programmer_Error with "code does not match grammar";
          end case;
-      end loop;
 
-      Temp := Tree.Find_Descendant (Association_List, +expression_ID);
-      if Temp = Invalid_Node_Index then
-         Unrecognized ("expression", Association_List, Edit_Begin);
-      else
-         Object := Temp;
-      end if;
+      when qualified_expression_ID =>
+         raise SAL.Not_Implemented; -- need use case
 
-      --  Build remaining arg list in Result.
-      loop
-         if Tree.RHS_Index (Association_List) = 0 then
-            Result := Get_Text (Data, Tree, Tree.Child (Association_List, 3)) &
-              (if Length (Result) = 0 then "" else ", ") &
-              Result;
-            Association_List := Tree.Child (Association_List, 1);
-         else
-            --  The remaining element in Association_List is the first one, which is Object.
-            if Length (Result) > 0 then
-               Result := " (" & Result & ")";
-            end if;
-            exit;
+      when direct_name_ID =>
+         Method := Tree.Child (Method, 1);
+
+      when others =>
+         Unrecognized ("supported token", Tree, Data, Method);
+      end case;
+
+      pragma Assert (To_Token_Enum (Tree.ID (Method)) in IDENTIFIER_ID | STRING_LITERAL_ID);
+
+      declare
+         Object : constant Node_Access := Tree.Find_Descendant (Association_List, +expression_ID);
+         Result : Unbounded_String;
+      begin
+         if Object = Invalid_Node_Access then
+            Unrecognized ("expression", Tree, Data, Association_List);
          end if;
-      end loop;
-      Result := (Get_Text (Data, Tree, Object) & "." & Get_Text (Data, Tree, Method)) & Result;
-      Put_Line ("[" & Edit_Action_Code & Edit_Begin'Image & Edit_End'Image & " """ &
-                  Elisp_Escape_Quotes (To_String (Result)) & """]");
+
+         --  Build remaining arg list in Result.
+         loop
+            if Tree.RHS_Index (Association_List) = 1 then
+               Result := Get_Text (Data, Tree, Tree.Child (Association_List, 3)) &
+                 (if Length (Result) = 0 then "" else ", ") &
+                 Result;
+               Association_List := Tree.Child (Association_List, 1);
+            else
+               --  The remaining element in Association_List is the first one, which is Object.
+               if Length (Result) > 0 then
+                  Result := " (" & Result & ")";
+               end if;
+               exit;
+            end if;
+         end loop;
+         Result := (Get_Text (Data, Tree, Object) & "." & Get_Text (Data, Tree, Method)) & Result;
+         Put_Line ("[" & Edit_Action_Code & Edit_Begin_Char'Image & Edit_End'Image & " """ &
+                     Elisp_Escape_Quotes (To_String (Result)) & """]");
+      end;
    end Method_Object_To_Object_Method;
 
    procedure Object_Method_To_Method_Object
      (Tree       : in     WisiToken.Syntax_Trees.Tree;
       Data       : in out Parse_Data_Type;
-      Edit_Begin : in     WisiToken.Buffer_Pos)
+      Edit_Begin_Char : in     WisiToken.Buffer_Pos)
    is
-      --  Data.Tree contains one statement or declaration; Edit_Begin is at
-      --  start of a subprogram call. Convert the subprogram call from
-      --  Object.Method (...) to Method (Object, ...).
-      use Ada_Process_Actions;
+      --  Data.Tree contains one statement or declaration; Edit_Begin is the
+      --  character position at the start of a subprogram call. Convert the
+      --  subprogram call from Object.Method (...) to Method (Object, ...).
+      use Ada_Annex_P_Process_Actions;
       use Standard.Ada.Strings.Unbounded;
-      use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
 
-      Call          : Node_Index := Find_ID_At (Tree, +name_ID, Edit_Begin);
+      --  ada_mode-refactor_object_method_to_method_object.adb
+      Call          : Node_Access := Find_ID_Containing
+        (Tree, (+primary_ID, +procedure_call_statement_ID), Edit_Begin_Char);
       Edit_End      : WisiToken.Buffer_Pos;
-      Object_Method : Valid_Node_Index;
+      Object_Method : Node_Access;
+      Args          : Node_Access := Invalid_Node_Access;
       Method        : Unbounded_String;
       Object        : Unbounded_String;
       Result        : Unbounded_String;
    begin
-      if Call = Invalid_Node_Index then
+      if Call = Invalid_Node_Access then
          --  Most likely the edit point is wrong.
-         raise SAL.Parameter_Error with "no 'name' at byte_pos" & Edit_Begin'Image;
-      elsif not (Tree.RHS_Index (Call) in 1 | 2 | 3) then
-         raise SAL.Parameter_Error with "no subprogram call found at byte_pos" & Edit_Begin'Image &
-           " (found node" & Call'Image & ")";
+         raise SAL.Parameter_Error with "no 'name' at byte_pos" & Edit_Begin_Char'Image;
       end if;
 
-      if WisiToken.Trace_Action > Detail then
-         Put_Line (";; refactoring node" & Call'Image & " '" & Data.Get_Text (Tree, Call) & "'");
+      if Trace_Action > Detail then
+         Tree.Lexer.Trace.Put_Line
+           ("refactoring node " & Tree.Image (Call, Node_Numbers => True) & " '" & Data.Get_Text (Tree, Call) & "'");
       end if;
 
-      if Tree.RHS_Index (Call) = 3 then
+      Call := Tree.Child (Call, 1);
+      pragma Assert (Tree.ID (Call) = +name_ID);
+
+      if Tree.ID (Tree.Child (Call, 1)) = +attribute_reference_ID then
          --  Code looks like: Container.Length'Old. We only want to edit
          --  'Container.Length', keeping the trailing 'Old.
          Call := Tree.Child (Tree.Child (Call, 1), 1);
       end if;
 
-      Edit_End      := Tree.Byte_Region (Call).Last;
+      Edit_End      := Tree.Byte_Region (Call, Trailing_Non_Grammar => False).Last;
       Object_Method := Tree.Child (Call, 1);
-         loop
-            case To_Token_Enum (Tree.ID (Object_Method)) is
-            when name_ID =>
-               Object_Method := Tree.Child (Object_Method, 1);
+      loop
+         case To_Token_Enum (Tree.ID (Object_Method)) is
+         when function_call_ID =>
+            --  Object_Method looks like:
+            --  Object.Method (Args)
+            --  test/ada_mode-refactor_object_method_to_method_object.adb
+            Args := Tree.Child (Tree.Child (Object_Method, 2), 2);
+            pragma Assert (Tree.ID (Args) = +parameter_association_list_ID);
 
-            when selected_component_ID =>
-               Object := +Get_Text (Data, Tree, Tree.Child (Object_Method, 1));
-               Method := +Get_Text (Data, Tree, Tree.Child (Object_Method, 3));
-               exit;
+            Object_Method := Tree.Child (Object_Method, 1);
 
-            when others =>
-               Unrecognized ("supported token", Object_Method, Edit_Begin);
-            end case;
-         end loop;
+         when name_ID =>
+            Object_Method := Tree.Child (Object_Method, 1);
 
-         Result := Method & " (" & Object;
-         if Tree.RHS_Index (Call) = 1 then
-            Result := Result & ", " & Get_Text (Data, Tree, Tree.Child (Tree.Child (Call, 2), 2));
-         end if;
-         Result := Result & ")";
-         Put_Line ("[" & Edit_Action_Code & Edit_Begin'Image & Edit_End'Image & " """ &
-                     Elisp_Escape_Quotes (To_String (Result)) & """]");
+         when selected_component_ID =>
+            Object := +Get_Text (Data, Tree, Tree.Child (Object_Method, 1));
+            Method := +Get_Text (Data, Tree, Tree.Child (Object_Method, 3));
+            exit;
+
+         when others =>
+            Unrecognized ("supported token", Tree, Data, Object_Method);
+         end case;
+      end loop;
+
+      Result := Method & " (" & Object;
+      if Args /= Invalid_Node_Access then
+         Result := Result & ", " & Get_Text (Data, Tree, Args);
+      end if;
+      Result := Result & ")";
+      Standard.Ada.Text_IO.Put_Line
+        ("[" & Edit_Action_Code & Edit_Begin_Char'Image & Edit_End'Image & " """ &
+           Elisp_Escape_Quotes (To_String (Result)) & """]");
    end Object_Method_To_Method_Object;
 
    procedure Element_Object_To_Object_Index
      (Tree       : in     WisiToken.Syntax_Trees.Tree;
       Data       : in out Parse_Data_Type;
-      Edit_Begin : in     WisiToken.Buffer_Pos)
+      Edit_Begin_Char : in     WisiToken.Buffer_Pos)
+   --  Data.Tree contains one statement or declaration; Edit_Begin_Char
+   --  is the character position at the start of a subprogram call.
+   --  Convert the subprogram call from Prefix.Element (Object, Index) to
+   --  Object (Index).
    is
-      --  Data.Tree contains one statement or declaration; Edit_Begin is at
-      --  start of a subprogram call. Convert the subprogram call from
-      --  Prefix.Element (Object, Index) to Object (Index).
-
-      use Ada_Process_Actions;
+      use Ada_Annex_P_Process_Actions;
       use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
 
-      Call             : Node_Index := Find_ID_At (Tree, +name_ID, Edit_Begin);
+      Call             : constant Node_Access := Find_ID_Containing (Tree, (1 => +function_call_ID), Edit_Begin_Char);
       Edit_End         : WisiToken.Buffer_Pos;
-      Temp             : Node_Index;
-      Association_List : Node_Index;
-      Object           : Valid_Node_Index;
-      Index            : Valid_Node_Index;
+      Temp             : Node_Access;
+      Association_List : Node_Access;
+      Object           : Node_Access;
+      Index            : Node_Access;
    begin
-      if Call = Invalid_Node_Index then
+      if Call = Invalid_Node_Access then
          --  Most likely the edit point is wrong.
-         raise SAL.Parameter_Error with "no 'name' found at byte_pos" & Edit_Begin'Image;
-      elsif not (Tree.RHS_Index (Call) in 1 | 2 | 3) then
-         raise SAL.Parameter_Error with "no subprogram call found at byte_pos" & Edit_Begin'Image &
-           " (found node" & Call'Image & ")";
+         raise SAL.Parameter_Error with "no subprogram call found at byte_pos" & Edit_Begin_Char'Image;
       end if;
 
-      if WisiToken.Trace_Action > Detail then
-         Put_Line (";; refactoring node" & Call'Image & " '" & Data.Get_Text (Tree, Call) & "'");
-      end if;
-
-      if Tree.RHS_Index (Call) = 2 then
-         --  Code looks like: Element (Container, I).Op. We only want to edit
-         --  the subprogram call, keeping the trailing .Op.
-         Call := Tree.Child (Tree.Child (Call, 1), 1);
-
-      elsif Tree.RHS_Index (Call) = 3 then
-         --  Code looks like: Element (Container, I)'Old. We only want to edit
-         --  the subprogram call, keeping the trailing 'Old.
-         Call := Tree.Child (Tree.Child (Call, 1), 1);
+      if Trace_Action > Detail then
+         Tree.Lexer.Trace.Put_Line
+           ("refactoring node " & Tree.Image (Call, Node_Numbers => True) & " '" & Data.Get_Text (Tree, Call) & "'");
       end if;
 
       Association_List := Tree.Child (Tree.Child (Call, 2), 2);
-      Edit_End         := Tree.Byte_Region (Call).Last;
+      pragma Assert (Tree.ID (Association_List) = +parameter_association_list_ID);
 
-      if Tree.RHS_Index (Association_List) /= 0 then
-         Unrecognized ("two args", Association_List, Edit_Begin);
+      Edit_End := Tree.Byte_Region (Call, Trailing_Non_Grammar => False).Last;
+
+      if Tree.RHS_Index (Association_List) /= 1 then
+         Unrecognized ("two args", Tree, Data, Association_List);
       end if;
 
       Temp := Tree.Find_Descendant (Association_List, +expression_ID);
-      if Temp = Invalid_Node_Index then
-         Unrecognized ("expression", Association_List, Edit_Begin);
+      if Temp = Invalid_Node_Access then
+         Unrecognized ("expression", Tree, Data, Association_List);
       else
          Object := Temp;
       end if;
 
       Temp := Tree.Find_Descendant (Tree.Child (Association_List, 3), +expression_ID);
-      if Temp = Invalid_Node_Index then
-         Unrecognized ("expression", Association_List, Edit_Begin);
+      if Temp = Invalid_Node_Access then
+         Unrecognized ("expression", Tree, Data, Association_List);
       else
          Index := Temp;
       end if;
 
       Put_Line
-        ("[" & Edit_Action_Code & Edit_Begin'Image & Edit_End'Image & " """ &
+        ("[" & Edit_Action_Code & Edit_Begin_Char'Image & Edit_End'Image & " """ &
            Elisp_Escape_Quotes (Get_Text (Data, Tree, Object) & " (" & Get_Text (Data, Tree, Index) & ")") &
            """]");
    end Element_Object_To_Object_Index;
@@ -360,75 +361,66 @@ package body Wisi.Ada is
    procedure Object_Index_To_Element_Object
      (Tree       : in     WisiToken.Syntax_Trees.Tree;
       Data       : in out Parse_Data_Type;
-      Edit_Begin : in     WisiToken.Buffer_Pos)
+      Edit_Begin_Char : in     WisiToken.Buffer_Pos)
+   --  Data.Tree contains one statement or declaration; Edit_Begin_Char
+   --  is the character position at the start of a subprogram call.
+   --  Convert the subprogram call from Object (Index) to Element
+   --  (Object, Index).
    is
-      --  Data.Tree contains one statement or declaration; Edit_Begin is at
-      --  start of a subprogram call. Convert the subprogram call from
-      --  Object (Index) to Element (Object, Index).
-
-      use Ada_Process_Actions;
+      use Ada_Annex_P_Process_Actions;
       use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
 
-      Call             : Node_Index := Find_ID_At (Tree, +name_ID, Edit_Begin);
+      Call             : constant Node_Access := Find_ID_Containing (Tree, (1 => +function_call_ID), Edit_Begin_Char);
       Edit_End         : WisiToken.Buffer_Pos;
-      Temp             : Node_Index;
-      Association_List : Node_Index;
-      Object           : Valid_Node_Index;
-      Index            : Valid_Node_Index;
+      Temp             : Node_Access;
+      Association_List : Node_Access;
+      Object           : Node_Access;
+      Index            : Node_Access;
    begin
-      if Call = Invalid_Node_Index then
+      if Call = Invalid_Node_Access then
          --  Most likely the edit point is wrong.
-         raise SAL.Parameter_Error with "no 'name' found at byte_pos" & Edit_Begin'Image;
-      elsif not (Tree.RHS_Index (Call) in 1 | 2 | 3) then
-         raise SAL.Parameter_Error with "no subprogram call found at byte_pos" & Edit_Begin'Image &
-           " (found node" & Call'Image & ")";
+         raise SAL.Parameter_Error with "no subprogram_call found at byte_pos" & Edit_Begin_Char'Image;
       end if;
 
-      if WisiToken.Trace_Action > Detail then
-         Put_Line (";; refactoring node" & Call'Image & " '" & Data.Get_Text (Tree, Call) & "'");
+      if Trace_Action > Detail then
+         Tree.Lexer.Trace.Put_Line
+           ("refactoring node " & Tree.Image (Call, Node_Numbers => True) & " '" & Data.Get_Text (Tree, Call) & "'");
       end if;
 
-      if Tree.RHS_Index (Call) = 2 then
-         --  Code looks like: Object (I).Component. We only want to edit
-         --  the subprogram call, keeping the trailing .Component.
-         Call := Tree.Child (Tree.Child (Call, 1), 1);
+      Object := Tree.Child (Call, 1);
+      pragma Assert (Tree.ID (Object) = +name_ID);
 
-      elsif Tree.RHS_Index (Call) = 3 then
-         --  Code looks like: Container (I)'Old. We only want to edit
-         --  the subprogram call, keeping the trailing 'Old.
-         Call := Tree.Child (Tree.Child (Call, 1), 1);
-      end if;
-
-      Object           := Tree.Child (Tree.Child (Call, 1), 1);
       Association_List := Tree.Child (Tree.Child (Call, 2), 2);
-      Edit_End         := Tree.Byte_Region (Call).Last;
+      pragma Assert (Tree.ID (Association_List) = +parameter_association_list_ID);
 
-      if Tree.RHS_Index (Association_List) /= 1 then
-         Unrecognized ("one args", Association_List, Edit_Begin);
+      Edit_End := Tree.Byte_Region (Call, Trailing_Non_Grammar => False).Last;
+
+      if Tree.RHS_Index (Association_List) /= 0 then
+         Unrecognized ("one arg", Tree, Data, Association_List);
       end if;
 
       Temp := Tree.Find_Descendant (Tree.Child (Association_List, 1), +expression_ID);
-      if Temp = Invalid_Node_Index then
-         Unrecognized ("expression", Association_List, Edit_Begin);
+      if Temp = Invalid_Node_Access then
+         Unrecognized ("expression", Tree, Data, Association_List);
       else
          Index := Temp;
       end if;
 
       Put_Line
-        ("[" & Edit_Action_Code & Edit_Begin'Image & Edit_End'Image & " """ &
+        ("[" & Edit_Action_Code & Edit_Begin_Char'Image & Edit_End'Image & " """ &
            Elisp_Escape_Quotes
              ("Element (" & Get_Text (Data, Tree, Object) & ", " & Get_Text (Data, Tree, Index) & ")") &
            """]");
    end Object_Index_To_Element_Object;
 
    procedure Format_Parameter_List
-     (Tree       : in out WisiToken.Syntax_Trees.Tree;
-      Data       : in out Parse_Data_Type;
-      Edit_Begin : in     WisiToken.Buffer_Pos)
+     (Tree            : in out WisiToken.Syntax_Trees.Tree;
+      Edit_Begin_Char : in     WisiToken.Buffer_Pos)
    is separate;
-   --  Data.Tree contains a subprogram declaration or body; Edit_Begin is
-   --  at the start of a parameter list. Format the parameter list.
+   --  Tree contains a subprogram declaration or body; Edit_Begin_Char is
+   --  the character position at the start of the parameter list. Format
+   --  the parameter list.
    --
    --  Handle virtual tokens as much as possible; at least closing paren.
 
@@ -436,33 +428,37 @@ package body Wisi.Ada is
    --  Public subprograms, declaration order
 
    overriding
-   procedure Initialize
-     (Data              : in out Parse_Data_Type;
-      Lexer             : in     WisiToken.Lexer.Handle;
-      Descriptor        : access constant WisiToken.Descriptor;
-      Base_Terminals    : in     WisiToken.Base_Token_Array_Access;
-      Post_Parse_Action : in     Post_Parse_Action_Type;
-      Begin_Line        : in     WisiToken.Line_Number_Type;
-      End_Line          : in     WisiToken.Line_Number_Type;
-      Begin_Indent      : in     Integer;
-      Params            : in     String)
+   procedure Initialize (Data  : in out Parse_Data_Type)
    is
-      use Standard.Ada.Strings.Fixed;
-      use all type Ada_Process_Actions.Token_Enum_ID;
-      First : Integer := Params'First;
-      Last  : Integer := Index (Params, " ");
+      use all type Ada_Annex_P_Process_Actions.Token_Enum_ID;
    begin
-      Wisi.Initialize
-        (Wisi.Parse_Data_Type (Data), Lexer, Descriptor, Base_Terminals, Post_Parse_Action, Begin_Line, End_Line,
-         Begin_Indent, "");
-
       Data.First_Comment_ID := +COMMENT_ID;
       Data.Last_Comment_ID  := WisiToken.Invalid_Token_ID;
       Data.Left_Paren_ID    := +LEFT_PAREN_ID;
       Data.Right_Paren_ID   := +RIGHT_PAREN_ID;
 
-      Data.Embedded_Quote_Escape_Doubled := True;
+      --  All nonterms in compilation_unit, basic_declarative_item for
+      --  package specs, wisitoken_accept for point in leading/trailing
+      --  comments.
+      Data.Statement_IDs.Append (+compilation_unit_ID);
+      Data.Statement_IDs.Append (+with_clause_ID);
+      Data.Statement_IDs.Append (+declarative_item_ID);
+      Data.Statement_IDs.Append (+statement_ID);
+      Data.Statement_IDs.Append (+subunit_ID);
+      Data.Statement_IDs.Append (+basic_declarative_item_ID);
+      Data.Statement_IDs.Append (+wisitoken_accept_ID);
+      --  not entry_declaration; only needed with partial parse
+   end Initialize;
 
+   overriding
+   procedure Parse_Language_Params
+     (Data   : in out Parse_Data_Type;
+      Params : in     String)
+   is
+      use Standard.Ada.Strings.Fixed;
+      First : Integer := Params'First;
+      Last  : Integer := Index (Params, " ");
+   begin
       if Params /= "" then
          Ada_Indent := Integer'Value (Params (First .. Last - 1));
 
@@ -507,374 +503,480 @@ package body Wisi.Ada is
          Ada_Indent_With := Integer'Value (Params (First .. Last - 1));
 
          First := Last + 1;
-         Last := First + 1;
-         Ada_Indent_Hanging_Rel_Exp := Params (First) = '1';
+         Last := Index (Params, " ", First);
+         Ada_Indent_Subprogram_Is := Integer'Value (Params (First .. Last - 1));
 
          First := Last + 1;
          Last := First + 1;
          End_Names_Optional := Params (First) = '1';
+      else
+         Ada_Indent                 := Ada_Indent_Default;
+         Ada_Indent_Broken          := Ada_Indent_Broken_Default;
+         Ada_Indent_Comment_Col_0   := Ada_Indent_Comment_Col_0_Default;
+         Ada_Indent_Comment_GNAT    := Ada_Indent_Comment_GNAT_Default;
+         Ada_Indent_Label           := Ada_Indent_Label_Default;
+         Ada_Indent_Record_Rel_Type := Ada_Indent_Record_Rel_Type_Default;
+         Ada_Indent_Renames         := Ada_Indent_Renames_Default;
+         Ada_Indent_Return          := Ada_Indent_Return_Default;
+         Ada_Indent_Use             := Ada_Indent_Use_Default;
+         Ada_Indent_When            := Ada_Indent_When_Default;
+         Ada_Indent_With            := Ada_Indent_With_Default;
+         Ada_Indent_Subprogram_Is   := Ada_Indent_Subprogram_Is_Default;
+         End_Names_Optional         := End_Names_Optional_Default;
       end if;
 
       Data.Indent_Comment_Col_0 := Ada_Indent_Comment_Col_0;
-   end Initialize;
+   end Parse_Language_Params;
 
-   overriding function Insert_After
-     (User_Data            : in out Parse_Data_Type;
-      Tree                 : in     WisiToken.Syntax_Trees.Tree'Class;
-      Token                : in     WisiToken.Valid_Node_Index;
-      Insert_On_Blank_Line : in     Boolean)
-     return Boolean
+   overriding
+   function Get_Token_IDs
+     (User_Data    : in     Parse_Data_Type;
+      Command_Line : in     String;
+      Last         : in out Integer)
+     return WisiToken.Token_ID_Arrays.Vector
    is
       pragma Unreferenced (User_Data);
-      use Ada_Process_Actions;
-
-      --  We return True if Token affects indent (ie it is a block boundary)
-      --  and normally has no code following it on the same line.
-      --
-      --  'end' is not really an exception, it is normally followed by
-      --  <name> and ';', but no more code. Except when indenting a blank
-      --  line; see test/ada_mode-interactive_2.adb Record_1.
-      --
-      --  RIGHT_PAREN is an exception; it is often followed by more code,
-      --  but clearly belongs on the same line as the preceding token (often
-      --  other ')').
-      --
-      --  COLON is similar to RIGHT_PAREN.
-
-      ID : constant Token_ID := Tree.ID (Token);
-
-      Result : constant array (Ada_Process_Actions.Token_Enum_ID) of Boolean :=
-        (BEGIN_ID |         -- test/ada_mode-recover_exception_1.adb, test/ada_mode-recover_extra_declare.adb
-           COLON_ID |       -- test/ada_mode-recover_partial_22.adb
-           DECLARE_ID |
-           RIGHT_PAREN_ID | -- test/ada_mode-recover_20.adb
-           SEMICOLON_ID |   -- test/ada_mode-recover_13.adb
-           THEN_ID          -- test/ada_mode-recover_19
-                => True,
-         others => False);
+      use Ada_Annex_P_Process_Actions;
    begin
-      case To_Token_Enum (ID) is
-      when CASE_ID | IF_ID | LOOP_ID | RECORD_ID | RETURN_ID | SELECT_ID =>
-         return -Tree.ID (Tree.Prev_Terminal (Token)) = END_ID;
+      return IDs : WisiToken.Token_ID_Arrays.Vector do
+         Wisi.Skip (Command_Line, Last, '(');
+         loop
+            IDs.Append (+Token_Enum_ID'Value (Wisi.Get_Enum (Command_Line, Last)));
+            Wisi.Skip (Command_Line, Last, ' ');
+            exit when Command_Line (Last + 1) = ')';
+         end loop;
+         Last := Last + 1;
+      end return;
+   end Get_Token_IDs;
 
-      when END_ID =>
-         --  test/ada_mode-recover_20.adb, test/ada_mode-interactive_2.adb Record_1.
-         return not Insert_On_Blank_Line;
+   overriding function Insert_After
+     (User_Data           : in out Parse_Data_Type;
+      Tree                : in     WisiToken.Syntax_Trees.Tree'Class;
+      Insert_Token        : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Insert_Before_Token : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Comment_Present     : in     Boolean;
+      Blank_Line_Present  : in     Boolean)
+     return WisiToken.Insert_Location
+   is
+      pragma Unreferenced (User_Data);
+      use Ada_Annex_P_Process_Actions;
 
-      when IDENTIFIER_ID =>
-         return -Tree.ID (Tree.Prev_Terminal (Token)) in END_ID | COLON_ID;
+      Insert_ID        : constant Token_Enum_ID := To_Token_Enum (Tree.ID (Insert_Token));
+      Insert_Before_ID : constant Token_Enum_ID := To_Token_Enum (Tree.ID (Insert_Before_Token));
+
+      After_End : constant array (Token_Enum_ID) of Boolean :=
+        --  Terminals that appear after 'end', other than ';'.
+        (
+           CASE_ID |
+           DO_ID |
+           IDENTIFIER_ID |
+           IF_ID |
+           LOOP_ID |
+           RECORD_ID |
+           RETURN_ID |
+           SELECT_ID => True,
+         others => False);
+
+      After_Comment : constant array (Token_Enum_ID) of Insert_Location :=
+        (
+         ABORT_ID |
+           ACCEPT_ID |
+           BEGIN_ID |
+           CASE_ID |
+           DECLARE_ID |
+           DELAY_ID |
+           ELSE_ID |
+           ELSIF_ID |
+           ENTRY_ID |
+           EXCEPTION_ID |
+           EXIT_ID |
+           FOR_ID |
+           FUNCTION_ID |
+           GENERIC_ID |
+           GOTO_ID |
+           IF_ID |
+           LOOP_ID |
+           OVERRIDING_ID |
+           PRAGMA_ID |
+           PROCEDURE_ID |
+           RAISE_ID |
+           REQUEUE_ID |
+           SELECT_ID |
+           TYPE_ID |
+           WHILE_ID => After_Prev,
+         others => Before_Next);
+   begin
+      if After_End (Insert_ID) and then -Tree.ID (Tree.Prev_Terminal (Insert_Token)) = END_ID then
+         return After_Prev;
+      end if;
+
+      case Insert_Before_ID is
+      when ELSE_ID | END_ID | IS_ID | WHEN_ID =>
+         case Insert_ID is
+         when END_ID =>
+            --  Ending a block of statements. The desired result depends on what
+            --  the user is doing, and what indent is begin computed (if any).
+            --
+            --  If continuing the block of statements and indenting a blank line,
+            --  the 'end' should be placed after the indent line; before_next.
+            --
+            --  If indenting a block of code, keep the indent of the existing
+            --  'end'; between or after_prev.
+            --
+            --  We don't know why the parse is being done, nor what lines are
+            --  being indented; we use the presence of a blank line and comment to
+            --  hint at that, and we bias towards continuing a block of
+            --  statements, not inserting 'end'.
+            --
+            --  If there is a blank line followed by comments, we assume that
+            --  means we are not adding code on the blank line.
+            --
+            --  If there is a blank line not followed by comments, we assume that
+            --  means we are adding code on the blank line.
+
+            --  Before ELSE_ID:
+            --     test/ada_mode-recover_27.adb
+            --     first 'else'
+            --
+            --  Before END_ID:
+            --     test/ada_mode-interactive_02 New_Line_2,
+            --     actually inserting 'end if;' before 'end case;'
+            --     blank line present => assume continuing code for 'if' body
+            --     => insert before 'end case;' => before_next.
+            --
+            --     test/ada_mode-recover_06.adb
+            --     actually inserting 'end;'
+            --     blank line and comment present; assume extending code for block body
+            --     => insert on blank line => between
+            --
+            --     test/ada_mode-recover_08.adb
+            --     no blank line or comment; keep correct indent for existing 'end' => after_prev.
+            --
+            --     test/ada_mode-recover_17.adb
+            --     inserting missing 'end if;', but assume extending code
+            --     comment present, no blank line; keep correct indent for existing 'end' => between
+            --
+            --     test/ada_mode-recover_repair_1.adb
+            --     deleted 'end if;', inserting 'end loop;'
+            --     comment followed by blank line; between.
+            --
+            --  Before IS_ID : test/ada_mode-recover_incremental_01.adb insert "Float"
+            --     no blank line or comment
+            --     'is' should be first. => after_prev
+            --
+            --  Before WHEN_ID : test/ada_mode-recover_34.adb
+            --     completing 'if'; keep existing indent of 'when' => after_prev
+            if Comment_Present then
+               return Between;
+            else
+               if Blank_Line_Present then
+                  return Before_Next;
+               else
+                  return After_Prev;
+               end if;
+            end if;
+
+         when others =>
+            --  Before END_ID :
+            --     test/ada_mode-recover_10.adb,
+            --     test/ada_mode-recover_37.adb,
+            --     put trailing 'end' in correct column
+            --
+            --     test/ada_mode-recover_41.adb
+            --     insert on blank line; continue previous code
+            if Blank_Line_Present then
+               return Between;
+            else
+               return After_Prev;
+            end if;
+         end case;
+
+      when RETURN_ID =>
+         --  Before RETURN_ID : test/ada_mode-recover_16.adb
+         --     There is never code before 'return'. => after_prev
+         return After_Prev;
 
       when others =>
-         return Result (-ID);
+         case Insert_ID is
+         when BEGIN_ID | DO_ID | ELSE_ID | GREATER_EQUAL_ID | LOOP_ID | IS_ID | THEN_ID =>
+            --  Starting a block of statements
+            if Blank_Line_Present then
+               --  Assume editing; this and next token should start new line.
+               return Between;
+            else
+               --  Next token should start new line.
+               return After_Prev;
+            end if;
+
+         when SEMICOLON_ID =>
+            --  test/ada_mode-interactive_2.adb A := B \n+C; on blank line: extending code => between | before_next
+            --  test/ada_mode-recover_03.adb after 'renames', _13.adb not on blank line: after_prev
+            --  test/ada_mode-recover_30.adb before 'if', blank line present: between
+            --  test/ada_mode-recover_36.adb after 'function Update\n comments': before_next
+            --
+            --  test/ada_mode-recover_07.adb after 'loop' on blank line: after_prev | Between,
+            if Blank_Line_Present then
+               return Between;
+            else
+               return After_Prev;
+            end if;
+
+         when others =>
+            if Blank_Line_Present then
+               --  Assume editing; continue previous code
+               return Before_Next;
+
+            elsif Comment_Present then
+               --  Don't continue previous code
+               return After_Comment (Insert_ID);
+
+            else
+               case Insert_ID is
+               when END_ID =>
+                  --  test/ada_mode-recover_20.adb,
+                  --  test/ada_mode-interactive_2.adb Record_1.
+                  return Before_Next;
+
+               when IDENTIFIER_ID | NUMERIC_LITERAL_ID =>
+                  --  test/ada_mode-recover_03.adb after 'renames'; completing an expression: true.
+                  --  Starting a procedure call or assignment statement: false
+                  return
+                    (if -Tree.ID (Tree.Prev_Terminal (Insert_Token)) /= SEMICOLON_ID
+                     then After_Prev
+                     else Before_Next);
+
+               when BEGIN_ID |    -- test/ada_mode-recover_exception_1.adb, test/ada_mode-recover_extra_declare.adb
+                 COLON_ID |       -- test/ada_mode-recover_partial_22.adb
+                 DECLARE_ID |
+                 RIGHT_PAREN_ID | -- test/ada_mode-recover_20.adb
+                 THEN_ID          -- test/ada_mode-recover_19
+                 =>
+                  return After_Prev;
+
+               when others =>
+                  return Before_Next;
+
+               end case;
+            end if;
+         end case;
       end case;
    end Insert_After;
 
    overriding
-   function Indent_Hanging_1
-     (Data              : in out Parse_Data_Type;
-      Tree              : in     Syntax_Trees.Tree;
-      Tokens            : in     Valid_Node_Index_Array;
-      Tree_Indenting    : in     Valid_Node_Index;
-      Indenting_Comment : in     Boolean;
-      Delta_1           : in     Simple_Indent_Param;
-      Delta_2           : in     Simple_Indent_Param;
-      Option            : in     Boolean;
-      Accumulate        : in     Boolean)
-     return Delta_Type
+   procedure Refactor_Help (Data : in Parse_Data_Type)
    is
-      Indenting_Token : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1 (Tree, Tree_Indenting);
-
-      function Result (Delta_1 : in Simple_Indent_Param; Delta_2 : in Simple_Delta_Type) return Delta_Type
-      is begin
-         return
-           (Hanging,
-            Hanging_First_Line  => Indenting_Token.Line,
-            Hanging_Paren_State => Indenting_Token.Paren_State,
-            Hanging_Delta_1     => Indent_Compute_Delta
-              (Data, Tree, Tokens, (Simple, Delta_1), Tree_Indenting, Indenting_Comment).Simple_Delta,
-            Hanging_Delta_2     => Delta_2,
-            Hanging_Accumulate => Accumulate);
-      end Result;
-
-      function Result (Delta_1 : in Simple_Delta_Type) return Delta_Type
-      is begin
-         return
-           (Hanging,
-            Hanging_First_Line  => Indenting_Token.Line,
-            Hanging_Paren_State => Indenting_Token.Paren_State,
-            Hanging_Delta_1     => Delta_1,
-            Hanging_Delta_2     => Delta_1,
-            Hanging_Accumulate => Accumulate);
-      end Result;
-
-      function Comment_Result (D : in Simple_Indent_Param) return Delta_Type
-      is begin
-         return Indent_Compute_Delta
-           (Data, Tree, Tokens, (Simple, D), Tree_Indenting, Indenting_Comment => False);
-      end Comment_Result;
-
-      use Ada_Process_Actions;
+      use Standard.Ada.Text_IO;
    begin
-      if Tree.ID (Tree.Parent (Tree_Indenting)) = +association_opt_ID and then
-        Invalid_Node_Index /= Tree.Find_Ancestor (Tree_Indenting, +aspect_specification_opt_ID)
-      then
-         --  In aspect_specification_opt
-         --  See ada.wy association_opt for test cases
-         if not Indenting_Comment then
-            return Result
-              (Delta_1,
-               Indent_Anchored_2
-                 (Data, Indenting_Token.Line, Indenting_Token.Last_Indent_Line,
-                  Current_Indent_Offset (Data, Indenting_Token, 0),
-                  Accumulate => False).Simple_Delta);
-         else
-            --  Test case in test/aspects.ads
-            return Result
-              (Indent_Compute_Delta
-                 (Data, Tree, Tokens, (Simple, Delta_1), Tree_Indenting, Indenting_Comment).Simple_Delta);
-         end if;
-
-      elsif Ada_Indent_Hanging_Rel_Exp then
-         declare
-            New_Delta_2 : constant Simple_Delta_Type := Indent_Anchored_2
-              (Data, Indenting_Token.Line, Indenting_Token.Last_Indent_Line,
-               Current_Indent_Offset (Data, Indenting_Token, Ada_Indent_Broken),
-               Accumulate => False).Simple_Delta;
-         begin
-            if not Option or Indenting_Token.Line = Indenting_Token.First_Indent_Line then
-               return Result (Delta_1, New_Delta_2);
-            else
-               return Result (New_Delta_2);
-            end if;
-         end;
-
-      elsif Indenting_Comment then
-         --  Use delta for last line of Indenting_Token.
-         --  Test cases in test/ada_mode-parens.adb Hello
-         declare
-            First_Terminal : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1
-              (Tree, Tree.First_Terminal (Tree_Indenting));
-         begin
-            if Option then
-               --  Test cases with "Item => ..."
-               if First_Terminal.First then
-                  if Indenting_Token.First_Indent_Line = Indenting_Token.Last_Indent_Line then
-                     return Comment_Result (Delta_1);
-                  else
-                     return Comment_Result (Delta_2);
-                  end if;
-               else
-                  if Indenting_Token.First_Indent_Line = Invalid_Line_Number then
-                     return Comment_Result ((Int, 0));
-                  else
-                     return Comment_Result (Delta_1);
-                  end if;
-               end if;
-
-            else
-               if First_Terminal.First then
-                  if Indenting_Token.First_Indent_Line = Indenting_Token.Last_Indent_Line then
-                     return Comment_Result (Delta_1);
-                  else
-                     return Comment_Result (Delta_2);
-                  end if;
-               else
-                  if Indenting_Token.First_Indent_Line = Invalid_Line_Number then
-                     --  Comment is after first line in token
-                     return Comment_Result (Delta_1);
-                  else
-                     return Comment_Result (Delta_2);
-                  end if;
-               end if;
-            end if;
-         end;
-
-      elsif not Option or Indenting_Token.Line = Indenting_Token.First_Indent_Line then
-         return Result
-           (Delta_1,
-            Indent_Compute_Delta
-              (Data, Tree, Tokens, (Simple, Delta_2), Tree_Indenting, Indenting_Comment).Simple_Delta);
-
-      else
-         return Result
-           (Indent_Compute_Delta
-              (Data, Tree, Tokens, (Simple, Delta_1), Tree_Indenting, Indenting_Comment).Simple_Delta);
-      end if;
-   end Indent_Hanging_1;
+      --  Must match "ada-refactor-*" in ada-core.el, Refactor_Label position number
+      Put ("0 Method_Object_To_Object_Method");
+      Put ("1 Object_Method_To_Method_Object");
+      Put ("2 Element_Object_To_Object_Index");
+      Put ("3 Object_Index_To_Element_Object");
+      Put ("4 Format_Parameter_List         ");
+   end Refactor_Help;
 
    overriding
    procedure Refactor
-     (Data       : in out Parse_Data_Type;
-      Tree       : in out WisiToken.Syntax_Trees.Tree;
-      Action     : in     Positive;
-      Edit_Begin : in     WisiToken.Buffer_Pos)
+     (Data            : in out Parse_Data_Type;
+      Tree            : in out WisiToken.Syntax_Trees.Tree;
+      Action          : in     Refactor_Action;
+      Edit_Begin_Char : in     WisiToken.Buffer_Pos)
    is
-      --  Must match "ada-refactor-*" in ada-wisi.el
-      Method_Object_To_Object_Method : constant Positive := 1;
-      Object_Method_To_Method_Object : constant Positive := 2;
-      Element_Object_To_Object_Index : constant Positive := 3;
-      Object_Index_To_Element_Object : constant Positive := 4;
-      Format_Parameter_List          : constant Positive := 5;
-
+      Enum_Action : Refactor_Label;
    begin
-      if WisiToken.Trace_Action > Detail then
-         Tree.Print_Tree (Data.Descriptor.all);
-      end if;
-      case Action is
-      when Method_Object_To_Object_Method =>
-         Wisi.Ada.Method_Object_To_Object_Method (Tree, Data, Edit_Begin);
-      when Object_Method_To_Method_Object =>
-         Wisi.Ada.Object_Method_To_Method_Object (Tree, Data, Edit_Begin);
-      when Element_Object_To_Object_Index =>
-         Wisi.Ada.Element_Object_To_Object_Index (Tree, Data, Edit_Begin);
-      when Object_Index_To_Element_Object =>
-         Wisi.Ada.Object_Index_To_Element_Object (Tree, Data, Edit_Begin);
-      when Format_Parameter_List =>
-         Wisi.Ada.Format_Parameter_List (Tree, Data, Edit_Begin);
+      begin
+         Enum_Action := Refactor_Label'Val (Action);
+      exception
+      when Constraint_Error =>
+         Standard.Ada.Text_IO.Put_Line ("(error ""unrecognized refactor action '" & Action'Image & "'"")");
+         return;
+      end;
 
-      when others =>
-         Standard.Ada.Text_IO.Put_Line ("(error ""unrecognized refactor action " & Action'Image & """)");
+      if Trace_Action > Detail then
+         Tree.Lexer.Trace.Put_Line (Tree.Image (Children => True));
+      end if;
+      case Enum_Action is
+      when Method_Object_To_Object_Method =>
+         Wisi.Ada.Method_Object_To_Object_Method (Tree, Data, Edit_Begin_Char);
+      when Object_Method_To_Method_Object =>
+         Wisi.Ada.Object_Method_To_Method_Object (Tree, Data, Edit_Begin_Char);
+      when Element_Object_To_Object_Index =>
+         Wisi.Ada.Element_Object_To_Object_Index (Tree, Data, Edit_Begin_Char);
+      when Object_Index_To_Element_Object =>
+         Wisi.Ada.Object_Index_To_Element_Object (Tree, Data, Edit_Begin_Char);
+      when Format_Parameter_List =>
+         Wisi.Ada.Format_Parameter_List (Tree, Edit_Begin_Char);
       end case;
+   exception
+   when E : others =>
+      if Debug_Mode then
+         Tree.Lexer.Trace.Put_Line
+           (Standard.Ada.Exceptions.Exception_Name (E) & ": " & Standard.Ada.Exceptions.Exception_Message (E));
+         Tree.Lexer.Trace.Put_Line (GNAT.Traceback.Symbolic.Symbolic_Traceback (E));
+         Tree.Lexer.Trace.New_Line;
+      end if;
+      raise;
    end Refactor;
 
    function Ada_Indent_Aggregate
      (Data              : in out Wisi.Parse_Data_Type'Class;
       Tree              : in     Syntax_Trees.Tree;
-      Tokens            : in     Valid_Node_Index_Array;
-      Tree_Indenting    : in     Valid_Node_Index;
+      Nonterm           : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Indenting_Token   : in     Syntax_Trees.Valid_Node_Access;
       Indenting_Comment : in     Boolean;
       Args              : in     Wisi.Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
    is
+      pragma Unreferenced (Nonterm);
       pragma Unreferenced (Data);
       pragma Unreferenced (Indenting_Comment);
       pragma Unreferenced (Args);
-      pragma Unreferenced (Tokens);
 
-      use Ada_Process_Actions;
+      use Ada_Annex_P_Process_Actions;
+      use Syntax_Trees;
 
       --  In our grammar, 'aggregate' can be an Ada aggregate, or a
       --  parenthesized expression.
       --
-      --  We always want an 'aggregate' to be indented by ada-indent-broken.
-      --  However, in some places in the grammar, 'aggregate' is indented by
-      --  ada-indent. The following checks for those places, and returns a
-      --  correction value. The aggregate may be nested inside a conidtional
-      --  expression, so we search for 'name' as well; see
+      --  We always want an 'aggregate' that begins an expression to be
+      --  indented by ada-indent-broken. However, in some places in the
+      --  grammar, 'aggregate' is indented by ada-indent. The following
+      --  checks for those places, and returns a correction value. The
+      --  aggregate may be nested inside a conditional expression, so we
+      --  search for 'name' as well; see
       --  test/ada_mode-conditional_expressions-more_1.adb.
 
-      Expression : constant Node_Index := Tree.Find_Ancestor (Tree_Indenting, (+expression_opt_ID, +name_ID));
+      pragma Assert (Tree.ID (Indenting_Token) = +aggregate_ID);
+
+      Expression : constant Node_Access := Tree.Find_Ancestor (Indenting_Token, (+expression_ID, +name_ID));
    begin
-      if Expression = Invalid_Node_Index or else
-        Tree.Parent (Expression) = Invalid_Node_Index
+      if Expression = Invalid_Node_Access or else
+        Tree.Parent (Expression) = Invalid_Node_Access
       then
          return Null_Delta;
       elsif Tree.ID (Tree.Parent (Expression)) in +if_expression_ID | +elsif_expression_item_ID |
         +case_expression_alternative_ID
       then
-         --  The controlling boolean expression in 'if_expression' and
-         --  'elsif_expression_item' cannot be an aggregate in legal Ada
-         --  syntax.
-         return (Simple, (Int, Ada_Indent_Broken - Ada_Indent));
+         --  test/ada_mode-conditional_expressions.adb K; value expression in
+         --  if_expression is indented by ada-indent.
+         --
+         --  test/ada_mode-conditional_expressions.adb M1 nested "(case C";
+         --  value expression in case_expression-alternative is indented by
+         --  ada-indent. But this aggregate does not start the value expression.
+         declare
+            List : constant Node_Access := Tree.Find_Ancestor (Indenting_Token, +term_binary_adding_operator_list_ID);
+         begin
+            if Tree.RHS_Index (List) = 0 then
+               --  Aggregate starts expression
+               return (Simple, (Int, Invalid_Line_Number, Ada_Indent_Broken - Ada_Indent));
+            else
+               return Null_Delta;
+            end if;
+         end;
+
       else
          return Null_Delta;
       end if;
    end Ada_Indent_Aggregate;
 
+   function Ada_Indent_Aspect
+     (Data              : in out Wisi.Parse_Data_Type'Class;
+      Tree              : in     Syntax_Trees.Tree;
+      Nonterm           : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Indenting_Token   : in     Syntax_Trees.Valid_Node_Access;
+      Indenting_Comment : in     Boolean;
+      Args              : in     Wisi.Indent_Arg_Arrays.Vector)
+     return Delta_Type
+   is
+      pragma Unreferenced (Nonterm, Args);
+
+      use Ada_Annex_P_Process_Actions;
+
+      pragma Assert (Tree.ID (Indenting_Token) = +aspect_definition_ID);
+
+      Indenting    : constant Wisi.Indenting                 := Compute_Indenting (Data, Tree, Indenting_Token);
+      Anchor_Token : constant Syntax_Trees.Valid_Node_Access := Tree.Child (Tree.Parent (Indenting_Token), 2);
+   begin
+      if Tree.Line_Region (Indenting_Token, Trailing_Non_Grammar => True).First = Indenting.Code.First then
+         --  aspect_definition starts a line; anchor the aspect_definition to
+         --  the line containing '=>' with offset ada_indent_broken.
+         return Indent_Anchored_2 (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment, Ada_Indent_Broken);
+      else
+         --  aspect_definition starts on same line as '=>'; anchor the aspect_definition to '=>' with offset 3
+         return Indent_Anchored_2
+           (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment,
+            Current_Indent_Offset (Tree, Anchor_Token, 3));
+      end if;
+   end Ada_Indent_Aspect;
+
    function Ada_Indent_Renames_0
      (Data              : in out Wisi.Parse_Data_Type'Class;
       Tree              : in     Syntax_Trees.Tree;
-      Tokens            : in     Valid_Node_Index_Array;
-      Tree_Indenting    : in     Valid_Node_Index;
+      Nonterm           : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Indenting_Token   : in     Syntax_Trees.Valid_Node_Access;
       Indenting_Comment : in     Boolean;
       Args              : in     Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
    is
-      Subp_Node   : constant Valid_Node_Index := Tokens (Positive_Index_Type (Integer'(Args (1))));
-      Subp_Tok    : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1 (Tree, Subp_Node);
-      Renames_Tok : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1 (Tree, Tree_Indenting);
-      Paren_I     : Node_Index;
-   begin
-      Paren_I := Tree.Find_Descendant (Subp_Node, Data.Left_Paren_ID);
+      Subp_Node : constant Syntax_Trees.Valid_Node_Access := Tree.Child
+        (Nonterm, Positive_Index_Type (Integer'(Args (1))));
 
-      if Paren_I /= Invalid_Node_Index then
+      Paren_I : constant Syntax_Trees.Node_Access := Tree.Find_Descendant (Subp_Node, Data.Left_Paren_ID);
+   begin
+      if Paren_I /= Syntax_Trees.Invalid_Node_Access then
          --  paren is present
          if Ada_Indent_Renames > 0 then
-            return Indent_Anchored_2
-              (Data,
-               Anchor_Line => Subp_Tok.Line,
-               Last_Line   => Renames_Tok.Last_Line (Indenting_Comment),
-               Offset      => Ada_Indent_Renames,
-               Accumulate  => True);
+            return Indent_Anchored_2 (Data, Tree, Subp_Node, Indenting_Token, Indenting_Comment, Ada_Indent_Renames);
          else
-            declare
-               Paren_Tok : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1 (Tree, Paren_I);
-            begin
-               return Indent_Anchored_2
-                 (Data,
-                  Anchor_Line => Paren_Tok.Line,
-                  Last_Line   => Renames_Tok.Last_Line (Indenting_Comment),
-                  Offset      => Current_Indent_Offset (Data, Paren_Tok, abs Ada_Indent_Renames),
-                  Accumulate  => True);
-            end;
+            return Indent_Anchored_2
+              (Data, Tree, Paren_I, Indenting_Token, Indenting_Comment, Current_Indent_Offset
+                 (Tree, Paren_I, abs Ada_Indent_Renames));
          end if;
       else
-         return Indent_Anchored_2
-           (Data,
-            Anchor_Line => Subp_Tok.Line,
-            Last_Line   => Renames_Tok.Last_Line (Indenting_Comment),
-            Offset      => Ada_Indent_Broken,
-            Accumulate  => True);
+         return Indent_Anchored_2 (Data, Tree, Subp_Node, Indenting_Token, Indenting_Comment, Ada_Indent_Broken);
       end if;
    end Ada_Indent_Renames_0;
 
    function Ada_Indent_Return_0
      (Data              : in out Wisi.Parse_Data_Type'Class;
       Tree              : in     Syntax_Trees.Tree;
-      Tokens            : in     Valid_Node_Index_Array;
-      Tree_Indenting    : in     Valid_Node_Index;
+      Nonterm           : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Indenting_Token   : in     Syntax_Trees.Valid_Node_Access;
       Indenting_Comment : in     Boolean;
       Args              : in     Wisi.Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
    is
-      use all type Ada_Process_Actions.Token_Enum_ID;
-      --  Tokens (Args (1)) = 'formal_part'
-      --  Indenting = 'result_profile'
+      use all type Ada_Annex_P_Process_Actions.Token_Enum_ID;
+      --  tree.child (Nonterm, Args (1)) = 'formal_part'
+      --  Indenting_Token = 'result_profile'
       --  Args (2) = delta (= 0!)
       --
       --  We are indenting 'result_profile' in
       --  'parameter_and_result_profile'. The indent depends on whether the
       --  'formal_part' is present, and the location of 'FUNCTION'.
 
-      Parameter_And_Result_Profile : constant Valid_Node_Index := Tree.Parent (Tree_Indenting);
+      Parameter_And_Result_Profile : constant Syntax_Trees.Valid_Node_Access := Tree.Parent (Indenting_Token);
 
-      Indenting : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1 (Tree, Tree_Indenting);
+      Indenting : constant Wisi.Indenting := Compute_Indenting (Data, Tree, Indenting_Token);
    begin
-      if Indenting.Line = Indenting.First_Indent_Line then
+      if Tree.Line_Region (Indenting_Token, Trailing_Non_Grammar => True).First = Indenting.Code.First then
          if Ada_Indent_Return <= 0 then
             declare
-               Anchor_Token : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1
-                 (Tree, Tokens (Positive_Index_Type (Integer'(Args (1)))));
+               Anchor_Token : constant Syntax_Trees.Valid_Node_Access :=
+                 Tree.Child (Nonterm, Positive_Index_Type (Integer'(Args (1))));
             begin
                return Indent_Anchored_2
-                 (Data,
-                  Anchor_Line => Anchor_Token.Line,
-                  Last_Line   => Indenting.Last_Line (Indenting_Comment),
-                  Offset      => Current_Indent_Offset (Data, Anchor_Token, Args (2) + abs Ada_Indent_Return),
-                  Accumulate  => True);
+                 (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment,
+                  Current_Indent_Offset (Tree, Anchor_Token, Args (2) + abs Ada_Indent_Return));
             end;
          else
             declare
-               Function_N   : constant Valid_Node_Index := Tree.Find_Sibling
+               Anchor_Token : constant Syntax_Trees.Valid_Node_Access := Tree.Find_Sibling
                  (Parameter_And_Result_Profile, +FUNCTION_ID);
-               Anchor_Token : Aug_Token_Const_Ref renames Get_Aug_Token_Const_1 (Tree, Function_N);
             begin
                return Indent_Anchored_2
-                 (Data,
-                  Anchor_Line => Anchor_Token.Line,
-                  Last_Line   => Indenting.Last_Line (Indenting_Comment),
-                  Offset      => Current_Indent_Offset (Data, Anchor_Token, Args (2) + abs Ada_Indent_Return),
-                  Accumulate  => True);
+                 (Data, Tree, Anchor_Token, Indenting_Token, Indenting_Comment,
+                  Current_Indent_Offset (Tree, Anchor_Token, Args (2) + abs Ada_Indent_Return));
             end;
          end if;
 
@@ -886,8 +988,8 @@ package body Wisi.Ada is
    function Ada_Indent_Record_0
      (Data              : in out Wisi.Parse_Data_Type'Class;
       Tree              : in     Syntax_Trees.Tree;
-      Tokens            : in     Valid_Node_Index_Array;
-      Tree_Indenting    : in     Valid_Node_Index;
+      Nonterm           : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Indenting_Token   : in     Syntax_Trees.Valid_Node_Access;
       Indenting_Comment : in     Boolean;
       Args              : in     Wisi.Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
@@ -895,18 +997,19 @@ package body Wisi.Ada is
       return Indent_Record
         (Parse_Data_Type (Data),
          Tree,
-         Anchor_Token      => Get_Aug_Token_Const_1 (Tree, Tokens (Positive_Index_Type (Integer'(Args (1))))),
-         Record_Token      => Get_Aug_Token_Const_1 (Tree, Tokens (Positive_Index_Type (Integer'(Args (2))))),
-         Offset            => Args (3),
-         Indenting_Token   => Get_Aug_Token_Const_1 (Tree, Tree_Indenting),
-         Indenting_Comment => Indenting_Comment);
+         Tree.Line_Region (Nonterm, Trailing_Non_Grammar => True).First,
+         Anchor_Token      => Tree.Child (Nonterm, Positive_Index_Type (Integer'(Args (1)))),
+         Record_Token      => Tree.Child (Nonterm, Positive_Index_Type (Integer'(Args (2)))),
+         Indenting_Token   => Indenting_Token,
+         Indenting_Comment => Indenting_Comment,
+         Offset            => Args (3));
    end Ada_Indent_Record_0;
 
    function Ada_Indent_Record_1
      (Data              : in out Wisi.Parse_Data_Type'Class;
       Tree              : in     Syntax_Trees.Tree;
-      Tokens            : in     Valid_Node_Index_Array;
-      Tree_Indenting    : in     Valid_Node_Index;
+      Nonterm           : in     WisiToken.Syntax_Trees.Valid_Node_Access;
+      Indenting_Token   : in     Syntax_Trees.Valid_Node_Access;
       Indenting_Comment : in     Boolean;
       Args              : in     Wisi.Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
@@ -919,29 +1022,31 @@ package body Wisi.Ada is
       --  full_type_declaration. If record_representation_clause, args (1)
       --  is FOR, child of record_representation_clause.
 
-      use Ada_Process_Actions;
+      use Ada_Annex_P_Process_Actions;
 
       Anchor : constant Token_ID := Token_ID (Integer'(Args (1)));
 
-      Declaration : constant Valid_Node_Index := Tree.Find_Ancestor
-        (Tree_Indenting,
+      Declaration : constant Syntax_Trees.Valid_Node_Access := Tree.Find_Ancestor
+        (Indenting_Token,
          (if To_Token_Enum (Anchor) = TYPE_ID
           then +full_type_declaration_ID
           else +record_representation_clause_ID));
 
-      Tree_Anchor : constant Valid_Node_Index := Tree.Find_Child (Declaration, Anchor);
+      Tree_Anchor : constant Syntax_Trees.Valid_Node_Access := Tree.Find_Child (Declaration, Anchor);
 
-      --  Args (2) is the index of RECORD (or a nonterminal possibly
-      --  starting with RECORD) in Tokens
-      Record_Token_Tree_Index : constant Node_Index := Tokens (Positive_Index_Type (Integer'(Args (2))));
+      --  Args (2) is the child index of RECORD (or a nonterminal possibly
+      --  starting with RECORD) in Nonterm
+      Record_Token : constant Syntax_Trees.Node_Access := Tree.Child
+        (Nonterm, Positive_Index_Type (Integer'(Args (2))));
    begin
       --  Args (3) is the offset
       return Indent_Record
         (Parse_Data_Type (Data),
          Tree,
-         Anchor_Token      => Get_Aug_Token_Const_1 (Tree, Tree_Anchor),
-         Record_Token      => Get_Aug_Token_Const_1 (Tree, Tree.First_Terminal (Record_Token_Tree_Index)),
-         Indenting_Token   => Get_Aug_Token_Const_1 (Tree, Tree_Indenting),
+         Tree.Line_Region (Nonterm, Trailing_Non_Grammar => True).First,
+         Anchor_Token      => Tree_Anchor,
+         Record_Token      => Tree.First_Terminal (Record_Token),
+         Indenting_Token   => Indenting_Token,
          Indenting_Comment => Indenting_Comment,
          Offset            => Args (3));
    end Ada_Indent_Record_1;

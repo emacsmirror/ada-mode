@@ -7,7 +7,7 @@
 ;; Keywords: languages
 ;;  ada
 ;; Version: 7.2.1
-;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.8") (emacs "25.3"))
+;; package-requires: ((uniquify-files "1.0.1") (wisi "3.1.5") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -106,7 +106,7 @@
 
 (require 'ada-core)
 (require 'ada-indent-user-options)
-(require 'ada-process)
+(require 'ada_annex_p-process)
 (require 'ada-skel)
 (require 'align)
 (require 'cl-lib)
@@ -117,7 +117,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "7.1.8"))
+  (let ((version-string "7.2.1.0 beta"))
     (if (called-interactively-p 'interactive)
 	(message version-string)
       version-string)))
@@ -212,6 +212,10 @@ nil, only the file name."
     (define-key map "\C-c\C-\M-y" 'wisi-case-create-partial-exception)
     (define-key map [C-down-mouse-3] 'ada-popup-menu)
 
+    (define-key map "\C-cr1" 'ada-refactor-1)
+    (define-key map "\C-cr2" 'ada-refactor-2)
+    (define-key map "\C-cr3" 'ada-refactor-3)
+    (define-key map "\C-cr4" 'ada-refactor-4)
     (wisi-case-activate-keys map)
 
     map
@@ -435,8 +439,8 @@ button was clicked."
     (modify-syntax-entry ?&  "." table)
     (modify-syntax-entry ?*  "." table)
     (modify-syntax-entry ?+  "." table)
-    (modify-syntax-entry ?-  ". 124" table); operator, double hyphen as comment
-    (modify-syntax-entry ?. "." table)
+    (modify-syntax-entry ?-  ". 12" table); double hyphen as comment start
+    (modify-syntax-entry ?.  "." table)
     (modify-syntax-entry ?/  "." table)
     (modify-syntax-entry ?:  "." table)
     (modify-syntax-entry ?<  "." table)
@@ -446,7 +450,7 @@ button was clicked."
     (modify-syntax-entry ?\' "." table); attribute; see ada-syntax-propertize for character literal
     (modify-syntax-entry ?\; "." table)
     (modify-syntax-entry ?\\ "." table); default is escape; not correct for Ada strings
-    (modify-syntax-entry ?\|  "." table)
+    (modify-syntax-entry ?\| "." table)
 
     ;; \f and \n end a comment.
     (modify-syntax-entry ?\f  ">" table)
@@ -523,15 +527,19 @@ See `ff-other-file-alist'.")
 (defconst ada-declaration-nonterms
   '(
     abstract_subprogram_declaration
+    attribute_definition_clause
     entry_body
     entry_declaration
     expression_function_declaration
+    exception_declaration
     full_type_declaration
     generic_instantiation
     generic_package_declaration
     generic_subprogram_declaration
     null_procedure_declaration
+    number_declaration
     object_declaration
+    object_renaming_declaration
     package_body
     package_declaration
     pragma_g
@@ -539,15 +547,18 @@ See `ff-other-file-alist'.")
     private_type_declaration
     protected_body
     protected_type_declaration
+    renaming_declaration
     single_protected_declaration
     single_task_declaration
     subprogram_body
+    subprogram_body_stub
     subprogram_declaration
     subprogram_renaming_declaration
     subtype_declaration
     task_body
     task_type_declaration
     use_clause
+    use_type_clause
     )
   "wisi-cache nonterminal symbols that are Ada declarations.")
 
@@ -616,75 +627,83 @@ See `ff-other-file-alist'.")
 (defun ada-which-function (&optional include-type)
   "Return name of subprogram/task/package containing point.
 Also sets ff-function-name for ff-pre-load-hook."
-  (interactive) ;; because which-function-mode does not provide which-function to call intermittently!
+  (interactive)
+  ;; which-function-mode does not provide which-function to call
+  ;; interactively!
+
   ;; Fail gracefully and silently, since this could be called from
   ;; which-function-mode.
-  (let ((parse-begin (max (point-min) (- (point) (/ ada-which-func-parse-size 2))))
-	(parse-end   (min (point-max) (+ (point) (/ ada-which-func-parse-size 2)))))
-    (save-excursion
-      (condition-case nil
-	  (progn
-	    (wisi-validate-cache parse-begin parse-end nil 'navigate)
-	    (when (wisi-cache-covers-region parse-begin parse-end 'navigate)
-	      (let ((result nil)
-		    (cache (ada-goto-declaration-start-1 include-type)))
-		(if (null cache)
-		    ;; bob or failed parse
-		    (setq result "")
+  (cond
+   (wisi-incremental-parse-enable
+    (ada-validate-enclosing-declaration nil 'navigate))
 
-		  (when (memq (wisi-cache-nonterm cache)
-			      '(generic_package_declaration generic_subprogram_declaration))
-		    ;; name is after next statement keyword
-		    (setq cache (wisi-next-statement-cache cache)))
-
-		  ;; add or delete 'body' as needed
-		  (cl-ecase (wisi-cache-nonterm cache)
-		    ((entry_body entry_declaration)
-		     (setq result (ada-which-function-1 "entry" nil)))
-
-		    ((full_type_declaration private_type_declaration)
-		     (setq result (ada-which-function-1 "type" nil)))
-
-		    (package_body
-		     (setq result (ada-which-function-1 "package" nil)))
-
-		    ((package_declaration
-		      package_specification) ;; after 'generic'
-		     (setq result (ada-which-function-1 "package" t)))
-
-		    (protected_body
-		     (setq result (ada-which-function-1 "protected" nil)))
-
-		    ((protected_type_declaration single_protected_declaration)
-		     (setq result (ada-which-function-1 "protected" t)))
-
-		    ((abstract_subprogram_declaration
-		      expression_function_declaration
-		      subprogram_declaration
-		      subprogram_renaming_declaration
-		      generic_subprogram_declaration ;; after 'generic'
-		      null_procedure_declaration)
-		     (setq result (ada-which-function-1
-				   (progn (search-forward-regexp "function\\|procedure")(match-string 0))
-				   nil))) ;; no 'body' keyword in subprogram bodies
-
-		    (subprogram_body
-		     (setq result (ada-which-function-1
-				   (progn (search-forward-regexp "function\\|procedure")(match-string 0))
-				   nil)))
-
-		    ((single_task_declaration task_type_declaration)
-		     (setq result (ada-which-function-1 "task" t)))
-
-
-		    (task_body
-		     (setq result (ada-which-function-1 "task" nil)))
-		    ))
-		(when (called-interactively-p 'interactive)
-		  (message result))
-		result)))
-	(error "")))
+   (t
+    (wisi-validate-cache (max (point-min) (- (point) (/ ada-which-func-parse-size 2)))
+			 (min (point-max) (+ (point) (/ ada-which-func-parse-size 2)))
+			 nil
+			 'navigate)
     ))
+
+  (save-excursion
+    (condition-case nil
+	(let ((result nil)
+	      (cache (ada-goto-declaration-start-1 include-type)))
+	  (if (null cache)
+	      ;; bob or failed parse
+	      (setq result "")
+
+	    (when (memq (wisi-cache-nonterm cache)
+			'(generic_package_declaration generic_subprogram_declaration))
+	      ;; name is after next statement keyword
+	      (setq cache (wisi-next-statement-cache cache)))
+
+	    ;; add or delete 'body' as needed
+	    (cl-ecase (wisi-cache-nonterm cache)
+	      ((entry_body entry_declaration)
+	       (setq result (ada-which-function-1 "entry" nil)))
+
+	      ((full_type_declaration private_type_declaration)
+	       (setq result (ada-which-function-1 "type" nil)))
+
+	      (package_body
+	       (setq result (ada-which-function-1 "package" nil)))
+
+	      ((package_declaration
+		package_specification) ;; after 'generic'
+	       (setq result (ada-which-function-1 "package" t)))
+
+	      (protected_body
+	       (setq result (ada-which-function-1 "protected" nil)))
+
+	      ((protected_type_declaration single_protected_declaration)
+	       (setq result (ada-which-function-1 "protected" t)))
+
+	      ((abstract_subprogram_declaration
+		expression_function_declaration
+		subprogram_declaration
+		subprogram_renaming_declaration
+		generic_subprogram_declaration ;; after 'generic'
+		null_procedure_declaration)
+	       (setq result (ada-which-function-1
+			     (progn (search-forward-regexp "function\\|procedure")(match-string 0))
+			     nil))) ;; no 'body' keyword in subprogram bodies
+
+	      ((subprogram_body subunit)
+	       (setq result (ada-which-function-1
+			     (progn (search-forward-regexp "function\\|procedure")(match-string 0))
+			     nil)))
+
+	      ((single_task_declaration task_type_declaration)
+	       (setq result (ada-which-function-1 "task" t)))
+
+
+	      (task_body
+	       (setq result (ada-which-function-1 "task" nil)))
+	      ))
+	  (when (called-interactively-p 'interactive)
+	    (message result))
+	  result)
+      (error ""))))
 
 (defun ada-add-log-current-function ()
   "For `add-log-current-defun-function'."
@@ -750,7 +769,6 @@ previously set by a file navigation command."
 	  (setq done t)))
       (when found
 	(goto-char found)
-	;; different parsers find different points on the line; normalize here
 	(back-to-indentation))
       (setq ff-function-name nil))))
 
@@ -852,6 +870,8 @@ compiler-specific compilation filters."
   ;; doesn't change, at least on Windows.
   (let ((start-buffer (current-buffer))
 	pos item file)
+    (when (eq major-mode 'compilation-mode)
+      (setq compilation-last-buffer (current-buffer)))
     ;; We use `pop-to-buffer', not `set-buffer', so point is correct
     ;; for the current window showing compilation-last-buffer, and
     ;; moving point in that window works. But that might eat an
@@ -915,10 +935,11 @@ compiler-specific compilation filters."
 
 		    ((abstract_subprogram_declaration
 		      expression_function_declaration
+		      null_procedure_declaration
 		      subprogram_body
 		      subprogram_declaration
 		      subprogram_renaming_declaration
-		      null_procedure_declaration)
+		      subunit)
 		     (memq (wisi-cache-token cache) '(NOT OVERRIDING FUNCTION PROCEDURE)))
 
 		    ((single_task_declaration task_body task_type_declaration)
@@ -939,7 +960,8 @@ compiler-specific compilation filters."
 subprogram, or task declaration point is currently in or just
 after.  For `beginning-of-defun-function'."
   (interactive)
-  (wisi-validate-cache (point-min) (point-max) t 'navigate)
+  (push-mark)
+  (ada-validate-enclosing-declaration t 'navigate)
   (ada-goto-declaration-start-1 include-type))
 
 (defun ada-goto-declaration-end ()
@@ -1069,7 +1091,8 @@ The ident for the paragraph is taken from the first line."
   "List of Ada keywords for current `ada-language-version'.")
 
 (defun ada-font-lock-keywords ()
-  "Return Ada mode value for `font-lock-keywords', depending on `ada-language-version'."
+  "Return Ada mode value for `font-lock-keywords',
+Depends on `ada-language-version'."
    ;; Grammar actions set `font-lock-face' property for all
    ;; non-keyword tokens that need it.
   (list
@@ -1131,7 +1154,7 @@ Otherwise, allow UPPERCASE for identifiers."
 
 ;;;; wisi integration
 
-(defconst ada-wisi-language-protocol-version "3"
+(defconst ada-wisi-language-protocol-version "4"
   "Defines language-specific parser parameters.
 Must match wisi-ada.ads Language_Protocol_Version.")
 
@@ -1140,6 +1163,7 @@ Must match wisi-ada.ads Language_Protocol_Version.")
   )
 
 (cl-defmethod wisi-parse-format-language-options ((_parser ada-wisi-parser))
+  ;; Must match code in wisi-ada.adb Initialize
   (format "%d %d %d %d %d %d %d %d %d %d %d %d %d"
 	  ada-indent
 	  ada-indent-broken
@@ -1152,15 +1176,30 @@ Must match wisi-ada.ads Language_Protocol_Version.")
 	  ada-indent-use
 	  ada-indent-when
 	  ada-indent-with
-	  (if ada-indent-hanging-rel-exp 1 0)
+	  ada-indent-subprogram-is
 	  (if ada-end-name-optional 1 0)
 	  ))
 
 (defconst ada-wisi-named-begin-regexp
-  "\\_<function\\_>\\|\\_<package\\_>\\|\\_<procedure\\_>\\|\\_<task\\_>"
+  "\\(?:\\_<overriding\\_> +\\)?\\(?:\\_<function\\_>\\|\\_<package\\_>\\|\\_<procedure\\_>\\|\\_<task\\_>\\)"
   )
 
 (defconst ada-wisi-partial-begin-regexp
+  ;; We have to include 'begin' here; consider:
+  ;;
+  ;;
+   ;;    end Copy_Node;
+   ;; begin
+   ;;    Destination.Leading_Non_Grammar;
+   ;;
+   ;; indenting 'Destination'. If we don't include 'begin', then
+   ;; 'Destination' is indented ada-indent relative to 'end
+   ;; Copy_Node', and there is no error to allow us to correct it.
+   ;;
+   ;; We'd like to include 'return' for extended return statement, but
+   ;; that gets confused with 'return' in a function declaration or
+   ;; non-extended return.
+
   (concat "\\_<begin\\_>\\|\\_<declare\\_>\\|"
 	  ada-wisi-named-begin-regexp
 	  "\\|\\_<end;\\|\\_<end " ada-name-regexp ";"))
@@ -1193,11 +1232,8 @@ Must match wisi-ada.ads Language_Protocol_Version.")
   ;;
   ;; This is handled by the set of keywords in
   ;; ada-wisi-partial-begin-regexp.
-  (cond
-   ((looking-at "[ \t]*\\_<begin\\_>")
-    ;; indenting 'begin'; best option is to assume it is indented properly
-    (point))
 
+  (cond
    ((wisi-search-backward-skip
      ada-wisi-partial-begin-regexp
      (lambda () (or (wisi-in-string-or-comment-p)
@@ -1262,7 +1298,7 @@ Point must have been set by `ada-wisi-find-begin'."
     ;; Point is at bol
     (back-to-indentation)
     (when (looking-at ada-wisi-named-begin-regexp)
-      (skip-syntax-forward "ws")
+      (goto-char (match-end 0))
       (skip-syntax-forward " ")
       (when (looking-at "body\\|type")
 	(goto-char (match-end 0))
@@ -1308,13 +1344,49 @@ Point must have been set by `ada-wisi-find-begin'."
 
 (cl-defmethod wisi-parse-adjust-indent ((_parser ada-wisi-parser) indent repair)
   (cond
-   ((or (wisi-list-memq (wisi--parse-error-repair-inserted repair) '(BEGIN IF LOOP))
-	(wisi-list-memq (wisi--parse-error-repair-deleted repair) '(END)))
-    ;; Error token terminates the block containing the start token
+   ((wisi-list-memq (wisi--parse-error-repair-inserted repair) '(BEGIN IF LOOP))
+    ;; case 1:
+    ;;        ...
+    ;;     end;
+    ;;  else
+    ;;  declare
+    ;;
+    ;; Indenting 'declare'; parse begin after 'end;', recover inserted
+    ;; 'if then' before 'else', so result is ada-indent relative to
+    ;; 'end;', but we want 0 relative to end
     (- indent ada-indent))
 
-   ((equal '(CASE IS) (wisi--parse-error-repair-inserted repair))
-        (- indent (+ ada-indent ada-indent-when)))
+   ((wisi-list-memq (wisi--parse-error-repair-deleted repair) '(END))
+    ;; test/ada_mode-partial_parse.adb
+    ;;
+    ;;       B;
+    ;;
+    ;;    end
+    ;;
+    (cond
+     ((= (point) (wisi--parse-error-repair-pos repair))
+	;; Indenting the 'end' that was deleted.
+      (- indent ada-indent))
+
+     ((< (point) (wisi--parse-error-repair-pos repair))
+      ;; indenting something else after "B;"
+      (- indent (* 2 ada-indent)))
+
+     (t ;; indenting something after 'end'; test/ada_mode-recover-partial_10.adb
+      (- indent ada-indent))))
+
+   ((equal '(CASE IDENTIFIER IS) (wisi--parse-error-repair-inserted repair))
+    ;; test/ada_mode-partial_parse.adb
+    ;;    end loop;
+    ;;    ...
+    ;; when Face =>
+    ;;
+    ;; indenting 'when', or the new blank line after 'when'. CASE
+    ;; IDENTIFIER IS was inserted by error recover, immediately before
+    ;; 'when'.
+    (if (looking-at "when")
+	(- indent ada-indent-when)
+      (- indent (+ ada-indent ada-indent-when))))
 
    ((equal '(END CASE SEMICOLON) (wisi--parse-error-repair-inserted repair))
         (+ indent (+ ada-indent ada-indent-when)))
@@ -1446,16 +1518,9 @@ For `wisi-indent-calculate-functions'.
 	 ))
       )))
 
-(defun ada-wisi-post-parse-fail ()
-  "For `wisi-post-parse-fail-hook'."
-  ;; Parse indent succeeded, so we assume parse navigate will as well
-  (wisi-validate-cache (point-min) (line-end-position) nil 'navigate)
-  (save-excursion
-    (let ((start-cache (wisi-goto-start (or (wisi-get-cache (point)) (wisi-backward-cache)))))
-      (when start-cache
-	;; nil when in a comment at point-min
-	(indent-region (point) (wisi-cache-end start-cache)))
-      ))
+(defun ada-wisi-post-indent-fail ()
+  "For `wisi-post-indent-fail-hook'."
+  (wisi-indent-statement)
   (back-to-indentation))
 
 (defun ada-find-file ()
@@ -1524,6 +1589,23 @@ Prompts with completion, defaults to filename at point."
 (defvar which-func-non-auto-modes) ;; ""
 
 ;;;###autoload
+(cl-defun ada-parse-require-process (&key wait)
+  "Start the Ada parser in an external process, if not already started.
+Unless WAIT, does not wait for parser to respond. Returns the parser object."
+  (interactive)
+  (let ((parser (wisi-process-parse-get
+		 (make-ada-wisi-parser
+		  :label "Ada"
+		  :language-protocol-version ada-wisi-language-protocol-version
+		  :exec-file ada-process-parse-exec
+		  :exec-opts ada-process-parse-exec-opts
+		  :face-table ada_annex_p-process-face-table
+		  :token-table ada_annex_p-process-token-table
+		  :repair-image ada_annex_p-process-repair-image))))
+    (wisi-parse-require-process parser :nowait (not wait))
+    parser))
+
+;;;###autoload
 (define-derived-mode ada-mode prog-mode "Ada"
   "The major mode for editing Ada code."
   :group 'ada
@@ -1533,7 +1615,7 @@ Prompts with completion, defaults to filename at point."
 
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
-  (set 'case-fold-search t); Ada is case insensitive; the syntax parsing requires this setting
+  (set 'case-fold-search t); Ada is case insensitive
   (set 'completion-ignore-case t)
   (set (make-local-variable 'comment-start) "--")
   (set (make-local-variable 'comment-end) "")
@@ -1553,7 +1635,7 @@ Prompts with completion, defaults to filename at point."
 
   (setq font-lock-defaults
 	'(ada-font-lock-keywords ;; keywords
-	  nil ;; keywords only; comment, string faces not set by wisi parser
+	  nil ;; keywords-only; font-lock set comment, string faces
 	  t ;; case-fold
 	  ((?\_ . "w")))); treat underscore as a word component
 
@@ -1604,17 +1686,8 @@ Prompts with completion, defaults to filename at point."
 
   (wisi-setup
    :indent-calculate '(ada-wisi-comment)
-   :post-indent-fail 'ada-wisi-post-parse-fail
-   :parser
-   (wisi-process-parse-get
-    (make-ada-wisi-parser
-     :label "Ada"
-     :language-protocol-version ada-wisi-language-protocol-version
-     :exec-file ada-process-parse-exec
-     :exec-opts ada-process-parse-exec-opts
-     :face-table ada-process-face-table
-     :token-table ada-process-token-table
-     :repair-image ada-process-repair-image)))
+   :post-indent-fail 'ada-wisi-post-indent-fail
+   :parser (ada-parse-require-process))
 
   (setq wisi-prj-parse-undefined-function #'ada-prj-parse-undefined)
   (setq wisi-xref-full-path ada-xref-full-path)

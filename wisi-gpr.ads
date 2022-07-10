@@ -5,7 +5,7 @@
 --  [1] gpr-wisi.el
 --  [2] gpr-indent-user-options.el
 --
---  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2022 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -39,22 +39,22 @@ package Wisi.Gpr is
    type Parse_Data_Type is new Wisi.Parse_Data_Type with null record;
 
    overriding
-   procedure Initialize
-     (Data              : in out Parse_Data_Type;
-      Lexer             : in     WisiToken.Lexer.Handle;
-      Descriptor        : access constant WisiToken.Descriptor;
-      Base_Terminals    : in     WisiToken.Base_Token_Array_Access;
-      Post_Parse_Action : in     Post_Parse_Action_Type;
-      Begin_Line        : in     WisiToken.Line_Number_Type;
-      End_Line          : in     WisiToken.Line_Number_Type;
-      Begin_Indent      : in     Integer;
-      Params            : in     String);
-   --  Call Wisi_Runtime.Initialize, then:
-   --
-   --  If Params /= "", set all indent parameters from Params, in
-   --  declaration order; otherwise keep default values. Boolean is
-   --  represented by 0 | 1. Parameter values are space delimited.
-   --
-   --  Also do any other initialization that Gpr_Data needs.
+   function New_User_Data (Template : in Parse_Data_Type) return WisiToken.Syntax_Trees.User_Data_Access
+   is (new Parse_Data_Type);
+
+   overriding
+   procedure Initialize (Data : in out Parse_Data_Type);
+
+   overriding
+   procedure Parse_Language_Params
+     (Data   : in out Parse_Data_Type;
+      Params : in     String);
+
+   overriding
+   function Get_Token_IDs
+     (User_Data    : in     Parse_Data_Type;
+      Command_Line : in     String;
+      Last         : in out Integer)
+     return WisiToken.Token_ID_Arrays.Vector;
 
 end Wisi.Gpr;

@@ -1,6 +1,6 @@
 # For compiling ada-mode Ada code in elpa worktree
 
-export Standard_Common_Build := Debug
+#export Standard_Common_Build := Debug
 
 .PHONY : all force
 
@@ -21,7 +21,7 @@ ada_mode_wisi_parse.gpr : ada_mode_wisi_parse.gpr.gp ../wisi/wisi.gpr
 	gnatprep -DELPA="yes" -DHAVE_GNAT_UTIL=$(HAVE_GNAT_UTIL) -DHAVE_LIBADALANG=$(HAVE_LIBADALANG) $< $@
 
 %.re2c : %.wy ../wisi/wisitoken-bnf-generate
-	../wisi/wisitoken-bnf-generate --time $(<F)
+	../wisi/wisitoken-bnf-generate $(<F)
 	dos2unix -q $(*F)-process.el $(*F)_process* $(*F).re2c $(*F)_re2c_c.ads
 
 %_re2c.c : %.re2c

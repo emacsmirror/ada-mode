@@ -312,6 +312,8 @@ Otherwise, allow UPPERCASE for identifiers."
       (cond
        ((string= "project" (downcase (buffer-substring-no-properties start end)))
 	(cond
+	 ((null (char-after end)) ;; at eob
+	  nil)
 	 ((= (char-after end) ?') ;; attribute Project'
 	  t)
 	 ((= (char-after end) ? ) ;; keyword project GDS

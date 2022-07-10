@@ -41,6 +41,19 @@
   "Executable for gpr_query."
   :type 'string)
 
+(defcustom gpr-query-no-symbols nil
+  "If non-nil, don't get symbol completion table from gpr-query.
+Reading all the symbols can be slow in a very large project."
+  :type 'boolean)
+
+(defcustom gpr-query-exec-opts '()
+  "Options for `gpr-query-exec'; a list of strings.
+\"--project\" is specified automatically. This can be used to
+override the database location by specifying
+\"--db=<writeable_file>\". See \"gpr_query --help\" for more
+options."
+  :type 'list)
+
 (defcustom gpr-query-env nil
   "Environment variables needed by the gpr_query executable.
 Value must be a list where each element is \"<name>=<value>\""
@@ -67,13 +80,13 @@ Must match gpr_query.adb Version.")
   gpr-file ;; string absolute file name
   process-env ;; copy of process-environment used to start a process
   (xref-process nil) ;; running gpr_query, for xrefs; default-directory gives location of db
+  no-symbols           ;; boolean; if non-nil, don't start symbols process
   (symbols-process nil);; runs 'complete' gpr_query command to get symbol-locs, symbols; then dies.
 
-  symbol-locs ;; alist completion table, with locations; see gpr-query--read-symbols
-  symbols ;; just symbols compeltion table; see gpr-query--read-symbols
+  symbol-locs ;; alist completion table, with locations; see gpr-query--symbols-filter
+  symbols ;; symbols completion table.
+  symbols-valid ;; t when symbols valid
   symbols-count-total
-  symbols-count-current
-  symbols-percent-last-update
   )
 
 ;; Starting the buffer name with a space hides it from some lists, and
@@ -85,7 +98,8 @@ Must match gpr_query.adb Version.")
   ;; gpr_query output ends with this
   "Regexp matching gpr_query prompt; indicates previous command is complete.")
 
-(defvar gpr-query--debug nil)
+(defvar gpr-query--debug nil
+  "When non-nil, dispay debug messages.")
 
 (defvar-local gpr-query--local-session nil
   "Buffer-local in gpr-query process buffer; the current session.")
@@ -137,35 +151,31 @@ Must match gpr_query.adb Version.")
 	  (gpr-query--check-startup)
 	  (set-process-filter process nil)
 
-	  ;; start the symbols process to get the symbols
-	  (gpr-query--start-process gpr-query--local-session 'symbols)
+	  (unless (gpr-query--session-no-symbols gpr-query--local-session)
+	    ;; start the symbols process to get the symbols
+	    (gpr-query--start-process gpr-query--local-session 'symbols))
 	  )))))
 
 (defvar gpr-query--symbols-progress ""
   ;; We assume only one gpr-query symbols process is active at a time
-  "For `mode-line-misc-info'.")
+  "For progress messages while waiting for symbols.")
+
+(defconst gpr-query--symbol-char "[-+*/=<>&[:alnum:]_.]")
+
+(defconst gpr-query-completion-regexp
+  (concat "\\(" gpr-query--symbol-char "+\\)\\((.*)\\)?<.*<[0-9]+>>")
+  "Regexp matching completion item from gpr-query--read-symbols.")
 
 (defun gpr-query--update-progress ()
-  ;; separate for debugging
-  (setf (gpr-query--session-symbols-count-current gpr-query--local-session)
-	(+ (gpr-query--session-symbols-count-current gpr-query--local-session)
-	   (count-lines (point) (point-max))))
-  (let ((percent
-	 (/
-	  (* 100 (gpr-query--session-symbols-count-current gpr-query--local-session))
-	     (gpr-query--session-symbols-count-total gpr-query--local-session))))
-    (when (< (+ 5 (gpr-query--session-symbols-percent-last-update gpr-query--local-session))
-	     percent)
-      (setf (gpr-query--session-symbols-percent-last-update gpr-query--local-session) percent)
-      (setq gpr-query--symbols-progress (format "symbols %d%%" percent))
-      (force-mode-line-update)
-      (redisplay t)
-      )))
+  ;; separate for debugging; update gpr-query--symbols-progress
+  (let* ((count (line-number-at-pos (point)))
+	 (percent (/ (* 100 count) (gpr-query--session-symbols-count-total gpr-query--local-session))))
+    (setq gpr-query--symbols-progress (format "%d%%" percent))
+    ))
 
 (defun gpr-query--symbols-filter (process text)
   "Process filter for symbols process."
-  (when (buffer-name (process-buffer process))
-    ;; process buffer is not dead
+  (when (buffer-live-p (process-buffer process))
     (with-current-buffer (process-buffer process)
       (let ((search-start (marker-position (process-mark process))))
         (save-excursion
@@ -173,24 +183,71 @@ Must match gpr_query.adb Version.")
           (insert text)
           (set-marker (process-mark process) (point)))
 
-	;; Update session progress slots
-	(when (eq (gpr-query--session-symbols gpr-query--local-session) 'sent-complete)
-	  (cond
-	   ((null (gpr-query--session-symbols-count-total gpr-query--local-session))
-	    (goto-char search-start)
-	    ;; back up a line in case we got part of the line previously.
-	    (forward-line -1)
+	;; Update session progress slots, accumulate symbols
+	(cond
+	 ((null (gpr-query--session-symbols-count-total gpr-query--local-session))
+	  (goto-char search-start)
+	  ;; back up a line in case we got part of the line previously.
+	  (forward-line -1)
 
-	    (when (re-search-forward "element count \\([0-9]+\\)" (point-max) t)
-	      (setf (gpr-query--session-symbols-count-total gpr-query--local-session)
-		    (string-to-number (match-string 1)))
-	      (setf (gpr-query--session-symbols-count-current gpr-query--local-session) 0)
-	      (setf (gpr-query--session-symbols-percent-last-update gpr-query--local-session) 0)
-	      ))
-	   (t
-	    (gpr-query--update-progress)
-	    )
-	   ))
+	  (when (re-search-forward "element count \\([0-9]+\\)" (point-max) t)
+	    (setf (gpr-query--session-symbols-count-total gpr-query--local-session)
+		  (string-to-number (match-string 1)))
+	    (when gpr-query--debug
+	      (message "gpr-query symbols: total count received %d"
+		       (gpr-query--session-symbols-count-total gpr-query--local-session)))
+	    ))
+	 (t
+	  (goto-char search-start)
+	  ;; back up a line in case we got part of the line previously.
+	  (forward-line -1)
+	  ;; The gpr_query 'complete' command returns a fully qualified name
+	  ;; and declaration location for each name:
+	  ;;
+	  ;; Wisi.Ada.Ada_Indent_Aggregate.Args C:\Projects\org.emacs.ada-mode\wisi-ada.ads:102:7
+	  ;;
+	  ;; For subprograms it includes the parameters (but not a function result):
+	  ;;
+	  ;; Gpr_Query.Process_Command_Single(Args) C:\Projects\org.emacs.ada-mode\gpr_query.adb:109:14
+	  ;;
+	  ;; Build a completion table as an alist of:
+	  ;;
+	  ;;    (simple_name(args)<prefix<line>> . location).
+	  ;;
+	  ;; The car matches wisi-xref-completion-regexp.
+	  ;;
+	  ;; We include the line number to make each name unique. This
+	  ;; doesn't work for one-line parameter lists, variable
+	  ;; declaration lists and similar, but they should be
+	  ;; unique names anyway.
+	  (while (not (eobp))
+	    (cond
+	     ;; We don't use gpr-query-completion-regexp here because we need finer groups.
+	     ((looking-at (concat "\\(" gpr-query--symbol-char "+\\)"    ;; 1: prefix
+				  "\\.\\(" gpr-query--symbol-char "+\\)" ;; 2: simple name
+				  "\\((.*)\\)? "                         ;; 3: args,
+				  wisi-file-line-col-regexp))            ;; 4, 5, 6 file:line:col
+	      ;; Process line. `cl-pushnew' would slow down the
+	      ;; processing too much; it noticeably ties up the Emacs
+	      ;; foreground process in large projects.
+	      (push (match-string-no-properties 2) (gpr-query--session-symbols gpr-query--local-session))
+	      (push
+	       (cons (concat (match-string-no-properties 2)
+			     (match-string-no-properties 3)
+			     "<" (match-string-no-properties 1) "<" (match-string-no-properties 5) ">>")
+		     (list (gpr-query--normalize-filename (match-string-no-properties 4))
+			   (string-to-number (match-string 5))
+			   (1- (string-to-number (match-string 6)))))
+	       (gpr-query--session-symbol-locs gpr-query--local-session))
+	      )
+
+	     (t ;; ignore line
+	      nil)
+	     )
+	    (forward-line 1))
+
+	  (gpr-query--update-progress)
+	  ))
 
 	;; Wait for last command to finish.
 	(goto-char search-start)
@@ -199,15 +256,18 @@ Must match gpr_query.adb Version.")
 	  (cond
 	   ((null (gpr-query--session-symbols gpr-query--local-session))
 	    ;; startup complete; get symbols
+	    (when gpr-query--debug
+	      (message "gpr-query symbols: startup complete"))
 	     (gpr-query--check-startup)
 	     (erase-buffer)
 	     (set-marker (process-mark process) (point-min))
 	     (setf (gpr-query--session-symbols-count-total gpr-query--local-session) nil)
 	     (process-send-string process "complete \"\"\n")
-	     (setf (gpr-query--session-symbols gpr-query--local-session) 'sent-complete))
+	     (setq gpr-query--symbols-progress "0%"))
 
-	   ((eq (gpr-query--session-symbols gpr-query--local-session) 'sent-complete)
-	    (gpr-query--read-symbols gpr-query--local-session)
+	   (t
+	    ;; All symbols received; done
+	    (setf (gpr-query--session-symbols-valid gpr-query--local-session) t)
 	    (set-process-filter process nil)
 	    (process-send-string process "exit\n"))
 
@@ -245,19 +305,25 @@ Must match gpr_query.adb Version.")
       (erase-buffer); delete any previous messages, prompt
       (setf (gpr-query--session-symbol-locs session) nil)
       (setf (gpr-query--session-symbols session) nil)
-      (setq process
-	    (apply #'start-process
-		   (buffer-name)
-		   buffer
-		   gpr-query-exec
-		   (cl-delete-if
-		    'null
+      (setf (gpr-query--session-symbols-valid session) nil)
+      (let ((args (cl-delete-if
+		   'null
+		   (append
 		    (list
 		     (concat "--project=" (file-name-nondirectory gpr-file))
 		     (when gpr-query--debug
 		       "--tracefile=gpr_query.trace"
 		       ;; The file gpr_query.trace should contain: gpr_query=yes
-		       )))))
+		       ))
+		    gpr-query-exec-opts))))
+	(when gpr-query--debug
+	  (message "gpr-query process args: %s" args))
+	(setq process
+	      (apply #'start-process
+		     (buffer-name)
+		     buffer
+		     gpr-query-exec
+		     args)))
       (cl-ecase command-type
 	(xref
 	 (setf (gpr-query--session-xref-process session) process)
@@ -269,11 +335,13 @@ Must match gpr_query.adb Version.")
       (set-process-query-on-exit-flag process nil)
       )))
 
-(defun gpr-query--make-session (project)
-  "Create and return a session for the current project file."
+(defun gpr-query--make-session (project no-symbols)
+  "Create and return a session for the current project file.
+If NO-SYMBOLS is non-nil, don't create the symbols process."
   (let ((session
 	 (make-gpr-query--session
 	  :gpr-file (gnat-compiler-gpr-file (wisi-prj-xref project))
+	  :no-symbols no-symbols
 	  :process-env (copy-sequence
 			(append
 			 (wisi-prj-compile-env project)
@@ -286,23 +354,26 @@ Must match gpr_query.adb Version.")
 (defvar gpr-query--sessions '()
   "Assoc list of sessions, indexed by absolute GNAT project file name.")
 
-(defun gpr-query-cached-session (project)
-  "Return a session for PROJECT, creating it if necessary."
+(cl-defun gpr-query-cached-session (project &key no-symbols)
+  "Return a session for PROJECT, creating it if necessary.
+If NO-SYMBOLS is non-nil, don't create the symbols process."
   (let* ((gpr-file (gnat-compiler-gpr-file (wisi-prj-xref project)))
 	 (session (cdr (assoc gpr-file gpr-query--sessions))))
     (if session
 	(progn
+	  (setf (gpr-query--session-no-symbols session) (or no-symbols gpr-query-no-symbols))
 	  (unless (process-live-p (gpr-query--session-xref-process session))
 	    (gpr-query--start-process session 'xref))
 	  session)
       ;; else
       (prog1
-          (setq session (gpr-query--make-session project))
+          (setq session (gpr-query--make-session project (or no-symbols gpr-query-no-symbols)))
 	(push (cons gpr-file session) gpr-query--sessions)))
     ))
 
 (defun gpr-query-session-wait (session command-type)
-  "Wait for the current COMMAND-TYPE (one of 'xref or 'symbols) to complete."
+  "Wait for the current COMMAND-TYPE command to complete.
+COMMAND-TYPE is one of 'xref or 'symbols."
   (when (and
 	 (eq command-type 'symbols)
 	 (null (gpr-query--session-symbols-process session)))
@@ -318,41 +389,53 @@ Must match gpr_query.adb Version.")
 	(done nil)
 	(wait-count 0))
 
-    (unless (process-live-p process)
+    (when (and (eq command-type 'xref)
+	       (not (process-live-p process)))
       (gpr-query--show-buffer session command-type)
       (error "gpr-query process died"))
 
-    (with-current-buffer (process-buffer process)
-      (setq search-start (point-min))
-      (when (eq command-type 'symbols)
-	;; show progress in mode line
-	(setq gpr-query--symbols-progress "")
-	(add-to-list 'mode-line-misc-info '("" gpr-query--symbols-progress " "))
-	(force-mode-line-update)
-	(redisplay))
+    (while (and (process-live-p process)
+		(not done))
+      (cl-ecase command-type
+	(symbols
+	 ;; The process filter is reading symbols text in the process
+	 ;; buffer; don't move point or otherwise modify the buffer.
+	 (cond
+	  ((gpr-query--session-symbols-valid session)
+	   (setq done t))
 
-      (while (and (process-live-p process)
-		  (not done))
-	(message (concat "running gpr_query ..." (make-string wait-count ?.)))
+	  (t
+	   (message "gpr-query receiving symbols %s" gpr-query--symbols-progress))))
 
-	;; process output is inserted before point, so move back over it to search it
-	(goto-char search-start)
-	(if (re-search-forward gpr-query-prompt (point-max) 1)
-	    (setq done t)
-	  ;; else wait for more input
-	  (unless (accept-process-output process 1.0)
-	    ;; accept-process returns non-nil when we got output, so we
-	    ;; did not wait for timeout.
-	    (setq wait-count (1+ wait-count))
-	    ))
-	))
+	(xref
+	 (message (concat "running gpr_query ..." (make-string wait-count ?.)))
 
-    (when (eq command-type 'symbols)
-      (setq mode-line-misc-info (delete '("" gpr-query--symbols-progress " ") mode-line-misc-info)))
+	 ;; process output is inserted before point, so move back over it to search it
+	 (with-current-buffer (process-buffer process)
+	   (setq search-start (point-min))
+
+    	   (goto-char search-start)
+	   (if (re-search-forward gpr-query-prompt (point-max) 1)
+	       (setq done t))))
+	)
+
+      (when (not done);; wait for more input
+	(unless (accept-process-output process 1.0)
+	  ;; accept-process returns non-nil when we got output, so we
+	  ;; did not wait for timeout.
+	  (setq wait-count (1+ wait-count))
+	  ))
+      )
 
     (if (or (eq command-type 'symbols);; symbols process is supposed to die
 	    (process-live-p process))
-	(message (concat "running gpr_query ... done"))
+	(cl-ecase command-type
+	  (symbols
+	   (message "gpr-query symbols done; symbols length %d"
+		    (length (gpr-query--session-symbols session)))
+	   )
+	  (xref
+	   (message (concat "running gpr_query ... done"))))
       (gpr-query--show-buffer session command-type)
       (error "gpr_query process died"))
     ))
@@ -385,14 +468,15 @@ Returns t if the process was live."
     t))
 
 (defun gpr-query-kill-session (session)
-  "Kill the background process of SESSION.
-Return t if the process was live."
+  "Kill the background processes of SESSION.
+Return t if either process was live."
   (setf (gpr-query--session-symbol-locs session) nil)
   (setf (gpr-query--session-symbols session) nil)
+  (setf (gpr-query--session-symbols-valid session) nil)
   (let (result)
     (setq result (gpr-query--kill-process (gpr-query--session-xref-process session)))
-    (setq result (or result
-		     (gpr-query--kill-process (gpr-query--session-symbols-process session))))
+    (setq result (or (gpr-query--kill-process (gpr-query--session-symbols-process session))
+		     result))
     result))
 
 (defun gpr-query-kill-all-sessions ()
@@ -455,63 +539,6 @@ Uses `gpr_query'. Returns new list."
 (defconst gpr-query-ident-file-type-regexp
   (concat wisi-file-line-col-regexp " (\\(.*\\))")
   "Regexp matching <file>:<line>:<column> (<type>)")
-
-(defconst gpr-query--symbol-char "[-+*/=<>&[:alnum:]_.]")
-
-(defconst gpr-query-completion-regexp
-  (concat "\\(" gpr-query--symbol-char "+\\)\\((.*)\\)?<.*<[0-9]+>>")
-  "Regexp matching completion item from gpr-query--read-symbols.")
-
-(defun gpr-query--read-symbols (session)
-  "Read result of gpr_query 'complete' command, store completion table in SESSION."
-  (let ((symbol-locs nil)
-	(symbols nil))
-    ;; The gpr_query 'complete' command returns a fully qualified name
-    ;; and declaration location for each name:
-    ;;
-    ;; Wisi.Ada.Ada_Indent_Aggregate.Args C:\Projects\org.emacs.ada-mode\wisi-ada.ads:102:7
-    ;;
-    ;; For subprograms it includes the parameters (but not a function result):
-    ;;
-    ;; Gpr_Query.Process_Command_Single(Args) C:\Projects\org.emacs.ada-mode\gpr_query.adb:109:14
-    ;;
-    ;; Build a completion table as an alist of:
-    ;;
-    ;;    (simple_name(args)<prefix<line>> . location).
-    ;;
-    ;; The car matches wisi-xref-completion-regexp.
-    ;;
-    ;; We include the line number to make each name unique. This
-    ;; doesn't work for one-line parameter lists, variable
-    ;; declaration lists and similar, but they should be
-    ;; unique names anyway.
-    (goto-char (point-min))
-
-    (while (not (eobp))
-      (cond
-       ;; FIXME: dispatch on language
-       ((looking-at (concat "\\(" gpr-query--symbol-char "+\\)"    ;; 1: prefix
-			    "\\.\\(" gpr-query--symbol-char "+\\)" ;; 2: simple name
-			    "\\((.*)\\)? "                         ;; 3: args,
-			    wisi-file-line-col-regexp))            ;; 4, 5, 6 file:line:col
-	;; process line
-	(push (match-string-no-properties 2) symbols)
-	(push
-	 (cons (concat (match-string-no-properties 2)
-		       (match-string-no-properties 3)
-		       "<" (match-string-no-properties 1) "<" (match-string-no-properties 5) ">>")
-	       (list (gpr-query--normalize-filename (match-string-no-properties 4))
-		     (string-to-number (match-string 5))
-		     (1- (string-to-number (match-string 6)))))
-	 symbol-locs))
-
-       (t ;; ignore line
-	)
-       )
-      (forward-line 1))
-
-    (setf (gpr-query--session-symbol-locs session) symbol-locs)
-    (setf (gpr-query--session-symbols session) (delete-dups symbols))))
 
 (defun gpr-query-compilation (project identifier file line col cmd comp-err &optional local_only append)
   "Run gpr_query CMD IDENTIFIER:FILE:LINE:COL,
@@ -654,10 +681,10 @@ FILE is from gpr-query."
   ;; FILE must be abs
   (cond
    ((eq system-type 'windows-nt)
-    ;; 'expand-file-name' converts Windows directory
-    ;; separators to normal Emacs.
-    ;; FIXME: we used to downcase here; need use case. Counter use case:
-    ;; completion table matching (buffer-file-name) in wisi-filter-table
+    ;; 'expand-file-name' converts Windows directory separators to
+    ;; normal Emacs.  Normally we would downcase here, but that
+    ;; interferes with completion table matching (buffer-file-name) in
+    ;; wisi-filter-table.
     (expand-file-name file))
 
    ((eq system-type 'darwin)
@@ -693,7 +720,7 @@ FILE is from gpr-query."
   (gpr-query-cached-session project)
   nil)
 
-(cl-defmethod wisi-xref-refresh-cache ((_xref gpr-query-xref) project no-full)
+(cl-defmethod wisi-xref-refresh-cache ((xref gpr-query-xref) project no-full)
   ;; Kill the current session and delete the database, to get changed
   ;; env vars etc when it restarts.
   ;;
@@ -701,26 +728,52 @@ FILE is from gpr-query."
   ;; changed, or the database was built with an incorrect environment
   ;; variable, or something else screwed up. However, rebuilding after
   ;; that is a lot slower, so we only do that with permission.
-  (let* ((session (gpr-query-cached-session project))
+  (let* ((gpr-file (gnat-compiler-gpr-file xref))
+	 (session (gpr-query-cached-session project :no-symbols t)) ;; we only need the db file name.
 	 (db-filename
-	  (with-current-buffer (gpr-query--session-send session "db_name" t)
-	    (goto-char (point-min))
-	    (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+	  (unless no-full
+	    (condition-case nil
+		;; gpr-query--session-send can fail if the .gpr file
+		;; contains errors, for example if GPR_PROJECT_PATH is
+		;; wrong.
+		(with-current-buffer (gpr-query--session-send session "db_name" t)
+		  (goto-char (point-min))
+		  (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+	      (error
+	       nil)
+	      ))))
 
     ;; We have to kill the process to delete the database. If we are
     ;; not deleting the db, this is an easy way to refresh everything
     ;; else.
     (gpr-query-kill-session session)
-    (when (and (not no-full)
+    (when (and db-filename
 	       (file-exists-p db-filename))
       (delete-file db-filename))
 
-    (gpr-query--start-process session 'xref)
+    ;; recreate session from newly parsed project
+    (setq gpr-query--sessions (delete (cons gpr-file session) gpr-query--sessions))
+
+    (setq session (gpr-query-cached-session project))
+    (message "project cache refreshed")
+    ))
+
+(defun gpr-query-refresh-lite ()
+  "Send a refresh command to the current gpr-query process."
+  (interactive)
+  (let* ((project (project-current))
+	 (session (gpr-query-cached-session project))
+	 (process (gpr-query--session-xref-process session)))
+
+    (process-send-string process "refresh\n")
+    (gpr-query-session-wait session 'xref)
+    (message "gpr_query refreshed")
     ))
 
 (defun gpr-query-tree-refs (project item op)
   "Run gpr_query tree command OP on ITEM (an xref-item), return list of xref-items."
-  ;; WORKAROUND: xref 1.3.2 xref-location changed from defclass to cl-defstruct
+  ;; WORKAROUND: xref 1.3.2 xref-location changed from defclass to
+  ;; cl-defstruct. If drop emacs 26, use 'with-suppressed-warnings'.
   (with-no-warnings ;; "unknown slot"
     (let ((summary (if (functionp 'xref-item-summary) (xref-item-summary item) (oref item summary)))
 	  (location (if (functionp 'xref-item-location) (xref-item-location item) (oref item location)))

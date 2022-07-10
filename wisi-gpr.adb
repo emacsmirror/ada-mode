@@ -2,7 +2,7 @@
 --
 --  See spec
 --
---  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2022 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -22,31 +22,26 @@ with Gpr_Process_Actions;
 package body Wisi.Gpr is
 
    overriding
-   procedure Initialize
-     (Data              : in out Parse_Data_Type;
-      Lexer             : in     WisiToken.Lexer.Handle;
-      Descriptor        : access constant WisiToken.Descriptor;
-      Base_Terminals    : in     WisiToken.Base_Token_Array_Access;
-      Post_Parse_Action : in     Post_Parse_Action_Type;
-      Begin_Line        : in     WisiToken.Line_Number_Type;
-      End_Line          : in     WisiToken.Line_Number_Type;
-      Begin_Indent      : in     Integer;
-      Params            : in     String)
+   procedure Initialize (Data : in out Parse_Data_Type)
    is
-      use Ada.Strings.Fixed;
       use all type Gpr_Process_Actions.Token_Enum_ID;
-      First : Integer := Params'First;
-      Last  : Integer := Index (Params, " ");
    begin
-      Wisi.Initialize
-        (Wisi.Parse_Data_Type (Data), Lexer, Descriptor, Base_Terminals, Post_Parse_Action, Begin_Line, End_Line,
-         Begin_Indent, "");
-
       Data.First_Comment_ID := +COMMENT_ID;
       Data.Last_Comment_ID  := WisiToken.Invalid_Token_ID;
       Data.Left_Paren_ID    := WisiToken.Invalid_Token_ID;
       Data.Right_Paren_ID   := WisiToken.Invalid_Token_ID;
+   end Initialize;
 
+   overriding
+   procedure Parse_Language_Params
+     (Data   : in out Parse_Data_Type;
+      Params : in     String)
+   is
+      pragma Unreferenced (Data);
+      use Ada.Strings.Fixed;
+      First : Integer := Params'First;
+      Last  : Integer := Index (Params, " ");
+   begin
       if Params /= "" then
          --  must match [1] wisi-parse-format-language-options
          Gpr_Indent := Integer'Value (Params (First .. Last - 1));
@@ -58,6 +53,27 @@ package body Wisi.Gpr is
          First := Last + 1;
          Gpr_Indent_When := Integer'Value (Params (First .. Params'Last));
       end if;
-   end Initialize;
+   end Parse_Language_Params;
+
+   overriding
+   function Get_Token_IDs
+     (User_Data    : in     Parse_Data_Type;
+      Command_Line : in     String;
+      Last         : in out Integer)
+     return WisiToken.Token_ID_Arrays.Vector
+   is
+      pragma Unreferenced (User_Data);
+      use Gpr_Process_Actions;
+   begin
+      return IDs : WisiToken.Token_ID_Arrays.Vector do
+         Wisi.Skip (Command_Line, Last, '(');
+         loop
+            IDs.Append (+Token_Enum_ID'Value (Wisi.Get_Enum (Command_Line, Last)));
+            Wisi.Skip (Command_Line, Last, ' ');
+            exit when Command_Line (Last + 1) = ')';
+         end loop;
+         Last := Last + 1;
+      end return;
+   end Get_Token_IDs;
 
 end Wisi.Gpr;

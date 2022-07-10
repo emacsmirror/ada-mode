@@ -6,6 +6,74 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+* Ada Mode ?
+9 Jul 2022 beta testing
+
+** Support incremental parse. Set wisi-incremental-parse-enable t to
+   experiment with this; default is nil, because the parser often gets
+   confused.
+
+   When the parser gets confused (which is fairly often), use M-x
+   wisi-reset-parser to recover.
+
+   When using incremental parse, it is best to keep the number of
+   errors in the file small; the parse time is proportial to the
+   number of errors, and error recover is often noticeably slow .
+
+** The Ada grammar is updated to the proposed Ada 2022 standard, and
+   is now in the file ada_annex_p.wy.
+
+** ada-end-name-optional now defaults to 't', to match the
+   expectations of new Ada users. Experienced users that follow a
+   style guide requiring matching end names should set this to 'nil',
+   since that gives better error correction.
+
+** New indent option add ada-indent-subprogram-is; indentation of 'is'
+   in expression functions and similar subprogram declarations.
+   Previously, this was ada-indent-broken; now you can set it
+   separately (ie to 0).
+
+** Indentation of 'is' and 'with' in null and abstract subprogram
+   specification is now consistent with non-abstract subprogram
+   specification and expression function.
+
+** Indentation of comment in subprogram body after param_list before
+   'is' matches subprogram spec;
+
+   procedure Foo
+     (A : in Integer)
+   --  Computes stuff
+   is ...
+
+** ada-make-subprogram-body now inserts "null;"; this eliminates a
+   syntax error, improving incremental parse. Similarly, the skeleton
+   commands insert dummy names where needed to avoid syntax errors.
+
+** New key binding prefix C-c r for the various ada-refactor commands.
+
+** New command ada-parse-require-process starts the external parser,
+   without waiting for it to respond.
+
+** build.sh now runs wisitoken-bnf-generate to create the Ada LR1
+   parse table file; it is too big to keep in ELPA. This can take a
+   couple of minutes.
+
+** New custom variable gpr-query-no-symbols allows disabling reading
+   the symbol completion table from the gpr_query process. When nil,
+   symbols are read in the background, but there can enough
+   interference with foreground processing to be annoying. When
+   non-nil, symbols are not read, and completing symbols in xref is
+   disabled. Default is nil.
+
+** New custom variable gpr-query-exec-opts allows specifying options
+   for gpr_query.
+
+** Declare indent option ada-indent-hanging-rel-exp obsolete; it was
+   never well defined, and now has no effect.
+
+** parser Ada language protocol version 4; delete
+   ada-indent-hanging-rel-exp, add ada-indent-subprogram-is
+
 * Ada Mode 7.2.1
 
 ** More fixes for xref-file-location syntax, required by Emacs 28.
@@ -51,7 +119,7 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 * Ada Mode 7.1.4
 07 Aug 2020
 
-** Set auto-mode-alist for ada-mode. 
+** Set auto-mode-alist for ada-mode.
 
 * Ada Mode 7.1.3
 04 Jun 2020

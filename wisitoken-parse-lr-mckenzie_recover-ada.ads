@@ -2,7 +2,7 @@
 --
 --  Ada language specific algorithms for McKenzie_Recover
 --
---  Copyright (C) 2018, 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2018 - 2022 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -20,21 +20,20 @@ pragma License (Modified_GPL);
 package WisiToken.Parse.LR.McKenzie_Recover.Ada is
 
    procedure Language_Fixes
-     (Trace             : in out WisiToken.Trace'Class;
-      Lexer             : access constant WisiToken.Lexer.Instance'Class;
-      Parser_Label      : in     Natural;
-      Parse_Table       : in     WisiToken.Parse.LR.Parse_Table;
-      Terminals         : in     Base_Token_Arrays.Vector;
-      Tree              : in     Syntax_Trees.Tree;
+     (Super             : in out WisiToken.Parse.LR.McKenzie_Recover.Base.Supervisor;
+      Shared_Parser     : in out Parser.Parser;
+      Parser_Index      : in     SAL.Peek_Type;
       Local_Config_Heap : in out Config_Heaps.Heap_Type;
       Config            : in     Configuration);
    --  See wisitoken-parse-lr-parser.ads Language_Fixes_Access for description.
 
    procedure Matching_Begin_Tokens
-     (Tokens                  : in     Token_ID_Array_1_3;
-      Config                  : in     Configuration;
-      Matching_Tokens         :    out Token_ID_Arrays.Vector;
-      Forbid_Minimal_Complete :    out Boolean);
+     (Super                   :         in out WisiToken.Parse.LR.McKenzie_Recover.Base.Supervisor;
+      Shared_Parser           :         in out Parser.Parser;
+      Tokens                  :         in     Token_ID_Array_1_3;
+      Config                  : aliased in     Configuration;
+      Matching_Tokens         :         in out Token_ID_Arrays.Vector;
+      Forbid_Minimal_Complete :         in out Boolean);
    --  See wisitoken-parse-lr-parser.ads Language_Matching_Begin_Tokens_Access
    --  for description.
 

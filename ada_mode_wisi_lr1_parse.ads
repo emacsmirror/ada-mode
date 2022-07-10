@@ -2,7 +2,7 @@
 --
 --  External process parser for Ada mode
 --
---  Copyright (C) 2017 - 2019 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2020, 2022 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -18,19 +18,22 @@
 
 pragma License (GPL);
 
-with Ada_Process_Actions;
-with Ada_Process_LR1_Main;
+with Ada_Annex_P_Process_Actions;
+with Ada_Annex_P_Process_LR1_Main;
 with Gen_Emacs_Wisi_LR_Text_Rep_Parse;
 with WisiToken.Parse.LR.McKenzie_Recover.Ada;
 with Wisi.Ada;
 procedure Ada_Mode_Wisi_LR1_Parse is new Gen_Emacs_Wisi_LR_Text_Rep_Parse
   (Parse_Data_Type                => Wisi.Ada.Parse_Data_Type,
-   Language_Protocol_Version      => Wisi.Ada.Language_Protocol_Version,
    Name                           => "Ada_mode_wisi_lr1_parse",
-   Descriptor                     => Ada_Process_Actions.Descriptor,
-   Partial_Parse_Active           => Ada_Process_Actions.Partial_Parse_Active,
+   Language_Protocol_Version      => Wisi.Ada.Language_Protocol_Version,
+   Descriptor                     => Ada_Annex_P_Process_Actions.Descriptor'Access,
+   Partial_Parse_Active           => Ada_Annex_P_Process_Actions.Partial_Parse_Active'Access,
+   Partial_Parse_Byte_Goal        => Ada_Annex_P_Process_Actions.Partial_Parse_Byte_Goal'Access,
    Language_Fixes                 => WisiToken.Parse.LR.McKenzie_Recover.Ada.Language_Fixes'Access,
    Language_Matching_Begin_Tokens => WisiToken.Parse.LR.McKenzie_Recover.Ada.Matching_Begin_Tokens'Access,
    Language_String_ID_Set         => WisiToken.Parse.LR.McKenzie_Recover.Ada.String_ID_Set'Access,
-   Text_Rep_File_Name             => "ada_lr1_parse_table.txt",
-   Create_Parser                  => Ada_Process_LR1_Main.Create_Parser);
+   Text_Rep_File_Name             => "ada_annex_p_lr1_parse_table.txt",
+   Create_Lexer                   => Ada_Annex_P_Process_LR1_Main.Create_Lexer,
+   Create_Parse_Table             => Ada_Annex_P_Process_LR1_Main.Create_Parse_Table,
+   Create_Productions             => Ada_Annex_P_Process_LR1_Main.Create_Productions);

@@ -3,7 +3,7 @@
 --  Support Emacs Ada mode and gpr-query minor mode queries about
 --  GNAT projects and cross reference data
 --
---  Copyright (C) 2014 - 2020 Free Software Foundation All Rights Reserved.
+--  Copyright (C) 2014 - 2022 Free Software Foundation All Rights Reserved.
 --
 --  This program is free software; you can redistribute it and/or
 --  modify it under terms of the GNU General Public License as
@@ -36,6 +36,7 @@ with GNAT.Traceback.Symbolic;
 with GNATCOLL.Arg_Lists;
 with GNATCOLL.Paragraph_Filling;
 with GNATCOLL.Projects;
+with GNATCOLL.SQL.Exec;
 with GNATCOLL.SQL.Sqlite;
 with GNATCOLL.Traces;
 with GNATCOLL.Utils;
@@ -51,8 +52,9 @@ procedure Gpr_Query is
    --  changes; must match gpr-query.el gpr-query-protocol-version
 
    Me : constant GNATCOLL.Traces.Trace_Handle := GNATCOLL.Traces.Create ("gpr_query");
+   --  See gnatcoll-xref.adb for xref traces.
 
-   Db_Error        : exception;
+   DB_Error        : exception;
    Invalid_Command : exception;
 
    function "+" (Item : in Ada.Strings.Unbounded.Unbounded_String) return String
@@ -1063,6 +1065,31 @@ procedure Gpr_Query is
       end loop;
    end Put;
 
+   ----------
+   --  SQL error reporting
+   type SQL_Error_Reporter is new GNATCOLL.SQL.Exec.Error_Reporter with null record;
+
+   overriding procedure On_Error
+     (Self : in out SQL_Error_Reporter;
+      Connection : access GNATCOLL.SQL.Exec.Database_Connection_Record'Class;
+      Message    : in String)
+   is
+      pragma Unreferenced (Self, Connection);
+   begin
+      Ada.Text_IO.Put_Line ("gpr_query: sql error on create database: " & Message);
+   end On_Error;
+
+   --  For some reason, gnat community 2020 doesn't like this:
+   --  overriding procedure On_Warning
+   --    (Self : in out SQL_Error_Reporter;
+   --     Connection : access GNATCOLL.SQL.Exec.Database_Connection_Record'Class;
+   --     Message    : in String)
+   --  is begin
+   --     Ada.Text_IO.Put_Line ("gpr_query: sql warning on create database: " & Message);
+   --  end On_Warning;
+
+   Error_Reporter : aliased SQL_Error_Reporter;
+
 begin
    Ada.Text_IO.Put_Line ("version: " & Version);
 
@@ -1090,7 +1117,7 @@ begin
         (Cmdline,
          Output      => DB_Name'Access,
          Long_Switch => "--db=",
-         Help        => "Specifies the name of the database (or ':memory:')");
+         Help        => "Specifies the name of the database file (or ':memory:')");
       Define_Switch
         (Cmdline,
          Output      => Force_Refresh'Access,
@@ -1126,6 +1153,10 @@ begin
            "Specify a traces configuration file, set projects lib verbose. File should contain ""gpr_query=yes""");
 
       Getopt (Cmdline, Callback => null);
+   exception
+   when Exit_From_Command_Line =>
+      --  from "--help"
+      return;
    end;
 
    if Project_File_Name.all = "" then
@@ -1248,20 +1279,52 @@ begin
    end if;
 
    declare
+      --  Error if DB_Name does not exist but is in a read-only directory.
+      --  The Errors parameter to Sqlite.Setup does not help here; it
+      --  reports no error. Ada.Directories does not support a "writeable"
+      --  query.
+      use Ada.Directories;
+   begin
+      if DB_Name.all = ":memory:" then
+         null;
+
+      elsif Exists (DB_Name.all) then
+         --  If this is read-only, we assume it is up to date and the user is
+         --  just browsing.
+         null;
+
+      else
+         declare
+            use GNATCOLL.VFS;
+            Dir_Name : constant String       := Containing_Directory (DB_Name.all);
+            Dir_File : constant Virtual_File := Create (Filesystem_String (Dir_Name));
+         begin
+            if Is_Writable (Dir_File) then
+               null;
+            else
+               raise DB_Error with "database file '" & DB_Name.all & "' does not exist, and directory is not writeable";
+            end if;
+         end;
+      end if;
+   end;
+
+   declare
       use type GNAT.Strings.String_Access;
       Error : GNAT.Strings.String_Access;
    begin
       GNATCOLL.Traces.Trace (Me, "using database " & DB_Name.all);
 
       Setup_DB
-        (Self  => Xref,
-         Tree  => Tree'Unchecked_Access,
-         DB    => GNATCOLL.SQL.Sqlite.Setup (Database => DB_Name.all),
-         Error => Error);
+        (Self        => Xref,
+         Tree        => Tree'Unchecked_Access,
+         DB          => GNATCOLL.SQL.Sqlite.Setup
+           (Database => DB_Name.all,
+            Errors   => Error_Reporter'Unchecked_Access),
+         Error       => Error);
 
       if Error /= null then
          --  old db schema
-         raise Db_Error with Error.all;
+         raise DB_Error with Error.all;
       end if;
    end;
 
@@ -1298,7 +1361,7 @@ when Ada.IO_Exceptions.End_Error =>
 when E : GNATCOLL.Projects.Invalid_Project =>
    Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
    Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
-when E : Db_Error =>
+when E : DB_Error =>
    Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
    Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
 when E : Invalid_Command =>
