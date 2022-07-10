@@ -40,7 +40,7 @@ byte-compile-clean :
 	cd ..; rm -f *.elc
 
 clean : force
-	rm -rf obj
+	rm -rf obj *parse_table*
 
 recursive-clean : force
 	gprclean -r -P ada_mode_wisi_parse.gpr
