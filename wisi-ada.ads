@@ -76,10 +76,6 @@ package Wisi.Ada is
    type Parse_Data_Type is new Wisi.Parse_Data_Type with null record;
 
    overriding
-   function New_User_Data (Template : in Parse_Data_Type) return WisiToken.Syntax_Trees.User_Data_Access
-   is (new Parse_Data_Type);
-
-   overriding
    procedure Initialize (Data : in out Parse_Data_Type);
 
    overriding

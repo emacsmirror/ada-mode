@@ -13294,6 +13294,7 @@ package body Ada_Annex_P_Process_Actions is
    begin
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
+         Statement_Action (Parse_Data, Tree, Nonterm, ((1, Motion), (2, Motion)));
          Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(1, Invalid_Token_ID) & Index_ID'(2, Invalid_Token_ID)));
       when Face =>
          null;

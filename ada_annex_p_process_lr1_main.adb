@@ -17,10 +17,10 @@
 --  You should have received a copy of the GNU General Public License
 --  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-with Ada_Annex_P_Process_Actions; use Ada_Annex_P_Process_Actions;
 with SAL;
 with WisiToken.Lexer.re2c;
 with ada_annex_p_re2c_c;
+with Ada_Annex_P_Process_Actions; use Ada_Annex_P_Process_Actions;
 package body Ada_Annex_P_Process_LR1_Main is
 
    function Is_Block_Delimited (ID : in WisiToken.Token_ID) return Boolean
@@ -360,11 +360,6 @@ package body Ada_Annex_P_Process_LR1_Main is
       Table.Max_Parallel := 20;
       return Table;
    end Create_Parse_Table;
-
-   function Create_Lexer (Trace : in WisiToken.Trace_Access) return WisiToken.Lexer.Handle
-   is begin
-      return Lexer.New_Lexer (Trace, Ada_Annex_P_Process_Actions.Descriptor'Access);
-   end Create_Lexer;
 
    function Create_Productions return WisiToken.Syntax_Trees.Production_Info_Trees.Vector
    is begin
@@ -1800,4 +1795,25 @@ package body Ada_Annex_P_Process_LR1_Main is
       end return;
    end Create_Productions;
 
+   function Create_Parser
+     (Trace      : in WisiToken.Trace_Access;
+      User_Data  : in WisiToken.Syntax_Trees.User_Data_Access;
+      Language_Fixes                 : in WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+      Language_Matching_Begin_Tokens : in WisiToken.Parse.LR.Parser.Language_Matching_Begin_Tokens_Access;
+      Language_String_ID_Set         : in WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access;
+      Text_Rep_File_Name : in String)
+     return WisiToken.Parse.LR.Parser.Parser
+   is begin
+      return Parser : WisiToken.Parse.LR.Parser.Parser do
+         Parser.Tree.Lexer := Lexer.New_Lexer (Trace, Ada_Annex_P_Process_Actions.Descriptor'Access);
+         Parser.Productions := Create_Productions;
+         Parser.User_Data := User_Data;
+         Parser.Partial_Parse_Active := Ada_Annex_P_Process_Actions.Partial_Parse_Active'Access;
+         Parser.Partial_Parse_Byte_Goal := Ada_Annex_P_Process_Actions.Partial_Parse_Byte_Goal'Access;
+         Parser.Table := Create_Parse_Table (Text_Rep_File_Name);
+         Parser.Language_Fixes                 := Language_Fixes;
+         Parser.Language_Matching_Begin_Tokens := Language_Matching_Begin_Tokens;
+         Parser.Language_String_ID_Set         := Language_String_ID_Set;
+      end return;
+   end Create_Parser;
 end Ada_Annex_P_Process_LR1_Main;

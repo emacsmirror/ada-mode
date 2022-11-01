@@ -18,14 +18,15 @@
 --  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 with WisiToken.Syntax_Trees;
-with WisiToken.Lexer;
-with WisiToken.Parse.LR;
+with WisiToken.Parse.LR.Parser;
 package Ada_Annex_P_Process_LALR_Main is
 
-   function Create_Parse_Table
-     return WisiToken.Parse.LR.Parse_Table_Ptr;
+   function Create_Parser
+     (Trace      : in WisiToken.Trace_Access;
+      User_Data  : in WisiToken.Syntax_Trees.User_Data_Access;
+      Language_Fixes                 : in WisiToken.Parse.LR.Parser.Language_Fixes_Access;
+      Language_Matching_Begin_Tokens : in WisiToken.Parse.LR.Parser.Language_Matching_Begin_Tokens_Access;
+      Language_String_ID_Set         : in WisiToken.Parse.LR.Parser.Language_String_ID_Set_Access)
+     return WisiToken.Parse.LR.Parser.Parser;
 
-   function Create_Productions return WisiToken.Syntax_Trees.Production_Info_Trees.Vector;
-
-   function Create_Lexer (Trace : in WisiToken.Trace_Access) return WisiToken.Lexer.Handle;
 end Ada_Annex_P_Process_LALR_Main;

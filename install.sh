@@ -1,20 +1,30 @@
 #!/bin/sh
 # Install executables for Ada mode.
-#
+# 
+# $1 : optional --prefix=<dir>
+#   
 # See build.sh for build (must be run before install).
 
-# $1 : optional --prefix=<dir>
-#
-# If you don't have write permission in the GNAT installation
-# directory, you need to use --prefix=<dir>, or run with root priviledges.
-
-if [ -d ../wisi-3.1.? ]; then
-    WISI_DIR=`ls -d ../wisi-3.1.?`
+if [ x$1 = x ]; then
+    PREFIX=$HOME/.local        
+    # as recommended by https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 else
-    # try devel version
-    WISI_DIR=`ls -d ../wisi-3.1.?.0.*`
+    PREFIX=$1
 fi
+    
+echo "installing ada-mode executables to" $PREFIX/bin
 
-gprinstall -f -p -P ada_mode_wisi_parse.gpr -aP $WISI_DIR --install-name=ada_mode_wisi_parse $1 
+# No need for gprinstall; we only need the executable 
+
+if type alr; then
+    cp emacs_ada_mode*/bin/* $PREFIX/bin
+
+elif type gprbuild; then
+    cp bin/* $PREFIX/bin
+
+else
+    echo "neither Alire nor gnat compiler found"
+    return 1
+fi
 
 # end of file.

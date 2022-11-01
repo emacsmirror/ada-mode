@@ -4,5 +4,6 @@ gpr_project_path=$WISI
 gpr_file=ada_mode_wisi_parse.gpr
 
 casing=ada-mode.casing
+casing=../wisi/wisi.casing
 
 -- end of file

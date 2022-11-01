@@ -3723,7 +3723,6 @@ package Ada_Annex_P_Process_Actions is
      Tokens         : in     WisiToken.Syntax_Trees.Recover_Token_Array;
      Recover_Active : in     Boolean)
     return WisiToken.Syntax_Trees.In_Parse_Actions.Status;
-
    Partial_Parse_Active    : aliased Boolean := False;
    Partial_Parse_Byte_Goal : aliased WisiToken.Buffer_Pos := WisiToken.Buffer_Pos'Last;
 end Ada_Annex_P_Process_Actions;

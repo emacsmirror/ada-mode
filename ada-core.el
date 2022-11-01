@@ -22,6 +22,7 @@
 
 (require 'compile)
 (require 'find-file)
+(require 'gnat-compiler)
 (require 'uniquify-files)
 (require 'wisi)
 (require 'wisi-prj)
@@ -37,6 +38,40 @@
   :type 'boolean
   :group 'ada)
 
+(defcustom ada-process-parse-exec "ada_mode_wisi_lr1_parse"
+  "Name of executable to use for external process Ada parser.
+There are two standard choices; ada_mode_wisi_lalr_parse and
+ada_mode_wisi_lr1_parse. The LR1 version (the default) is
+slower to load on first use, but gives better error recovery."
+  :type 'string
+  :group 'ada)
+
+(defcustom ada-process-parse-exec-opts nil
+  "List of process start options for `ada-process-parse-exec'."
+  :type 'string
+  :group 'ada)
+
+(defcustom ada-face-backend
+  (cond
+   ((locate-file ada-process-parse-exec exec-path '("" ".exe")) 'wisi)
+   ((gnat-find-als nil t) 'eglot)
+   (t 'none))
+  "Face backend to use for Ada."
+  ;; Could be extended to tree-sitter, lsp-mode ...; use `other' for that.
+  :type 'symbol
+  :options '(none eglot wisi other)
+  :group 'ada)
+
+(defcustom ada-indent-backend
+  (cond
+   ((locate-file ada-process-parse-exec exec-path '("" ".exe")) 'wisi)
+   ((gnat-find-als nil t) 'eglot)
+   (t 'none))
+  "Indent backend to use for Ada."
+  :type 'symbol
+  :options '(none eglot wisi other)
+  :group 'ada)
+
 (defconst ada-operator-re
   "\\+\\|-\\|/\\|\\*\\*\\|\\*\\|=\\|&\\|\\_<\\(abs\\|mod\\|rem\\|and\\|not\\|or\\|xor\\)\\_>\\|<=\\|<\\|>=\\|>"
   "Regexp matching Ada operator_symbol.")
@@ -50,8 +85,7 @@ Values defined by compiler packages.")
 
 (defvar ada-syntax-propertize-hook nil
   "Hook run from `ada-syntax-propertize'.
-Called by `syntax-propertize', which is called by font-lock in
-`after-change-functions'.")
+Called by `syntax-propertize'.")
 
 (defun ada-validate-enclosing-declaration (error-on-fail parse-action)
   "Call `wisi-validate-cache' on at least the declaration enclosing point."
@@ -75,13 +109,15 @@ Called by `syntax-propertize', which is called by font-lock in
    (t
     (wisi-validate-cache (point-min) (point-max) error-on-fail parse-action))))
 
-
 (defun ada-goto-declarative-region-start ()
   "Goto start of declarative region containing point.
 If in a statement, goto declarative region of the containing
 declaration.  If already in a declaration at or before a
 declarative region start, goto containing region start."
   (interactive)
+  (unless wisi-parser-shared
+    (user-error "ada-goto-declarative-region-start requires a syntax-tree"))
+
   (ada-validate-enclosing-declaration t 'navigate)
   (push-mark)
 
@@ -195,29 +231,16 @@ declarative region start, goto containing region start."
 	    )))
       )))
 
-;;;; additional ada-compiler generic interfaces
-
-(cl-defgeneric ada-compiler-file-name-from-ada-name (compiler project ada-name)
-  "Return the filename that would contain the library level ADA-NAME.")
-
 (defun ada-file-name-from-ada-name (ada-name)
   "Return the filename in which ADA-NAME is found."
-  (let ((project (ada-prj-require-prj)))
-    (ada-compiler-file-name-from-ada-name (ada-prj-compiler project) project ada-name)))
-
-(cl-defgeneric ada-compiler-ada-name-from-file-name (compiler project file-name)
-  "Return the Ada library unit name that should be found in FILE-NAME.")
-
-(cl-defgeneric ada-compiler-make-package-body (compiler project body-file-name)
-  "Create a package body skeleton from a package spec.
-BODY-FILE-NAME is the file name of the body file. Current buffer
-is the package spec.")
+  ;; We don't just use gnat-compiler-* directly, because we might add
+  ;; support for some other compiler. This should probably be a wisi
+  ;; generic function.
+  (gnat-file-name-from-ada-name (wisi-prj-compiler (project-current)) ada-name))
 
 (defun ada-make-package-body (body-file-name)
   (let ((prj (ada-prj-require-prj)))
-    (ada-compiler-make-package-body (ada-prj-compiler prj)
-				    prj
-				    (expand-file-name body-file-name))))
+    (gnat-make-package-body prj (expand-file-name body-file-name))))
 
 ;;;; refactor
 
@@ -232,9 +255,11 @@ is the package spec.")
 
 (defun ada-refactor (action)
   "Perform refactor action ACTION at point."
-  (unless wisi-incremental-parse-enable
-   (wisi-validate-cache (line-end-position -7) (line-end-position 7) t 'navigate))
-  (wisi-refactor wisi-parser-shared action (point)))
+  ;; No overlap between wisi and als refactoring (as of Aug 2022 als 22)
+  (when wisi-parser-shared
+    (unless wisi-incremental-parse-enable
+      (wisi-validate-cache (line-end-position -7) (line-end-position 7) t 'navigate))
+    (wisi-refactor wisi-parser-shared action (point))))
 
 (defun ada-refactor-1 ()
   "Refactor Method (Object) => Object.Method.
@@ -261,18 +286,6 @@ Point must be in Object"
   (ada-refactor ada-refactor-object-index-to-element-object))
 
 ;; refactor-5 in ada-format-paramlist below
-
-(defcustom ada-language-version 'ada2012
-  ;; ada-fix-error.el needs this.
-  "Ada language version; one of `ada83', `ada95', `ada2005', `ada2012'.
-Only affects the keywords to highlight, not which version the
-parser accepts; the parser always accepts a superset of ada2012."
-  :type '(choice (const ada83)
-		 (const ada95)
-		 (const ada2005)
-		 (const ada2012))
-  :safe  #'symbolp)
-(make-variable-buffer-local 'ada-language-version)
 
 (defun ada-in-case-expression (parse-result)
   "Return non-nil if point is in a case expression."
@@ -313,86 +326,91 @@ PARSE-RESULT must be the result of `syntax-ppss'."
   ;; (info "(elisp)Parser State" "*syntax-ppss*")
   (when (> (nth 0 parse-result) 0)
     ;; In parens.
-    (cond
-     (wisi-incremental-parse-enable
-      (let ((node (wisi-parse-tree-query wisi-parser-shared 'node (nth 1 parse-result))))
-	(eq 'formal_part
-	    (wisi-tree-node-id
-	     (wisi-parse-tree-query wisi-parser-shared 'parent (wisi-tree-node-address node) 1)))))
+    (when wisi-parser-shared
+      ;; LSP does not support this detailed query
+      (cond
+       (wisi-incremental-parse-enable
+	(let ((node (wisi-parse-tree-query wisi-parser-shared 'node (nth 1 parse-result))))
+	  (eq 'formal_part
+	      (wisi-tree-node-id
+	       (wisi-parse-tree-query wisi-parser-shared 'parent (wisi-tree-node-address node) 1)))))
 
-     (t ;; not incremental parse
+       (t ;; not incremental parse
 
-      ;; Request parse of region containing parens; that
-      ;; will be expanded to include the subprogram declaration, if
-      ;; any,
-      (let* ((forward-sexp-function nil) ;; forward-sexp just does parens
-	     (start (nth 1 parse-result))
-	     (end (save-excursion (goto-char (nth 1 parse-result)) (forward-sexp) (point))))
-	(wisi-validate-cache start end nil 'navigate)
-	(let ((cache (wisi-get-cache start)))
-	  ;; cache is nil if the parse failed
-	  (when cache
-	    (eq 'formal_part (wisi-cache-nonterm cache)))
-	  )))
-     )))
+	;; Request parse of region containing parens; that
+	;; will be expanded to include the subprogram declaration, if
+	;; any,
+	(let* ((forward-sexp-function nil) ;; forward-sexp just does parens
+	       (start (nth 1 parse-result))
+	       (end (save-excursion (goto-char (nth 1 parse-result)) (forward-sexp) (point))))
+	  (wisi-validate-cache start end nil 'navigate)
+	  (let ((cache (wisi-get-cache start)))
+	    ;; cache is nil if the parse failed
+	    (when cache
+	      (eq 'formal_part (wisi-cache-nonterm cache)))
+	    )))
+       ))))
 
-(defun ada-format-paramlist ()
-  "Reformat the parameter list point is in."
-  (interactive)
-  (condition-case-unless-debug nil
-      ;; FIXME: this aborts if missing close paren, but incremental parse can handle that
-      (wisi-goto-open-paren)
-    (error
-     (user-error "Not in parameter list")))
-  (when (not (looking-back "^[ \t]*" (line-beginning-position)))
-    ;;  Left paren after code; ensure nominal spacing. See
-    ;;  test/ada_mode-parens.adb If_Statement.
-    (delete-horizontal-space)
-    (insert " "))
-  (funcall indent-line-function); so reformatted list is indented properly
-  (when (not wisi-incremental-parse-enable)
-    ;; Force parse of current statement after indent
-    (let* ((paren (point))
-	   (cache (wisi-goto-statement-start))
-	   (parse-begin (point))
-	   (parse-end (wisi-cache-end cache)))
-      (if parse-end
-	  (setq parse-end (+ parse-end (wisi-cache-last (wisi-get-cache (wisi-cache-end cache)))))
-	;; else there is a syntax error; missing end of statement
-	(setq parse-end (point-max)))
-      (wisi-invalidate-cache 'navigate parse-begin)
-      (wisi-validate-cache parse-begin parse-end t 'navigate)
-      (goto-char paren)))
-  (ada-refactor ada-refactor-format-paramlist))
+  (defun ada-format-paramlist ()
+    "Reformat the parameter list point is in."
+    (interactive)
+    (when wisi-parser-shared
+      (condition-case-unless-debug nil
+	  ;; IMPROVEME: this aborts if missing close paren, but incremental parse can handle that
+	  (wisi-goto-open-paren)
+	(error
+	 (user-error "Not in parameter list")))
+      (when (not (looking-back "^[ \t]*" (line-beginning-position)))
+	;;  Left paren after code; ensure nominal spacing. See
+	;;  test/ada_mode-parens.adb If_Statement.
+	(delete-horizontal-space)
+	(insert " "))
+      (funcall indent-line-function); so reformatted list is indented properly
+      (when (not wisi-incremental-parse-enable)
+	;; Force parse of current statement after indent
+	(let* ((paren (point))
+	       (cache (wisi-goto-statement-start))
+	       (parse-begin (point))
+	       (parse-end (wisi-cache-end cache)))
+	  (if parse-end
+	      (setq parse-end (+ parse-end (wisi-cache-last (wisi-get-cache (wisi-cache-end cache)))))
+	    ;; else there is a syntax error; missing end of statement
+	    (setq parse-end (point-max)))
+	  (wisi-invalidate-cache 'navigate parse-begin)
+	  (wisi-validate-cache parse-begin parse-end t 'navigate)
+	  (goto-char paren)))
+      (ada-refactor ada-refactor-format-paramlist)))
 
 ;;;; fix compiler errors
-(defun ada-fix-context-clause ()
-  "Return the region containing the context clause for the current buffer,
+  (defun ada-context-clause-region ()
+    "Return the region containing the context clause for the current buffer,
 excluding leading pragmas."
-  (wisi-validate-cache (point-min) (point-max) t 'navigate)
-  (save-excursion
-    (goto-char (point-min))
-    (let ((begin nil)
-	  (end nil)
-	  cache)
+    ;; FIXME: rename this - no 'fix'
+    (when wisi-parser-shared
+      (wisi-validate-cache (point-min) (point-max) t 'navigate)
+      (save-excursion
+	(goto-char (point-min))
+	(let ((begin nil)
+	      (end nil)
+	      cache)
 
-      (while (not end)
-	(setq cache (wisi-forward-cache))
-	(cl-case (wisi-cache-nonterm cache)
-	  (pragma_g (wisi-goto-end-1 cache))
-	  (use_package_clause (wisi-goto-end-1 cache))
-	  ((limited_with_clause | nonlimited_with_clause)
-	   (when (not begin)
-	     (setq begin (line-beginning-position)))
-	   (wisi-goto-end-1 cache))
-	  (t
-	   ;; start of compilation unit
-	   (setq end (line-beginning-position))
-	   (unless begin
-	     (setq begin end)))
-	  ))
-      (cons begin end)
-    )))
+	  (while (not end)
+	    (setq cache (wisi-forward-cache))
+	    (cl-case (wisi-cache-nonterm cache)
+	      (pragma_g (wisi-goto-end-1 cache))
+	      (use_package_clause (wisi-goto-end-1 cache))
+	      ((limited_with_clause | nonlimited_with_clause)
+	       (when (not begin)
+		 (setq begin (line-beginning-position)))
+	       (wisi-goto-end-1 cache))
+	      (t
+	       ;; start of compilation unit
+	       (setq end (line-beginning-position))
+	       (unless begin
+		 (setq begin end)))
+	      ))
+	  (cons begin end)
+	  ))))
 
 (defun ada-fix-sort-context-pred (a b)
   "Predicate for `sort-subr'; sorts \"limited with\", \"private with\" last.
@@ -449,13 +467,16 @@ Returns non-nil if a should preceed b in buffer."
   "Add a with_clause for PACKAGE_NAME.
 If ada-fix-sort-context-clause, sort the context clauses using
 sort-lines."
-  (let ((context-clause (ada-fix-context-clause)))
+  ;; IMPROVEME: https://github.com/AdaCore/ada_language_server/issues/1039
+  (unless wisi-parser-shared
+    (user-error "ada-fix-add-With-clause not supported by this parser; add use clause manually"))
+  (let ((context-clause (ada-context-clause-region)))
     (when (not context-clause)
       (error "no compilation unit found"))
 
     (goto-char (cdr context-clause))
     (insert "with ")
-    (ada-fix-insert-unit-name package-name)
+    (gnat-insert-unit-name package-name)
     (insert ";\n")
 
     (when (and (< (car context-clause) (cdr context-clause))
@@ -463,57 +484,13 @@ sort-lines."
       (ada-fix-sort-context-clause (car context-clause) (point)))
     ))
 
-(defun ada-fix-extend-with-clause (partial-parent-name child-name)
-  "Assuming point is in a selected name, just before CHILD-NAME, add or
-extend a with_clause to include CHILD-NAME."
-  ;; In GNAT Community 2020, point is before partial-parent-name; in
-  ;; earlier gnat, it is after.
-  (search-forward partial-parent-name (line-end-position) t)
-  (let ((parent-name-end (point)))
-    ;; Find the full parent name; skip back to whitespace, then match
-    ;; the name forward.
-    (skip-syntax-backward "w_.")
-    (search-forward-regexp ada-name-regexp parent-name-end t)
-    (let ((parent-name (match-string 0))
-	  (context-clause (ada-fix-context-clause)))
-      (goto-char (car context-clause))
-      (if (search-forward-regexp (concat "^with " parent-name ";") (cdr context-clause) t)
-	  ;; found exisiting 'with' for parent; extend it
-	  (progn
-	    (forward-char -1) ; skip back over semicolon
-	    (insert "." child-name))
-
-	;; not found; we are in a package body, with_clause for parent is in spec.
-	;; insert a new one
-	(ada-fix-add-with-clause (concat parent-name "." child-name)))
-      )))
-
-(defun ada-fix-insert-unit-name (unit-name)
-  "Insert UNIT-NAME at point and capitalize it."
-  ;; unit-name is normally gotten from a file-name, and is thus all lower-case.
-  (let ((start-point (point))
-        search-bound)
-    (insert unit-name)
-    (setq search-bound (point))
-    (insert " ") ; separate from following words, if any, for wisi-case-adjust-identifier
-    (goto-char start-point)
-    (while (search-forward "." search-bound t)
-      (forward-char -1)
-      (wisi-case-adjust-identifier)
-      (forward-char 1))
-    (goto-char search-bound)
-    (wisi-case-adjust-identifier)
-    (delete-char 1)))
-
 (defun ada-fix-add-use-type (type)
-  "Insert `use type' clause for TYPE."
+  "Insert `use all type' clause for TYPE."
+  (unless wisi-parser-shared
+    (user-error "ada-fix-add-use-type not supported by this parser; add use clause manually"))
   (ada-goto-declarative-region-start); leaves point after 'is'
   (newline-and-indent)
-  (cl-ecase ada-language-version
-    (ada2012
-     (insert "use all type "))
-    ((ada83 ada95 ada2005)
-     (insert "use type ")))
+  (insert "use all type ")
   (let ((begin (point))
 	end)
     (insert type ";")
@@ -526,21 +503,33 @@ extend a with_clause to include CHILD-NAME."
 
 (defun ada-fix-add-use (package)
   "Insert `use' clause for PACKAGE."
+  (unless wisi-parser-shared
+    (user-error "ada-fix-add-use not supported by this parser; add use clause manually"))
   (ada-goto-declarative-region-start); leaves point after 'is'
   (newline-and-indent)
   (insert "use " package ";"))
 
 ;;;; xref
 
-(defvar ada-xref-tool (if (locate-file "gpr_query" exec-path '("" ".exe")) 'gpr_query 'gnat)
-  "Default Ada cross reference tool; can be overridden in project files.")
+(defconst ada-xref-known-backends '(gpr_query gnat eglot other)
+  "Supported xref backends.")
 
-(defconst ada-xref-known-tools '(gpr_query gnat)
-  "Supported xref tools")
+(defcustom ada-xref-backend
+  (if (locate-file "gpr_query" exec-path '("" ".exe")) 'gpr_query 'gnat)
+  "Ada cross reference backend; can be overridden in project files."
+  :type 'symbol
+  :options ada-xref-known-backends
+  :group 'ada)
+
+(defalias 'ada-xref-tool 'ada-xref-backend)
+(make-obsolete 'ada-xref-tool 'ada-xref-backend "ada-mode version 8.0")
 
 (defun ada-make-subprogram-body ()
   "Convert subprogram specification after point into a subprogram body stub."
   (interactive)
+  (unless wisi-parser-shared
+    ;; eglot/lsp does not provide access to syntax tree
+    (user-error "ada-make-subprogram-body not supported by eglot/LSP"))
   (wisi-goto-statement-start)
   ;; point is at start of subprogram specification;
 
@@ -565,8 +554,7 @@ extend a with_clause to include CHILD-NAME."
   ;; spec. So go back to the spec, and delete the body buffer so it
   ;; does not get written to disk.
   (let ((body-buffer (current-buffer))
-	(body-file-name (buffer-file-name))
-	(prj (ada-prj-require-prj)))
+	(body-file-name (buffer-file-name)))
 
     (set-buffer-modified-p nil);; may have a skeleton; allow silent delete
 
@@ -574,7 +562,7 @@ extend a with_clause to include CHILD-NAME."
 
     (kill-buffer body-buffer)
 
-    (ada-compiler-make-package-body (ada-prj-compiler prj) prj body-file-name)
+    (ada-make-package-body body-file-name)
 
     ;; back to the new body file, read in from the disk.
     (ff-find-the-other-file)
@@ -593,7 +581,7 @@ extend a with_clause to include CHILD-NAME."
 		    name
 		    compile-env
 		    (compiler-label ada-compiler)
-		    (xref-label ada-xref-tool)
+		    (xref-label ada-xref-backend)
 		    source-path
 		    plist
 		    file-pred
@@ -615,7 +603,7 @@ extend a with_clause to include CHILD-NAME."
      name
      compile-env
      (compiler-label ada-compiler)
-     (xref-label ada-xref-tool)
+     (xref-label ada-xref-backend)
      source-path
      plist
      file-pred)
@@ -660,7 +648,7 @@ If SRC-DIR is non-nil, use it as the default for project.source-path."
 	 (make-ada-prj
 	  :name (or name "_default_")
 	  :compiler-label  ada-compiler
-	  :xref-label      ada-xref-tool
+	  :xref-label      ada-xref-backend
 	  :source-path	  (cond
 			   ((null src-dir) nil)
 			   ((listp src-dir) src-dir)
@@ -689,7 +677,6 @@ If SRC-DIR is non-nil, use it as the default for project.source-path."
 ;;;###autoload
 (defun ada-prj-make-compiler (label)
   ;; We use the autoloaded constructor here
-  (require (intern (format "ada-compiler-%s" (symbol-name label))))
   (funcall (intern (format "create-%s-compiler" (symbol-name label)))))
 
 (defun ada-prj-make-xref (label)
@@ -720,19 +707,20 @@ Throw an error if current project is not an ada-prj."
       (setf (ada-prj-plist project) (plist-put (ada-prj-plist project) 'obj_dir obj-dir))
       ))
 
-   ((string= name "xref_tool")
+   ((string= name "xref_backend")
     ;; This is defined here, rather than in wisi, because the list of
     ;; xref tools is likely to be language-specific (but not always;
     ;; for example Gnu global supports many languages).
     (let ((xref-label (intern value)))
-      (if (memq xref-label ada-xref-known-tools)
-	  (progn
-	    (setf (ada-prj-xref-label project) xref-label)
-	    (setf (ada-prj-xref project) (ada-prj-make-xref xref-label)))
+      (cond
+       ((memq xref-label ada-xref-known-backends)
+	(setf (ada-prj-xref-label project) xref-label)
+	(setf (ada-prj-xref project) (ada-prj-make-xref xref-label)))
 
-	(user-error "'%s' is not a recognized xref tool (must be one of %s)"
-		    xref-label ada-xref-known-tools))
-      ))
+       (t
+	(user-error "'%s' is not a recognized xref backend (must be one of %s)"
+		    xref-label ada-xref-known-backends))
+      )))
    ))
 
 (defun ada-prj-parse-undefined (project name value)
@@ -768,18 +756,6 @@ Throw an error if current project is not an ada-prj."
 Deselects the current project first."
   (wisi-prj-select-cache prj-file (ada-prj-default "")))
 (make-obsolete 'ada-select-prj-file 'wisi-prj-select-cache "ada-mode 7.0")
-
-(cl-defgeneric ada-prj-select-compiler (compiler project)
-  "Set PROJECT options that are Ada and compiler specific.")
-
-(cl-defgeneric ada-prj-deselect-compiler (compiler project)
-  "Unset any PROJECT options that are both Ada and compiler specific.")
-
-(cl-defmethod wisi-prj-select :after ((project ada-prj))
-  (ada-prj-select-compiler (ada-prj-compiler project) project))
-
-(cl-defmethod wisi-prj-deselect :before ((project ada-prj))
-  (ada-prj-deselect-compiler (ada-prj-compiler project) project))
 
 (cl-defmethod wisi-prj-identifier-at-point ((_project ada-prj))
   ;; Handle adjacent operator/identifer like:

@@ -27,6 +27,8 @@
 ;; this (they use 'make' or similar tool), so it would just get in the
 ;; way, particularly for fixing bugs in the core capabilities of
 ;; ada-mode.
+;;
+;; IMPROVME: move to wisi or gnat-compiler so gpr-mode can share *-build.
 
 ;;; History:
 ;;
@@ -35,7 +37,7 @@
 ;; Stephen Leake <stephen_leake@stephe-leake.org>.
 
 (require 'ada-core)
-(require 'gnat-core)
+(require 'gnat-compiler)
 (require 'cl-lib)
 
 ;;;; User customization
@@ -110,7 +112,7 @@ buffer file name including the directory and extension."
 
        ((string= name "gpr_file")
 	(when (gnat-compiler-gpr-file (ada-prj-compiler project))
-	  (setq value (file-name-nondirectory (gnat-compiler-gpr-file (ada-prj-compiler project))))))
+	  (setq value (gnat-compiler-gpr-file (ada-prj-compiler project)))))
 
        )
 
@@ -171,48 +173,31 @@ selected, nil otherwise."
     ))
 
 ;;;###autoload
-(defun ada-build-prompt-select-prj-file ()
+(defun ada-build-prompt-select-prj-file (filename)
   "Prompt for a project file, parse and select it.
 The file must have an extension from `wisi-prj-file-extensions'.
 Returns the project if a file is selected, nil otherwise."
-  (interactive)
-  (let (filename)
-    (condition-case-unless-debug nil
-	(setq filename
-	      (read-file-name
-	       "Project file: " ; prompt
-	       nil ; dir
-	       "" ; default-filename
-	       t   ; mustmatch
-	       nil; initial
-	       (lambda (name)
-		 ;; this allows directories, which enables navigating
-		 ;; to the desired file. We just assume the user won't
-		 ;; return a directory.
-		 (or (file-accessible-directory-p name)
-		     (member (file-name-extension name) wisi-prj-file-extensions)))))
-      (error
-       (setq filename nil))
-      )
+  (interactive (list (wisi-prompt-prj-file)))
 
-    (when (and filename
-	       (not (equal "" filename)))
+  (when (and filename
+	     (not (equal "" filename)))
 
-      (unless (wisi-prj-find-function-set-p)
-	;; See comment in ada-build-require-project-file. We also do
-	;; this here because it may be the first project-related
-	;; function the user runs.
-	(add-hook 'project-find-functions #'wisi-prj-find-dominating-cached)
-	(add-hook 'xref-backend-functions #'wisi-prj-xref-backend))
+    (unless (wisi-prj-find-function-set-p)
+      ;; See comment in ada-build-require-project-file. We also do
+      ;; this here because it may be the first project-related
+      ;; function the user runs.
+      (add-hook 'project-find-functions #'wisi-prj-find-dominating-cached)
+      (add-hook 'xref-backend-functions #'wisi-prj-xref-backend))
 
-      (let ((default-prj (ada-prj-default (file-name-nondirectory (file-name-sans-extension filename)))))
-	(wisi-prj-dtrt-parse-file filename default-prj filename (file-name-directory filename)))
-      )))
+    (let ((default-prj (ada-prj-default (file-name-nondirectory (file-name-sans-extension filename)))))
+      (wisi-prj-dtrt-parse-file filename default-prj filename (file-name-directory filename)))))
 
 (defun ada-build-create-select-default-prj ()
   "Create a default project with source-path set current directory, select it."
   (let* ((prj-file (expand-file-name "default_.adp" default-directory)) ;; we assume this does not exist
- 	 (ada-xref-tool 'gnat) ;; since we are not specifying a gpr file.
+ 	 (ada-xref-backend
+	  (if (eq ada-xref-backend 'gpr_query) 'gnat ;; since we are not specifying a gpr file.
+	    ada-xref-backend))
 	 (project (ada-prj-default default-directory)))
 
     ;; We use buffer-file-name as the dominating file (nominally the
@@ -264,10 +249,10 @@ An error result does not change the current project."
 
 	(search-prompt
 	  (or (setq prj (ada-build-find-select-prj-file prj))
-	      (setq prj (ada-build-prompt-select-prj-file))))
+	      (setq prj (call-interactively #'ada-build-prompt-select-prj-file))))
 
 	(prompt
-	 (setq prj (ada-build-prompt-select-prj-file)))
+	 (setq prj (call-interactively #'ada-build-prompt-select-prj-file)))
 
 	(error
 	 (user-error "no project file selected"))

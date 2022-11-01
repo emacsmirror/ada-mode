@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 7.3.beta1
-;; package-requires: ((uniquify-files "1.0.1") (wisi "4.0.beta") (emacs "25.3"))
+;; Version: 8.0.2
+;; package-requires: ((uniquify-files "1.0.1") (wisi "4.1.1") (gnat-compiler "1.0.0") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -46,15 +46,15 @@
 ;; `ada-compiler' selects which compiler to use; it can be overridden
 ;; by the "ada_compiler" setting in project files.
 ;;
-;; We also support a cross reference tool (also called xref tool) that
-;; is different from the compiler. For example, you can use a local
-;; GNAT compiler to generate and access cross-reference information,
-;; while using a cross-compiler for compiling the final
-;; executable. The user variable `ada-xref-tool' selects the xref
-;; tool; it can be overridden by the "xref_tool" setting in project
-;; files.
+;; We also support a cross reference backend (also called xref
+;; backend) that is different from the compiler. For example, you can
+;; use a local GNAT compiler to generate and access cross-reference
+;; information, while using a cross-compiler for compiling the final
+;; executable. The user variable `ada-xref-backend' selects the xref
+;; backend; it can be overridden by the "xref_backend" setting in
+;; project files.
 ;;
-;; The indentation engine and skeleton tools are from the wisi
+;; The indentation engine and skeleton backends are from the wisi
 ;; package.
 ;;
 ;;; History:
@@ -117,7 +117,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "7.3.beta"))
+  (let ((version-string "8.0.2"))
     (if (called-interactively-p 'interactive)
 	(message version-string)
       version-string)))
@@ -148,19 +148,6 @@ rather than to the same column."
   :group 'ada
   :type 'integer
   :safe #'integerp)
-
-(defcustom ada-process-parse-exec "ada_mode_wisi_lr1_parse"
-  "Name of executable to use for external process Ada parser.
-There are two standard choices; ada_mode_wisi_lalr_parse and
-ada_mode_wisi_lr1_parse. The LR1 version (the default) is
-slower to load on first use, but gives better error recovery."
-  :type 'string
-  :group 'ada)
-
-(defcustom ada-process-parse-exec-opts nil
-  "List of process start options for `ada-process-parse-exec'."
-  :type 'string
-  :group 'ada)
 
 (defcustom ada-xref-full-path nil
   "If t, cross-references show the full path to source files; if
@@ -218,8 +205,8 @@ nil, only the file name."
     (define-key map "\C-cr4" 'ada-refactor-4)
     (wisi-case-activate-keys map)
 
-    map
-  )  "Local keymap used for Ada mode.")
+    map)
+  "Local keymap used for Ada mode.")
 
 (defvar ada-mode-menu (make-sparse-keymap "Ada"))
 (easy-menu-define ada-mode-menu ada-mode-map "Menu keymap for Ada mode"
@@ -232,62 +219,62 @@ nil, only the file name."
     ["Customize"                  (customize-group 'ada)    t]
     ("Project files"
      ["Find and select project ..."   ada-build-prompt-select-prj-file t]
-     ["Show project"                  wisi-prj-show                    t]
-     ["Show project file search path" wisi-prj-show-prj-path           t]
-     ["Show source file search path"  wisi-prj-show-src-path           t]
-     ["Clear current project"         wisi-prj-clear-current           t]
+     ["Show project"                  wisi-prj-show 		       t]
+     ["Show project file search path" wisi-prj-show-prj-path 	       t]
+     ["Show source file search path"  wisi-prj-show-src-path 	       t]
+     ["Clear current project"         wisi-prj-clear-current 	       t]
     )
     ("Build"
-     ["Next compilation error"     next-error                t]
-     ["Show secondary error"       ada-show-secondary-error  t]
-     ["Fix compilation error"      wisi-fix-compiler-error   t]
-     ["Show last parse error"      wisi-show-parse-error     t]
-     ["Check syntax"               ada-build-check       t]
-     ["Show main"                  ada-build-show-main   t]
-     ["Build"                      ada-build-make        t]
-     ["Set main and Build"         ada-build-set-make    t]
-     ["Run"                        ada-build-run         t]
+     ["Next compilation error"     next-error 		    t]
+     ["Show secondary error"       ada-show-secondary-error t]
+     ["Fix compilation error"      wisi-fix-compiler-error  t]
+     ["Show last parse error"      wisi-show-parse-error    t]
+     ["Check syntax"               ada-build-check 	    t]
+     ["Show main"                  ada-build-show-main 	    t]
+     ["Build"                      ada-build-make 	    t]
+     ["Set main and Build"         ada-build-set-make 	    t]
+     ["Run"                        ada-build-run 	    t]
      )
     ("Navigate"
      ["Other file"                    ada-find-other-file          t]
      ["Find file in project"          project-find-file            t]
      ["Goto declaration/body"         wisi-goto-spec/body          t]
-     ["Goto next statement keyword"   forward-sexp   t]
-     ["Goto prev statement keyword"   backward-sexp   t]
-     ["Goto subprogram/package start" ada-goto-declaration-start   t]
-     ["Goto subprogram/package end"   ada-goto-declaration-end     t]
-     ["Goto declarative region start" ada-goto-declarative-region-start   t]
-     ["Goto containing statement start" wisi-goto-containing-statement-start t]
-     ["Show parent declarations"        wisi-show-declaration-parents        t]
+     ["Goto next statement keyword"   forward-sexp 			     wisi-parser-shared]
+     ["Goto prev statement keyword"   backward-sexp 			     wisi-parser-shared]
+     ["Goto subprogram/package start" ada-goto-declaration-start 	     wisi-parser-shared]
+     ["Goto subprogram/package end"   ada-goto-declaration-end 		     wisi-parser-shared]
+     ["Goto declarative region start" ada-goto-declarative-region-start      wisi-parser-shared]
+     ["Goto containing statement start" wisi-goto-containing-statement-start wisi-parser-shared]
+     ["Show parent declarations"        wisi-show-declaration-parents 	     (eq ada-xref-backend 'gpr_query)]
      ["Show all references (classwide)" xref-find-references                 t]
      ["Show all direct references"      wisi-show-references                 t]
-     ["Show local references"         wisi-show-local-references    t]
-     ["Show overriding"               wisi-show-overriding          t]
-     ["Show overridden"               wisi-show-overridden          t]
-     ["Goto prev position current buffer" pop-to-mark-command  t]
-     ["Goto prev position other buffer"   pop-global-mark      t]
-     ["Next placeholder"              wisi-skel-next-placeholder    t]
-     ["Previous placeholder"          wisi-skel-prev-placeholder    t]
+     ["Show local references"         wisi-show-local-references (eq ada-xref-backend 'gpr_query)]
+     ["Show overriding"               wisi-show-overriding       (eq ada-xref-backend 'gpr_query)]
+     ["Show overridden"               wisi-show-overridden       (eq ada-xref-backend 'gpr_query)]
+     ["Goto prev position current buffer" pop-to-mark-command 	 t]
+     ["Goto prev position other buffer"   pop-global-mark 	 t]
+     ["Next placeholder"              wisi-skel-next-placeholder t]
+     ["Previous placeholder"          wisi-skel-prev-placeholder t]
      )
     ("Edit"
      ["Complete name at point"      completion-at-point     t]
      ["Expand skeleton"             wisi-skel-expand        t]
      ["Indent line or selection"    indent-for-tab-command  t]
-     ["Indent current statement"    wisi-indent-statement   t]
-     ["Indent containing statement" wisi-indent-containing-statement    t]
-     ["Indent file"            (indent-region (point-min) (point-max))  t]
-     ["Align"                       ada-align               t]
-     ["Comment/uncomment selection" comment-dwim            t]
-     ["Fill comment paragraph"         ada-fill-comment-paragraph           t]
+     ["Indent current statement"    wisi-indent-statement   wisi-parser-shared]
+     ["Indent containing statement" wisi-indent-containing-statement        wisi-parser-shared]
+     ["Indent file"            (indent-region (point-min) (point-max)) 	    t]
+     ["Align"                       ada-align 				    t]
+     ["Comment/uncomment selection" comment-dwim 			    t]
+     ["Fill comment paragraph"         ada-fill-comment-paragraph 	    t]
      ["Fill comment paragraph justify" (ada-fill-comment-paragraph 'full)   t]
      ["Fill comment paragraph postfix" (ada-fill-comment-paragraph 'full t) t]
-     ["Make body for subprogram"    ada-make-subprogram-body     t]
+     ["Make body for subprogram"    ada-make-subprogram-body                wisi-parser-shared]
      )
     ("Refactor"
-     ["Method (Object) => Object.Method"   ada-refactor-1 t]
-     ["Object.Method   => Method (Object)" ada-refactor-2 t]
-     ["Element (Object, Index) => Object (Index)" ada-refactor-3 t]
-     ["Object (Index) => Element (Object, Index)" ada-refactor-4 t]
+     ["Method (Object) => Object.Method"   ada-refactor-1 wisi-parser-shared]
+     ["Object.Method   => Method (Object)" ada-refactor-2 wisi-parser-shared]
+     ["Element (Object, Index) => Object (Index)" ada-refactor-3 wisi-parser-shared]
+     ["Object (Index) => Element (Object, Index)" ada-refactor-4 wisi-parser-shared]
      )
     ("Casing"
      ["Create full exception"       wisi-case-create-exception t]
@@ -298,25 +285,25 @@ nil, only the file name."
      ["Show casing files list"      wisi-case-show-files       t]
      )
     ("Misc"
-     ["Show last parse error"         wisi-show-parse-error       t]
-     ["Refresh cross reference cache" wisi-refresh-prj-cache      t]
-     ["Restart parser"                wisi-kill-parser            t]
+     ["Show last parse error"         wisi-show-parse-error       wisi-parser-shared]
+     ["Refresh cross reference cache" wisi-refresh-prj-cache      (wisi-prj-p (project-current))]
+     ["Restart parser"                wisi-kill-parser            wisi-parser-shared]
      )))
 
 (easy-menu-define ada-context-menu nil
   "Context menu keymap for Ada mode"
   '("Ada"
-    ["Goto declaration/body"         wisi-goto-spec-body         t]
-    ["Goto next statement keyword"   forward-sexp   t]
-    ["Goto prev statement keyword"   backward-sexp   t]
-    ["Goto declarative region start" ada-goto-declarative-region-start   t]
-    ["Goto containing statement start" wisi-goto-containing-statement-start t]
-    ["Goto subprogram/package start" ada-goto-declaration-start    t]
-    ["Goto subprogram/package end"   ada-goto-declaration-end      t]
-    ["Show parent declarations"      wisi-show-declaration-parents t]
-    ["Show references"               wisi-show-references          t]
-    ["Show overriding"               wisi-show-overriding          t]
-    ["Show overridden"               wisi-show-overridden          t]
+    ["Goto declaration/body"         wisi-goto-spec-body         wisi-parser-shared]
+    ["Goto next statement keyword"   forward-sexp   wisi-parser-shared]
+    ["Goto prev statement keyword"   backward-sexp   wisi-parser-shared]
+    ["Goto declarative region start" ada-goto-declarative-region-start   wisi-parser-shared]
+    ["Goto containing statement start" wisi-goto-containing-statement-start wisi-parser-shared]
+    ["Goto subprogram/package start" ada-goto-declaration-start    wisi-parser-shared]
+    ["Goto subprogram/package end"   ada-goto-declaration-end      wisi-parser-shared]
+    ["Show parent declarations"      wisi-show-declaration-parents (eq ada-xref-backend 'gpr_query)]
+    ["Show references"               wisi-show-references          (eq ada-xref-backend 'gpr_query)]
+    ["Show overriding"               wisi-show-overriding          (eq ada-xref-backend 'gpr_query)]
+    ["Show overridden"               wisi-show-overridden          (eq ada-xref-backend 'gpr_query)]
 
     ["-"                nil nil]
 
@@ -329,9 +316,9 @@ nil, only the file name."
     ["Adjust case region"	      wisi-case-adjust-region               (use-region-p)]
     ["Create full case exception"     wisi-case-create-exception         t]
     ["Create partial case exception"  wisi-case-create-partial-exception t]
-    ["Indent current statement"	      wisi-indent-statement             t]
+    ["Indent current statement"	      wisi-indent-statement             wisi-parser-shared]
     ["Expand skeleton"		      wisi-skel-expand                  t]
-    ["Make body for subprogram"	      ada-make-subprogram-body          t]
+    ["Make body for subprogram"	      ada-make-subprogram-body          wisi-parser-shared]
     ))
 
 (defun ada-popup-menu ()
@@ -479,34 +466,30 @@ Runs `ada-syntax-propertize-hook'."
   ;; (info "(elisp)Syntax Properties")
   ;;
   ;; called from `syntax-propertize', inside save-excursion with-silent-modifications
-  (let ((inhibit-read-only t)
-	(inhibit-point-motion-hooks t))
-    (goto-char start)
-    (save-match-data
-      (while (re-search-forward
-	      (concat
-	       "[^[:alnum:])]\\('\\)[^'\n]\\('\\)"; 1, 2: character literal, not attribute
-	       "\\|[^[:alnum:])]\\('''\\)"; 3: character literal '''
-	       )
-	      end t)
-	;; syntax-propertize-extend-region-functions is set to
-	;; syntax-propertize-wholelines by default. We assume no
-	;; coding standard will permit a character literal at the
-	;; start of a line (not preceded by whitespace).
-	(cond
-	 ((match-beginning 1)
-	  (put-text-property
-	   (match-beginning 1) (match-end 1) 'syntax-table '(7 . ?'))
-	  (put-text-property
-	   (match-beginning 2) (match-end 2) 'syntax-table '(7 . ?')))
-	 ((match-beginning 3)
-	  (put-text-property
-	   (match-beginning 3) (1+ (match-beginning 3)) 'syntax-table '(7 . ?'))
-	  (put-text-property
-	   (1- (match-end 3)) (match-end 3) 'syntax-table '(7 . ?')))
-	 )))
-    (run-hook-with-args 'ada-syntax-propertize-hook start end))
-  )
+  (goto-char start)
+  (while (re-search-forward
+	  (concat
+	   "[^[:alnum:])]\\('\\)[^'\n]\\('\\)"; 1, 2: character literal, not attribute
+	   "\\|[^[:alnum:])]\\('''\\)"; 3: character literal '''
+	   )
+	  end t)
+    ;; syntax-propertize-extend-region-functions is set to
+    ;; syntax-propertize-wholelines by default. We assume no
+    ;; coding standard will permit a character literal at the
+    ;; start of a line (not preceded by whitespace).
+    (cond
+     ((match-beginning 1)
+      (put-text-property
+       (match-beginning 1) (match-end 1) 'syntax-table '(7 . ?'))
+      (put-text-property
+       (match-beginning 2) (match-end 2) 'syntax-table '(7 . ?')))
+     ((match-beginning 3)
+      (put-text-property
+       (match-beginning 3) (1+ (match-beginning 3)) 'syntax-table '(7 . ?'))
+      (put-text-property
+       (1- (match-end 3)) (match-end 3) 'syntax-table '(7 . ?')))
+     ))
+  (run-hook-with-args 'ada-syntax-propertize-hook start end))
 
 ;;;; navigation within and between files
 
@@ -626,84 +609,96 @@ See `ff-other-file-alist'.")
 
 (defun ada-which-function (&optional include-type)
   "Return name of subprogram/task/package containing point.
-Also sets ff-function-name for ff-pre-load-hook."
+Also sets `ff-function-name' for `ff-pre-load-hook'."
   (interactive)
   ;; which-function-mode does not provide which-function to call
   ;; interactively!
 
   ;; Fail gracefully and silently, since this could be called from
   ;; which-function-mode.
-  (cond
-   (wisi-incremental-parse-enable
-    (ada-validate-enclosing-declaration nil 'navigate))
+  (cl-ecase ada-face-backend
+    (wisi
+     (cond
+      (wisi-incremental-parse-enable
+       (ada-validate-enclosing-declaration nil 'navigate))
 
-   (t
-    (wisi-validate-cache (max (point-min) (- (point) (/ ada-which-func-parse-size 2)))
-			 (min (point-max) (+ (point) (/ ada-which-func-parse-size 2)))
-			 nil
-			 'navigate)
+      (t
+       (wisi-validate-cache (max (point-min) (- (point) (/ ada-which-func-parse-size 2)))
+			    (min (point-max) (+ (point) (/ ada-which-func-parse-size 2)))
+			    nil
+			    'navigate)
+       ))
+
+     (save-excursion
+       (condition-case nil
+	   (let ((result nil)
+		 (cache (ada-goto-declaration-start-1 include-type)))
+	     (if (null cache)
+		 ;; bob or failed parse
+		 (setq result "")
+
+	       (when (memq (wisi-cache-nonterm cache)
+			   '(generic_package_declaration generic_subprogram_declaration))
+		 ;; name is after next statement keyword
+		 (setq cache (wisi-next-statement-cache cache)))
+
+	       ;; add or delete 'body' as needed
+	       (cl-ecase (wisi-cache-nonterm cache)
+		 ((entry_body entry_declaration)
+		  (setq result (ada-which-function-1 "entry" nil)))
+
+		 ((full_type_declaration private_type_declaration)
+		  (setq result (ada-which-function-1 "type" nil)))
+
+		 (package_body
+		  (setq result (ada-which-function-1 "package" nil)))
+
+		 ((package_declaration
+		   package_specification) ;; after 'generic'
+		  (setq result (ada-which-function-1 "package" t)))
+
+		 (protected_body
+		  (setq result (ada-which-function-1 "protected" nil)))
+
+		 ((protected_type_declaration single_protected_declaration)
+		  (setq result (ada-which-function-1 "protected" t)))
+
+		 ((abstract_subprogram_declaration
+		   expression_function_declaration
+		   subprogram_declaration
+		   subprogram_renaming_declaration
+		   generic_subprogram_declaration ;; after 'generic'
+		   null_procedure_declaration)
+		  (setq result (ada-which-function-1
+				(progn (search-forward-regexp "function\\|procedure")(match-string 0))
+				nil))) ;; no 'body' keyword in subprogram bodies
+
+		 ((subprogram_body subunit)
+		  (setq result (ada-which-function-1
+				(progn (search-forward-regexp "function\\|procedure")(match-string 0))
+				nil)))
+
+		 ((single_task_declaration task_type_declaration)
+		  (setq result (ada-which-function-1 "task" t)))
+
+
+		 (task_body
+		  (setq result (ada-which-function-1 "task" nil)))
+		 ))
+	     (when (called-interactively-p 'interactive)
+	       (message result))
+	     result)
+	 (error ""))))
+
+    (eglot
+     (when (eglot--server-capable :DocumentSymbol)
+	 ;; eglot/LSP maybe supports "which function" via DocumentSymbol, which
+	 ;; ada_language_server version 22 does not support.
+	 (display-warning 'ada "ada-mode which-function via eglot not yet implemented."))
+     )
+
+    (none "")
     ))
-
-  (save-excursion
-    (condition-case nil
-	(let ((result nil)
-	      (cache (ada-goto-declaration-start-1 include-type)))
-	  (if (null cache)
-	      ;; bob or failed parse
-	      (setq result "")
-
-	    (when (memq (wisi-cache-nonterm cache)
-			'(generic_package_declaration generic_subprogram_declaration))
-	      ;; name is after next statement keyword
-	      (setq cache (wisi-next-statement-cache cache)))
-
-	    ;; add or delete 'body' as needed
-	    (cl-ecase (wisi-cache-nonterm cache)
-	      ((entry_body entry_declaration)
-	       (setq result (ada-which-function-1 "entry" nil)))
-
-	      ((full_type_declaration private_type_declaration)
-	       (setq result (ada-which-function-1 "type" nil)))
-
-	      (package_body
-	       (setq result (ada-which-function-1 "package" nil)))
-
-	      ((package_declaration
-		package_specification) ;; after 'generic'
-	       (setq result (ada-which-function-1 "package" t)))
-
-	      (protected_body
-	       (setq result (ada-which-function-1 "protected" nil)))
-
-	      ((protected_type_declaration single_protected_declaration)
-	       (setq result (ada-which-function-1 "protected" t)))
-
-	      ((abstract_subprogram_declaration
-		expression_function_declaration
-		subprogram_declaration
-		subprogram_renaming_declaration
-		generic_subprogram_declaration ;; after 'generic'
-		null_procedure_declaration)
-	       (setq result (ada-which-function-1
-			     (progn (search-forward-regexp "function\\|procedure")(match-string 0))
-			     nil))) ;; no 'body' keyword in subprogram bodies
-
-	      ((subprogram_body subunit)
-	       (setq result (ada-which-function-1
-			     (progn (search-forward-regexp "function\\|procedure")(match-string 0))
-			     nil)))
-
-	      ((single_task_declaration task_type_declaration)
-	       (setq result (ada-which-function-1 "task" t)))
-
-
-	      (task_body
-	       (setq result (ada-which-function-1 "task" nil)))
-	      ))
-	  (when (called-interactively-p 'interactive)
-	    (message result))
-	  result)
-      (error ""))))
 
 (defun ada-add-log-current-function ()
   "For `add-log-current-defun-function'."
@@ -718,35 +713,33 @@ Also sets ff-function-name for ff-pre-load-hook."
 (defun ada-on-context-clause ()
   "Return non-nil if point is on a context clause."
   (interactive)
-  (let (cache)
-    (save-excursion
-      ;; Don't require parse of large file just for ada-find-other-file
-      (and (< (point-max) wisi-size-threshold)
-	   (setq cache (wisi-goto-statement-start))
-	   (memq (wisi-cache-nonterm cache) '(use_clause with_clause))
-	   ))))
+  (and wisi-parser-shared
+       (save-excursion
+	 (memq (wisi-cache-nonterm (wisi-goto-statement-start)) '(use_clause with_clause))
+	 )))
 
 (defun ada-goto-subunit-name ()
   "Return non-nil if the current buffer contains a subunit.
 Also move point to the subunit name. If no subunit, leave point
 alone, return nil."
   (interactive)
-  (wisi-validate-cache (point-min) (point-max) t 'navigate)
+  (when wisi-parser-shared
+    (wisi-validate-cache (point-min) (point-max) t 'navigate)
 
-  (let (cache
-	(name-pos nil))
-    (save-excursion
-      ;; move to top declaration
-      (goto-char (point-min))
-      (setq cache (or (wisi-get-cache (point))
-		      (wisi-forward-cache)))
+    (let (cache
+	  (name-pos nil))
+      (save-excursion
+	;; move to top declaration
+	(goto-char (point-min))
+	(setq cache (or (wisi-get-cache (point))
+			(wisi-forward-cache)))
 
-      (when (eq (wisi-cache-nonterm cache) 'subunit)
-	(setq name-pos (car (wisi-next-name-region))))
-      )
-    (when name-pos
-      (goto-char name-pos))
-    ))
+	(when (eq (wisi-cache-nonterm cache) 'subunit)
+	  (setq name-pos (car (wisi-next-name-region))))
+	)
+      (when name-pos
+	(goto-char name-pos))
+      )))
 
 (defun ada-set-point-accordingly ()
   "Move to the string specified in `ff-function-name', which may be a regexp,
@@ -871,14 +864,14 @@ compiler-specific compilation filters."
   (let ((start-buffer (current-buffer))
 	pos item file)
     (when (eq major-mode 'compilation-mode)
-      (setq compilation-last-buffer (current-buffer)))
+      (setq next-error-last-buffer (current-buffer)))
     ;; We use `pop-to-buffer', not `set-buffer', so point is correct
-    ;; for the current window showing compilation-last-buffer, and
+    ;; for the current window showing next-error-last-buffer, and
     ;; moving point in that window works. But that might eat an
     ;; `other-frame-window-mode' prefix, which the user means to apply
     ;; to ’ada-goto-source’ below; disable that temporarily.
     (let ((display-buffer-overriding-action nil))
-      (pop-to-buffer compilation-last-buffer nil t)
+      (pop-to-buffer next-error-last-buffer nil t)
       (setq pos (next-single-property-change (point) 'ada-secondary-error))
       (unless pos
 	;; probably at end of compilation-buffer, in new compile
@@ -960,6 +953,8 @@ compiler-specific compilation filters."
 subprogram, or task declaration point is currently in or just
 after.  For `beginning-of-defun-function'."
   (interactive)
+  (unless wisi-parser-shared
+    (user-error "goto-declaration-* not supported by this parser; add use clause manually"))
   (push-mark)
   (ada-validate-enclosing-declaration t 'navigate)
   (ada-goto-declaration-start-1 include-type))
@@ -1064,35 +1059,28 @@ The ident for the paragraph is taken from the first line."
 
 ;;;; support for font-lock.el
 
-(defconst ada-83-keywords
-  '("abort" "abs" "accept" "access" "all" "and" "array" "at" "begin"
+(defconst ada-keywords
+  '(;; Ada 83:
+    "abort" "abs" "accept" "access" "all" "and" "array" "at" "begin"
     "body" "case" "constant" "declare" "delay" "delta" "digits" "do"
     "else" "elsif" "end" "entry" "exception" "exit" "for" "function"
     "generic" "goto" "if" "in" "is" "limited" "loop" "mod" "new"
     "not" "null" "of" "or" "others" "out" "package" "pragma" "private"
     "procedure" "raise" "range" "record" "rem" "renames" "return"
     "reverse" "select" "separate" "subtype" "task" "terminate" "then"
-    "type" "use" "when" "while" "with" "xor")
-  "List of Ada 83 keywords.")
-
-(defconst ada-95-keywords
-  '("abstract" "aliased" "protected" "requeue" "tagged" "until")
-  "List of keywords new in Ada 95.")
-
-(defconst ada-2005-keywords
-  '("interface" "overriding" "synchronized")
-  "List of keywords new in Ada 2005.")
-
-(defconst ada-2012-keywords
-  '("some")
-  "List of keywords new in Ada 2012.")
-
-(defvar ada-keywords nil
-  "List of Ada keywords for current `ada-language-version'.")
+    "type" "use" "when" "while" "with" "xor"
+    ;; Ada 95:
+    "abstract" "aliased" "protected" "requeue" "tagged" "until"
+    ;; Ada 2001
+    "interface" "overriding" "synchronized"
+    ;; Ada 2012:
+    "some"
+    ;; Ada 2022:
+    "parallel")
+  "List of Ada keywords.")
 
 (defun ada-font-lock-keywords ()
-  "Return Ada mode value for `font-lock-keywords',
-Depends on `ada-language-version'."
+  "Return Ada mode value for `font-lock-keywords'."
    ;; Grammar actions set `font-lock-face' property for all
    ;; non-keyword tokens that need it.
   (list
@@ -1588,6 +1576,12 @@ Prompts with completion, defaults to filename at point."
 (defvar which-func-functions) ;; which-func.el
 (defvar which-func-non-auto-modes) ;; ""
 
+(defvar ada-other-backend-setup-function nil
+  "When non-nil, called with no args from ada-mode if any of
+`ada-face-backend',
+`ada-indent-backend', `ada-xref-backend' are set to other.
+See `ada-eglot-setup' in ada-eglot.el for a similar function.")
+
 ;;;###autoload
 (cl-defun ada-parse-require-process (&key wait)
   "Start the Ada parser in an external process, if not already started.
@@ -1611,7 +1605,6 @@ Unless WAIT, does not wait for parser to respond. Returns the parser object."
   :group 'ada
 
   (set (make-local-variable 'syntax-propertize-function) 'ada-syntax-propertize)
-  (syntax-ppss-flush-cache (point-min));; reparse with new function
 
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
@@ -1626,18 +1619,11 @@ Unless WAIT, does not wait for parser to respond. Returns the parser object."
   ;; indent-region to use it for all indentation. See
   ;; ada-fill-comment-paragraph.
 
-  ;; AdaCore standard style (enforced by -gnaty) requires two spaces
-  ;; after '--' in comments; this makes it easier to distinguish
-  ;; special comments that have something else after '--'
-  (set (make-local-variable 'comment-padding) "  ")
-
-  (set (make-local-variable 'require-final-newline) t)
-
   (setq font-lock-defaults
 	'(ada-font-lock-keywords ;; keywords
-	  nil ;; keywords-only; font-lock set comment, string faces
+	  nil ;; keywords-only; font-lock does keywords, comment, string faces via regexp. parser does identifiers.
 	  t ;; case-fold
-	  ((?\_ . "w")))); treat underscore as a word component
+	  )); treat underscore as a word component
 
   (set (make-local-variable 'ff-other-file-alist)
        'ada-other-file-alist)
@@ -1669,9 +1655,6 @@ Unless WAIT, does not wait for parser to respond. Returns the parser object."
   (set (make-local-variable 'align-region-separate) ada-align-region-separate)
   (set (make-local-variable 'align-indent-before-aligning) t)
 
-  (set (make-local-variable 'beginning-of-defun-function) #'ada-goto-declaration-start)
-  (set (make-local-variable 'end-of-defun-function) #'ada-goto-declaration-end)
-
   ;; Exclude comments alone on line from alignment.
   (add-to-list 'align-exclude-rules-list
 	       '(ada-solo-comment
@@ -1684,58 +1667,46 @@ Unless WAIT, does not wait for parser to respond. Returns the parser object."
 
   (setq align-mode-rules-list ada-align-rules)
 
-  (wisi-setup
-   :indent-calculate '(ada-wisi-comment)
-   :post-indent-fail 'ada-wisi-post-indent-fail
-   :parser (ada-parse-require-process))
-
   (setq wisi-prj-parse-undefined-function #'ada-prj-parse-undefined)
   (setq wisi-xref-full-path ada-xref-full-path)
 
+  ;; Startup cases:
+  ;;
+  ;; 1) Newbie or small project; no wisi project, no gpr
+  ;; file. ada-*-background set by default from presence of als,
+  ;; ada_mode_wisi_parse, gpr_query.  Start eglot in ada-mode,
+  ;; ada-mode-hook, or ada-mode-post-local-vars.
+  ;;
+  ;; 2) ada-*-background set in dir-local vars or by default, wisi
+  ;; project with or without gpr file declared via wisi-select-* in
+  ;; dir-local vars. Start eglot in wisi-select-prj.
+  ;;
+  ;; 3) ada-*-background, wisi project declared in Makefile or
+  ;; elsewhere before Ada files opened; start eglot in
+  ;; wisi-select-prj.
+  ;;
+  ;; In order to accomodate 1 and 2, we call ada-eglot-setup and wisi-setup in
+  ;; ada-mode-post-local-vars.
   (add-hook 'hack-local-variables-hook #'ada-mode-post-local-vars nil t)
   )
 
 (defun ada-mode-post-local-vars ()
-  ;; These are run after ada-mode-hook and file local variables
+  ;; These are run after ada-mode-hook and file/dir local variables
   ;; because users or *.ad? files might set the relevant
-  ;; variable inside the hook or file local variables.
+  ;; variable inside the hook or local variables.
 
   ;; This means to fully set ada-mode interactively, user must
   ;; do M-x ada-mode M-; (hack-local-variables)
 
   (remove-hook 'hack-local-variables-hook #'ada-mode-post-local-vars)
 
+  ;;; Handle variables that can easily be file-specific.
+
   ;; fill-region-as-paragraph in ada-fill-comment-paragraph does not
   ;; call syntax-propertize, so set comment syntax on
   ;; ada-fill-comment-prefix. In post-local because user may want to
   ;; set it per-file.
   (put-text-property 0 2 'syntax-table '(11 . nil) ada-fill-comment-prefix)
-
-  (cl-case ada-language-version
-   (ada83
-    (setq ada-keywords ada-83-keywords))
-
-   (ada95
-    (setq ada-keywords
-	  (append ada-83-keywords
-		  ada-95-keywords)))
-
-   (ada2005
-    (setq ada-keywords
-	  (append ada-83-keywords
-		  ada-95-keywords
-		  ada-2005-keywords)))
-   (ada2012
-    (setq ada-keywords
-	  (append ada-83-keywords
-		  ada-95-keywords
-		  ada-2005-keywords
-		  ada-2012-keywords))))
-
-  (when global-font-lock-mode
-    ;; This calls ada-font-lock-keywords, which depends on
-    ;; ada-keywords
-    (font-lock-refresh-defaults))
 
   (setq wisi-indent-comment-col-0 ada-indent-comment-col-0)
 
@@ -1745,6 +1716,48 @@ Unless WAIT, does not wait for parser to respond. Returns the parser object."
   (setq wisi-language-keywords ada-keywords)
   (setq wisi-case-keyword ada-case-keyword)
   (setq wisi-case-adjust-p-function #'ada-case-adjust-p)
+
+  ;;; See comment in ada-mode on startup cases for rationale on doing
+  ;;; ada-eglot-setup here.
+
+  (setq-local wisi-disable-parser nil)
+
+  (when (or (eq ada-xref-backend   'eglot)
+	    (eq ada-indent-backend 'eglot)
+	    (eq ada-face-backend   'eglot))
+    (require 'ada-eglot)
+    (when (fboundp 'ada-eglot-setup)
+      (ada-eglot-setup)))
+
+  (when (or (eq ada-xref-backend   'other)
+	    (eq ada-indent-backend 'other)
+	    (eq ada-face-backend   'other))
+    (when ada-other-backend-setup-function
+      (funcall ada-other-backend-setup-function)))
+
+  ;; We want at least one warning for missing ada-process-parse-exec,
+  ;; to give users a reminder to build/install it. But avoid that
+  ;; warning for users using eglot; ada-eglot-setup sets
+  ;; wisi-disable-parser if the wisi parser is not needed.
+  ;;
+  (unless wisi-disable-parser
+    (unless (executable-find ada-process-parse-exec)
+	(display-warning
+	 'ada
+	 (format "Ada parser exec '%s' not found; install it, or set ada-*-backend to eglot."
+		 ada-process-parse-exec))
+	(setq-local wisi-disable-parser t)))
+
+  ;; wisi-setup tolerates parser nil.
+  (wisi-setup
+   :indent-calculate '(ada-wisi-comment)
+   :post-indent-fail 'ada-wisi-post-indent-fail
+   :parser (unless wisi-disable-parser (ada-parse-require-process)))
+
+  (when wisi-parser-shared
+    (setq-local beginning-of-defun-function #'ada-goto-declaration-start)
+    (setq-local end-of-defun-function #'ada-goto-declaration-end))
+
   )
 
 (put 'ada-mode 'custom-mode-group 'ada)

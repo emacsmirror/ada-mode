@@ -63,10 +63,9 @@ package body WisiToken.Parse.LR.McKenzie_Recover.Ada is
    procedure Handle_In_Parse_Action_Fail
      (Super             : in out WisiToken.Parse.LR.McKenzie_Recover.Base.Supervisor;
       Shared_Parser     : in out Parser.Parser;
-      Parser_Index      : in              SAL.Peek_Type;
-
-      Local_Config_Heap : in out          Config_Heaps.Heap_Type;
-      Config            : in              Configuration)
+      Parser_Index      : in     SAL.Peek_Type;
+      Local_Config_Heap : in out Config_Heaps.Heap_Type;
+      Config            : in     Configuration)
    with Pre => Config.In_Parse_Action_Status.Label /= Ok
    is
       use Syntax_Trees;
@@ -581,6 +580,12 @@ package body WisiToken.Parse.LR.McKenzie_Recover.Ada is
             New_Config.Strategy_Counts (Language_Fix) := New_Config.Strategy_Counts (Language_Fix) + 1;
 
             case To_Token_Enum (Tree.Element_ID (Config.Error_Token)) is
+            when accept_statement_ID =>
+               Push_Back_Check
+                 (Super, Shared_Parser, New_Config,
+                  (+SEMICOLON_ID, +identifier_opt_ID, +END_ID),
+                  Push_Back_Undo_Reduce => True);
+
             when block_statement_ID =>
                Push_Back_Check
                  (Super, Shared_Parser, New_Config,

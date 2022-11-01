@@ -37,32 +37,24 @@
 %meta_syntax EBNF
 
 %code copyright_license %{
-;;  Copyright (C) 2013 - 2022 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2022 Free Software Foundation, Inc.
 
-;;  This program is free software; you can redistribute it and/or
-;;  modify it under the terms of the GNU General Public License as
-;;  published by the Free Software Foundation; either version 3, or (at
-;;  your option) any later version.
-;;
-;;  This software is distributed in the hope that it will be useful,
-;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;;  General Public License for more details.
-;;
-;;  You should have received a copy of the GNU General Public License
-;;  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-}%
-
-%code actions spec post
-%{
-   Partial_Parse_Active    : aliased Boolean := False;
-   Partial_Parse_Byte_Goal : aliased WisiToken.Buffer_Pos := WisiToken.Buffer_Pos'Last;
+--  This program is free software; you can redistribute it and/or
+--  modify it under the terms of the GNU General Public License as
+--  published by the Free Software Foundation; either version 3, or (at
+--  your option) any later version.
+--
+--  This software is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+--  General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 }%
 
 %generate LALR Ada_Emacs re2c Process
 %generate LR1 Ada_Emacs text_rep re2c Process
-
-%lr1_hash_table_size 124_087
 
 %language_runtime "Wisi.Ada"
 
@@ -1035,7 +1027,7 @@ iterated_element_association
                                ada-indent-broken]))%
   ;
 
-AND_relation_list ;;:new, split out from expression for action. FIXME: put back
+AND_relation_list ;;:new, split out from expression for action.
   : 'and' relation
   | AND_relation_list 'and' relation
   ;
@@ -2367,7 +2359,8 @@ exception_handler_list ;;:new for pragma, action
   : exception_handler
   | pragma_g ;;:new for pragma
   | exception_handler_list exception_handler
-    %((wisi-motion-action [1 2]))%
+    %((wisi-statement-action [1 motion 2 motion])
+      (wisi-motion-action [1 2]))%
   ;
 
 handled_sequence_of_statements

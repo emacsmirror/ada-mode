@@ -18,7 +18,6 @@
 
 pragma License (GPL);
 
-with Ada_Annex_P_Process_Actions;
 with Ada_Annex_P_Process_LR1_Main;
 with Gen_Emacs_Wisi_LR_Text_Rep_Parse;
 with WisiToken.Parse.LR.McKenzie_Recover.Ada;
@@ -27,13 +26,8 @@ procedure Ada_Mode_Wisi_LR1_Parse is new Gen_Emacs_Wisi_LR_Text_Rep_Parse
   (Parse_Data_Type                => Wisi.Ada.Parse_Data_Type,
    Name                           => "Ada_mode_wisi_lr1_parse",
    Language_Protocol_Version      => Wisi.Ada.Language_Protocol_Version,
-   Descriptor                     => Ada_Annex_P_Process_Actions.Descriptor'Access,
-   Partial_Parse_Active           => Ada_Annex_P_Process_Actions.Partial_Parse_Active'Access,
-   Partial_Parse_Byte_Goal        => Ada_Annex_P_Process_Actions.Partial_Parse_Byte_Goal'Access,
    Language_Fixes                 => WisiToken.Parse.LR.McKenzie_Recover.Ada.Language_Fixes'Access,
    Language_Matching_Begin_Tokens => WisiToken.Parse.LR.McKenzie_Recover.Ada.Matching_Begin_Tokens'Access,
    Language_String_ID_Set         => WisiToken.Parse.LR.McKenzie_Recover.Ada.String_ID_Set'Access,
    Text_Rep_File_Name             => "ada_annex_p_lr1_parse_table.txt",
-   Create_Lexer                   => Ada_Annex_P_Process_LR1_Main.Create_Lexer,
-   Create_Parse_Table             => Ada_Annex_P_Process_LR1_Main.Create_Parse_Table,
-   Create_Productions             => Ada_Annex_P_Process_LR1_Main.Create_Productions);
+   Create_Parser                  => Ada_Annex_P_Process_LR1_Main.Create_Parser);

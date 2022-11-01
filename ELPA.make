@@ -6,19 +6,11 @@
 
 all : build_executables byte-compile
 
-Makefile.conf : create_makefile_conf.sh
-	$(SHELL) -c ./create_makefile_conf.sh
-
-include Makefile.conf
-
-build_executables : ada_mode_wisi_parse.gpr gpr_re2c.c ada_annex_p_re2c.c force
+build_executables : ada_annex_p_re2c.c force
 	gprbuild -p -j8 ada_mode_wisi_parse.gpr
 
 ../wisi/wisi.gpr : ../wisi/wisi.gpr.gp
 	gnatprep -DELPA="yes" ../wisi/wisi.gpr.gp ../wisi/wisi.gpr
-
-ada_mode_wisi_parse.gpr : ada_mode_wisi_parse.gpr.gp ../wisi/wisi.gpr
-	gnatprep -DELPA="yes" -DHAVE_GNAT_UTIL=$(HAVE_GNAT_UTIL) -DHAVE_LIBADALANG=$(HAVE_LIBADALANG) $< $@
 
 %.re2c : %.wy ../wisi/wisitoken-bnf-generate
 	../wisi/wisitoken-bnf-generate $(<F)
@@ -31,10 +23,11 @@ ada_mode_wisi_parse.gpr : ada_mode_wisi_parse.gpr.gp ../wisi/wisi.gpr
 ../wisi/wisitoken-bnf-generate : ../wisi/wisi.gpr force
 	cd ../wisi; gprbuild -p -j8 -P wisi.gpr wisitoken-bnf-generate
 
-BYTE_COMPILE := "(progn (setq package-load-list '((wisi) (ada-mode) all)) (package-initialize)(setq byte-compile-error-on-warn t)(batch-byte-compile))"
+BYTE_COMPILE := "(progn (setq package-load-list '((wisi) (ada-mode) (gnat-compiler) all)) (package-initialize)(setq byte-compile-error-on-warn t)(batch-byte-compile))"
 byte-compile : byte-compile-clean
 	cd ../wisi; emacs -Q -batch -L . --eval $(BYTE_COMPILE) *.el
-	emacs -Q -batch -L . -L ../wisi  --eval $(BYTE_COMPILE) *.el
+	cd ../gnat-compiler; emacs -Q -batch -L . -L ../wisi --eval $(BYTE_COMPILE) *.el
+	emacs -Q -batch -L . -L ../wisi -L ../gnat-compiler --eval $(BYTE_COMPILE) *.el
 
 byte-compile-clean :
 	cd ..; rm -f *.elc
