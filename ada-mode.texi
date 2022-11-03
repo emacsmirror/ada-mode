@@ -62,7 +62,7 @@ Ada Mode Version 8.0.2
 
 Overview
 
-* wisi parser vs LSP::
+* wisi parser vs LSP vs ...::
 * Supported features::
 
 Installation
@@ -96,10 +96,6 @@ Project files
 
 * Project file overview::
 * Project file variables::
-
-Indentation
-
-* Ada-specific indent functions::
 
 Developer overview
 
@@ -145,7 +141,7 @@ tools.
 information on debugging.
 
 @menu
-* wisi parser vs LSP::
+* wisi parser vs LSP vs ...::
 * Supported features::
 @end menu
 
@@ -316,11 +312,12 @@ Alire packages several recent versions of the FSF compiler. It is used
 by all Alire build commands. The versions available can be listed by:
 @example
 alr toolchain
-@end table
+@end example
 
 The compiler can be installed for external use by:
 @example
 alr toolchain --install <version> --install-dir <prefix>
+@end example
 @end table
 
 Sometimes compiler versions change what code they accept, particularly

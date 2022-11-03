@@ -6,7 +6,7 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 8.0.2
+;; Version: 8.0.3
 ;; package-requires: ((uniquify-files "1.0.1") (wisi "4.1.1") (gnat-compiler "1.0.0") (emacs "25.3"))
 ;; url: http://www.nongnu.org/ada-mode/
 ;;
