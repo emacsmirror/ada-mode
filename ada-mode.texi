@@ -554,7 +554,7 @@ names, and the extension for specs and bodies are
 @samp{.ads} and @samp{.adb}, respectively.
 
 Emacs uses the file extension to enable Ada mode; Ada mode uses the
-file extentions to allow moving from a package body to the
+file extensions to allow moving from a package body to the
 corresponding spec and back.
 
 Emacs and Ada mode support ways to use alternative file extensions for
@@ -1143,7 +1143,7 @@ You can create a casing exception by editing the file directly, or via
 the @code{Ada | Casing} menu.
 
 @code{gpr_project_path} and @code{casing} are list variables; each
-occurence in a wisi project file adds an entry to the list.
+occurrence in a wisi project file adds an entry to the list.
 
 In addition, create a directory @file{Example_4/More},
 containing these files:
@@ -1553,7 +1553,7 @@ menu commands:
 
 @table @asis
 @item @code{check_cmd} [default: @code{ada-build-check-cmd}]
-Compiler commannd to syntax check a single file.
+Compiler command to syntax check a single file.
 
 @item @code{main} [default: basename of current file name]
 File name of executable to build.
@@ -1732,7 +1732,7 @@ can also configure the indentation, via the following variables:
 Number of columns for default indentation.
 
 @item @code{ada-indent-after-trailing-comment} (default value t)
-If t, align comment lines imediately following a comment on the
+If t, align comment lines immediately following a comment on the
 same line as code with the preceding comment. Otherwise, ignore
 the preceding comment.
 

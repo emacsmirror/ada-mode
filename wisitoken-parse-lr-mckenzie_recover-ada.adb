@@ -445,7 +445,7 @@ package body WisiToken.Parse.LR.McKenzie_Recover.Ada is
                   Delete_Check
                     (Super, Shared_Parser, New_Config, (+END_ID, Tree.Element_ID (Keyword_Item.Token), +SEMICOLON_ID));
                else
-                  --  We don't need to delete the identifier|name ; it is missing and therefor empty.
+                  --  We don't need to delete the identifier|name ; it is missing and therefore empty.
                   Delete_Check (Super, Shared_Parser, New_Config, (+END_ID, +SEMICOLON_ID));
                end if;
 
@@ -1161,7 +1161,7 @@ package body WisiToken.Parse.LR.McKenzie_Recover.Ada is
          --  d: There is a missing matching component_statement start
          --
          --  We can't reliably distinguish between a: and b:, so we do both. c:
-         --  is distinquished by the minimal action being 'reduce to name'. d:
+         --  is distinguished by the minimal action being 'reduce to name'. d:
          --  is distinguished by searching for an open matching
          --  component_statement start.
 

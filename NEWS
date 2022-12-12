@@ -340,7 +340,7 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
   point.
 
 ** New indent option: 'ada-indent-after-trailing-comment' If t (the
- default), align comment lines imediately following a comment on the
+ default), align comment lines immediately following a comment on the
  same line as code with the preceding comment. Otherwise, ignore the
  preceding comment.
 
@@ -360,7 +360,7 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 17 Nov 2018
 
 ** Use wisi 2.0; indentation computed directly in parser actions. This
-   has a few user visible changes in indention, making it more
+   has a few user visible changes in indentation, making it more
    consistent. It also makes it faster, so larger files are handled
    more smoothly.
 
@@ -482,7 +482,7 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
    identifier (ie +Tree).
 
 ** When a 'use type' clause is inserted by the compile error
-   correction code, 'use all type' is inserted if the lanuage version
+   correction code, 'use all type' is inserted if the language version
    is 2012 (the default).
 
 ** The context menu is simplified.

@@ -130,7 +130,7 @@ declarative region start, goto containing region start."
     ;; where point is in the whitespace or comment before a block; we
     ;; want the containing block, not the next block.
     ;;
-    ;; The typical use case for calling this fuction is to add a
+    ;; The typical use case for calling this function is to add a
     ;; use_clause for an identifier/operator at start-pos.
 
     (while (not done)
@@ -414,7 +414,7 @@ excluding leading pragmas."
 
 (defun ada-fix-sort-context-pred (a b)
   "Predicate for `sort-subr'; sorts \"limited with\", \"private with\" last.
-Returns non-nil if a should preceed b in buffer."
+Returns non-nil if a should precede b in buffer."
   ;; a, b are buffer ranges in the current buffer
   (cl-flet
       ((starts-with
@@ -758,7 +758,7 @@ Deselects the current project first."
 (make-obsolete 'ada-select-prj-file 'wisi-prj-select-cache "ada-mode 7.0")
 
 (cl-defmethod wisi-prj-identifier-at-point ((_project ada-prj))
-  ;; Handle adjacent operator/identifer like:
+  ;; Handle adjacent operator/identifier like:
   ;; test/ada_mode-slices.adb
   ;;   D1, D2 : Day := +Sun;
   ;;

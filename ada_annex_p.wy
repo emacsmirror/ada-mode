@@ -130,7 +130,7 @@ tick : TICK_1 | TICK_2 ;
 %non_grammar <comment-new-line> GNAT_PREP_END_IF "#end if"
 
 ;; skeleton placeholders. Also terminated by newline, EOI to avoid
-;; accidently commenting out multiple lines.
+;; accidentally commenting out multiple lines.
 %non_grammar <comment-one-line> PLACEHOLDER "{" "}"
 
 ;; git conflict marks. ada_mode-recover_conflict_marks.adb
@@ -1711,7 +1711,7 @@ extended_return_object_declaration
 
 extended_return_statement
   : 'return' extended_return_object_declaration ['do' handled_sequence_of_statements 'end' 'return'] ';'
-    ;; indent the same as a simple return statment
+    ;; indent the same as a simple return statement
     ;; test/ada_mode-nominal.adb
     ;; return B : Integer :=
     ;;   (Local_Function);

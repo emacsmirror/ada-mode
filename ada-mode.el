@@ -1685,7 +1685,7 @@ Unless WAIT, does not wait for parser to respond. Returns the parser object."
   ;; elsewhere before Ada files opened; start eglot in
   ;; wisi-select-prj.
   ;;
-  ;; In order to accomodate 1 and 2, we call ada-eglot-setup and wisi-setup in
+  ;; In order to accommodate 1 and 2, we call ada-eglot-setup and wisi-setup in
   ;; ada-mode-post-local-vars.
   (add-hook 'hack-local-variables-hook #'ada-mode-post-local-vars nil t)
   )
