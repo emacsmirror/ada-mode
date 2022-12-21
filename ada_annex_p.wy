@@ -32,7 +32,7 @@
 ;;
 ;; See ada_license.text for ARM Annex P copyright/license.
 ;;
-;; re2c lexer syntax: http://re2c.org/
+;; re2c lexer syntax: https://re2c.org/
 
 %meta_syntax EBNF
 
@@ -50,7 +50,7 @@
 --  General Public License for more details.
 --
 --  You should have received a copy of the GNU General Public License
---  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+--  along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 }%
 
 %generate LALR Ada_Emacs re2c Process

@@ -8,7 +8,7 @@
 ;;  ada
 ;; Version: 8.0.3
 ;; package-requires: ((uniquify-files "1.0.1") (wisi "4.1.1") (gnat-compiler "1.0.0") (emacs "25.3"))
-;; url: http://www.nongnu.org/ada-mode/
+;; url: https://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
 ;;
@@ -23,7 +23,7 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Usage:
 ;;
