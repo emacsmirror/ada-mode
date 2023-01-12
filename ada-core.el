@@ -1,6 +1,6 @@
 ;;; ada-core.el --- core facilities for ada-mode -*- lexical-binding:t -*-
 
-;; Copyright (C) 1994, 1995, 1997 - 2017, 2019 - 2022  Free Software Foundation, Inc.
+;; Copyright (C) 1994, 1995, 1997 - 2017, 2019 - 2023  Free Software Foundation, Inc.
 ;;
 ;; Author: Stephen Leake <stephen_leake@member.fsf.org>
 ;; Maintainer: Stephen Leake <stephen_leake@member.fsf.org>
@@ -35,21 +35,30 @@
 
 (defcustom ada-fix-sort-context-clause t
   "*If non-nil, sort context clause when inserting `with'"
-  :type 'boolean
-  :group 'ada)
+  :type 'boolean)
 
 (defcustom ada-process-parse-exec "ada_mode_wisi_lr1_parse"
   "Name of executable to use for external process Ada parser.
 There are two standard choices; ada_mode_wisi_lalr_parse and
 ada_mode_wisi_lr1_parse. The LR1 version (the default) is
 slower to load on first use, but gives better error recovery."
-  :type 'string
-  :group 'ada)
+  :type 'string)
 
 (defcustom ada-process-parse-exec-opts nil
   "List of process start options for `ada-process-parse-exec'."
-  :type 'string
-  :group 'ada)
+  :type 'string)
+
+;; We don't autoload ada-*-backend, because that would mean computing
+;; the default value before the user has a chance to set variables
+;; that affect it.
+(defcustom ada-diagnostics-backend
+  (cond
+   ((locate-file ada-process-parse-exec exec-path '("" ".exe")) 'wisi)
+   ((gnat-find-als nil t) 'eglot)
+   (t 'none))
+  "Diagnostics (syntax errors) backend to use for Ada."
+  :type 'symbol
+  :options '(none eglot wisi other))
 
 (defcustom ada-face-backend
   (cond
@@ -59,8 +68,7 @@ slower to load on first use, but gives better error recovery."
   "Face backend to use for Ada."
   ;; Could be extended to tree-sitter, lsp-mode ...; use `other' for that.
   :type 'symbol
-  :options '(none eglot wisi other)
-  :group 'ada)
+  :options '(none eglot wisi other))
 
 (defcustom ada-indent-backend
   (cond
@@ -69,8 +77,24 @@ slower to load on first use, but gives better error recovery."
    (t 'none))
   "Indent backend to use for Ada."
   :type 'symbol
-  :options '(none eglot wisi other)
-  :group 'ada)
+  :options '(none eglot wisi other))
+
+(defcustom ada-statement-backend
+  (cond
+   ((locate-file ada-process-parse-exec exec-path '("" ".exe")) 'wisi)
+   (t 'none))
+  "Statement motion backend to use for Ada."
+  :type 'symbol
+  ;; LSP does not support this; need full access to the syntax tree.
+  :options '(none wisi other))
+
+(defcustom ada-eglot-gpr-file nil
+  "Specify a gpr file to use, when not using a wisi project.
+If the file requires setting GPR_PROJECT_PATH, use a wisi project
+or set it globally."
+  :type 'string
+  :safe (lambda (val) (or (null val) (stringp val)))
+  :group 'ada-mode)
 
 (defconst ada-operator-re
   "\\+\\|-\\|/\\|\\*\\*\\|\\*\\|=\\|&\\|\\_<\\(abs\\|mod\\|rem\\|and\\|not\\|or\\|xor\\)\\_>\\|<=\\|<\\|>=\\|>"
@@ -214,7 +238,7 @@ declarative region start, goto containing region start."
 	       ((protected_type_declaration single_protected_declaration single_task_declaration task_type_declaration)
 		(while (not (eq 'IS (wisi-cache-token cache)))
 		  (setq cache (wisi-next-statement-cache cache)))
-		(when (looking-at "\<new\>")
+		(when (looking-at "\\<new\\>")
 		  (while (not (eq 'WITH (wisi-cache-token cache)))
 		    (setq cache (wisi-next-statement-cache cache))))
 
@@ -382,7 +406,7 @@ PARSE-RESULT must be the result of `syntax-ppss'."
       (ada-refactor ada-refactor-format-paramlist)))
 
 ;;;; fix compiler errors
-  (defun ada-context-clause-region ()
+(defun ada-context-clause-region ()
     "Return the region containing the context clause for the current buffer,
 excluding leading pragmas."
     ;; FIXME: rename this - no 'fix'
@@ -527,9 +551,8 @@ sort-lines."
 (defun ada-make-subprogram-body ()
   "Convert subprogram specification after point into a subprogram body stub."
   (interactive)
-  (unless wisi-parser-shared
-    ;; eglot/lsp does not provide access to syntax tree
-    (user-error "ada-make-subprogram-body not supported by eglot/LSP"))
+  (when (eq ada-statement-backend 'none)
+    (user-error "ada-make-subprogram-body requires ada-statement-backend"))
   (wisi-goto-statement-start)
   ;; point is at start of subprogram specification;
 
@@ -584,10 +607,9 @@ sort-lines."
 		    (xref-label ada-xref-backend)
 		    source-path
 		    plist
-		    file-pred
 		    &aux
-		    (compiler (ada-prj-make-compiler compiler-label))
-		    (xref (ada-prj-make-xref xref-label))
+		    (compiler (wisi-prj-make-compiler compiler-label))
+		    (xref (wisi-prj-make-xref xref-label))
 		    (compile-env (ada-prj-check-env compile-env))
 		    )))
   compiler-label
@@ -605,8 +627,7 @@ sort-lines."
      (compiler-label ada-compiler)
      (xref-label ada-xref-backend)
      source-path
-     plist
-     file-pred)
+     plist)
   ;; We declare and autoload this because we can't autoload
   ;; make-ada-prj in emacs < 27. We can't use '(defalias
   ;; 'create-ada-prj 'make-ada-prj); then make-ada-prj is not defined
@@ -617,8 +638,7 @@ sort-lines."
    :compiler-label compiler-label
    :xref-label xref-label
    :source-path source-path
-   :plist plist
-   :file-pred file-pred))
+   :plist plist))
 
 (defun ada-prj-check-env (env)
   "Check that ENV has the proper structure; list of \"NAME=VALUE\".
@@ -674,17 +694,6 @@ If SRC-DIR is non-nil, use it as the default for project.source-path."
 
     project))
 
-;;;###autoload
-(defun ada-prj-make-compiler (label)
-  ;; We use the autoloaded constructor here
-  (funcall (intern (format "create-%s-compiler" (symbol-name label)))))
-
-(defun ada-prj-make-xref (label)
-  ;; We use the autoloaded constructor here
-  ;; No new require here.
-  (funcall (intern (format "create-%s-xref" (symbol-name label))))
-  )
-
 (defun ada-prj-require-prj ()
   "Return current `ada-prj' object.
 Throw an error if current project is not an ada-prj."
@@ -698,7 +707,7 @@ Throw an error if current project is not an ada-prj."
    ;; variable name alphabetical order
    ((string= name "ada_compiler")
     (let ((comp (intern value)))
-      (setf (ada-prj-compiler project) (ada-prj-make-compiler comp))))
+      (setf (ada-prj-compiler project) (wisi-prj-make-compiler comp))))
 
    ((string= name "obj_dir")
     (let ((obj-dir (plist-get (ada-prj-plist project) 'obj_dir)))
@@ -715,7 +724,7 @@ Throw an error if current project is not an ada-prj."
       (cond
        ((memq xref-label ada-xref-known-backends)
 	(setf (ada-prj-xref-label project) xref-label)
-	(setf (ada-prj-xref project) (ada-prj-make-xref xref-label)))
+	(setf (ada-prj-xref project) (wisi-prj-make-xref xref-label)))
 
        (t
 	(user-error "'%s' is not a recognized xref backend (must be one of %s)"
@@ -771,7 +780,7 @@ Deselects the current project first."
    ((wisi-in-string-p)
     ;; In an operator, or a string literal
     (let (start)
-      (skip-chars-backward "+*/&<>=-andxorme") ;; Ada operator string content (see ada-operator-re).
+      (skip-chars-backward "-+*/&<>=andxorme") ;; Ada operator string content (see ada-operator-re).
       (setq start (point))
       (cond
        ((and (= (char-before) ?\")

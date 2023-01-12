@@ -6,7 +6,8 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
-* Ada Mode 8.0.2
+Ada Mode 8.0.3
+6 Jan 2023
 
 ** Support building ada-mode parser with Alire.
 
@@ -19,7 +20,8 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 
 ** ada-xref-tool renamed to ada-xref-backend; now supports choice eglot.
 
-** New user configuration variables; ada-indent-backend, ada-face-backend.
+** New user configuration variables; ada-diagnostics-backend,
+   ada-face-backend, ada-indent-backend, ada-statement-backend.
 
 ** Declared user configuration variable ada-language-version obsolete;
    it is no longer used (Ada 2022 is assumed).

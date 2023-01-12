@@ -6,7 +6,7 @@
 ;; Keywords: syntax
 ;;
 ;;  Copied from Ada Language Reference Manual Annex P
-;;  (http://www.ada-auth.org/standards/ada2x.html), minimal changes
+;;  (https://www.ada-auth.org/standards/ada2x.html), minimal changes
 ;;  made to conform with WisiToken requirements.
 
 ;;  Changes from Annex P:
@@ -109,9 +109,10 @@
   "'"
 tick : TICK_1 | TICK_2 ;
 
-;; Handle 0.0, (1..Length) and 0..16#10FFFF#
+;; Handle floating, fixed, exponent, special cases 0.0, (1..Length)
+;; and 0..16#10FFFF#
 %token <regexp> NUMERIC_LITERAL
-    %[ ([0-9])|([0-9_]+([.][0-9]+)?([eE[0-9_-]+)?)|([0-9]+"#"[0-9a-fA-F._-]+"#") ]%
+    %[ ([0-9])|([0-9_]+([.][0-9]+)?([eE][0-9_-]+)?)|([0-9]+"#"[0-9a-fA-F._-]+"#") ]%
   "1234567890"
 
 ;; Include ASCII control chars, except new-line and EOI, in whitespace, just
@@ -684,7 +685,7 @@ interface_type_definition
 interface_list
   : name ;;:new; explicit list for action
     %((wisi-face-apply-action [1 font-lock-function-name-face font-lock-type-face]))%
-  | interface_list AND name ;;:new explicit list for action
+  | interface_list 'and' name ;;:new explicit list for action
     %((wisi-face-apply-action [3 font-lock-function-name-face font-lock-type-face]))%
   ;
 
@@ -1033,8 +1034,8 @@ AND_relation_list ;;:new, split out from expression for action.
   ;
 
 AND_THEN_relation_list
-  : 'and' THEN relation
-  | AND_THEN_relation_list 'and' THEN relation
+  : 'and' 'then' relation
+  | AND_THEN_relation_list 'and' 'then' relation
   ;
 
 OR_relation_list
@@ -1043,8 +1044,8 @@ OR_relation_list
   ;
 
 OR_ELSE_relation_list
-  : 'or' ELSE relation
-  | OR_ELSE_relation_list 'or' ELSE relation
+  : 'or' 'else' relation
+  | OR_ELSE_relation_list 'or' 'else' relation
   ;
 
 XOR_relation_list
@@ -2638,7 +2639,8 @@ aspect_mark_list
 aspect_specification
   : 'with' aspect_mark_list
     ;; test/ada_mode-recover_30.adb "--  comment after aspect_specification"
-    %((wisi-indent-action [nil [ada-indent-broken ada-indent-broken]]))%
+    ;; comment is indented by higher level.
+    %((wisi-indent-action [nil ada-indent-broken]))%
   ;
 
 aspect_mark : IDENTIFIER [tick IDENTIFIER] ; ;;:edited "class" changed

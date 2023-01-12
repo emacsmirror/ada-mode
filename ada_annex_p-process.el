@@ -60,15 +60,15 @@
    BEGIN
    DECLARE
    SOME
-   ELSE
    IF
-   THEN
    ELSIF
    REM
    ABS
    IN
    XOR
+   ELSE
    OR
+   THEN
    USE
    FOR
    NOT
@@ -529,15 +529,15 @@
    (BEGIN . "begin")
    (DECLARE . "declare")
    (SOME . "some")
-   (ELSE . "else")
    (IF . "if")
-   (THEN . "then")
    (ELSIF . "elsif")
    (REM . "rem")
    (ABS . "abs")
    (IN . "in")
    (XOR . "xor")
+   (ELSE . "else")
    (OR . "or")
+   (THEN . "then")
    (USE . "use")
    (FOR . "for")
    (NOT . "not")

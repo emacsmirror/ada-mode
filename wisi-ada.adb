@@ -1041,12 +1041,12 @@ package body Wisi.Ada is
       return Indent_Record
         (Parse_Data_Type (Data),
          Tree,
-         Tree.Line_Region (Nonterm, Trailing_Non_Grammar => True).First,
-         Anchor_Token      => Tree_Anchor,
-         Record_Token      => Tree.First_Terminal (Record_Token),
-         Indenting_Token   => Indenting_Token,
-         Indenting_Comment => Indenting_Comment,
-         Offset            => Args (3));
+         Controlling_Token_Line => Tree.Line_Region (Nonterm, Trailing_Non_Grammar => True).First,
+         Anchor_Token           => Tree_Anchor,
+         Record_Token           => Tree.First_Terminal (Record_Token),
+         Indenting_Token        => Indenting_Token,
+         Indenting_Comment      => Indenting_Comment,
+         Offset                 => Args (3));
    end Ada_Indent_Record_1;
 
 end Wisi.Ada;

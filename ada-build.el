@@ -193,7 +193,7 @@ Returns the project if a file is selected, nil otherwise."
       (wisi-prj-dtrt-parse-file filename default-prj filename (file-name-directory filename)))))
 
 (defun ada-build-create-select-default-prj ()
-  "Create a default project with source-path set current directory, select it."
+  "Create a default project with source-path set to current directory, select it."
   (let* ((prj-file (expand-file-name "default_.adp" default-directory)) ;; we assume this does not exist
  	 (ada-xref-backend
 	  (if (eq ada-xref-backend 'gpr_query) 'gnat ;; since we are not specifying a gpr file.

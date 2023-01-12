@@ -2366,12 +2366,13 @@ package body Ada_Annex_P_Process_Actions is
       Nonterm   : in     WisiToken.Syntax_Trees.Valid_Node_Access)
    is
       Parse_Data : Wisi.Parse_Data_Type renames Wisi.Parse_Data_Type (User_Data);
+      T3 : constant SAL.Peek_Type := 3;
    begin
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          null;
       when Face =>
-         Face_Apply_Action (Parse_Data, Tree, Nonterm, (1 => (3, 1, 2)));
+         Face_Apply_Action (Parse_Data, Tree, Nonterm, (1 => (T3, 1, 2)));
       when Indent =>
          null;
       end case;
@@ -4026,7 +4027,7 @@ package body Ada_Annex_P_Process_Actions is
          Statement_Action (Parse_Data, Tree, Nonterm, ((T1, Statement_Start), (T3, Motion), (T6, Motion), (T10,
          Statement_End)));
          Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, Invalid_Token_ID) & Index_ID'(T3, Invalid_Token_ID) &
-         Index_ID'(T5, 44) & Index_ID'(T6, Invalid_Token_ID) & Index_ID'(T10, Invalid_Token_ID)));
+         Index_ID'(T5, 42) & Index_ID'(T6, Invalid_Token_ID) & Index_ID'(T10, Invalid_Token_ID)));
       when Face =>
          null;
       when Indent =>
@@ -4058,7 +4059,7 @@ package body Ada_Annex_P_Process_Actions is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, ((T1, Statement_Start), (T3, Motion), (T10, Statement_End)));
          Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, Invalid_Token_ID) & Index_ID'(T3, Invalid_Token_ID) &
-         Index_ID'(T5, 44) & Index_ID'(T10, Invalid_Token_ID)));
+         Index_ID'(T5, 42) & Index_ID'(T10, Invalid_Token_ID)));
       when Face =>
          null;
       when Indent =>
@@ -12568,7 +12569,7 @@ package body Ada_Annex_P_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, (1 => (T2, Motion)));
-         Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, 49) & Index_ID'(T2, Invalid_Token_ID)));
+         Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, 48) & Index_ID'(T2, Invalid_Token_ID)));
       when Face =>
          null;
       when Indent =>
@@ -12594,7 +12595,7 @@ package body Ada_Annex_P_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, ((T1, Statement_Start), (T3, Motion), (T7, Statement_End)));
-         Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, Invalid_Token_ID) & Index_ID'(T2, 49) & Index_ID'(T3,
+         Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, Invalid_Token_ID) & Index_ID'(T2, 48) & Index_ID'(T3,
          Invalid_Token_ID) & Index_ID'(T7, Invalid_Token_ID)));
       when Face =>
          null;
@@ -12622,7 +12623,7 @@ package body Ada_Annex_P_Process_Actions is
       case Parse_Data.Post_Parse_Action is
       when Navigate =>
          Statement_Action (Parse_Data, Tree, Nonterm, ((T1, Statement_Start), (T7, Statement_End)));
-         Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, Invalid_Token_ID) & Index_ID'(T2, 49) & Index_ID'(T7,
+         Motion_Action (Parse_Data, Tree, Nonterm, (Index_ID'(T1, Invalid_Token_ID) & Index_ID'(T2, 48) & Index_ID'(T7,
          Invalid_Token_ID)));
       when Face =>
          null;
@@ -15295,8 +15296,8 @@ package body Ada_Annex_P_Process_Actions is
       when Face =>
          null;
       when Indent =>
-         Indent_Action_0 (Parse_Data, Tree, Nonterm, (T1 => (False, (Simple, (Label => None))), T2 => (True, (Simple,
-         (Int, Ada_Indent_Broken)), (Simple, (Int, Ada_Indent_Broken)))));
+         Indent_Action_0 (Parse_Data, Tree, Nonterm, (T1 => (False, (Simple, (Label => None))), T2 => (False, (Simple,
+         (Int, Ada_Indent_Broken)))));
       end case;
    end aspect_specification_0;
 

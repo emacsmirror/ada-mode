@@ -1,7 +1,7 @@
 #!/bin/sh
 # Install executables for Ada mode.
 # 
-# $1 : optional <install dir>
+# $1 : optional --prefix=<dir>
 #   
 # See build.sh for build (must be run before install).
 

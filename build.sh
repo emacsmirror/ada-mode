@@ -16,13 +16,13 @@ if type alr; then
     cd emacs_ada_mode_*; alr build --release
 
     # WORKAROUND: this should be in alire_rules.make
-    mv emacs_ada_mode_*/ada_annex_p_lr1_parse_table.txt emacs_ada_mode_*/bin
+    mv ada_annex_p_lr1_parse_table.txt bin
     
 elif type gprbuild; then
     echo "building ada-mode executables via gnat compiler"
     
-    if [ -d ../wisi-4.1.? ]; then
-        WISI_DIR=`ls -d ../wisi-4.1.?`
+    if [ -d ../wisi-4.2.? ]; then
+        WISI_DIR=`ls -d ../wisi-4.2.?`
     fi
 
     args=`echo -DELPA="yes" $WISI_DIR/wisi.gpr.gp $WISI_DIR/wisi.gpr`
@@ -48,7 +48,6 @@ elif type gprbuild; then
     $WISI_DIR/wisitoken-bnf-generate --task_count 1 ada_annex_p.wy
 
     gprbuild -p -j8 -P ada_mode_wisi_parse.gpr -aP $WISI_DIR "$@"
-    mv ada_annex_p_lr1_parse_table.txt bin
 
 else
     echo "neither Alire nor gnat compiler found"
