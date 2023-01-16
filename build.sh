@@ -12,7 +12,7 @@ if type alr; then
     echo "building ada-mode executables via Alire"
 
     # alr get --build builds dependencies with release, but top with development.
-    alr get emacs_ada_mode~8.0.2
+    alr get emacs_ada_mode~8.0.3
     cd emacs_ada_mode_*; alr build --release
 
     # WORKAROUND: this should be in alire_rules.make

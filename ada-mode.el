@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 8.0.3
-;; package-requires: ((uniquify-files "1.0.1") (wisi "4.2.0") (gnat-compiler "1.0.1") (emacs "25.3"))
+;; Version: 8.0.4
+;; package-requires: ((uniquify-files "1.0.4") (wisi "4.2.2") (gnat-compiler "1.0.1") (emacs "25.3"))
 ;; url: https://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -117,7 +117,7 @@
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "8.0.2"))
+  (let ((version-string "8.0.4"))
     (if (called-interactively-p 'interactive)
 	(message version-string)
       version-string)))
@@ -164,7 +164,7 @@ nil, only the file name."
 
     ;; global-map has C-x ` 'next-error
     (define-key map [return] 	 'wisi-case-adjust-interactive)
-    (define-key map "\C-c`" 	 'ada-show-secondary-error)
+    (define-key map "\C-c`" 	 'gnat-show-secondary-error)
     (define-key map "\C-c;"      (lambda () (error "use M-; instead"))) ; comment-dwim
     (define-key map "\C-c\M-`" 	 'wisi-fix-compiler-error)
     (define-key map "\C-c\C-a" 	 'ada-align)
@@ -215,7 +215,7 @@ nil, only the file name."
     )
     ("Build"
      ["Next compilation error/xref"  next-error 	      t]
-     ["Show secondary error"         ada-show-secondary-error t]
+     ["Show secondary error"         gnat-show-secondary-error t]
      ["Fix compilation error"        wisi-fix-compiler-error  t]
      ["Show last parse error"        wisi-show-parse-error    t]
      ["Check syntax"                 ada-build-check 	      t]
@@ -878,53 +878,6 @@ the file name."
     (speedbar-add-supported-extension spec)
     (speedbar-add-supported-extension body))
   )
-
-(defun ada-show-secondary-error ()
-  "Show the next secondary file reference in the compilation buffer.
-A secondary file reference is defined by text having text
-property `gnat-secondary-error'.  These can be set by
-compiler-specific compilation filters."
-  (interactive)
-
-  ;; preserving the current window works only if the frame
-  ;; doesn't change, at least on Windows.
-  (let ((start-buffer (current-buffer))
-	pos item file)
-    (when (eq major-mode 'compilation-mode)
-      (setq next-error-last-buffer (current-buffer)))
-    ;; We use `pop-to-buffer', not `set-buffer', so point is correct
-    ;; for the current window showing next-error-last-buffer, and
-    ;; moving point in that window works. But that might eat an
-    ;; `other-frame-window-mode' prefix, which the user means to apply
-    ;; to ’ada-goto-source’ below; disable that temporarily.
-    (let ((display-buffer-overriding-action nil))
-      (pop-to-buffer next-error-last-buffer nil t)
-      (setq pos (next-single-property-change (point) 'gnat-secondary-error))
-      (unless pos
-	;; probably at end of compilation-buffer, in new compile
-	(goto-char (point-min))
-	(setq pos (next-single-property-change (point) 'gnat-secondary-error)))
-
-      (when pos
-	(setq item (get-text-property pos 'gnat-secondary-error))
-	;; file-relative-name handles absolute Windows paths from
-	;; g++. Do this in compilation buffer to get correct
-	;; default-directory.
-	(setq file (file-relative-name (nth 0 item)))
-
-	;; Set point in compilation buffer past this secondary error, so
-	;; user can easily go to the next one.
-	(goto-char (next-single-property-change (1+ pos) 'gnat-secondary-error)))
-
-      (pop-to-buffer start-buffer nil t);; for windowing history
-      )
-    (when item
-      (wisi-goto-source
-       file
-       (nth 1 item); line
-       (nth 2 item); column
-       ))
-    ))
 
 (defun ada-goto-declaration-start-1 (include-type)
   "Subroutine of `ada-goto-declaration-start'."

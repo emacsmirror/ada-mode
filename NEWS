@@ -6,6 +6,11 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+Ada Mode 8.0.4
+16 Jan 2023
+
+** Misc bug fixes.
+
 Ada Mode 8.0.3
 6 Jan 2023
 
@@ -46,6 +51,9 @@ Ada Mode 8.0.3
    an environment variable from the Emacs process.
 
 ** Minor bug fixes.
+
+* Ada Mode 7.3.0
+22 Oct 2022 beta promoted to release
 
 * Ada Mode 7.3.beta
 9 Jul 2022 beta testing

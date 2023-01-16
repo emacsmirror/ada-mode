@@ -1,4 +1,4 @@
-# For compiling ada-mode Ada code in elpa worktree
+# For compiling ada-mode in elpa worktree
 
 #export Standard_Common_Build := Debug
 
