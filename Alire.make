@@ -7,5 +7,5 @@ include $(STEPHES_ADA_LIBRARY_ALIRE_PREFIX)/build/alire_rules.make
 include $(WISITOKEN_ALIRE_PREFIX)/build/wisitoken_alire_rules.make
 
 # Local Variables:
-# eval: (load-file "prj-eglot.el")
+# eval: (load-file "prj.el")
 # End:
