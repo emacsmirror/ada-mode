@@ -6,6 +6,11 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
+Ada Mode 8.0.5
+3 Feb 2020
+
+** Alire and ELPA packaging fixes.
+
 Ada Mode 8.0.4
 16 Jan 2023
 
