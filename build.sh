@@ -12,14 +12,14 @@ if type alr; then
     echo "building ada-mode executables via Alire"
 
     # alr get --build builds dependencies with release, but top with development.
-    alr get emacs_ada_mode~8.0.5
+    alr get emacs_ada_mode~8.1.0
     cd emacs_ada_mode_*; alr build --release
     
 elif type gprbuild; then
     echo "building ada-mode executables via gnat compiler"
     
-    if [ -d ../wisi-4.2.? ]; then
-        WISI_DIR=`ls -d ../wisi-4.2.?`
+    if [ -d ../wisi-4.3.? ]; then
+        WISI_DIR=`ls -d ../wisi-4.3.?`
     fi
 
     args=`echo -DELPA="yes" $WISI_DIR/wisi.gpr.gp $WISI_DIR/wisi.gpr`

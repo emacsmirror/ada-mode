@@ -1,6 +1,6 @@
 ;;; ada-eglot.el --- Ada definitions for eglot -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2022  Free Software Foundation, Inc.
+;; Copyright (C) 2022, 2023  Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU Emacs.
 ;;
@@ -110,11 +110,11 @@
   :documentation "AdaCore's ada_language_server.")
 
 (cl-defmethod eglot-handle-notification :after ((server eglot-ada) (_method (eql $/progress))
-   &key token value &allow-other-keys)
+						&key token value &allow-other-keys)
   "Record when indexing is done."
-  (when (string-match token "indexing"))
+  (when (string-match token "indexing")
     (when (string= (plist-get value :kind) "end")
-      (setf (eglot-ada-indexing-done server) t)))
+      (setf (eglot-ada-indexing-done server) t))))
 
 (defun ada-eglot-wait-indexing-done ()
   "For use in tests."

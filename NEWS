@@ -6,17 +6,26 @@ Please send ada-mode bug reports to bug-gnu-emacs@gnu.org, with
 'ada-mode' in the subject. If possible, use M-x report-emacs-bug.
 
 
-Ada Mode 8.0.5
+* Ada Mode 8.1.0
+22 Sep 2023
+
+** ada_annex_p.wy (the source grammar file) is now compatible with
+   tree-sitter; a tree-sitter source grammar file ada_annex_p.js is
+   generated.
+
+** parser Ada language protocol version 5
+
+* Ada Mode 8.0.5
 3 Feb 2020
 
 ** Alire and ELPA packaging fixes.
 
-Ada Mode 8.0.4
+* Ada Mode 8.0.4
 16 Jan 2023
 
 ** Misc bug fixes.
-
-Ada Mode 8.0.3
+ 
+* Ada Mode 8.0.3
 6 Jan 2023
 
 ** Support building ada-mode parser with Alire.

@@ -4,7 +4,7 @@
 --
 --  [2] ada-indent-user-options.el
 --
---  Copyright (C) 2017 - 2022 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2023 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -21,8 +21,8 @@ pragma License (Modified_GPL);
 
 package Wisi.Ada is
 
-   Language_Protocol_Version : constant String := "4";
-   --  Defines the data passed to Initialize in Params.
+   Language_Protocol_Version : constant String := "5";
+   --  Defines the data passed between elisp and Ada.
    --
    --  This value must match ada-mode.el
    --  ada-wisi-language-protocol-version.

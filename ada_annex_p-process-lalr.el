@@ -1,7 +1,7 @@
-;;; ada_annex_p-process.el --- Generated parser support file  -*- buffer-read-only:t lexical-binding:t -*-
-;;  command line: wisitoken-bnf-generate.exe  --generate LR1 Ada_Emacs re2c PROCESS text_rep ada_annex_p.wy
+;;; ada_annex_p-process-lalr.el --- Generated parser support file  -*- buffer-read-only:t lexical-binding:t -*-
+;;  command line: wisitoken-bnf-generate.exe  --generate LALR Ada_Emacs re2c PROCESS ada_annex_p.wy
 
-;;  Copyright (C) 2013 - 2022 Free Software Foundation, Inc.
+;;  Copyright (C) 2013 - 2023 Free Software Foundation, Inc.
 
 ;;  This program is free software; you can redistribute it and/or
 ;;  modify it under the terms of the GNU General Public License as
@@ -18,92 +18,92 @@
 
 (require 'wisi-process-parse)
 
-(defconst ada_annex_p-process-token-table
+(defconst ada_annex_p-process-lalr-token-table
   [WHITESPACE
    NEW_LINE
+   PLACEHOLDER
    COMMENT
-   GNAT_PREP_IF
-   GNAT_PREP_ELSIF
-   GNAT_PREP_ELSE
-   GNAT_PREP_END_IF
    CONFLICT_MARK_A
    CONFLICT_MARK_B
    CONFLICT_MARK_END
-   PLACEHOLDER
-   AT
-   RAISE
-   SEPARATE
-   TERMINATE
-   SELECT
-   UNTIL
-   DELAY
    ABORT
-   REQUEUE
-   ACCEPT
-   ENTRY
-   GENERIC
-   EXCEPTION
-   RENAMES
-   OVERRIDING
-   BODY
-   PRIVATE
-   PACKAGE
-   OUT
-   RETURN
-   GOTO
-   EXIT
-   DO
-   REVERSE
-   WHILE
-   LOOP
-   PARALLEL
-   BEGIN
-   DECLARE
-   SOME
-   IF
-   ELSIF
-   REM
    ABS
-   IN
-   XOR
-   ELSE
-   OR
-   THEN
-   USE
-   FOR
-   NOT
-   FUNCTION
-   PROCEDURE
-   ALL
+   ABSTRACT
+   ACCEPT
    ACCESS
-   INTERFACE
-   SYNCHRONIZED
-   PROTECTED
-   TASK
-   WITH
-   OTHERS
-   WHEN
-   CASE
-   NULL
-   END
-   RECORD
-   TAGGED
-   OF
+   ALIASED
+   ALL
+   AND
    ARRAY
+   AT
+   BEGIN
+   BODY
+   CASE
+   CONSTANT
+   DECLARE
+   DELAY
    DELTA
    DIGITS
-   MOD
-   RANGE
-   AND
-   NEW
-   LIMITED
-   ABSTRACT
-   CONSTANT
-   ALIASED
-   SUBTYPE
+   DO
+   ELSE
+   ELSIF
+   END
+   ENTRY
+   EXCEPTION
+   EXIT
+   FOR
+   FUNCTION
+   GENERIC
+   GOTO
+   IF
+   IN
+   INTERFACE
    IS
-   TYPE
+   LIMITED
+   LOOP
+   MOD
+   NEW
+   NOT
+   NULL
+   OF
+   OR
+   OTHERS
+   OUT
+   OVERRIDING
+   PACKAGE
+   PARALLEL
    PRAGMA
+   PRIVATE
+   PROCEDURE
+   PROTECTED
+   RAISE
+   RANGE
+   RECORD
+   REM
+   RENAMES
+   REQUEUE
+   RETURN
+   REVERSE
+   SELECT
+   SEPARATE
+   SOME
+   SUBTYPE
+   SYNCHRONIZED
+   TAGGED
+   TASK
+   TERMINATE
+   THEN
+   TYPE
+   UNTIL
+   USE
+   WHEN
+   WHILE
+   WITH
+   XOR
+   GNAT_PREP_IF
+   GNAT_PREP_ELSIF
+   GNAT_PREP_ELSE
+   GNAT_PREP_END
    LEFT_PAREN
    LEFT_SQUARE_BRACKET
    RIGHT_PAREN
@@ -141,6 +141,8 @@
    Wisi_EOI
    wisitoken_accept
    tick
+   gnatprep_declarative_if_statement
+   gnatprep_if_statement
    conditional_quantified_expression
    pragma_argument_association_list
    pragma_g
@@ -175,10 +177,8 @@
    digits_constraint
    array_type_definition
    index_subtype_definition_list
-   unconstrained_array_definition
    index_subtype_definition
    discrete_subtype_definition_list
-   constrained_array_definition
    discrete_subtype_definition
    component_definition
    index_constraint
@@ -211,24 +211,24 @@
    incomplete_type_declaration
    declarative_item
    declarative_item_pragma
-   declarative_part
+   non_empty_declarative_part
    basic_declarative_item
    proper_body
+   simple_name
    name
-   direct_name
    explicit_dereference
    slice
    selected_component
    selector_name
    attribute_reference
    attribute_designator
-   range_attribute_reference
    range_attribute_designator
    aggregate
    record_aggregate
    record_component_association_list
    record_component_association
    component_choice_list
+   component_choice_list_1
    extension_aggregate
    array_aggregate
    expression_list
@@ -241,11 +241,6 @@
    record_delta_aggregate
    array_delta_aggregate
    iterated_element_association
-   AND_relation_list
-   AND_THEN_relation_list
-   OR_relation_list
-   OR_ELSE_relation_list
-   XOR_relation_list
    expression
    relation
    membership_choice_list
@@ -260,9 +255,7 @@
    multiplying_operator
    conditional_expression
    elsif_expression_item
-   elsif_expression_list
    if_expression
-   condition
    case_expression_alternative_list
    case_expression
    case_expression_alternative
@@ -279,13 +272,11 @@
    subtype_indication_paren_constraint
    subpool_specification
    sequence_of_statements
-   sequence_of_statements_opt
    statement
    simple_statement
    compound_statement
    null_statement
    label
-   statement_identifier
    assignment_statement
    target_name
    elsif_statement_item
@@ -297,14 +288,11 @@
    loop_statement
    iteration_scheme
    chunk_specification
-   loop_parameter_specification
    iterator_filter
    iterator_specification
    loop_parameter_subtype_indication
    procedural_iterator
    iterator_parameter_specification
-   identifier_opt
-   label_opt
    block_statement
    statement_AND_list
    parallel_block_statement
@@ -314,20 +302,16 @@
    subprogram_specification
    procedure_specification
    function_specification
-   parameter_profile
    result_profile
    parameter_and_result_profile
    parameter_specification_list
    formal_part
    parameter_specification
-   mode
+   non_empty_mode
    global_aspect_definition
    global_aspect_element
    global_mode
-   basic_global_mode
-   global_set
    global_designator
-   name_opt
    subprogram_body
    procedure_call_statement
    function_call
@@ -343,7 +327,6 @@
    expression_function_declaration
    package_declaration
    basic_declarative_item_pragma
-   basic_declarative_item_list
    package_specification
    package_body
    private_type_declaration
@@ -377,9 +360,8 @@
    protected_operation_item
    entry_declaration
    accept_statement
-   entry_index
    entry_body
-   entry_body_formal_part
+   non_empty_entry_body_formal_part
    entry_barrier
    entry_index_specification
    requeue_statement
@@ -400,13 +382,10 @@
    conditional_entry_call
    asynchronous_select
    triggering_alternative
-   abortable_part
    abort_statement
    compilation
    compilation_unit
    with_clause
-   limited_with_clause
-   nonlimited_with_clause
    body_stub
    subprogram_body_stub
    package_body_stub
@@ -414,11 +393,9 @@
    protected_body_stub
    subunit
    exception_declaration
-   exception_handler_list
    handled_sequence_of_statements
    exception_choice_list
    exception_handler
-   choice_parameter_specification
    exception_choice
    raise_statement
    raise_expression
@@ -448,7 +425,6 @@
    formal_concrete_subprogram_declaration
    formal_abstract_subprogram_declaration
    subprogram_default
-   default_name
    formal_package_declaration
    aspect_clause
    aspect_association
@@ -458,38 +434,40 @@
    aspect_definition
    attribute_definition_clause
    enumeration_representation_clause
-   enumeration_aggregate
    record_representation_clause
    component_clause
-   position
-   first_bit
-   last_bit
    extended_global_aspect_definition
    extended_global_aspect_element
    extended_global_mode
-   formal_parameter_designator
    formal_parameter_set
    formal_group_designator
-   dispatching_operation_set
-   dispatching_operation_specifier
    delta_constraint
    at_clause
    mod_clause
-   discrete_range_COMMA_list
-   component_item_component_item_list
    declarative_item_pragma_list
+   GNAT_PREP_ELSIF_expression_list
+   discrete_range_COMMA_list
+   component_item_list
    record_component_association_COMMA_list
+   AND_THEN
+   AND_THEN_list
+   OR_ELSE
+   OR_ELSE_list
+   XOR_relation_list
+   elsif_expression_item_list
    declare_item_list
-   statement_statement_list
+   statement_list
    label_list
    global_aspect_element_COMMA_list
+   exception_handler_list
    generic_formal_parameter_declaration_list
    term_binary_adding_operator_list
+   basic_declarative_item_pragma_list
    component_clause_list
    Wisi_SOI
    ])
 
-(defconst ada_annex_p-process-face-table
+(defconst ada_annex_p-process-lalr-face-table
   [
    font-lock-constant-face
    font-lock-function-name-face
@@ -497,82 +475,86 @@
    nil
    ])
 
-(defconst ada_annex_p-process-repair-image
+(defconst ada_annex_p-process-lalr-repair-image
   '(
-   (AT . "at")
-   (RAISE . "raise")
-   (SEPARATE . "separate")
-   (TERMINATE . "terminate")
-   (SELECT . "select")
-   (UNTIL . "until")
-   (DELAY . "delay")
    (ABORT . "abort")
-   (REQUEUE . "requeue")
-   (ACCEPT . "accept")
-   (ENTRY . "entry")
-   (GENERIC . "generic")
-   (EXCEPTION . "exception")
-   (RENAMES . "renames")
-   (OVERRIDING . "overriding")
-   (BODY . "body")
-   (PRIVATE . "private")
-   (PACKAGE . "package")
-   (OUT . "out")
-   (RETURN . "return")
-   (GOTO . "goto")
-   (EXIT . "exit")
-   (DO . "do")
-   (REVERSE . "reverse")
-   (WHILE . "while")
-   (LOOP . "loop")
-   (PARALLEL . "parallel")
-   (BEGIN . "begin")
-   (DECLARE . "declare")
-   (SOME . "some")
-   (IF . "if")
-   (ELSIF . "elsif")
-   (REM . "rem")
    (ABS . "abs")
-   (IN . "in")
-   (XOR . "xor")
-   (ELSE . "else")
-   (OR . "or")
-   (THEN . "then")
-   (USE . "use")
-   (FOR . "for")
-   (NOT . "not")
-   (FUNCTION . "function")
-   (PROCEDURE . "procedure")
-   (ALL . "all")
+   (ABSTRACT . "abstract")
+   (ACCEPT . "accept")
    (ACCESS . "access")
-   (INTERFACE . "interface")
-   (SYNCHRONIZED . "synchronized")
-   (PROTECTED . "protected")
-   (TASK . "task")
-   (WITH . "with")
-   (OTHERS . "others")
-   (WHEN . "when")
-   (CASE . "case")
-   (NULL . "null")
-   (END . "end")
-   (RECORD . "record")
-   (TAGGED . "tagged")
-   (OF . "of")
+   (ALIASED . "aliased")
+   (ALL . "all")
+   (AND . "and")
    (ARRAY . "array")
+   (AT . "at")
+   (BEGIN . "begin")
+   (BODY . "body")
+   (CASE . "case")
+   (CONSTANT . "constant")
+   (DECLARE . "declare")
+   (DELAY . "delay")
    (DELTA . "delta")
    (DIGITS . "digits")
-   (MOD . "mod")
-   (RANGE . "range")
-   (AND . "and")
-   (NEW . "new")
-   (LIMITED . "limited")
-   (ABSTRACT . "abstract")
-   (CONSTANT . "constant")
-   (ALIASED . "aliased")
-   (SUBTYPE . "subtype")
+   (DO . "do")
+   (ELSE . "else")
+   (ELSIF . "elsif")
+   (END . "end")
+   (ENTRY . "entry")
+   (EXCEPTION . "exception")
+   (EXIT . "exit")
+   (FOR . "for")
+   (FUNCTION . "function")
+   (GENERIC . "generic")
+   (GOTO . "goto")
+   (IF . "if")
+   (IN . "in")
+   (INTERFACE . "interface")
    (IS . "is")
-   (TYPE . "type")
+   (LIMITED . "limited")
+   (LOOP . "loop")
+   (MOD . "mod")
+   (NEW . "new")
+   (NOT . "not")
+   (NULL . "null")
+   (OF . "of")
+   (OR . "or")
+   (OTHERS . "others")
+   (OUT . "out")
+   (OVERRIDING . "overriding")
+   (PACKAGE . "package")
+   (PARALLEL . "parallel")
    (PRAGMA . "pragma")
+   (PRIVATE . "private")
+   (PROCEDURE . "procedure")
+   (PROTECTED . "protected")
+   (RAISE . "raise")
+   (RANGE . "range")
+   (RECORD . "record")
+   (REM . "rem")
+   (RENAMES . "renames")
+   (REQUEUE . "requeue")
+   (RETURN . "return")
+   (REVERSE . "reverse")
+   (SELECT . "select")
+   (SEPARATE . "separate")
+   (SOME . "some")
+   (SUBTYPE . "subtype")
+   (SYNCHRONIZED . "synchronized")
+   (TAGGED . "tagged")
+   (TASK . "task")
+   (TERMINATE . "terminate")
+   (THEN . "then")
+   (TYPE . "type")
+   (UNTIL . "until")
+   (USE . "use")
+   (WHEN . "when")
+   (WHILE . "while")
+   (WITH . "with")
+   (XOR . "xor")
+   (GNAT_PREP_IF . "#if")
+   (GNAT_PREP_ELSIF . "#elsif")
+   (GNAT_PREP_ELSE . "#else")
+   (GNAT_PREP_END . "#end")
    (LEFT_PAREN . "(")
    (LEFT_SQUARE_BRACKET . "[")
    (RIGHT_PAREN . ")")
@@ -609,4 +591,4 @@
    (CHARACTER_LITERAL . "' '")
    ))
 
-(provide 'ada_annex_p-process)
+(provide 'ada_annex_p-process-lalr)

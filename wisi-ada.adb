@@ -2,7 +2,7 @@
 --
 --  see spec.
 --
---  Copyright (C) 2017 - 2022 Free Software Foundation, Inc.
+--  Copyright (C) 2017 - 2023 Free Software Foundation, Inc.
 --
 --  This library is free software;  you can redistribute it and/or modify it
 --  under terms of the  GNU General Public License  as published by the Free
@@ -17,7 +17,7 @@ with Ada.Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
-with Ada_Annex_P_Process_Actions; --  token_enum_id
+with Ada_Annex_P_Process_LR1_Actions; --  token_enum_id
 with GNAT.Traceback.Symbolic;
 package body Wisi.Ada is
    use WisiToken;
@@ -36,7 +36,7 @@ package body Wisi.Ada is
       Offset                 : in     Integer)
      return Wisi.Delta_Type
    is
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
    begin
       if not Indenting_Comment and Tree.ID (Indenting_Token) = +RECORD_ID then
          --  Indenting 'record'
@@ -129,7 +129,7 @@ package body Wisi.Ada is
    --  Convert a subprogram call from Prefix.Method (Object, ...) to
    --  Object.Method (...). Edit_Begin_Char is in Prefix.Method.
    is
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
       use Standard.Ada.Strings.Unbounded;
       use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
@@ -186,8 +186,8 @@ package body Wisi.Ada is
       when qualified_expression_ID =>
          raise SAL.Not_Implemented; -- need use case
 
-      when direct_name_ID =>
-         Method := Tree.Child (Method, 1);
+      when IDENTIFIER_ID =>
+         null;
 
       when others =>
          Unrecognized ("supported token", Tree, Data, Method);
@@ -231,7 +231,7 @@ package body Wisi.Ada is
    --  Convert a subprogram call from Object.Method (...) to
    --  Method (Object, ...). Edit_Begin_Char is in Object.Method.
    is
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
       use Standard.Ada.Strings.Unbounded;
       use WisiToken.Syntax_Trees;
 
@@ -307,7 +307,7 @@ package body Wisi.Ada is
    --  Convert a function call from Prefix.Element (Object, Index) to
    --  Object (Index). Edit_Begin_Char is in Prefix.Element.
    is
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
       use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
 
@@ -365,7 +365,7 @@ package body Wisi.Ada is
    --  (Object, Index). Edit_Begin_Char is in Object. The expression
    --  parses as a subprogram call.
    is
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
       use Standard.Ada.Text_IO;
       use WisiToken.Syntax_Trees;
 
@@ -428,7 +428,7 @@ package body Wisi.Ada is
    overriding
    procedure Initialize (Data  : in out Parse_Data_Type)
    is
-      use all type Ada_Annex_P_Process_Actions.Token_Enum_ID;
+      use all type Ada_Annex_P_Process_LR1_Actions.Token_Enum_ID;
    begin
       Data.First_Comment_ID := +COMMENT_ID;
       Data.Last_Comment_ID  := WisiToken.Invalid_Token_ID;
@@ -534,7 +534,7 @@ package body Wisi.Ada is
      return WisiToken.Token_ID_Arrays.Vector
    is
       pragma Unreferenced (User_Data);
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
    begin
       return IDs : WisiToken.Token_ID_Arrays.Vector do
          Wisi.Skip (Command_Line, Last, '(');
@@ -557,7 +557,7 @@ package body Wisi.Ada is
      return WisiToken.Insert_Location
    is
       pragma Unreferenced (User_Data);
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
 
       Insert_ID        : constant Token_Enum_ID := To_Token_Enum (Tree.ID (Insert_Token));
       Insert_Before_ID : constant Token_Enum_ID := To_Token_Enum (Tree.ID (Insert_Before_Token));
@@ -830,7 +830,7 @@ package body Wisi.Ada is
       pragma Unreferenced (Indenting_Comment);
       pragma Unreferenced (Args);
 
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
       use Syntax_Trees;
 
       --  In our grammar, 'aggregate' can be an Ada aggregate, or a
@@ -888,7 +888,7 @@ package body Wisi.Ada is
    is
       pragma Unreferenced (Nonterm, Args);
 
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
 
       pragma Assert (Tree.ID (Indenting_Token) = +aspect_definition_ID);
 
@@ -944,7 +944,7 @@ package body Wisi.Ada is
       Args              : in     Wisi.Indent_Arg_Arrays.Vector)
      return Wisi.Delta_Type
    is
-      use all type Ada_Annex_P_Process_Actions.Token_Enum_ID;
+      use all type Ada_Annex_P_Process_LR1_Actions.Token_Enum_ID;
       --  tree.child (Nonterm, Args (1)) = 'formal_part'
       --  Indenting_Token = 'result_profile'
       --  Args (2) = delta (= 0!)
@@ -1020,7 +1020,7 @@ package body Wisi.Ada is
       --  full_type_declaration. If record_representation_clause, args (1)
       --  is FOR, child of record_representation_clause.
 
-      use Ada_Annex_P_Process_Actions;
+      use Ada_Annex_P_Process_LR1_Actions;
 
       Anchor : constant Token_ID := Token_ID (Integer'(Args (1)));
 

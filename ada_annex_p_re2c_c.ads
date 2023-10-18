@@ -2,7 +2,7 @@
 --  command line: wisitoken-bnf-generate.exe  --generate LALR Ada_Emacs re2c PROCESS ada_annex_p.wy
 --
 
---  Copyright (C) 2013 - 2022 Free Software Foundation, Inc.
+--  Copyright (C) 2013 - 2023 Free Software Foundation, Inc.
 
 --  This program is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU General Public License as

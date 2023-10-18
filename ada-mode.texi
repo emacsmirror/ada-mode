@@ -29,7 +29,7 @@ developing GNU and promoting software freedom.''
 @node Top, Overview, (dir), (dir)
 @top Top
 
-Ada Mode Version 8.0
+Ada Mode Version 8.1
 @end ifnottex
 
 @menu

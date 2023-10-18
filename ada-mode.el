@@ -6,8 +6,8 @@
 ;; Maintainer: Stephen Leake <stephen_leake@stephe-leake.org>
 ;; Keywords: languages
 ;;  ada
-;; Version: 8.0.5
-;; package-requires: ((uniquify-files "1.0.4") (wisi "4.2.2") (gnat-compiler "1.0.2") (emacs "25.3"))
+;; Version: 8.1.0
+;; package-requires: ((uniquify-files "1.0.4") (wisi "4.3.0") (gnat-compiler "1.0.3") (emacs "25.3"))
 ;; url: https://www.nongnu.org/ada-mode/
 ;;
 ;; This file is part of GNU Emacs.
@@ -106,18 +106,18 @@
 
 (require 'ada-core)
 (require 'ada-indent-user-options)
-(require 'ada_annex_p-process)
 (require 'ada-skel)
 (require 'align)
 (require 'cl-lib)
 (require 'compile)
 (require 'find-file)
 (require 'wisi)
+(require 'wisi-process-parse)
 
 (defun ada-mode-version ()
   "Return Ada mode version."
   (interactive)
-  (let ((version-string "8.0.5"))
+  (let ((version-string "8.1.0"))
     (if (called-interactively-p 'interactive)
 	(message version-string)
       version-string)))
@@ -629,6 +629,8 @@ See `ff-other-file-alist'.")
 	     "\\_>")))
     result))
 
+(declare-function "eglot.el" eglot--server-capable)
+
 (defun ada-which-function (&optional include-type)
   "Return name of subprogram/task/package containing point.
 Also sets `ff-function-name' for `ff-pre-load-hook'."
@@ -879,6 +881,45 @@ the file name."
     (speedbar-add-supported-extension body))
   )
 
+(defun ada-declarative-region (pos)
+  "Return (BEGIN . END) of declaration region containing POS.
+Does not contain trailing non_grammar."
+  ;; FIXME: First we check whether to do 'wisi-statement-start'. Consider
+  ;; test/ada_mode-ancestor.adb; if pos is on 'begin' of procedure B,
+  ;; we want the declarative region of Ada_Mode.Ancestor, so move to
+  ;; 'procedure' before querying for the block ancestor.
+  (let ((query-result (wisi-parse-tree-query
+		       wisi-parser-shared 'ancestor pos
+		       '(non_empty_declarative_part
+			 block_statement
+			 subprogram_body
+			 package_body
+			 task_body
+			 entry_body))))
+      (unless query-result
+	(user-error "no declarative region found"))
+
+      (cl-ecase (wisi-tree-node-id query-result)
+	(non_empty_declarative_part
+	 (wisi-tree-node-char-region query-result))
+
+	((block_statement subprogram_body package_body task_body entry_body)
+	 ;;  Declarative region is empty; return end of previous token
+	 ;;  ('declare' or 'is').
+	 (let* ((nonterm (wisi-tree-node-address query-result))
+		(child-index 1)
+		(child (wisi-parse-tree-query wisi-parser-shared 'child nonterm child-index))
+		(child-char-region (wisi-tree-node-char-region child)))
+
+	   (while (not (memq (wisi-tree-node-id child) '(DECLARE IS)))
+	     (setq child-index (1+ child-index))
+	     (setq child (wisi-parse-tree-query wisi-parser-shared 'child nonterm child-index))
+	     (setq child-char-region (wisi-tree-node-char-region child)))
+
+	   (cons (1+ (cdr child-char-region)) (1+ (cdr child-char-region)))))
+	)
+      ))
+
 (defun ada-goto-declaration-start-1 (include-type)
   "Subroutine of `ada-goto-declaration-start'."
   (let ((start (point))
@@ -1122,7 +1163,7 @@ Otherwise, allow UPPERCASE for identifiers."
 
 ;;;; wisi integration
 
-(defconst ada-wisi-language-protocol-version "4"
+(defconst ada-wisi-language-protocol-version "5"
   "Defines language-specific parser parameters.
 Must match wisi-ada.ads Language_Protocol_Version.")
 
@@ -1562,20 +1603,57 @@ Prompts with completion, defaults to filename at point."
 `ada-indent-backend', `ada-xref-backend' are set to other.
 See `ada-eglot-setup' in ada-eglot.el for a similar function.")
 
+(defvar ada_annex_p-process-lr1-face-table)
+(defvar ada_annex_p-process-lr1-token-table)
+(defvar ada_annex_p-process-lr1-repair-image)
+
+(defvar ada_annex_p-process-lalr-face-table)
+(defvar ada_annex_p-process-lalr-token-table)
+(defvar ada_annex_p-process-lalr-repair-image)
+
+(defvar ada_annex_p-process-tree_sitter-face-table)
+(defvar ada_annex_p-process-tree_sitter-token-table)
+(defvar ada_annex_p-process-tree_sitter-repair-image)
+
 ;;;###autoload
 (cl-defun ada-parse-require-process (&key wait)
   "Start the Ada parser in an external process, if not already started.
 Unless WAIT, does not wait for parser to respond. Returns the parser object."
   (interactive)
-  (let ((parser (wisi-process-parse-get
-		 (make-ada-wisi-parser
-		  :label "Ada"
-		  :language-protocol-version ada-wisi-language-protocol-version
-		  :exec-file ada-process-parse-exec
-		  :exec-opts ada-process-parse-exec-opts
-		  :face-table ada_annex_p-process-face-table
-		  :token-table ada_annex_p-process-token-table
-		  :repair-image ada_annex_p-process-repair-image))))
+  (let (face-table token-table repair-image parser)
+    (cond
+     ((string-match "lr1" ada-process-parse-exec)
+      (require 'ada_annex_p-process-lr1)
+      (setq face-table ada_annex_p-process-lr1-face-table)
+      (setq token-table ada_annex_p-process-lr1-token-table)
+      (setq repair-image ada_annex_p-process-lr1-repair-image))
+
+     ((string-match "lalr" ada-process-parse-exec)
+      (require 'ada_annex_p-process-lalr)
+      (setq face-table ada_annex_p-process-lalr-face-table)
+      (setq token-table ada_annex_p-process-lalr-token-table)
+      (setq repair-image ada_annex_p-process-lalr-repair-image))
+
+     ((string-match "tree_sitter" ada-process-parse-exec)
+      (require 'ada_annex_p-process-tree_sitter)
+      (setq face-table ada_annex_p-process-tree_sitter-face-table)
+      (setq token-table ada_annex_p-process-tree_sitter-token-table)
+      (setq repair-image ada_annex_p-process-tree_sitter-repair-image))
+
+     (t
+      (user-error "unrecognized `ada-process-parse-exec'; file name must contain one of 'lr1', 'lalr', 'tree_sitter'"))
+     )
+
+    (setq parser
+	  (wisi-process-parse-get
+	   (make-ada-wisi-parser
+	    :label "Ada"
+	    :language-protocol-version ada-wisi-language-protocol-version
+	    :exec-file ada-process-parse-exec
+	    :exec-opts ada-process-parse-exec-opts
+	    :face-table face-table
+	    :token-table token-table
+	    :repair-image repair-image)))
     (wisi-parse-require-process parser :nowait (not wait))
     parser))
 

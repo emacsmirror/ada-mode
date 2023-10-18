@@ -423,7 +423,7 @@ excluding leading pragmas."
 	    (cl-case (wisi-cache-nonterm cache)
 	      (pragma_g (wisi-goto-end-1 cache))
 	      (use_package_clause (wisi-goto-end-1 cache))
-	      ((limited_with_clause | nonlimited_with_clause)
+	      (with_clause 
 	       (when (not begin)
 		 (setq begin (line-beginning-position)))
 	       (wisi-goto-end-1 cache))
